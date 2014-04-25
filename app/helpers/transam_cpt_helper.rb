@@ -1,4 +1,4 @@
-module TransamHelper
+module TransamCptHelper
 
   # Return the version of TransAM CPT that is running
   def transam_cpt_version
