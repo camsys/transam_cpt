@@ -77,7 +77,7 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
     
     create_table :mpms_projects do |t|
       t.integer   :capital_project_id,                :null => :false   
-      t.integer   :external_id,         :limit => 32, :null => :false   
+      t.string    :external_id,         :limit => 32, :null => :false   
       t.string    :name,                :limit => 64, :null => :false
       t.string    :description,                       :null => :false
       t.boolean   :active,                            :null => :false
