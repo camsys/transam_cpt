@@ -24,7 +24,7 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
       t.integer   :team_scope_category_id,            :null => :false
       t.string    :code,                :limit => 6,  :null => :false
       t.string    :name,                              :null => :false
-      t.string    :instructions,                      :null => :false
+      t.string    :instructions
       t.boolean   :active,                            :null => :false
     end 
     add_index :team_scope_codes, [:team_scope_category_id, :code], :name => "team_scope_codes_idx1"
