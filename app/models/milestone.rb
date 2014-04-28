@@ -30,6 +30,8 @@ class Milestone < ActiveRecord::Base
   end
             
   # Associations
+  belongs_to :activity_line_item
+
   belongs_to :milestone_type
   
   # Each milestone was recorded by a user

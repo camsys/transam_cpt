@@ -38,14 +38,12 @@ class ActivityLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
-  # Every activity line item belongs to an organization
-  belongs_to  :organization
   
   # Every ali belongs to a capital project
   belongs_to  :capital_project
 
-  # Every ALI has a single FTA Activity Line Item Code
-  belongs_to  :activity_line_item_code
+  # Every ALI has a single TEAM sub catagory code
+  belongs_to  :team_sub_category
   
   # Has 0 or more assets
   has_many    :assets
@@ -60,10 +58,9 @@ class ActivityLineItem < ActiveRecord::Base
   # Validations
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => true, :uniqueness => true
-  validates :organization_id,                   :presence => true
   validates :capital_project_id,                :presence => true
   validates :name,                              :presence => true
-  validates :activity_line_item_code_id,        :presence => true
+  validates :team_sub_category_id,              :presence => true
 
 
   #------------------------------------------------------------------------------
@@ -76,10 +73,9 @@ class ActivityLineItem < ActiveRecord::Base
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :object_key,
-    :organization_id,
     :capital_project_id, 
     :name,
-    :activity_line_item_code_id, 
+    :team_sub_category_id, 
     :active    
   ]
   
