@@ -69,6 +69,7 @@ class CapitalProject < ActiveRecord::Base
   validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
   validates :description,                       :presence => true
+  validates :justification,                     :presence => true
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -87,6 +88,7 @@ class CapitalProject < ActiveRecord::Base
     :capital_project_status_type_id, 
     :title,
     :description,
+    :justification,
     :emergency,
     :active    
   ]

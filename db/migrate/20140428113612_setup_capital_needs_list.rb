@@ -55,6 +55,7 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
       t.integer   :capital_project_status_type_id,    :null => :false   
       t.string    :title,               :limit => 80, :null => :false
       t.text      :description,                       :null => :false
+      t.text      :justification,                     :null => :false
       t.boolean   :emergency,                         :null => :false
       t.boolean   :active,                            :null => :false
       
