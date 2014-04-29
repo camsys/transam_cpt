@@ -1,24 +1,19 @@
 .row
-  .col-md-12
+  .col-md-12{:style => 'height: 100px;overflow-y: scroll;'}
     - if @project.documents.empty?
-      %p There are no supporting documents for this project.
-      = link_to "Add a document", "#", :class => "btn btn-primary"
+      %p There are no documents for this project.
     - else
-      %table.table.table-condensed.table-striped.table-hover.table-bordered#datatable{:width => "100%"}
-        %thead
-          %tr
-            %th Name
-            %th Description
-            %th Type
-            %th Actions
-        %tbody
-          - @project.documents.each do |a|
-            %tr
-              %td= a.name
-              %td= a.description
-              %td= a.type
-              %td= link_to "Download", "#", :class => "btn btn-success btn-xs"
-      
-      
-      = render 'shared/datatable_javascript'
+      = render :partial => 'shared/documents', :locals => {:documents => @project.documents}
+
+.row
+  .col-md-12
+    %fieldset
+      %legend Add Document
+      = simple_form_for([@project, Document.new],
+          :html => {:multipart => true, :class => 'form-vertical' },
+          :wrapper => :vertical_form,
+          :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+        = f.input :document
+        = f.input :description, :as => :text, :input_html => { :rows => 3 }, :placeholder => 'Enter a brief description of the document...'
+        = f.submit "Add document to project", :class => 'btn btn-primary'
       
