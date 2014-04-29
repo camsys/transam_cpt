@@ -30,7 +30,7 @@ class CapitalProject < ActiveRecord::Base
   before_validation(:on => :create) do
     generate_unique_key(:object_key)
   end
-  
+      
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -46,17 +46,17 @@ class CapitalProject < ActiveRecord::Base
   # Has a single TEAM category, eg Expansion, Rehabilitation, etc
   belongs_to  :team_category
 
-  # Has many MPMS projects
-  has_many    :mpms_projects
+  # Has many MPMS projects. These will be removed if the project is removed
+  has_many    :mpms_projects, :dependent => :destroy
     
-  # Has 0 or more activity line items
-  has_many    :activity_line_items
+  # Has 0 or more activity line items. These will be removed if the project is removed.
+  has_many    :activity_line_items, :dependent => :destroy
 
-  #Has 0 or more documents
-  has_many    :documents,  -> { where :attachment_type_id => 2}, :class_name => "Attachment"
+  # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
+  has_many    :documents,   :as => :documentable, :dependent => :destroy
 
-  # Has 0 or more comments. Using a polynmorphic association
-  has_many    :comments,  :as => :commentable
+  # Has 0 or more comments. Using a polymorphic association, These will be removed if the project is removed
+  has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
   #------------------------------------------------------------------------------
   # Validations
@@ -66,7 +66,7 @@ class CapitalProject < ActiveRecord::Base
   validates :team_scope_code_id,                :presence => true
   validates :team_category_id,                  :presence => true
   validates :capital_project_status_type_id,    :presence => true
-  validates :project_number,                    :presence => true, :uniqueness => true
+  #validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
   validates :description,                       :presence => true
   validates :justification,                     :presence => true
@@ -81,7 +81,7 @@ class CapitalProject < ActiveRecord::Base
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :object_key,
-    :project_number, 
+    #:project_number, 
     :organization_id,
     :team_scope_code_id,
     :team_category_id,
@@ -116,11 +116,11 @@ class CapitalProject < ActiveRecord::Base
   #------------------------------------------------------------------------------
   protected 
 
-
   # Set resonable defaults for a new capital project
   def set_defaults
     self.active ||= true
     self.emergency ||= false
+    self.capital_project_status_type_id ||= 1
   end    
       
 end

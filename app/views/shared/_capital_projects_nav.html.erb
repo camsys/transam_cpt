@@ -1,9 +1,15 @@
 <li class="nav-item <%= get_nav_link_class('capital_projects') %>">
 	<%= link_to capital_projects_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do %>
-		<i class="fa fa-list fa-2x"></i><br/><span>Projects</span>
+		<i class="fa fa-list fa-2x"></i><br/><span>CPT</span>
 		<b class="caret"></b>
 	<% end %>
 	<ul class="dropdown-menu">
+		<li class="text-left">												
+			<%= link_to capital_projects_path do %>
+				<i class="fa fa-list"></i> Capital Needs List
+			<% end %>
+		</li>		
+		<li class="divider"></li>			
 		<li class="text-left">												
 			<%= link_to new_search_path do %>
 				<i class="fa fa-search"></i> Search

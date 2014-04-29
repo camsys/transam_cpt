@@ -1,0 +1,22 @@
+.row
+  - @projects.each do |project|
+    = action_thumbnail_tag({:class => 'col-md-3', :icon => "fa fa-folder-open", :title => project.project_number, :path => capital_project_path(project)}) do
+      %p
+        %strong= project.title
+      %dl.dl-horizontal.thumbnail-list
+        %dt Scope:
+        %dd= project.team_scope_code
+        %dt Category:
+        %dd= project.team_category.name
+        %dt Status:
+        %dd= project.capital_project_status_type
+
+:javascript
+
+  $(document).ready(function() {
+    transam.make_same_height('.thumbnail-content');
+		
+    $(window).resize(function() {
+      transam.make_same_height('.thumbnail-content');
+    });		
+  });

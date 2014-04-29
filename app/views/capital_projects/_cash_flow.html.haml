@@ -1,0 +1,77 @@
+.row
+  .col-md-12
+    %table.table.table-condensed.table-striped.table-hover.table-bordered{:width => "100%"}
+      %thead
+        %tr
+          %th Fiscal Year
+          %th State
+          %th Federal
+          %th Local
+          %th Total       
+      %tbody
+        %tr
+          %td.left Prior Sub Total
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td{:colspan => 5} Current Request
+        %tr
+          %td.left FY 13-14
+          %td.right= "#{format_as_currency(324788)}"
+          %td.right= "#{format_as_currency(360408)}"
+          %td.right= "#{format_as_currency(2097)}"
+          %td.right= "#{format_as_currency(687293)}"
+        %tr
+          %td.left{:colspan => 5} Future Cash Flow
+        %tr
+          %td.left FY 14-15
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td.left FY 15-16
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td.left FY 16-17
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td.left FY 17-18
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td.left FY 18-19
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td.left FY 19-20
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+        %tr
+          %td.left Future Subtotal
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+          %td.right= "#{format_as_currency(0)}"
+      %tfoot
+        %tr
+          %td.left Total Cost Flow
+          %td.right= "#{format_as_currency(324788)}"
+          %td.right= "#{format_as_currency(360408)}"
+          %td.right= "#{format_as_currency(2097)}"
+          %td.right= "#{format_as_currency(687293)}"
+       

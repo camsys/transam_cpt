@@ -7,10 +7,10 @@ class CapitalProjectsController < OrganizationAwareController
     
   def index
 
-    @page_title = 'Capital Projects'
+    @page_title = 'Capital Needs List'
    
     # get the capital projects for this organizaitons 
-    @projects = CapitalProject.where('organizationn_id = ? AND active = ?', @organization.id, true)
+    @projects = CapitalProject.where('organization_id = ? AND active = ?', @organization.id, true)
     
     # remember the view type
     @view_type = get_view_type(SESSION_VIEW_TYPE_VAR)
@@ -23,7 +23,7 @@ class CapitalProjectsController < OrganizationAwareController
 
   def show
 
-    @page_title = @project.name
+    @page_title = "Project: #{@project.project_number}"
 
     respond_to do |format|
       format.html # show.html.erb
@@ -33,12 +33,15 @@ class CapitalProjectsController < OrganizationAwareController
 
   
   def new
-    #right now, no blank policies can be created - just copying existing policies
+    
+    @page_title = "New Capital Project"
+    @project = CapitalProject.new
+    
   end
 
   def edit
     
-    @page_title = "Update #{@project.name}"
+    @page_title = "Update #{@project.project_number}"
     
   end
   
@@ -46,10 +49,16 @@ class CapitalProjectsController < OrganizationAwareController
 
     @project = CapitalProject.new(form_params)
     @project.organization = @organization
+    @page_title = "New Capital Project"
 
     respond_to do |format|
       if @project.save
-        notify_user(:notice, "Capital Project #{@project.name} was successfully created.")
+        # Update the record with a unique project number that uses the database id  
+        year = Date.today.year - 2000
+        @project.project_number = "#{@project.organization.short_name}-#{year}-#{year+1}-#{@project.team_scope_code.code}-#{@project.id}"   
+        @project.save(:validate => :false)
+
+        notify_user(:notice, "Capital Project #{@project.project_number} was successfully created.")
         format.html { redirect_to capital_project_url(@project) }
         format.json { render :json => @project, :status => :created, :location => @project }
       else
@@ -60,6 +69,8 @@ class CapitalProjectsController < OrganizationAwareController
   end
 
   def update
+
+    @page_title = "Update #{@project.project_number}"
 
     respond_to do |format|
       if @project.update_attributes(form_params)

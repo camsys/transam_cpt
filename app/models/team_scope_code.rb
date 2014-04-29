@@ -19,4 +19,7 @@ class TeamScopeCode < ActiveRecord::Base
     code
   end
 
+  def full_name
+    #{code} #{name}
+  end
 end

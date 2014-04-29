@@ -1,0 +1,8 @@
+= render 'master_subnav'
+
+- if @view_type == CapitalProjectsController::VIEW_TYPE_TABLE
+  = render 'index_table'
+- else
+  = render 'index_thumbnails'
+
+

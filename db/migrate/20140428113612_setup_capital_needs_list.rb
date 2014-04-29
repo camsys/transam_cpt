@@ -48,7 +48,7 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
     # Capital Needs List Models
     create_table :capital_projects do |t|
       t.string    :object_key,          :limit => 12, :null => :false
-      t.string    :project_number,      :limit => 16, :null => :false
+      t.string    :project_number,      :limit => 24, :null => :false
       t.integer   :organization_id,                   :null => :false   
       t.integer   :team_scope_code_id,                :null => :false   
       t.integer   :team_category_id,                  :null => :false   
