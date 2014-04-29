@@ -1,16 +1,16 @@
 .row
-  .col-md-12
+  .col-md-12{:style => 'height: 200px;overflow-y: scroll;'}
     - if @project.comments.empty?
       %p There are no comments for this project.
-      = link_to "Add a comment", "#", :class => "btn btn-primary"
     - else
-      %ul.media.list
-        - @project.notes.comments do |c|
-          .media
-            .pull-left
-              %i.fa.fa-comment.fa-2x
-            .media-body
-              %h4.media-heading
-                = #{c.created_by.name} at #{format_as_date_time(c.created_at)}
-              = c.comment.html_safe
-      
+      = render :partial => 'shared/comments', :locals => {:comments => @project.comments}
+
+.row
+  .col-md-12
+    %fieldset
+      %legend Add Comment
+      = form_for [@project, Comment.new], :role => 'form' do |f|
+        .form-group
+          = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...'
+        = f.submit :class => 'btn btn-primary'
+  
