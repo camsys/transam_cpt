@@ -54,8 +54,7 @@ class CapitalProjectsController < OrganizationAwareController
     respond_to do |format|
       if @project.save
         # Update the record with a unique project number that uses the database id  
-        year = Date.today.year - 2000
-        @project.project_number = "#{@project.organization.short_name}-#{year}-#{year+1}-#{@project.team_scope_code.code}-#{@project.id}"   
+        @project.project_number = generate_project_number(@project)
         @project.save(:validate => :false)
 
         notify_user(:notice, "Capital Project #{@project.project_number} was successfully created.")
@@ -92,6 +91,13 @@ class CapitalProjectsController < OrganizationAwareController
       format.html { redirect_to capital_projects_url }
       format.json { head :no_content }
     end
+  end
+  
+  protected
+  
+  def generate_project_number(capital_project)
+    year = Date.today.year - 2000
+    "CCA-G-#{year}-#{year+1}-#{capital_project.organization.short_name}-#{capital_project.team_scope_code.code}-#{capital_project.id}"      
   end
   
   private
