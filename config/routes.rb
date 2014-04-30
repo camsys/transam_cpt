@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
   
+  # Capital Project Controllers
   resources :capital_projects do
+    
     resources :comments
     resources :documents
-    resources :activity_line_items
+    resources :activity_line_items do
+      resources :comments      
+    end
+    
   end
   
 end

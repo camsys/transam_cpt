@@ -1,0 +1,11 @@
+.row
+  .col-md-12{:style => 'height: 200px;overflow-y: scroll;'}
+    - if @activity_line_item.funding_requests.empty?
+      %p There are no funding requests for this activity line item.
+    - else
+      = render 'funding_request_table'
+
+.row
+  .col-md-12
+    = link_to "Add Funding Request", "#", :class => "btn btn-primary"
+  

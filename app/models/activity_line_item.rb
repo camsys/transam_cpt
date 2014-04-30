@@ -45,7 +45,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Every ALI has a single TEAM sub catagory code
   belongs_to  :team_sub_category
-  
+    
   # Has 0 or more assets
   has_and_belongs_to_many    :assets
     
@@ -55,6 +55,8 @@ class ActivityLineItem < ActiveRecord::Base
   # Has 0 or more comments. Using a polynmorphic association
   has_many    :comments,  :as => :commentable
 
+  attr_reader :funding_requests
+  
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -111,6 +113,7 @@ class ActivityLineItem < ActiveRecord::Base
   # Set resonable defaults for a new activity line item
   def set_defaults
     self.active ||= true
+    @funding_requests = []
   end    
       
 end

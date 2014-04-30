@@ -1,30 +1,38 @@
 .row
-  .col-md-12
+  .col-md-12{:style => 'height: 150px;overflow-y: scroll;'}
     - if @project.activity_line_items.empty?
       %p There are no activity line items for this project.
-      = link_to "Add an activity line item", "#", :class => "btn btn-primary"  
     -else
-      %table.table.table-condensed.table-striped.table-hover.table-bordered#datatable{:width => "100%"}
+      %table.table.table-condensed.table-striped.table-hover.table-bordered{:width => "100%"}
         %thead
           %tr
-            %th Owning Agency
-            %th Project
-            %th Scope
-            %th Category
-            %th Title				
-            %th Status				
-            %th Created
-            %th Last Updated
+            %th Name
+            %th Sub category
+            %th # Assets
+            %th # Fund Req				
+            %th Created       
+            %th Updated       
+                
         %tbody
           - @project.activity_line_items.each do |ali|
-            %tr{:data-action-path => '#{capital_project_path(ali)}'}
-              %td.left= p.organization
-              %td.left= p.project_number
-              %td.center= p.team_category
-              %td.left= p.title
-              %td.left= p.capital_project_status_type
-              %td.right= format_as_date_time(p.created_at)
-              %td.right= format_as_date_time(p.updated_at)
-      
-      
-      = render 'shared/datatable_javascript'
+            %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(@project, ali)}"}}
+              
+              %td.left= ali.name
+              %td.left= ali.team_sub_category
+              
+              %td.right= "#{ali.assets.count}"
+              %td.right= "#{ali.funding_requests.count}"
+              
+              %td.right= "#{format_as_date(ali.created_at)}"
+              %td.right= "#{format_as_date_time(ali.updated_at)}"
+
+.row
+  .col-md-12
+    %fieldset
+      %legend Add Activity Line Item
+      = simple_form_for([@project, ActivityLineItem.new],
+          :wrapper => :vertical_form,
+          :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+        = f.input :name
+        = f.association :team_sub_category        
+        = f.submit "Add Line Item to project", :class => 'btn btn-primary'

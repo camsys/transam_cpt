@@ -1,0 +1,16 @@
+.row
+  .col-md-12{:style => 'height: 200px;overflow-y: scroll;'}
+    - if @activity_line_item.comments.empty?
+      %p There are no comments for this activity line item.
+    - else
+      = render :partial => 'shared/comments', :locals => {:comments => @activity_line_item.comments}
+
+.row
+  .col-md-12
+    %fieldset
+      %legend Add Comment
+      = form_for [@commentable, Comment.new], :role => 'form' do |f|
+        .form-group
+          = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...'
+        = f.submit :class => 'btn btn-primary'
+  

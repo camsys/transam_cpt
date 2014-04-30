@@ -1,0 +1,13 @@
+.row
+  = simple_form_for([@project, @activity_line_item],
+    :html => {:class => 'form-horizontal' },
+    :wrapper => :horizontal_form,
+    :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
+    .col-md-8.col-md-offset-2
+      = dialog_tag('Project Details', {:icon => 'fa fa-book', :class => "form_part"}) do
+        = f.input :name, :placeholder => "Enter a name..."
+        = f.association :team_sub_category, :label => 'Sub Category'
+            
+    .col-md-8.col-md-offset-2
+      = f.button :submit, :class => "btn btn-primary"
+      = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"

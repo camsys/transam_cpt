@@ -1,0 +1,44 @@
+= render 'detail_subnav'
+
+.row
+  .col-md-4
+    = dialog_tag('Activity Line Item', {:icon => 'fa fa-book', :class => "header_part"}) do
+      = format_field("Project", @project.capital_project_status_type)
+      = format_field("Project Scope", @project.title)
+      = format_field("Project Category", @project.team_scope_code)
+      = format_field("Sub Category", @activity_line_item.team_sub_category.name)
+
+      = format_field("Created", format_as_date(@activity_line_item.created_at))
+      = format_field("Updated", format_as_date_time(@activity_line_item.updated_at))
+      
+  .col-md-8
+    = dialog_tag('Details', {:icon => 'fa fa-book', :class => "header_part"}) do
+      %ul.nav.nav-tabs
+        %li.active
+          %a{:href => "#asst", :data =>{:toggle => 'tab'}}
+            = "Assets (#{@activity_line_item.assets.count})"
+        %li
+          %a{:href => "#fund", :data =>{:toggle => 'tab'}}
+            = "Funding Requests (#{@activity_line_item.funding_requests.count})"
+        %li
+          %a{:href => "#mile", :data =>{:toggle => 'tab'}}
+            = "Milestones (#{@activity_line_item.milestones.count})"
+        %li
+          %a{:href => "#comm", :data =>{:toggle => 'tab'}}
+            = "Comments (#{@activity_line_item.comments.count})"
+
+      .tab-content
+        .tab-pane.fade.in.active#asst
+          .tab-content
+            = render 'assets'
+        .tab-pane.fade#fund
+          .tab-content
+            = render 'funding_requests'
+        .tab-pane.fade#mile
+          .tab-content
+            = render 'milestones'
+        .tab-pane.fade#comm
+          .tab-content
+            = render 'comments'
+
+= render 'scripts'

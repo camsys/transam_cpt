@@ -1,0 +1,11 @@
+.row
+  .col-md-12{:style => 'height: 200px;overflow-y: scroll;'}
+    - if @activity_line_item.assets.empty?
+      %p There are no assets for this activity line item.
+    - else
+      = render :partial => 'shared/comments', :locals => {:comments => @activity_line_item.comments}
+
+.row
+  .col-md-12
+    = link_to "Add Assets", "#", :class => "btn btn-primary"
+  
