@@ -1,5 +1,5 @@
 .row
-  .col-md-12{:style => 'height: 150px;overflow-y: scroll;'}
+  .col-md-12{:style => 'height:150px;overflow-y:auto;'}
     - if @project.activity_line_items.empty?
       %p There are no activity line items for this project.
     -else

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     
     resources :comments
     resources :documents
+    
     resources :activity_line_items do
       resources :comments      
     end
