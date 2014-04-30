@@ -31,6 +31,9 @@ class CapitalProject < ActiveRecord::Base
     generate_unique_key(:object_key)
   end
       
+  # Clean up any HABTM associations before the asset is destroyed
+  before_destroy { mpms_projects.clear }
+      
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -47,7 +50,7 @@ class CapitalProject < ActiveRecord::Base
   belongs_to  :team_category
 
   # Has many MPMS projects. These will be removed if the project is removed
-  has_many    :mpms_projects, :dependent => :destroy
+  has_and_belongs_to_many    :mpms_projects
     
   # Has 0 or more activity line items. These will be removed if the project is removed.
   has_many    :activity_line_items, :dependent => :destroy
@@ -90,7 +93,8 @@ class CapitalProject < ActiveRecord::Base
     :description,
     :justification,
     :emergency,
-    :active    
+    :active,
+    :mpms_project_ids => []
   ]
   
   #------------------------------------------------------------------------------

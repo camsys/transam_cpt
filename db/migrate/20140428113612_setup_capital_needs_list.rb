@@ -46,6 +46,8 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
     add_index :team_sub_categories, [:team_category_id, :code], :name => "team_sub_categories_idx1"
     
     # Capital Needs List Models
+    
+    # Main capital projects table.
     create_table :capital_projects do |t|
       t.string    :object_key,          :limit => 12, :null => :false
       t.string    :project_number,      :limit => 24, :null => :false
@@ -65,6 +67,7 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
     add_index :capital_projects, [:organization_id, :object_key], :name => "capital_projects_idx1"
     add_index :capital_projects, [:organization_id, :project_number], :name => "capital_projects_idx2"
 
+    # Activity Line Items
     create_table :activity_line_items do |t|
       t.string    :object_key,          :limit => 12, :null => :false
       t.integer   :capital_project_id,                :null => :false   
@@ -76,6 +79,15 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
     end
     add_index :activity_line_items, [:capital_project_id, :object_key], :name => "activity_line_items_idx1"
     
+    # Map table between ALIs and Assets
+    create_table :activity_line_items_assets do |t|
+      t.integer :activity_line_item_id
+      t.integer :asset_id
+    end
+    
+    add_index :activity_line_items_assets, [:activity_line_item_id, :asset_id], :name => "activity_line_items_assets_idx1"
+    
+    # MPMS Projects Table
     create_table :mpms_projects do |t|
       t.integer   :capital_project_id,                :null => :false   
       t.string    :external_id,         :limit => 32, :null => :false   
@@ -84,7 +96,16 @@ class SetupCapitalNeedsList < ActiveRecord::Migration
       t.boolean   :active,                            :null => :false
     end
     add_index :mpms_projects, [:capital_project_id], :name => "mpms_projects_idx1"
+
+    # Map table between Capital Projects and MPMS Projects
+    create_table :capital_projects_mpms_projects do |t|
+      t.integer :capital_project_id
+      t.integer :mpms_project_id
+    end
     
+    add_index :capital_projects_mpms_projects, [:capital_project_id, :mpms_project_id], :name => "capital_projects_mpms_projects_idx1"
+
+    # ALI Milestones Table    
     create_table :milestones do |t|
       t.string    :object_key,          :limit => 12, :null => :false
       t.integer   :activity_line_item_id,             :null => :false   

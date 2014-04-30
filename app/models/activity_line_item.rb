@@ -12,8 +12,6 @@ class ActivityLineItem < ActiveRecord::Base
     
   # Include the unique key mixin
   include UniqueKey
-  # Include the numeric sanitizers mixin
-  include NumericSanitizers
 
   #------------------------------------------------------------------------------
   # Overrides
@@ -35,6 +33,9 @@ class ActivityLineItem < ActiveRecord::Base
     generate_unique_key(:object_key)
   end
   
+  # Clean up any HABTM associations before the ali is destroyed
+  before_destroy { assets.clear }
+  
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -46,7 +47,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :team_sub_category
   
   # Has 0 or more assets
-  has_many    :assets
+  has_and_belongs_to_many    :assets
     
   # Has 0 or more milestones
   has_many    :milestones
@@ -76,7 +77,8 @@ class ActivityLineItem < ActiveRecord::Base
     :capital_project_id, 
     :name,
     :team_sub_category_id, 
-    :active    
+    :active,
+    :asset_ids => []    
   ]
   
   #------------------------------------------------------------------------------
