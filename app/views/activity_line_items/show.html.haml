@@ -14,7 +14,7 @@
   .col-md-8
     = dialog_tag('Details', {:icon => 'fa fa-book', :class => "header_part"}) do
       %ul.nav.nav-tabs
-        %li.active
+        %li
           %a{:href => "#asst", :data =>{:toggle => 'tab'}}
             = "Assets (#{@activity_line_item.assets.count})"
         %li
@@ -28,7 +28,7 @@
             = "Comments (#{@activity_line_item.comments.count})"
 
       .tab-content
-        .tab-pane.fade.in.active#asst
+        .tab-pane.fade#asst
           .tab-content
             = render 'assets'
         .tab-pane.fade#fund

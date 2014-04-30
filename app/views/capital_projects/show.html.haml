@@ -18,7 +18,7 @@
   .col-md-8
     = dialog_tag('Details', {:icon => 'fa fa-book', :class => "header_part"}) do
       %ul.nav.nav-tabs
-        %li.active
+        %li
           %a{:href => "#cash", :data =>{:toggle => 'tab'}}
             Cash Flow
         %li
@@ -38,7 +38,7 @@
             = "Supporting Documents (#{@project.documents.count})"
 
       .tab-content
-        .tab-pane.fade.in.active#cash
+        .tab-pane.fade#cash
           .tab-content
             = render 'cash_flow'
         .tab-pane.fade#just
