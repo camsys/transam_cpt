@@ -1,5 +1,5 @@
 .row
-  .col-md-12{:style => 'height:200px;overflow-y:auto;'}
+  .col-md-12{:style => 'height:180px;overflow-y:auto;'}
     - if @project.documents.empty?
       %p There are no documents for this project.
     - else
@@ -14,6 +14,6 @@
           :wrapper => :vertical_form,
           :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
         = f.input :document
-        = f.input :description, :as => :text, :input_html => { :rows => 3 }, :placeholder => 'Enter a brief description of the document...'
+        = f.input :description, :as => :text, :placeholder => 'Enter a brief description of the document...'
         = f.submit "Add document to project", :class => 'btn btn-primary'
-      
+     
