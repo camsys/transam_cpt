@@ -10,6 +10,8 @@ class CapitalProject < ActiveRecord::Base
     
   # Include the unique key mixin
   include UniqueKey
+  # Include the fiscal year mixin
+  include FiscalYear
 
   #------------------------------------------------------------------------------
   # Overrides
@@ -115,15 +117,15 @@ class CapitalProject < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
 
+  # Override the mixin method and delegate to it
+  def fiscal_year
+    super(fy_year)
+  end
+  
   def name
     project_number
   end
-  
-  def fiscal_year
-    year = fy_year - 2000
-    "#{year}-#{year + 1}"
-  end
-  
+    
   #------------------------------------------------------------------------------
   #
   # Protected Methods
@@ -136,7 +138,9 @@ class CapitalProject < ActiveRecord::Base
     self.active ||= true
     self.emergency ||= false
     self.capital_project_status_type_id ||= 1
-    self.fy_year ||= Date.today.year
+    # Set the fiscal year to the current fiscal year which can be different from
+    # the calendar year
+    self.fy_year ||= current_fiscal_year_year 
   end    
       
 end

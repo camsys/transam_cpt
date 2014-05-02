@@ -1,7 +1,10 @@
 class CapitalProjectsController < OrganizationAwareController
-  
+
   MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
-  
+
+  # Include the fiscal year mixin
+  include FiscalYear
+    
   #before_filter :authorize_admin
   before_filter :check_for_cancel, :only => [:create, :update]
   before_filter :get_project, :except => [:index, :create, :new]
@@ -132,24 +135,13 @@ class CapitalProjectsController < OrganizationAwareController
   end
   
   protected
-  
-  # Returns a select array of fiscal years
-  def get_fiscal_years
-    current_year = Date.today.year
-    last_year = current_year + MAX_FORECASTING_YEARS
-    a = []
-    (current_year..last_year).each do |year|
-      yr = year - 2000
-      a << ["#{yr}-#{yr + 1}", year]
-    end
-    a
-  end
-  
+    
   def generate_project_number(capital_project)
     "CCA-G-#{capital_project.fiscal_year}-#{capital_project.organization.short_name}-#{capital_project.team_scope_code.code}-#{capital_project.id}"      
   end
   
   private
+  
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
     params.require(:capital_project).permit(capital_project_allowable_params)
