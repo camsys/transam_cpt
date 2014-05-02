@@ -73,6 +73,7 @@ class CapitalProject < ActiveRecord::Base
   validates :title,                             :presence => true
   validates :description,                       :presence => true
   validates :justification,                     :presence => true
+  validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 2000}
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -86,6 +87,7 @@ class CapitalProject < ActiveRecord::Base
     :object_key,
     #:project_number, 
     :organization_id,
+    :fy_year,
     :team_scope_code_id,
     :team_category_id,
     :capital_project_status_type_id, 
@@ -117,6 +119,11 @@ class CapitalProject < ActiveRecord::Base
     project_number
   end
   
+  def fiscal_year
+    year = fy_year - 2000
+    "#{year}-#{year + 1}"
+  end
+  
   #------------------------------------------------------------------------------
   #
   # Protected Methods
@@ -129,6 +136,7 @@ class CapitalProject < ActiveRecord::Base
     self.active ||= true
     self.emergency ||= false
     self.capital_project_status_type_id ||= 1
+    self.fy_year ||= Date.today.year
   end    
       
 end

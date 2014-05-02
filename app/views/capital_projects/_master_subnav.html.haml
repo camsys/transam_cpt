@@ -1,13 +1,31 @@
-= sub_nav_tag({}) do
-  %li{:class => "#{get_nav_link_class('capital_projects', CapitalProjectsController::SESSION_VIEW_TYPE_VAR, CapitalProjectsController::VIEW_TYPE_LIST)}"}
-    = link_to capital_projects_path(:view_type => CapitalProjectsController::VIEW_TYPE_LIST) do
-      %i.fa.fa-th-large= " List View"
+.row
+  .col-md-12
+    %nav.navbar.navbar-default{:role => 'navigation'}
+      .container-fluid
+        %ul.nav.navbar-nav
+          %li{:class => "#{get_nav_link_class('capital_projects', CapitalProjectsController::SESSION_VIEW_TYPE_VAR, CapitalProjectsController::VIEW_TYPE_LIST)}"}
+            = link_to capital_projects_path(:view_type => CapitalProjectsController::VIEW_TYPE_LIST) do
+              %i.fa.fa-th-large= " List View"
+        
+          %li{:class => "#{get_nav_link_class('capital_projects', CapitalProjectsController::SESSION_VIEW_TYPE_VAR, CapitalProjectsController::VIEW_TYPE_TABLE)}"}
+            = link_to capital_projects_path(:view_type => CapitalProjectsController::VIEW_TYPE_TABLE) do
+              %i.fa.fa-list-alt= " Table View"
+        
+          - if can? :create, @project
+            = sub_nav_elem_tag do
+              = link_to new_capital_project_path do
+                %i.fa.fa-plus= " Create New"
 
-  %li{:class => "#{get_nav_link_class('capital_projects', CapitalProjectsController::SESSION_VIEW_TYPE_VAR, CapitalProjectsController::VIEW_TYPE_TABLE)}"}
-    = link_to capital_projects_path(:view_type => CapitalProjectsController::VIEW_TYPE_TABLE) do
-      %i.fa.fa-list-alt= " Table View"
-
-  - if can? :create, @project
-    = sub_nav_elem_tag do
-      = link_to new_capital_project_path do
-        %i.fa.fa-plus= " Create New"
+        = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right', :style => "border:1px solid #FFF;" do
+          .form-group
+            %label Fiscal Year
+            = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
+          .form-group
+            %label Scope
+            = select_tag(:team_scope_id, options_for_select(TeamScopeCode.all.collect{|a| [a.code, a.id]}, :selected => @team_scope_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
+          .form-group
+            %label Status
+            = select_tag(:status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @status_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
+          = button_tag :class => "btn btn-primary", :type => "submit", :id => "submit_button" do
+            %i.fa.fa-filter= " Filter"
+              

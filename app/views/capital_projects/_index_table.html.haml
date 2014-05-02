@@ -1,7 +1,8 @@
 %table.table.table-condensed.table-striped.table-hover.table-bordered#datatable{:width => "100%"}
   %thead
     %tr
-      %th Owning Agency
+      %th Agency
+      %th FY
       %th Project
       %th Scope
       %th Category
@@ -13,6 +14,7 @@
     - @projects.each do |p|
       %tr{:data => {:action_path => "#{capital_project_path(p)}"}}
         %td= p.organization
+        %td= p.fiscal_year
         %td= p.project_number
         %td= p.team_scope_code
         %td= p.team_category.name

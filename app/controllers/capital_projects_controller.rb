@@ -1,4 +1,7 @@
 class CapitalProjectsController < OrganizationAwareController
+  
+  MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
+  
   #before_filter :authorize_admin
   before_filter :check_for_cancel, :only => [:create, :update]
   before_filter :get_project, :except => [:index, :create, :new]
@@ -8,10 +11,40 @@ class CapitalProjectsController < OrganizationAwareController
   def index
 
     @page_title = 'Capital Needs List'
+    @fiscal_years = get_fiscal_years
    
-    # get the capital projects for this organizaitons 
-    @projects = CapitalProject.where('organization_id = ? AND active = ?', @organization.id, true)
+     # Start to set up the query
+    conditions  = []
+    values      = []
     
+    # Only for the selected organization
+    conditions << 'organization_id = ?'
+    values << @organization.id
+    
+    # See if we got search
+    @fiscal_year = params[:fiscal_year]
+    unless @fiscal_year.blank?
+      @fiscal_year = @fiscal_year.to_i
+      conditions << 'fy_year = ?'
+      values << @fiscal_year
+    end
+    @team_scope_id = params[:team_scope_id]
+    unless @team_scope_id.blank?
+      @team_scope_id = @team_scope_id.to_i
+      conditions << 'team_scope_code_id = ?'
+      values << @team_scope_id
+    end
+    @status_type_id = params[:status_type_id]
+    unless @status_type_id.blank?
+      @status_type_id = @status_type_id.to_i
+      conditions << 'capital_project_status_type_id = ?'
+      values << @status_type_id
+    end
+    
+    #puts conditions.inspect
+    #puts values.inspect
+    @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :team_scope_code_id, :created_at)
+      
     # remember the view type
     @view_type = get_view_type(SESSION_VIEW_TYPE_VAR)
 
@@ -37,11 +70,14 @@ class CapitalProjectsController < OrganizationAwareController
     @page_title = "New Capital Project"
     @project = CapitalProject.new
     
+    @fiscal_years = get_fiscal_years
+    
   end
 
   def edit
     
     @page_title = "Update #{@project.project_number}"
+    @fiscal_years = get_fiscal_years
     
   end
   
@@ -50,6 +86,7 @@ class CapitalProjectsController < OrganizationAwareController
     @project = CapitalProject.new(form_params)
     @project.organization = @organization
     @page_title = "New Capital Project"
+    @fiscal_years = get_fiscal_years
 
     respond_to do |format|
       if @project.save
@@ -70,6 +107,7 @@ class CapitalProjectsController < OrganizationAwareController
   def update
 
     @page_title = "Update #{@project.project_number}"
+    @fiscal_years = get_fiscal_years
 
     respond_to do |format|
       if @project.update_attributes(form_params)
@@ -95,9 +133,20 @@ class CapitalProjectsController < OrganizationAwareController
   
   protected
   
+  # Returns a select array of fiscal years
+  def get_fiscal_years
+    current_year = Date.today.year
+    last_year = current_year + MAX_FORECASTING_YEARS
+    a = []
+    (current_year..last_year).each do |year|
+      yr = year - 2000
+      a << ["#{yr}-#{yr + 1}", year]
+    end
+    a
+  end
+  
   def generate_project_number(capital_project)
-    year = Date.today.year - 2000
-    "CCA-G-#{year}-#{year+1}-#{capital_project.organization.short_name}-#{capital_project.team_scope_code.code}-#{capital_project.id}"      
+    "CCA-G-#{capital_project.fiscal_year}-#{capital_project.organization.short_name}-#{capital_project.team_scope_code.code}-#{capital_project.id}"      
   end
   
   private

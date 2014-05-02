@@ -3,6 +3,7 @@
 .row
   .col-md-4
     = dialog_tag('Project', {:icon => 'fa fa-book', :class => "header_part"}) do
+      = format_field("Fiscsal Year", @project.fiscal_year)
       = format_field("Status", @project.capital_project_status_type)
       = format_field("Title", @project.title)
       = format_field("Scope", @project.team_scope_code)
