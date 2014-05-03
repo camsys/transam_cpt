@@ -93,10 +93,6 @@ class CapitalProjectsController < OrganizationAwareController
 
     respond_to do |format|
       if @project.save
-        # Update the record with a unique project number that uses the database id  
-        @project.project_number = generate_project_number(@project)
-        @project.save(:validate => :false)
-
         notify_user(:notice, "Capital Project #{@project.project_number} was successfully created.")
         format.html { redirect_to capital_project_url(@project) }
         format.json { render :json => @project, :status => :created, :location => @project }
@@ -136,10 +132,7 @@ class CapitalProjectsController < OrganizationAwareController
   
   protected
     
-  def generate_project_number(capital_project)
-    "CCA-G-#{capital_project.fiscal_year}-#{capital_project.organization.short_name}-#{capital_project.team_scope_code.code}-#{capital_project.id}"      
-  end
-  
+      
   private
   
   # Never trust parameters from the scary internet, only allow the white list through.

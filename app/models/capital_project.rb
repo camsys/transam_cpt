@@ -26,8 +26,11 @@ class CapitalProject < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
-  after_initialize :set_defaults
-  
+  after_initialize                  :set_defaults
+  # Always generate a unique project number when the project is created
+  after_create do
+    create_project_number
+  end
   # Always generate a unique object key before saving to the database
   before_validation(:on => :create) do
     generate_unique_key(:object_key)
@@ -132,6 +135,13 @@ class CapitalProject < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   protected 
+
+  def create_project_number
+    years = fiscal_year.split[1]
+    scope = team_scope_code.code.split('-')[0]
+    project_number = "CCA-G-#{years}-#{organization.short_name}-#{scope}-#{id}"
+    self.update_attributes(:project_number => project_number)      
+  end
 
   # Set resonable defaults for a new capital project
   def set_defaults
