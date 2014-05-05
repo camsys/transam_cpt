@@ -2,6 +2,30 @@
 
 = render(:partial => 'shared/form_errors', :locals => {:obj => @builder_proxy}) unless @builder_proxy.errors.empty?
 
-= render 'builder_form'
+#processing
+  = render :partial => 'shared/running_process', :locals => {:message => @message}
 
-= render 'scripts'
+#form
+  = render 'builder_form'
+
+:javascript
+  
+  // Document Ready
+  $(document).ready(function(){
+    // Hide the processing div and show the form
+    $('#processing').hide();
+    $('#form').show();
+    
+    // install a submit handler for the form
+    $('#new_builder_proxy').submit(function() {
+      alert('submitting form');
+      $('#processing').show();
+      $('#form').hide();
+      return true;      
+    });
+
+    // Disable the submit button
+    $('#submit_button').attr("disabled", "disabled");
+    
+  });
+  

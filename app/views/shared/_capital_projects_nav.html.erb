@@ -23,5 +23,13 @@
 				<% end %>
 			</li>
 		<% end %>
+		<% if can? :create, Asset %>
+			<li class="divider"></li>			
+			<li class="text-left">												
+				<%= link_to builder_capital_projects_path do %>
+				<i class="fa fa-cogs"></i> Build Capital Projects
+				<% end %>
+			</li>
+		<% end %>
 	</ul>
 </li>

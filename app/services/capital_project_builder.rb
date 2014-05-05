@@ -65,8 +65,8 @@ class CapitalProjectBuilder
       Rails.logger.debug "Processing class = #{asset_type}"
       # Loop over each fiscal year
       (start_year..last_year).each do |year|
-        # See how many assets are scheduled for replacement this FY
-        assets = Asset.where('organization_id = ? AND asset_type_id = ? AND scheduled_replacement_year = ?', organization.id, asset_type.id, year)
+        # See how many assets are scheduled for replacement this FY taht are not already associated with a capital project
+        assets = Asset.where('organization_id = ? AND asset_type_id = ? AND scheduled_replacement_year = ? AND id NOT IN (SELECT asset_id FROM activity_line_items_assets)', organization.id, asset_type.id, year)
                 
         # If there are assets to program we create a new project
         if assets.count > 0
@@ -76,7 +76,7 @@ class CapitalProjectBuilder
           category  = TeamCategory.find_by_code('12')       # Purchase/Replacement
           scope     = TeamScopeCode.find_by_code('111-00')  # Bus Rolling Stock
           title     = "Replacement of #{asset_type}s"          
-          project = create_capital_project(org, year, category, scope, title)
+          project = create_capital_project(organization, year, category, scope, title)
           
           # increment our counter
           project_count += 1

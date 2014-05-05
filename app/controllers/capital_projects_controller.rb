@@ -6,24 +6,43 @@ class CapitalProjectsController < OrganizationAwareController
   include FiscalYear
     
   #before_filter :authorize_admin
-  before_filter :check_for_cancel, :only => [:create, :update, :runner]
-  before_filter :get_project, :except => [:index, :create, :new]
+  before_filter :check_for_cancel,  :only =>    [:create, :update, :runner]
+  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder]
   
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
     
-  def build
+  def builder
     @page_title = 'Capital Needs List Builder'
     @builder_proxy = BuilderProxy.new
+    @message = "Creating capital projects. This process might take a while."
+    
   end
   
   def runner
     
+    @page_title = 'Capital Needs List Builder'
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
-
+      # Sleep for a couple of seconds so that the screen can display the waiting 
+      # message and the user can read it.
+      sleep 2
+      # Run the builder
+      builder = CapitalProjectBuilder.new
+      num_created = builder.build(@organization)
+      # Let the user know the results
+      if num_created > 0
+        msg = "Capital Project Builder completed. #{num_created} projects were added to your capital needs list."
+        notify_user(:notice, msg)
+        # Add a row into the activity table
+        ActivityLog.create({:organization_id => @organization.id, :user_id => current_user.id, :item_type => "CapitalProjectBuilder", :activity => msg, :activity_time => Time.now})
+      else
+        notify_user(:notice, "No projects were created.")
+      end
+      redirect_to capital_projects_url
+      return      
     else
       respond_to do |format|
-        format.html { render :action => "build" }
+        format.html { render :action => "builder" }
       end
     end
     

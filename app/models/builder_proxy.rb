@@ -17,6 +17,7 @@ class BuilderProxy < Proxy
     attrs.each do |k, v|
       self.send "#{k}=", v
     end
+    self.project_type ||= 'Both'
   end
                 
 end
