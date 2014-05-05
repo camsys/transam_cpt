@@ -1,0 +1,38 @@
+%table.table.table-condensed.table-striped.table-hover.table-bordered#datatable
+  %thead
+    %tr
+      %th.center{:colspan => "3"} Asset	
+      %th.center{:colspan => "3"} Condition 
+      %th.center{:colspan => "3"} Replacement 
+    %tr
+      %th.center Tag
+      %th.center Description
+      %th.center Fuel
+
+      %th.center Age
+      %th.center Mileage
+      %th.center Rating
+
+      %th.center Orig.
+      %th.center Curr Val.
+      %th.center Est. Cost
+  %tbody
+    - assets.each do |a|
+      %tr{:data => {:action_path => inventory_path(a) }}
+        %td.left= a.asset_tag
+        %td.left= a.description
+        %td.left= a.asset_subtype.name
+
+        %td.right= a.age
+        %td.right= a.reported_mileage
+        %td.center= a.reported_condition_type
+
+        %td.right= format_as_currency(a.cost)
+        %td.right= format_as_currency(a.estimated_value)
+        %td.right= format_as_currency(a.estimated_replacement_cost)
+  %tfoot
+    %tr
+      %td{:colspan => "6"} 
+      %td.right= format_as_currency(@activity_line_item.total_original_cost) 
+      %td.right= format_as_currency(@activity_line_item.total_estimated_value) 
+      %td.right= format_as_currency(@activity_line_item.total_estimated_replacement_cost) 

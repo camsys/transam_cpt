@@ -3,6 +3,11 @@ Rails.application.routes.draw do
   # Capital Project Controllers
   resources :capital_projects do
     
+    collection do
+      get   'builder'
+      post  'runner'
+    end
+    
     resources :comments
     resources :documents
     

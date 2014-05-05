@@ -102,6 +102,32 @@ class ActivityLineItem < ActiveRecord::Base
   def to_s
     name
   end
+  
+  # Returns the total estiamted value of the assets in this ALI
+  def total_estimated_value
+    val = 0
+    assets.each do |a|
+      val += a.estimated_value
+    end
+    val
+  end
+  # Returns the total original purchase cost of the assets in this ALI
+  def total_original_cost
+    val = 0
+    assets.each do |a|
+      val += a.cost
+    end
+    val
+  end
+  # Returns the total estimated replacment cost of the assets in this ALI
+  def total_estimated_replacement_cost
+    val = 0
+    assets.each do |a|
+      val += a.estimated_replacement_cost
+    end
+    val
+  end
+  
   #------------------------------------------------------------------------------
   #
   # Protected Methods

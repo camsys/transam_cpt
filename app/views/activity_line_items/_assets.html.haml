@@ -3,7 +3,7 @@
     - if @activity_line_item.assets.empty?
       %p There are no assets for this activity line item.
     - else
-      = render :partial => 'shared/comments', :locals => {:comments => @activity_line_item.comments}
+      = render :partial => 'assets_datatable', :locals => {:assets => @activity_line_item.assets}
 
 .row
   .col-md-12

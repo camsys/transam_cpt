@@ -6,11 +6,28 @@ class CapitalProjectsController < OrganizationAwareController
   include FiscalYear
     
   #before_filter :authorize_admin
-  before_filter :check_for_cancel, :only => [:create, :update]
+  before_filter :check_for_cancel, :only => [:create, :update, :runner]
   before_filter :get_project, :except => [:index, :create, :new]
   
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
     
+  def build
+    @page_title = 'Capital Needs List Builder'
+    @builder_proxy = BuilderProxy.new
+  end
+  
+  def runner
+    
+    @builder_proxy = BuilderProxy.new(params[:builder_proxy])
+    if @builder_proxy.valid?
+
+    else
+      respond_to do |format|
+        format.html { render :action => "build" }
+      end
+    end
+    
+  end
   def index
 
     @page_title = 'Capital Needs List'

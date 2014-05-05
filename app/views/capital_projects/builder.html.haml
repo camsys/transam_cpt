@@ -1,0 +1,7 @@
+= render 'form_subnav'
+
+= render(:partial => 'shared/form_errors', :locals => {:obj => @builder_proxy}) unless @builder_proxy.errors.empty?
+
+= render 'builder_form'
+
+= render 'scripts'
