@@ -6,7 +6,11 @@
   = render :partial => 'shared/running_process', :locals => {:message => @message}
 
 #form
-  = render 'builder_form'
+  .row
+    .col-md-3
+      = render 'builder_notes'    
+    .col-md-6
+      = render 'builder_form'
 
 :javascript
   
@@ -27,5 +31,7 @@
     // Disable the submit button
     $('#submit_button').attr("disabled", "disabled");
     
+    // Fix the view
+    transam.make_same_height('header_part');
   });
   
