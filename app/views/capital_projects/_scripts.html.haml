@@ -8,7 +8,6 @@
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
       // save the latest tab
       var this_tab = $(this).attr('href');
-      //alert(this_tab);
       transam.set_ui_key_value('capital_project_tab', this_tab);
       // If this tab is the history then we need to re-render the timeline
       if (this_tab == '#hist') {
@@ -19,7 +18,6 @@
   $(function() {
     var last_tab = transam.get_ui_key_value('capital_project_tab');
     if (last_tab) {
-      //alert('Tab = ' + last_tab);
       $('a[href='+last_tab+']').tab('show');
     } else {
       // Default to the firsdt tab if no tab is stored

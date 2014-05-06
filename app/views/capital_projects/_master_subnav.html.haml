@@ -16,7 +16,7 @@
               = link_to new_capital_project_path do
                 %i.fa.fa-plus= " Create New"
 
-        = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right', :style => "border:1px solid #FFF;" do
+        = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right' do
           .form-group
             %label Fiscal Year
             = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
