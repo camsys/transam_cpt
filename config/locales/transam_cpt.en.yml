@@ -1,9 +1,12 @@
 en:
-  helpers:
+  activerecord:
+    models:
+      capital_project: Capital Proejct
+      activity_line_item: Activity Line Item
     submit:
       capital_project:
-        create: "Add Capital Project"
-        update: "Save Changes"
+        create: Add Capital Project
+        update: Save Changes
       activity_line_item:
-        create: "Add Activity Line Item"
-        update: "Save Changes"
+        create: Add Activity Line Item
+        update: Save Changes
