@@ -9,8 +9,5 @@
         = f.association :team_sub_category, :label => 'Sub Category'
             
     .col-md-8.col-md-offset-2
-      - if @activity_line_item.new_record?
-        = f.button :submit, :class => "btn btn-primary", :value => "Create Line Item"
-      - else
-        = f.button :submit, :class => "btn btn-primary", :value => "Update Line Item"
+      = f.button :submit, :class => "btn btn-primary"
       = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
