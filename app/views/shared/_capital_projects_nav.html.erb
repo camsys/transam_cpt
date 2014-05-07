@@ -6,20 +6,20 @@
 	<ul class="dropdown-menu">
 		<li class="text-left">												
 			<%= link_to capital_projects_path do %>
-				<i class="fa fa-list"></i> Capital Needs List
+				<i class="fa fa-list fa-fw"></i> Capital Needs List
 			<% end %>
 		</li>		
 		<li class="divider"></li>			
 		<li class="text-left">												
 			<%= link_to new_search_path do %>
-				<i class="fa fa-search"></i> Search
+				<i class="fa fa-search fa-fw"></i> Search
 			<% end %>
 		</li>		
 		<% if can? :create, Asset %>
 			<li class="divider"></li>			
 			<li class="text-left">												
 				<%= link_to new_capital_project_path do %>
-				<i class="fa fa-plus"></i> Add Project
+				<i class="fa fa-plus fa-fw"></i> Add Project
 				<% end %>
 			</li>
 		<% end %>
@@ -27,7 +27,7 @@
 			<li class="divider"></li>			
 			<li class="text-left">												
 				<%= link_to builder_capital_projects_path do %>
-				<i class="fa fa-cogs"></i> Build Capital Projects
+				<i class="fa fa-cogs fa-fw"></i> Build Capital Projects
 				<% end %>
 			</li>
 		<% end %>
