@@ -1,7 +1,7 @@
 en:
   activerecord:
     models:
-      capital_project: Capital Proejct
+      capital_project: Capital Project
       activity_line_item: Activity Line Item
     submit:
       capital_project:
