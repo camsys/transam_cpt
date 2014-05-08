@@ -34,5 +34,5 @@
           :wrapper => :vertical_form,
           :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
         = f.input :name
-        = f.association :team_scope_ali_code        
+        = f.association :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name'        
         = f.submit "Add Line Item", :class => 'btn btn-primary'

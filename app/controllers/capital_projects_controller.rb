@@ -70,7 +70,7 @@ class CapitalProjectsController < OrganizationAwareController
     @team_scope_id = params[:team_scope_id]
     unless @team_scope_id.blank?
       @team_scope_id = @team_scope_id.to_i
-      conditions << 'team_scope_code_id = ?'
+      conditions << 'team_ali_code_id = ?'
       values << @team_scope_id
     end
     @status_type_id = params[:status_type_id]
