@@ -68,7 +68,7 @@ class CapitalProject < ActiveRecord::Base
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :organization_id,                   :presence => true
-  validates :team_ali_code,                     :presence => true
+  validates :team_ali_code_id,                  :presence => true
   validates :capital_project_status_type_id,    :presence => true
   #validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
@@ -89,7 +89,7 @@ class CapitalProject < ActiveRecord::Base
     #:project_number, 
     :organization_id,
     :fy_year,
-    :team_ali_code,
+    :team_ali_code_id,
     :capital_project_status_type_id, 
     :title,
     :description,
