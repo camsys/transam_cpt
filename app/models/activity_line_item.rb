@@ -44,7 +44,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :capital_project
 
   # Every ALI has a single TEAM sub catagory code
-  belongs_to  :team_sub_category
+  belongs_to  :team_ali_code
     
   # Has 0 or more assets
   has_and_belongs_to_many    :assets
@@ -63,7 +63,7 @@ class ActivityLineItem < ActiveRecord::Base
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :capital_project_id,                :presence => true
   validates :name,                              :presence => true
-  validates :team_sub_category_id,              :presence => true
+  validates :team_ali_code_id,                  :presence => true
 
 
   #------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ class ActivityLineItem < ActiveRecord::Base
     :object_key,
     :capital_project_id, 
     :name,
-    :team_sub_category_id, 
+    :team_ali_code_id, 
     :active,
     :asset_ids => []    
   ]

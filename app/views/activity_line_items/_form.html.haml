@@ -6,7 +6,7 @@
     .col-md-8.col-md-offset-2
       = dialog_tag('Project Details', {:icon => 'fa fa-book', :class => "form_part"}) do
         = f.input :name, :placeholder => "Enter a name..."
-        = f.association :team_sub_category, :label => 'Sub Category'
+        = f.input :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name', :label => 'Sub Category'
             
     .col-md-8.col-md-offset-2
       = f.button :submit, :class => "btn btn-primary"

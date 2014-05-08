@@ -21,7 +21,7 @@
       %tr{:data => {:action_path => inventory_path(a) }}
         %td.left= a.asset_tag
         %td.left= a.description
-        %td.left= a.asset_subtype.name
+        %td.left= FuelType.find(a.fuel_type_id)
 
         %td.right= a.age
         %td.right= a.reported_mileage

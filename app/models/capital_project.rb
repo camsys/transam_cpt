@@ -48,11 +48,8 @@ class CapitalProject < ActiveRecord::Base
   # Has a single project status
   belongs_to  :capital_project_status_type
 
-  # Has a single TEAM scope
-  belongs_to  :team_scope_code
-
-  # Has a single TEAM category, eg Expansion, Rehabilitation, etc
-  belongs_to  :team_category
+  # Every CP has a single TEAM sub catagory code
+  belongs_to  :team_ali_code
 
   # Has many MPMS projects. These will be removed if the project is removed
   has_and_belongs_to_many    :mpms_projects
@@ -71,8 +68,7 @@ class CapitalProject < ActiveRecord::Base
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :organization_id,                   :presence => true
-  validates :team_scope_code_id,                :presence => true
-  validates :team_category_id,                  :presence => true
+  validates :team_ali_code,                     :presence => true
   validates :capital_project_status_type_id,    :presence => true
   #validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
@@ -93,8 +89,7 @@ class CapitalProject < ActiveRecord::Base
     #:project_number, 
     :organization_id,
     :fy_year,
-    :team_scope_code_id,
-    :team_category_id,
+    :team_ali_code,
     :capital_project_status_type_id, 
     :title,
     :description,
@@ -138,8 +133,7 @@ class CapitalProject < ActiveRecord::Base
 
   def create_project_number
     years = fiscal_year.split[1]
-    scope = team_scope_code.code.split('-')[0]
-    project_number = "CCA-G-#{years}-#{organization.short_name}-#{scope}-#{id}"
+    project_number = "CCA-G-#{years}-#{organization.short_name}-#{team_ali_code.type_and_category}-#{id}"
     self.update_attributes(:project_number => project_number)      
   end
 

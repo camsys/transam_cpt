@@ -4,9 +4,8 @@
   .col-md-4
     = dialog_tag('Activity Line Item', {:icon => 'fa fa-book', :class => "header_part"}) do
       = format_field("Project", @project.capital_project_status_type)
-      = format_field("Project Scope", @project.title)
-      = format_field("Project Category", @project.team_scope_code)
-      = format_field("Sub Category", @activity_line_item.team_sub_category.name)
+      = format_field("Project Scope", @activity_line_item.team_ali_code)
+      = format_field("Sub Category", @activity_line_item.team_ali_code.name)
 
       = format_field("Created", format_as_date(@activity_line_item.created_at))
       = format_field("Updated", format_as_date_time(@activity_line_item.updated_at))

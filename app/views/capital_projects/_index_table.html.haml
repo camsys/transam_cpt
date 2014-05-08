@@ -5,7 +5,6 @@
       %th FY
       %th Project
       %th Scope
-      %th Category
       %th Title				
       %th Status				
       %th Created
@@ -16,8 +15,7 @@
         %td= p.organization
         %td= p.fiscal_year
         %td= p.project_number
-        %td= p.team_scope_code
-        %td= p.team_category.name
+        %td= p.team_ali_code
         %td= p.title
         %td= p.capital_project_status_type
         %td= format_as_date_time(p.created_at)
