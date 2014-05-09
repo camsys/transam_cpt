@@ -1,13 +1,13 @@
 #encoding: utf-8
 
-table_name = 'team_scope_ali_codes'
+table_name = 'team_ali_codes'
 puts "  Processing #{table_name}"
 ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name}")
 
 # Start to build the Scope/ALI tree
 
 # Set the root nodes, these are top level categories
-TeamScopeAliCode.create!(:name => 'Capital',    :code => '1X.XX.XX')
+TeamAliCode.create!(:name => 'Capital',    :code => '1X.XX.XX')
 
 level_1 = [
   {:name => 'Bus',        :code => '11.XX.XX', :parent_code => '1X.XX.XX'},
@@ -15,8 +15,8 @@ level_1 = [
   {:name => 'New Start',  :code => '14.XX.XX', :parent_code => '1X.XX.XX'}
 ]
 level_1.each do |h|
-  node = TeamScopeAliCode.create!(h.except(:parent_code))
-  parent = TeamScopeAliCode.find_by_code(h[:parent_code])
+  node = TeamAliCode.create!(h.except(:parent_code))
+  parent = TeamAliCode.find_by_code(h[:parent_code])
   node.move_to_child_of(parent)
 end
 
@@ -34,13 +34,13 @@ level_2 = [
 ]
 # Build the second level for each of the bus and fixed guideway nodes
 %w{11.XX.XX 12.XX.XX}.each do |parent_code|
-  parent = TeamScopeAliCode.find_by_code(parent_code)
+  parent = TeamAliCode.find_by_code(parent_code)
   level_2.each do |h|
     pc = parent_code.split('.')[0]
     tc = h[:cat_code].split('.')[1]
     ac = h[:cat_code].split('.')[2]
     code = "#{pc}.#{tc}.#{ac}"
-    node = TeamScopeAliCode.create!(:name => h[:name], :code => code)
+    node = TeamAliCode.create!(:name => h[:name], :code => code)
     node.move_to_child_of(parent)
   end
 end
@@ -58,13 +58,13 @@ level_3_rrs = [
 ]
 # Build the third level for each of the bus and fixed guideway nodes
 %w{11.1X.XX 12.1X.XX}.each do |parent_code|
-  parent = TeamScopeAliCode.find_by_code(parent_code)
+  parent = TeamAliCode.find_by_code(parent_code)
   level_3_rrs.each do |h|
     pc = parent_code.split('.')[0]
     tc = h[:cat_code].split('.')[1]
     ac = h[:cat_code].split('.')[2]
     code = "#{pc}.#{tc}.#{ac}"
-    node = TeamScopeAliCode.create!(:name => h[:name], :code => code)
+    node = TeamAliCode.create!(:name => h[:name], :code => code)
     node.move_to_child_of(parent)
   end
 end
@@ -84,13 +84,13 @@ level_3_oth = [
     tc = type_code.split('.')[1]
     ac = type_code.split('.')[2]
     parent_code = "#{pc}.#{tc}.#{ac}"
-    parent = TeamScopeAliCode.find_by_code(parent_code)
+    parent = TeamAliCode.find_by_code(parent_code)
   
     level_3_oth.each do |h|
       tc1 = "#{tc.first}#{h[:cat_code].split('.')[1].last}"
       ac1 = h[:cat_code].split('.')[2]
       code = "#{pc}.#{tc1}.#{ac1}"
-      node = TeamScopeAliCode.create!(:name => h[:name], :code => code)
+      node = TeamAliCode.create!(:name => h[:name], :code => code)
       node.move_to_child_of(parent)
     end
   end
@@ -139,12 +139,12 @@ level_4_rrs = [
     tc = type_code.split('.')[1]
     ac = type_code.split('.')[2]
     parent_code = "#{pc}.#{tc}.#{ac}"
-    parent = TeamScopeAliCode.find_by_code(parent_code)
+    parent = TeamAliCode.find_by_code(parent_code)
   
     level_4_rrs.each do |h|
       ac1 = h[:cat_code].split('.')[2]
       code = "#{pc}.#{tc}.#{ac1}"
-      node = TeamScopeAliCode.create!(:name => h[:name], :code => code)
+      node = TeamAliCode.create!(:name => h[:name], :code => code)
       node.move_to_child_of(parent)
     end
   end
