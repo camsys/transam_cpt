@@ -22,7 +22,7 @@
             = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
           .form-group
             %label Scope
-            = select_tag(:team_scope_id, options_for_select(TeamScopeCode.all.collect{|a| [a.code, a.id]}, :selected => @team_scope_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
+            = select_tag(:team_ali_code_id, options_for_select(TeamAliCode.bus_categories.collect{|a| [a.full_name, a.id]}, :selected => @team_ali_code_id), :class => "form-control", :style => "width: 200px;", :prompt => "Any...")
           .form-group
             %label Status
             = select_tag(:status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @status_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")

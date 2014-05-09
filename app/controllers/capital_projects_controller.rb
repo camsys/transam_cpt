@@ -67,11 +67,12 @@ class CapitalProjectsController < OrganizationAwareController
       conditions << 'fy_year = ?'
       values << @fiscal_year
     end
-    @team_scope_id = params[:team_scope_id]
-    unless @team_scope_id.blank?
-      @team_scope_id = @team_scope_id.to_i
+    @team_ali_code_id = params[:team_ali_code_id]
+    unless @team_ali_code_id.blank?
+      # These are ALI categories eg 11.11.XX 
+      @team_ali_code_id = @team_ali_code_id.to_i
       conditions << 'team_ali_code_id = ?'
-      values << @team_scope_id
+      values << @team_ali_code_id
     end
     @status_type_id = params[:status_type_id]
     unless @status_type_id.blank?

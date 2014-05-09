@@ -4,6 +4,9 @@ class TeamAliCode < ActiveRecord::Base
           
   # default scope
   default_scope { where(:active => true) }
+  scope :all_categories, -> { where("code REGEXP '[1-4]{2}.[1-9]{2}.XX'") }
+  scope :bus_categories, -> { where("code REGEXP '11.[1-9]{2}.XX'") }
+  scope :fixed_guideway_categories, -> { where("code REGEXP '12.[1-9]{2}.XX'") }
   
   def full_name
     "#{code} #{name}"

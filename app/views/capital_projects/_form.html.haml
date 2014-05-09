@@ -7,7 +7,7 @@
       = dialog_tag('Project Details', {:icon => 'fa fa-book', :class => "header_part"}) do
         = f.input :fy_year, :collection => @fiscal_years, :label => "Fiscal Year"
         = f.input :title, :placeholder => "Enter a title for this project..."
-        = f.association :team_ali_code, :collection => TeamAliCode.find_by_code('11.1X.XX').children, :label_method => 'full_name', :label => 'Scope'
+        = f.association :team_ali_code, :collection => TeamAliCode.bus_categories, :label_method => 'full_name', :label => 'Scope'
         = f.input :emergency, :as => :radio_buttons
     
     .col-md-6
