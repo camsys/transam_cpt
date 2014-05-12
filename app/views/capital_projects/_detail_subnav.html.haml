@@ -1,16 +1,20 @@
 = sub_nav_tag({}) do
   = sub_nav_elem_tag do
     = link_to capital_projects_path do
-      %i.fa.fa-angle-left= " Back"
+      %i.fa.fa-angle-left
+      = " Back"
   - if can? :update, @project
     = sub_nav_elem_tag do
       = link_to edit_capital_project_path(@project) do
-        %i.fa.fa-edit= " Update"
+        %i.fa.fa-edit
+        = " Update"
   - if can? :delete, @project
     = sub_nav_elem_tag do
       = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure?. The action cannot be undone!."}  do
-        %i.fa.fa-times= " Remove"
+        %i.fa.fa-times
+        = " Remove"
   - if can? :create, @project
     = sub_nav_elem_tag do
       = link_to new_capital_project_path do
-        %i.fa.fa-plus= " Create New"
+        %i.fa.fa-plus
+        = " Create New"

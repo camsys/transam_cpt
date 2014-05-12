@@ -5,16 +5,19 @@
         %ul.nav.navbar-nav
           %li{:class => "#{get_nav_link_class('capital_projects', CapitalProjectsController::SESSION_VIEW_TYPE_VAR, CapitalProjectsController::VIEW_TYPE_LIST)}"}
             = link_to capital_projects_path(:view_type => CapitalProjectsController::VIEW_TYPE_LIST) do
-              %i.fa.fa-th-large= " List View"
-        
+              %i.fa.fa-th-large
+              = " List View"
+
           %li{:class => "#{get_nav_link_class('capital_projects', CapitalProjectsController::SESSION_VIEW_TYPE_VAR, CapitalProjectsController::VIEW_TYPE_TABLE)}"}
             = link_to capital_projects_path(:view_type => CapitalProjectsController::VIEW_TYPE_TABLE) do
-              %i.fa.fa-list-alt= " Table View"
-        
+              %i.fa.fa-list-alt
+              = " Table View"
+
           - if can? :create, @project
             = sub_nav_elem_tag do
               = link_to new_capital_project_path do
-                %i.fa.fa-plus= " Create New"
+                %i.fa.fa-plus
+                = " Create New"
 
         = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right' do
           .form-group
@@ -28,4 +31,4 @@
             = select_tag(:status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @status_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any...")
           = button_tag :class => "btn btn-primary", :type => "submit", :id => "submit_button" do
             %i.fa.fa-filter= " Filter"
-              
+
