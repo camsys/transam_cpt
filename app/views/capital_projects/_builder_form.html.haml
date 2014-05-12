@@ -1,18 +1,17 @@
 = simple_form_for(@builder_proxy,
-  :html => {:class => 'form-horizontal' },
+  :html => {:class => 'form-vertical' },
   :url => runner_capital_projects_path,
   :method => 'post',
-  :wrapper => :horizontal_form,
-  :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
   = dialog_tag('Capital Project Builder Details', {:icon => 'fa fa-book', :class => "header_part"}) do
     = f.input :asset_type_id, :collection => AssetType.all, :prompt => 'Select type of assets to process...'
     = f.input :project_type,  :collection => ['Replacement', 'Rehabilitation', 'Both'], :as => :radio_buttons
-          
     = f.submit "Start...", :class => "btn btn-primary", :id => "submit_button"
     = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
 
 :javascript
-  
+
   // Document Ready
   $(document).ready(function(){
 
@@ -21,10 +20,10 @@
     $('#builder_proxy_asset_type_id').change(function() {
       var val = $(this).val();
       if (val) {
-        $('#submit_button').removeAttr("disabled");          
+        $('#submit_button').removeAttr("disabled");
       } else {
         $('#submit_button').attr("disabled", "disabled");
       }
     });
   });
-  
+
