@@ -1,14 +1,22 @@
 %table.table.table-condensed.table-striped.table-hover.table-bordered#datatable{:width => "100%"}
   %thead
     %tr
-      %th Agency
-      %th FY
-      %th Project
-      %th Scope
-      %th Title				
-      %th Status				
-      %th Created
-      %th Last Updated
+      %th.center{:colspan => 6} Project
+      %th.center{:colspan => 4} Requests
+    %tr
+      %th.left Agency
+      %th.left FY
+      %th.left Project
+      %th.left Scope
+      %th.left Title				
+      %th.center Status
+
+      %th.right State
+      %th.right Federal       
+      %th.right Local
+      %th.right Total
+      
+      				
   %tbody
     - @projects.each do |p|
       %tr{:data => {:action_path => "#{capital_project_path(p)}"}}
@@ -18,7 +26,10 @@
         %td= p.team_ali_code
         %td= p.title
         %td= p.capital_project_status_type
-        %td= format_as_date_time(p.created_at)
-        %td= format_as_date_time(p.updated_at)
+        
+        %td.right= format_as_currency(p.state_request)
+        %td.right= format_as_currency(p.federal_request)
+        %td.right= format_as_currency(p.local_request)
+        %td.right= format_as_currency(p.total_request)
 
 = render 'shared/datatable_javascript'

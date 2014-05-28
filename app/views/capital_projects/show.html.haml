@@ -3,27 +3,31 @@
 .row
   .col-md-4
     = dialog_tag('Project', {:icon => 'fa fa-book', :class => "header_part"}) do
-      = format_field("Fiscsal Year", @project.fiscal_year)
-      = format_field("Status", @project.capital_project_status_type)
-      = format_field("Title", @project.title)
-      = format_field("Scope", @project.team_ali_code)
-      = format_field("Emergency", format_as_boolean(@project.emergency))
+      %fieldset
+        %legend.panel-legend Details
+        = format_field("Fiscal Year", @project.fiscal_year)
+        = format_field("Scope", @project.team_ali_code)
+        = format_field("Title", @project.title)
+        = format_field("Emergency", format_as_boolean(@project.emergency)) unless @project.emergency == false
+        = format_field("Status", @project.capital_project_status_type)
+      %fieldset
+        %legend.panel-legend Requests
+        = format_field("State", format_as_currency(@project.state_request))
+        = format_field("Federal", format_as_currency(@project.federal_request))
+        = format_field("Local", format_as_currency(@project.local_request))
+        = format_field("Total", format_as_currency(@project.total_request))
 
-      = format_field("Description", @project.description)
+      %fieldset
+        %legend.panel-legend Description
+        %p= @project.description
 
-      = format_field("", "")
+      %fieldset
+        %legend.panel-legend Justification
+        %p= @project.justification
 
-      = format_field("Created", format_as_date(@project.created_at))
-      = format_field("Updated", format_as_date_time(@project.updated_at))
   .col-md-8
     = dialog_tag('Details', {:icon => 'fa fa-book', :class => "header_part"}) do
       %ul.nav.nav-tabs
-        %li
-          %a{:href => "#cash", :data =>{:toggle => 'tab'}}
-            Cash Flow
-        %li
-          %a{:href => "#just", :data =>{:toggle => 'tab'}}
-            Justification
         %li
           %a{:href => "#alis", :data =>{:toggle => 'tab'}}
             = "Activity Line Items (#{@project.activity_line_items.count})"
@@ -38,14 +42,6 @@
             = "Supporting Documents (#{@project.documents.count})"
 
       .tab-content
-        .tab-pane.fade#cash
-          .tab-content
-            = render 'cash_flow'
-        .tab-pane.fade#just
-          .tab-content
-            .row
-              .col-md-12
-                %p= "#{@project.justification}"
         .tab-pane.fade#alis
           .tab-content
             = render 'activity_line_items_table'

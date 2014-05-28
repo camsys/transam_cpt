@@ -6,12 +6,23 @@
       %table.table.table-condensed.table-striped.table-hover.table-bordered{:width => "100%"}
         %thead
           %tr
+            %th.center{:colspan => 3} Team
+            %th.center{:colspan => 2} State
+            %th.center{:colspan => 2} Federal
+            %th.center{:colspan => 2} Local
+            %th
+          %tr
             %th Name
-            %th Sub Category
-            %th # Assets
-            %th # Fund Req				
-            %th Created       
-            %th Updated       
+            %th.left Sub Category
+            %th.right Count
+            
+            %th.right Amount				
+            %th.right %       
+            %th.right Amount       
+            %th.right %       
+            %th.right Amount       
+            %th.right %       
+            %th.right Total
                 
         %tbody
           - @project.activity_line_items.each do |ali|
@@ -19,12 +30,19 @@
               
               %td.left= ali.name
               %td.left= ali.team_ali_code
+              %td.right= format_as_integer(ali.assets.count)
               
-              %td.right= "#{ali.assets.count}"
-              %td.right= "#{ali.funding_requests.count}"
+              %td.right= format_as_currency(ali.state_request)
+              %td.right= format_as_percentage(ali.state_request / ali.total_estimated_replacement_cost * 100.0)
+
+              %td.right= format_as_currency(ali.federal_request)
+              %td.right= format_as_percentage(ali.federal_request / ali.total_estimated_replacement_cost * 100.0)
+
+              %td.right= format_as_currency(ali.local_request)
+              %td.right= format_as_percentage(ali.local_request / ali.total_estimated_replacement_cost * 100.0)
+
+              %td.right= format_as_currency(ali.total_estimated_replacement_cost)
               
-              %td.right= "#{format_as_date(ali.created_at)}"
-              %td.right= "#{format_as_date_time(ali.updated_at)}"
 
 .row
   .col-md-12

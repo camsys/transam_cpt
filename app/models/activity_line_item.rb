@@ -103,6 +103,15 @@ class ActivityLineItem < ActiveRecord::Base
     name
   end
   
+  def state_request
+    total_estimated_replacement_cost * 0.15
+  end
+  def federal_request
+    total_estimated_replacement_cost * 0.8  
+  end
+  def local_request
+    total_estimated_replacement_cost * 0.05
+  end
   # Returns the total estiamted value of the assets in this ALI
   def total_estimated_value
     val = 0

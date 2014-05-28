@@ -115,6 +115,30 @@ class CapitalProject < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
 
+  def state_request
+    val = 0
+    activity_line_items.each do |a|
+      val += a.state_request
+    end
+    val
+  end
+  def federal_request
+    val = 0
+    activity_line_items.each do |a|
+      val += a.federal_request
+    end
+    val
+  end
+  def local_request
+    val = 0
+    activity_line_items.each do |a|
+      val += a.local_request
+    end
+    val
+  end
+  def total_request
+    state_request + federal_request + local_request
+  end
   # Override the mixin method and delegate to it
   def fiscal_year
     super(fy_year)

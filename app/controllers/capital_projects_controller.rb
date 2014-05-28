@@ -20,7 +20,7 @@ class CapitalProjectsController < OrganizationAwareController
   
   def runner
     
-    @page_title = 'Capital Needs List Builder'
+    @page_title = 'Capital Project Builder'
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
       # Sleep for a couple of seconds so that the screen can display the waiting 
@@ -49,7 +49,7 @@ class CapitalProjectsController < OrganizationAwareController
   end
   def index
 
-    @page_title = 'Capital Needs List'
+    @page_title = 'Unconstrained Capital Needs List'
     @fiscal_years = get_fiscal_years
    
      # Start to set up the query
