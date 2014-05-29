@@ -3,6 +3,7 @@
     %legend.panel-legend Details
     = format_field("Fiscal Year", @project.fiscal_year)
     = format_field("Scope", @project.team_ali_code)
+    = format_field("Type", @project.capital_project_type)
     = format_field("Title", @project.title)
     = format_field("Emergency", format_as_boolean(@project.emergency)) unless @project.emergency == false
     = format_field("Status", @project.capital_project_status_type)

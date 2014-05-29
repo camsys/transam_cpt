@@ -14,6 +14,12 @@ capital_project_status_types = [
   {:active => 1, :name => 'Status 3',       :description => 'Status 3'}
 ]
 
+capital_project_types = [
+  {:active => 1, :name => 'SOGR Replacement Project',     :display_icon_name => "fa fa-credit-card",   :description => 'SOGR Replacement Project'},
+  {:active => 1, :name => 'SOGR Rehabilitation Project',  :display_icon_name => "fa fa-wrench", :description => 'SOGR Rehabilitation Project'},
+  {:active => 1, :name => 'Enhancement Project',          :display_icon_name => "fa fa-puzzle-piece",   :description => 'Enhancement Project'}
+]
+
 milestone_types = [
   {:active => 1, :name => 'Out for Bid',          :description => 'Out for Bid'},
   {:active => 1, :name => 'Contract Awarded',     :description => 'Contract Awarded'},
@@ -23,7 +29,7 @@ milestone_types = [
   {:active => 1, :name => 'Contract Completed',   :description => 'Contract Completed'}
 ]
 
-lookup_tables = %w{capital_project_status_types milestone_types }
+lookup_tables = %w{capital_project_status_types milestone_types capital_project_types }
 
 puts ">>> Loading CPT Lookup Tables <<<<"
 lookup_tables.each do |table_name|

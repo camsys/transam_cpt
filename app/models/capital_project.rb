@@ -51,6 +51,9 @@ class CapitalProject < ActiveRecord::Base
   # Every CP has a single TEAM sub catagory code
   belongs_to  :team_ali_code
 
+  # Every CP has a single type 
+  belongs_to  :capital_project_type
+
   # Has many MPMS projects. These will be removed if the project is removed
   has_and_belongs_to_many    :mpms_projects
     
@@ -69,6 +72,7 @@ class CapitalProject < ActiveRecord::Base
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :organization_id,                   :presence => true
   validates :team_ali_code_id,                  :presence => true
+  validates :capital_project_type_id,           :presence => true
   validates :capital_project_status_type_id,    :presence => true
   #validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
@@ -90,6 +94,7 @@ class CapitalProject < ActiveRecord::Base
     :organization_id,
     :fy_year,
     :team_ali_code_id,
+    :capital_project_type_id,
     :capital_project_status_type_id, 
     :title,
     :description,
