@@ -1,0 +1,22 @@
+= dialog_tag('Project', {:icon => 'fa fa-list', :class => "header_part"}) do
+  %fieldset
+    %legend.panel-legend Details
+    = format_field("Fiscal Year", @project.fiscal_year)
+    = format_field("Scope", @project.team_ali_code)
+    = format_field("Title", @project.title)
+    = format_field("Emergency", format_as_boolean(@project.emergency)) unless @project.emergency == false
+    = format_field("Status", @project.capital_project_status_type)
+  %fieldset
+    %legend.panel-legend Requests
+    = format_field("State", format_as_currency(@project.state_request))
+    = format_field("Federal", format_as_currency(@project.federal_request))
+    = format_field("Local", format_as_currency(@project.local_request))
+    = format_field("Total", format_as_currency(@project.total_request))
+
+  %fieldset
+    %legend.panel-legend Description
+    %p= @project.description
+
+  %fieldset
+    %legend.panel-legend Justification
+    %p= @project.justification

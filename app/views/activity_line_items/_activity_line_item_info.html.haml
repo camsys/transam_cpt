@@ -1,0 +1,17 @@
+= dialog_tag('Activity Line Item', {:icon => 'fa fa-list', :class => "header_part"}) do
+  %fieldset
+    %legend.panel-legend Project
+    = format_field("Project",  link_to(ali.capital_project.project_number, ali.capital_project))
+    = format_field("Fiscal Year", ali.capital_project.fiscal_year)
+
+  %fieldset
+    %legend.panel-legend Details
+    = format_field("Name", ali.name)
+    = format_field("Scope", ali.team_ali_code)
+
+  %fieldset
+    %legend.panel-legend Requests
+    = format_field("State", format_as_currency(ali.state_request))
+    = format_field("Federal", format_as_currency(ali.federal_request))
+    = format_field("Local", format_as_currency(ali.local_request))
+    = format_field("Total", format_as_currency(ali.total_request))

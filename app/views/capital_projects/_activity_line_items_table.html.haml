@@ -10,7 +10,8 @@
             %th.center{:colspan => 2} State
             %th.center{:colspan => 2} Federal
             %th.center{:colspan => 2} Local
-            %th
+            %th.center Total
+
           %tr
             %th Name
             %th.left Sub Category
@@ -22,7 +23,7 @@
             %th.right %       
             %th.right Amount       
             %th.right %       
-            %th.right Total
+            %th.right Amount
                 
         %tbody
           - project.activity_line_items.each do |ali|
@@ -42,3 +43,28 @@
               %td.right= format_as_percentage(ali.local_request / ali.total_estimated_replacement_cost * 100.0)
 
               %td.right= format_as_currency(ali.total_estimated_replacement_cost)
+              
+              - if popup
+                %td.center
+                  %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{ali.name}", :content => "#{raw render :partial => 'activity_line_items/assets_datatable', :locals => {:ali => ali, :popup => false}}"}}
+
+        %tfoot
+          %tr
+            %td{:colspan => "3"} 
+            %td.right= format_as_currency(project.state_request) 
+            %td
+            %td.right= format_as_currency(project.federal_request) 
+            %td
+            %td.right= format_as_currency(project.local_request) 
+            %td
+            %td.right= format_as_currency(project.total_request) 
+              
+:javascript
+  $('.popup-details').popover({
+    trigger: 'hover',
+    container: 'body',
+    placement: 'left',
+    animation: 'true',
+    html: 'true'    
+  });  
+  

@@ -17,4 +17,8 @@ Rails.application.routes.draw do
     
   end
   
+  resources :activity_line_items do
+    resources :comments, :documents
+  end
+  
 end

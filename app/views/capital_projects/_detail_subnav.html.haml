@@ -1,20 +1,52 @@
-= sub_nav_tag({}) do
-  = sub_nav_elem_tag do
-    = link_to capital_projects_path do
-      %i.fa.fa-angle-left
-      = " Back"
-  - if can? :update, @project
-    = sub_nav_elem_tag do
-      = link_to edit_capital_project_path(@project) do
-        %i.fa.fa-edit
-        = " Update"
-  - if can? :delete, @project
-    = sub_nav_elem_tag do
-      = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure?. The action cannot be undone!."}  do
-        %i.fa.fa-times
-        = " Remove"
-  - if can? :create, @project
-    = sub_nav_elem_tag do
-      = link_to new_capital_project_path do
-        %i.fa.fa-plus
-        = " Create New"
+.row
+  .col-md-12
+    %nav.navbar.navbar-default{:role => 'navigation'}
+      .container-fluid
+        %ul.nav.navbar-nav
+          %li
+            = link_to "#" do
+              %i.fa.fa-step-backward
+              = " Previous project"
+          %li
+            = link_to "#" do
+              %i.fa.fa-step-forward
+              = " Next project"
+
+        - if can? :create, @project
+          .btn-group.navbar-right
+            %button.btn.btn-info.navbar-btn.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+              I want to  
+              %span.caret
+            %ul.dropdown-menu{:role => 'menu'}
+              %li
+                = link_to new_capital_project_path do
+                  %i.fa.fa-plus.fa-fw
+                  = " Create a new project"
+              %li.divider
+              %li
+                = link_to "#" do
+                  %i.fa.fa-share.fa-fw
+                  = " Submit for review"
+              %li.divider
+              %li
+                = link_to "#" do
+                  %i.fa.fa-usd.fa-fw
+                  = " Program this project"
+              %li
+                = link_to "#" do
+                  %i.fa.fa-arrow-right.fa-fw
+                  = " Defer project to next FY"
+              %li.divider
+              %li
+                = link_to new_capital_project_path do
+                  %i.fa.fa-copy.fa-fw
+                  = " Make a copy"
+              %li
+                = link_to edit_capital_project_path(@project) do
+                  %i.fa.fa-edit.fa-fw
+                  = " Modify this project"
+              %li.divider
+              %li
+                = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure?. The action cannot be undone!."}  do
+                  %i.fa.fa-trash-o.fa-fw
+                  = " Remove this project"

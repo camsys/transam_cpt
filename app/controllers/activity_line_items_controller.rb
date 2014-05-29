@@ -7,8 +7,8 @@ class ActivityLineItemsController < OrganizationAwareController
   # GET /activity_line_items.json
   def index
 
-    @page_title = "#{@project.project_number}: ALIs"  
-    @activity_line_items = ActivityLineItem.all
+    # Render the project -> show action
+    redirect_to capital_project_path(@project)
   end
 
   # GET /activity_line_items/1

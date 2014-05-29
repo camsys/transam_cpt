@@ -17,7 +17,7 @@
       %th.right Local
       %th.right Total
       
-      %th.center Actions
+      %th.center
       				
   %tbody
     - @projects.each do |p|
@@ -35,11 +35,15 @@
         %td.right= format_as_currency(p.total_request)
 
         %td.center
-          %button.btn.btn-primary.popup-details{:data => {:trigger => 'hover', :placement => 'left', :title => "#{p.project_number}: Activity Line Items", :animation => 'true', :toggle => "click", :html => 'true', :content => "#{raw render :partial => 'activity_line_items_table', :locals => {:project => p}}"}}
-            %i.fa.fa-crosshairs
-            Details
+          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
             
 = render 'shared/datatable_javascript'
 
 :javascript
-  $('.popup-details').popover();  
+  $('.popup-details').popover({
+    trigger: 'hover',
+    container: 'body',
+    placement: 'left',
+    animation: 'true',
+    html: 'true'    
+  });  
