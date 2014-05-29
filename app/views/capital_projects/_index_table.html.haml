@@ -3,6 +3,7 @@
     %tr
       %th.center{:colspan => 6} Project
       %th.center{:colspan => 4} Requests
+      %th
     %tr
       %th.left Agency
       %th.left FY
@@ -16,10 +17,11 @@
       %th.right Local
       %th.right Total
       
+      %th.center Actions
       				
   %tbody
     - @projects.each do |p|
-      %tr{:data => {:action_path => "#{capital_project_path(p)}"}}
+      %tr.popup-details{:data => {:action_path => capital_project_path(p)}}
         %td= p.organization
         %td= p.fiscal_year
         %td= p.project_number
@@ -32,4 +34,12 @@
         %td.right= format_as_currency(p.local_request)
         %td.right= format_as_currency(p.total_request)
 
+        %td.center
+          %button.btn.btn-primary.popup-details{:data => {:trigger => 'hover', :placement => 'left', :title => "#{p.project_number}: Activity Line Items", :animation => 'true', :toggle => "click", :html => 'true', :content => "#{raw render :partial => 'activity_line_items_table', :locals => {:project => p}}"}}
+            %i.fa.fa-crosshairs
+            Details
+            
 = render 'shared/datatable_javascript'
+
+:javascript
+  $('.popup-details').popover();  
