@@ -15,9 +15,9 @@ capital_project_status_types = [
 ]
 
 capital_project_types = [
-  {:active => 1, :name => 'SOGR Replacement Project',     :display_icon_name => "fa fa-credit-card",   :description => 'SOGR Replacement Project'},
-  {:active => 1, :name => 'SOGR Rehabilitation Project',  :display_icon_name => "fa fa-wrench", :description => 'SOGR Rehabilitation Project'},
-  {:active => 1, :name => 'Enhancement Project',          :display_icon_name => "fa fa-puzzle-piece",   :description => 'Enhancement Project'}
+  {:active => 1, :name => 'SOGR Replacement Project',     :code => "RP",  :description => 'SOGR Replacement Project'},
+  {:active => 1, :name => 'SOGR Rehabilitation Project',  :code => "RH",  :description => 'SOGR Rehabilitation Project'},
+  {:active => 1, :name => 'Enhancement Project',          :code => "EP",  :description => 'Enhancement Project'}
 ]
 
 milestone_types = [

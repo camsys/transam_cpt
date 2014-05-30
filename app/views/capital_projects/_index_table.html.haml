@@ -27,8 +27,7 @@
         %td= p.fiscal_year
         %td= p.project_number
         %td= p.team_ali_code
-        %td
-          %i#{p.capital_project_type.display_icon_name}
+        %td.center= p.capital_project_type.code
             
         %td= p.title
         %td= p.capital_project_status_type

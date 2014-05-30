@@ -4,7 +4,7 @@ class AddProjectTypeToCapitalProject < ActiveRecord::Migration
 
     create_table :capital_project_types do |t|
       t.string  "name",              limit: 64,  null: false
-      t.string  "display_icon_name", limit: 64,  null: false
+      t.string  "code",              limit: 4,   null: false
       t.string  "description",       limit: 254, null: false
       t.boolean "active",                        null: false
     end
