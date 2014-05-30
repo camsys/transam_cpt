@@ -1,8 +1,15 @@
 #encoding: utf-8
 
+# determine if we are using postgres or mysql
+is_mysql = (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'mysql2')
+
 table_name = 'team_ali_codes'
 puts "  Processing #{table_name}"
-ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name}")
+if is_mysql
+  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
+else
+  ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY;")
+end
 
 # Start to build the Scope/ALI tree
 
