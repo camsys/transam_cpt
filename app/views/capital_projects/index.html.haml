@@ -12,7 +12,10 @@
       .panel-body
         - if @projects.empty?
           %p No matching capital projects found
-        - else    
-          = render 'index_table'
+        - else
+          .col-md-12
+            .chart{:id => "chart_#{@report.id}"}
+          .col-md-12                
+            = render 'index_table'
 
-
+= render 'index_scripts'

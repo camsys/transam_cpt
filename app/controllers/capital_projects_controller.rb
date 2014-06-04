@@ -102,6 +102,10 @@ class CapitalProjectsController < OrganizationAwareController
     #puts values.inspect
     @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :team_scope_code_id, :created_at)
       
+    @report = Report.find_by_class_name('CapitalNeedsForecast')
+    report_instance = @report.class_name.constantize.new
+    @data = report_instance.get_data_from_result_list(@projects)
+    
     # remember the view type
     @view_type = get_view_type(SESSION_VIEW_TYPE_VAR)
 
