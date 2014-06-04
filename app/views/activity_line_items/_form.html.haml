@@ -4,7 +4,7 @@
     :wrapper => :horizontal_form,
     :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
     .col-md-8.col-md-offset-2
-      = dialog_tag('Project Details', {:icon => 'fa fa-book', :class => "form_part"}) do
+      = dialog_tag('Activity Line Item', {:icon => 'fa fa-list', :class => "form-part"}) do
         = f.input :name, :placeholder => "Enter a name..."
         = f.association :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name', :label => 'Sub Category'
             

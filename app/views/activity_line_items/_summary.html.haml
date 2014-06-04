@@ -1,0 +1,16 @@
+%fieldset
+  %legend.panel-legend Project
+  = format_field("Project",  link_to(@activity_line_item.capital_project.project_number, @activity_line_item.capital_project))
+  = format_field("Fiscal Year", @activity_line_item.capital_project.fiscal_year)
+
+%fieldset
+  %legend.panel-legend Details
+  = format_field("Name", @activity_line_item.name)
+  = format_field("Scope", @activity_line_item.team_ali_code)
+
+%fieldset
+  %legend.panel-legend Requests
+  = format_field("State", format_as_currency(@activity_line_item.state_request))
+  = format_field("Federal", format_as_currency(@activity_line_item.federal_request))
+  = format_field("Local", format_as_currency(@activity_line_item.local_request))
+  = format_field("Total", format_as_currency(@activity_line_item.total_request))

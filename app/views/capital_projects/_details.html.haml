@@ -1,0 +1,27 @@
+%ul.nav.nav-tabs
+  %li
+    %a{:href => "#alis", :data =>{:toggle => 'tab'}}
+      = "Activity Line Items (#{@project.activity_line_items.count})"
+  %li
+    %a{:href => "#mpms", :data =>{:toggle => 'tab'}}
+      = "MPMS Projects (#{@project.mpms_projects.count})"
+  %li
+    %a{:href => "#comm", :data =>{:toggle => 'tab'}}
+      = "Comments (#{@project.comments.count})"
+  %li
+    %a{:href => "#docs", :data =>{:toggle => 'tab'}}
+      = "Supporting Documents (#{@project.documents.count})"
+
+.tab-content
+  .tab-pane.fade#alis
+    .tab-content
+      = render 'activity_line_items'
+  .tab-pane.fade#mpms
+    .tab-content
+      = render 'mpms_projects_table'
+  .tab-pane.fade#comm
+    .tab-content
+      = render 'comments'
+  .tab-pane.fade#docs
+    .tab-content
+      = render 'documents'

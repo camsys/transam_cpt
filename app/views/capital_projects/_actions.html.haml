@@ -1,0 +1,47 @@
+.btn-group.pull-right.panel-action
+  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+    I want to  
+    %span.caret
+  %ul.dropdown-menu{:role => 'menu'}
+    - if can? :update, @project
+      %li
+        = link_to "#" do
+          %i.fa.fa-usd.fa-fw
+          = " Program this project"
+      %li.divider
+      %li
+        = link_to "#" do
+          %i.fa.fa-arrow-right.fa-fw
+          = " Defer project to next FY"
+      %li
+        = link_to "#" do
+          %i.fa.fa-arrow-left.fa-fw
+          = " Move project to earlier FY"
+      %li
+        = link_to "#" do
+          %i.fa.fa-arrows-v.fa-fw
+          = " Change the priority"
+      %li.divider
+      %li
+        = link_to "#" do
+          %i.fa.fa-share.fa-fw
+          = " Submit for review"
+    - if can? :create, @project
+      %li.divider
+      %li
+        = link_to new_capital_project_path do
+          %i.fa.fa-copy.fa-fw
+          = " Make a copy"
+    - if can? :update, @project
+      %li.divider
+      %li
+        = link_to edit_capital_project_path(@project) do
+          %i.fa.fa-edit.fa-fw
+          = " Modify this project"
+          
+    - if can? :delete, @project
+      %li.divider
+      %li
+        = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure?. The action cannot be undone!."}  do
+          %i.fa.fa-trash-o.fa-fw
+          = " Remove this project"

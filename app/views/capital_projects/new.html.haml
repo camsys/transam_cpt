@@ -1,7 +1,3 @@
-= render 'form_subnav'
-
 = render(:partial => 'shared/form_errors', :locals => {:obj => @project}) unless @project.errors.empty?
 
 = render 'form'
-
-= render 'scripts'

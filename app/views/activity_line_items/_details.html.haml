@@ -1,0 +1,27 @@
+%ul.nav.nav-tabs
+  %li
+    %a{:href => "#asst", :data =>{:toggle => 'tab'}}
+      = "Assets (#{@activity_line_item.assets.count})"
+  %li
+    %a{:href => "#fund", :data =>{:toggle => 'tab'}}
+      = "Funding Requests (#{@activity_line_item.funding_requests.count})"
+  %li
+    %a{:href => "#mile", :data =>{:toggle => 'tab'}}
+      = "Milestones (#{@activity_line_item.milestones.count})"
+  %li
+    %a{:href => "#comm", :data =>{:toggle => 'tab'}}
+      = "Comments (#{@activity_line_item.comments.count})"
+
+.tab-content{:style => 'max-height:400px;overflow-y: auto;'}
+  .tab-pane.fade#asst
+    .tab-content
+      = render 'assets'
+  .tab-pane.fade#fund
+    .tab-content
+      = render 'funding_requests'
+  .tab-pane.fade#mile
+    .tab-content
+      = render 'milestones'
+  .tab-pane.fade#comm
+    .tab-content
+      = render 'comments'

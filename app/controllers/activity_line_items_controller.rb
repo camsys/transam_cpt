@@ -1,4 +1,8 @@
 class ActivityLineItemsController < OrganizationAwareController
+  
+  add_breadcrumb "Home", :root_path
+  add_breadcrumb "Capital Projects", :capital_projects_path
+  
   before_action :get_capital_project
   before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy]
@@ -14,23 +18,40 @@ class ActivityLineItemsController < OrganizationAwareController
   # GET /activity_line_items/1
   # GET /activity_line_items/1.json
   def show
+    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
+
     @page_title = "#{@project.project_number}: #{@activity_line_item.name}"  
   end
 
   # GET /activity_line_items/new
   def new
+
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb "New Activity Line Item", new_capital_project_activity_line_item_path(@project)
+
     @page_title = "#{@project.project_number}: New Activity Line Item"  
     @activity_line_item = ActivityLineItem.new
   end
 
   # GET /activity_line_items/1/edit
   def edit
+    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
+
     @page_title = "#{@project.project_number}: Update Activity Line Item"  
   end
 
   # POST /activity_line_items
   # POST /activity_line_items.json
   def create
+    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb "New Activity Line Item", new_capital_project_activity_line_item_path(@project)
+
     @activity_line_item = ActivityLineItem.new(form_params)
     @activity_line_item.capital_project = @project
     @page_title = "#{@project.project_number}: New Activity Line Item"  
@@ -49,6 +70,11 @@ class ActivityLineItemsController < OrganizationAwareController
   # PATCH/PUT /activity_line_items/1
   # PATCH/PUT /activity_line_items/1.json
   def update
+
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
+
     respond_to do |format|
       if @activity_line_item.update(form_params)
         format.html { redirect_to @activity_line_item, notice: 'Activity line item was successfully updated.' }

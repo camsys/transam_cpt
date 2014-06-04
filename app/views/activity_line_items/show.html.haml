@@ -1,37 +1,27 @@
-= render 'detail_subnav'
-
 .row
   .col-md-4
-    = render :partial => 'activity_line_item_info', :locals => {:ali => @activity_line_item} 
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-6
+            %h3.panel-title
+              %i.fa.fa-list
+              Activity Line Item
+          .col-md-6
+            = render 'actions'
+      .panel-body    
+        = render 'summary'
         
   .col-md-8
-    = dialog_tag('Details', {:icon => 'fa fa-book', :class => "header_part"}) do
-      %ul.nav.nav-tabs
-        %li
-          %a{:href => "#asst", :data =>{:toggle => 'tab'}}
-            = "Assets (#{@activity_line_item.assets.count})"
-        %li
-          %a{:href => "#fund", :data =>{:toggle => 'tab'}}
-            = "Funding Requests (#{@activity_line_item.funding_requests.count})"
-        %li
-          %a{:href => "#mile", :data =>{:toggle => 'tab'}}
-            = "Milestones (#{@activity_line_item.milestones.count})"
-        %li
-          %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-            = "Comments (#{@activity_line_item.comments.count})"
-
-      .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
-        .tab-pane.fade#asst
-          .tab-content
-            = render 'assets'
-        .tab-pane.fade#fund
-          .tab-content
-            = render 'funding_requests'
-        .tab-pane.fade#mile
-          .tab-content
-            = render 'milestones'
-        .tab-pane.fade#comm
-          .tab-content
-            = render 'comments'
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-12
+            %h3.panel-title
+              %i.fa.fa-folder-open
+              Details
+                
+      .panel-body
+        = render 'details'
 
 = render 'scripts'

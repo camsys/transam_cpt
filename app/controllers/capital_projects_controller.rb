@@ -1,5 +1,8 @@
 class CapitalProjectsController < OrganizationAwareController
 
+  add_breadcrumb "Home", :root_path
+  add_breadcrumb "Capital Projects", :capital_projects_path
+  
   MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
 
   # Include the fiscal year mixin
@@ -12,15 +15,20 @@ class CapitalProjectsController < OrganizationAwareController
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
     
   def builder
+
+    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
+    
     @page_title = 'Capital Needs List Builder'
     @builder_proxy = BuilderProxy.new
-    @message = "Creating capital projects. This process might take a while."
+    @message = "Creating SOGR capital projects. This process might take a while."
     
   end
   
   def runner
-    
+
+    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
     @page_title = 'Capital Project Builder'
+
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
       # Sleep for a couple of seconds so that the screen can display the waiting 
@@ -47,7 +55,10 @@ class CapitalProjectsController < OrganizationAwareController
     end
     
   end
+  
   def index
+
+    add_breadcrumb "Unconstrained Capital Needs List", capital_projects_path    
 
     @page_title = 'Unconstrained Capital Needs List'
     @fiscal_years = get_fiscal_years
@@ -80,6 +91,12 @@ class CapitalProjectsController < OrganizationAwareController
       conditions << 'capital_project_status_type_id = ?'
       values << @status_type_id
     end
+    @project_type_id = params[:project_type_id]
+    unless @project_type_id.blank?
+      @project_type_id = @project_type_id.to_i
+      conditions << 'capital_project_type_id = ?'
+      values << @project_type_id
+    end
     
     #puts conditions.inspect
     #puts values.inspect
@@ -96,6 +113,8 @@ class CapitalProjectsController < OrganizationAwareController
 
   def show
 
+    add_breadcrumb @project.project_number, capital_project_path(@project)    
+
     @page_title = "Project: #{@project.project_number}"
 
     respond_to do |format|
@@ -106,6 +125,8 @@ class CapitalProjectsController < OrganizationAwareController
 
   
   def new
+
+    add_breadcrumb "New", new_capital_project_path    
     
     @page_title = "New Capital Project"
     @project = CapitalProject.new
@@ -115,6 +136,9 @@ class CapitalProjectsController < OrganizationAwareController
   end
 
   def edit
+
+    add_breadcrumb @project.project_number, capital_project_path(@project)    
+    add_breadcrumb "Modify", edit_capital_project_path(@project)    
     
     @page_title = "Update #{@project.project_number}"
     @fiscal_years = get_fiscal_years
@@ -123,9 +147,11 @@ class CapitalProjectsController < OrganizationAwareController
   
   def create
 
+    add_breadcrumb "New", new_capital_project_path    
+    @page_title = "New Capital Project"
+
     @project = CapitalProject.new(form_params)
     @project.organization = @organization
-    @page_title = "New Capital Project"
     @fiscal_years = get_fiscal_years
 
     respond_to do |format|
@@ -142,7 +168,9 @@ class CapitalProjectsController < OrganizationAwareController
 
   def update
 
-    @page_title = "Update #{@project.project_number}"
+    add_breadcrumb @project.project_number, capital_project_path(@project)    
+    add_breadcrumb "Modify", edit_capital_project_path(@project)    
+    @page_title = "Modify #{@project.project_number}"
     @fiscal_years = get_fiscal_years
 
     respond_to do |format|

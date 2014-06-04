@@ -1,8 +1,18 @@
-= render 'master_subnav'
-
-- if @view_type == CapitalProjectsController::VIEW_TYPE_TABLE
-  = render 'index_table'
-- else
-  = render 'index_thumbnails'
+.row
+  .col-md-12
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-4
+            %h3.panel-title
+              %i.fa.fa-list
+              Unconstrained Capital Needs List
+          .col-md-8
+            = render 'index_actions'
+      .panel-body
+        - if @projects.empty?
+          %p No matching capital projects found
+        - else    
+          = render 'index_table'
 
 
