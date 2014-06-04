@@ -68,7 +68,7 @@ lookup_tables.each do |table_name|
 end
 
 puts ">>> Loading CPT Merge Tables <<<<"
-lookup_tables.each do |table_name|
+merge_tables.each do |table_name|
   puts "  Processing #{table_name}"
   data = eval(table_name)
   klass = table_name.classify.constantize
