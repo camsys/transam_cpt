@@ -10,6 +10,9 @@
         %i.fa.fa-usd.fa-fw
         = " Capital Needs Lists"
       %ul.dropdown-menu
+        %li
+          = link_to "All", capital_projects_path
+        %li.divider  
         - CapitalProjectType.all.each do |x|
           %li
             = link_to x.name.pluralize(2), capital_projects_path(:project_type_id => x)
