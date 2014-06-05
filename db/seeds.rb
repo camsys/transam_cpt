@@ -68,13 +68,12 @@ lookup_tables.each do |table_name|
 end
 
 puts ">>> Loading CPT Merge Tables <<<<"
-merge_tables.each do |table_name|
-  puts "  Processing #{table_name}"
-  data = eval(table_name)
-  klass = table_name.classify.constantize
-  data.each do |row|
-    x = klass.new(row)
-    x.save!
-  end
+table_name = 'reports'
+puts "  Processing #{table_name}"
+data = eval(table_name)
+data.each do |row|
+  x = Report.new(row.except(:belongs_to, :type))
+  x.report_type = ReportType.where(:name => row[:type]).first
+  x.save!
 end
 
