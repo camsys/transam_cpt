@@ -18,9 +18,15 @@ capital_project_status_types = [
 ]
 
 capital_project_types = [
-  {:active => 1, :name => 'SOGR Replacement Project',     :code => "RP",  :description => 'SOGR Replacement Project'},
-  {:active => 1, :name => 'SOGR Rehabilitation Project',  :code => "RH",  :description => 'SOGR Rehabilitation Project'},
-  {:active => 1, :name => 'Enhancement Project',          :code => "EP",  :description => 'Enhancement Project'}
+  {:active => 1, :name => 'SOGR Fleet replacement project',     :code => "SRP",  :description => 'SOGR Fleet Replacement Project'},
+  {:active => 1, :name => 'SOGR Fleet rebuild project',         :code => "SRH",  :description => 'SOGR Fleet Rehabilitation Project'},
+  {:active => 1, :name => 'SOGR Rail mid-life rebuild project', :code => "SMR",  :description => 'SOGR Rail mid-life rebuild project'},
+  {:active => 1, :name => 'SOGR Vehicle overhaul project',      :code => "VOH",  :description => 'SOGR Vehicle overhaul project'},
+  {:active => 1, :name => 'Fleet expansion project',            :code => "FEX",  :description => 'Fleet expansion project'},
+  {:active => 1, :name => 'Facility construction project',      :code => "FCP",  :description => 'Facility construction project'},
+  {:active => 1, :name => 'Facility renovation project',        :code => "FRP",  :description => 'Facility renovation project'},
+  {:active => 1, :name => 'Operating assistance project',       :code => "OAP",  :description => 'Operating assistance project'},
+  {:active => 1, :name => 'Other captial project',              :code => "OCP",  :description => 'Other captial project'}
 ]
 
 milestone_types = [
