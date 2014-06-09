@@ -14,6 +14,16 @@ class TeamAliCode < ActiveRecord::Base
   def to_s
     code
   end
+  # Return the context for a code. The context is the predecessors as a string
+  def context(join_str = '->')
+    a = []
+    x = self
+    while x.parent
+      x = x.parent
+      a << x.name
+    end
+    a.reverse.join(join_str)
+  end
   def type
     code.split('.')[0]
   end
