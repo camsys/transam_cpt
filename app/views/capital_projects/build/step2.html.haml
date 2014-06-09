@@ -1,0 +1,94 @@
+.row
+  .col-md-3
+    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+      = render 'new_project_instructions'
+      
+  .col-md-6
+    = dialog_tag('Step 2 of 4: Project Information', {:class => "header-part"}) do
+      %div{:style => 'padding:20px;'}
+        = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
+          .form-group
+            %label Project Name
+            = f.text_field :name, :placeholder => "Enter a name for this project...", :class => "form-control"
+          .form-group
+            %label Fiscal Year
+            = f.select(:fiscal_year, options_for_select(@fiscal_years, :selected => :fiscal_year), {:prompt => "Select the fiscal year"}, :class => "form-control")           
+          %label Project Type
+          .radio
+            - if @proxy.capital_project_type == '1'
+              
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 1
+                  = "Purchase replacement busses"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 2
+                  = "Lease replacement busses"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 3
+                  = "Purchase replacement rail cars"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 4
+                  = "Lease replacement rail cars"        
+            - elsif @proxy.capital_project_type == '2'
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 5
+                  = "Rebuild busses"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 6
+                  = "Rebuild rail cars"        
+            - elsif @proxy.capital_project_type == '3'
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 7, :selected => true
+                  = "Perform mid-life rebuild of rail cars"        
+            - elsif @proxy.capital_project_type == '4'
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 8
+                  = "Purchase expansion busses"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 9
+                  = "Lease expansion busses"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 10
+                  = "Purchase expansion rail cars"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 11
+                  = "Lease expansion rail cars"        
+            - elsif @proxy.capital_project_type == '5'
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 12
+                  = "Ovehaul busses"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 13
+                  = "Overhaul rail cars"        
+                                       
+          = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+          = submit_tag "Continue", :class => 'btn btn-primary'
+              
+  .col-md-3
+    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+      #action-info
+
+= render 'scripts'
+
+:javascript
+  // Create a select handler that changes out the info panel based on the user selecting a proejct type
+  $('input[name=project_type]').change(function() {
+    // Get the data element and display the contents in the info panel
+    val = $(this).data('info');
+    //alert(val);
+    $('#action-info').html(val);
+  });
+  

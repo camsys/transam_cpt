@@ -1,0 +1,32 @@
+.row
+  .col-md-3
+    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+      = render 'new_project_instructions'
+      
+  .col-md-6
+    = dialog_tag('Step 3 of 4: Description and Justification', {:class => "header-part"}) do
+      %div{:style => 'padding:20px;'}
+        = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
+          .form-group
+            %label Project Description
+            = f.text_area :description, :rows => 3, :class => "form-control", :placeholder => "Enter a description for this project..."
+          .form-group
+            %label Justification
+            = f.text_area :justification, :rows => 6 , :class => "form-control", :placeholder => "Enter a justification for this project..."
+        
+          = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+          = submit_tag "Continue", :class => 'btn btn-primary'
+
+  .col-md-3
+    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+      = render 'description_and_justification_info'
+
+= render 'scripts'
+
+:javascript
+
+  // Document Ready
+  $(document).ready(function(){
+    $('#capital_project_proxy_description').wysihtml5();
+    $('#capital_project_proxy_justification').wysihtml5();
+  });

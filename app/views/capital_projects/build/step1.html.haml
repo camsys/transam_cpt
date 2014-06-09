@@ -1,0 +1,36 @@
+.row
+  .col-md-3
+    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+      = render 'new_project_instructions'
+      
+  .col-md-6
+    = dialog_tag('Step 1 of 4: Select Project Type', {:class => "header-part"}) do
+      %div{:style => 'padding:20px;'}
+        = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
+          .radio
+            .row
+              - CapitalProjectType.all.each_slice(5) do |col|
+                .col-md-6
+                  - col.each do |cpt|
+                    .form-group
+                      %label
+                        = f.radio_button :capital_project_type, cpt.id, {:data => {:info => "#{raw render 'opt1_info'}"}}
+                        = cpt.name        
+                             
+          = submit_tag "Continue", :class => 'btn btn-primary'
+              
+  .col-md-3
+    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+      #action-info
+
+= render 'scripts'
+
+:javascript
+  // Create a select handler that changes out the info panel based on the user selecting a proejct type
+  $('input:radio').change(function() {
+    // Get the data element and display the contents in the info panel
+    val = $(this).data('info');
+    //alert(val);
+    $('#action-info').html(val);
+  });
+  

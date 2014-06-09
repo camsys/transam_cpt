@@ -1,0 +1,31 @@
+.row
+  .col-md-3
+    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+      = render 'new_project_instructions'
+      
+  .col-md-6
+    = dialog_tag('Description and Justification', {:icon => "fa fa-usd", :class => "header-part"}) do
+      %div{:style => 'padding:20px;'}
+        = form_tag(new_capital_project_path, {:role => 'form', :class => 'form-horizontal'}) do |f|
+          .form-group
+            %label Project Description
+            = text_field_tag :description, nil, :rows => 3, :class => "form-control", :placeholder => "Enter a description for this project..."
+          .form-group
+            %label Justification
+            = text_field_tag :justification, nil, :rows => 6 , :class => "form-control", :placeholder => "Enter a justification for this project..."
+        
+          = link_to "Continue", next_wizard_path, :class => 'btn btn-primary'
+
+  .col-md-3
+    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+      = render 'description_and_justification_info'
+
+= render 'scripts'
+
+:javascript
+
+  // Document Ready
+  $(document).ready(function(){
+    $('#description').wysihtml5();
+    $('#justification').wysihtml5();
+  });
