@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   # Capital Project Controllers
   resources :capital_projects do
     
+    # Build controller for CP wizard
+    resources :build, controller: 'capital_projects/build'    
+    
     collection do
       get   'builder'
       post  'runner'
