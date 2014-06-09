@@ -63,9 +63,10 @@ class CapitalProjects::BuildController < OrganizationAwareController
       msg = "The capital project was sucessfully created."
       notify_user(:notice, msg)
       capital_project_path(cp)
+      return
     else
       msg = "A problem occurred while saving your capital project."
-      notify_user(:warning, msg)
+      notify_user(:alert, msg)
     end
   end  
   
