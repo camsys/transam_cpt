@@ -6,11 +6,14 @@
 #form
   .row
     .col-md-3
-      = render 'asset_info'
+      = dialog_tag('Asset Information', {:icon => 'fa fa-book', :class => "header_part"}) do
+        = render 'builder_instructions'
     .col-md-6
-      = render 'builder_form'
+      = dialog_tag('Capital Project Builder Details', {:icon => 'fa fa-book', :class => "header_part"}) do
+        = render 'builder_form'
     .col-md-3
-      = render 'builder_notes'
+      = dialog_tag('Capital Project Builder Notes', {:icon => 'fa fa-book', :class => "header_part"}) do
+        = render 'builder_notes'
 
 :javascript
 
