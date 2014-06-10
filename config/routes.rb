@@ -11,6 +11,10 @@ Rails.application.routes.draw do
       post  'runner'
     end
     
+    member do
+      get 'shift_fiscal_year'
+    end
+    
     resources :comments
     resources :documents
     

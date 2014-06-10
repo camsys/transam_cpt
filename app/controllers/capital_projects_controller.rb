@@ -139,6 +139,20 @@ class CapitalProjectsController < OrganizationAwareController
     
   end
 
+  # Move a project forward or backward by the specified number of years.
+  def shift_fiscal_year
+    num_years = params[:num_years].to_i
+    new_project_year = @project.fy_year + num_years
+    if new_project_year < Date.today.year
+      notify_user(:alert, "Project #{@project.project_number} can't be scheduled earlier than #{}.")
+    else
+      @project.fy_year = new_project_year
+      @project.save
+      notify_user(:notice, "The project was re-scheduled for #{}. The new project number is #{}.")
+    end
+    redirect_to capital_project_url(@project)
+  end
+  
   def edit
 
     add_breadcrumb @project.project_number, capital_project_path(@project)    
