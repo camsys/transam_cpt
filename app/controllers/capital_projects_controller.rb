@@ -58,8 +58,6 @@ class CapitalProjectsController < OrganizationAwareController
   
   def index
 
-    add_breadcrumb "Unconstrained Capital Needs List", capital_projects_path    
-
     @page_title = 'Unconstrained Capital Needs List'
     @fiscal_years = get_fiscal_years
    
@@ -78,24 +76,40 @@ class CapitalProjectsController < OrganizationAwareController
       conditions << 'fy_year = ?'
       values << @fiscal_year
     end
-    @team_ali_code_id = params[:team_ali_code_id]
-    unless @team_ali_code_id.blank?
-      # These are ALI categories eg 11.11.XX 
-      @team_ali_code_id = @team_ali_code_id.to_i
-      conditions << 'team_ali_code_id = ?'
-      values << @team_ali_code_id
-    end
     @status_type_id = params[:status_type_id]
     unless @status_type_id.blank?
       @status_type_id = @status_type_id.to_i
       conditions << 'capital_project_status_type_id = ?'
       values << @status_type_id
     end
-    @project_type_id = params[:project_type_id]
-    unless @project_type_id.blank?
-      @project_type_id = @project_type_id.to_i
+    
+    # Get the filter, if one is not found default to 0 
+    @capital_project_type_id = params[:capital_project_type_id]
+    if @capital_project_type_id.blank?
+      @capital_project_type_id = 0
+    else
+      @capital_project_type_id = @capital_project_type_id.to_i
+    end
+    
+    # See what type of filter we got. If the filter > 0 it is a capital project type
+    # otherwise it is a grouping
+    if @capital_project_type_id > 0
+      capital_project_type = CapitalProjectType.find(@capital_project_type_id)
       conditions << 'capital_project_type_id = ?'
-      values << @project_type_id
+      values << @capital_project_type_id
+      add_breadcrumb capital_project_type.name.pluralize(2), capital_projects_path(:capital_project_type_id => capital_project_type)    
+    else
+      if @capital_project_type_id == -1
+        # all SOGR projects
+        conditions << 'capital_project_type_id IN (?)'
+        values << [1,2,3,4]
+        add_breadcrumb "All SOGR Projects", capital_projects_path(:capital_project_type_id => -1)    
+      elsif @capital_project_type_id == -2
+        # all other projects
+        conditions << 'capital_project_type_id IN (?)'
+        values << [4,5,6,7,8,9]
+        add_breadcrumb "All Other Projects", capital_projects_path(:capital_project_type_id => -2)    
+      end
     end
     
     #puts conditions.inspect
