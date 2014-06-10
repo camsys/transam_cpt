@@ -12,9 +12,10 @@
               - CapitalProjectType.all.each_slice(5) do |col|
                 .col-md-6
                   - col.each do |cpt|
+                    - info_content_partial = "opt#{cpt.id}_info"
                     .form-group
                       %label
-                        = f.radio_button :capital_project_type, cpt.id, {:data => {:info => "#{raw render 'opt1_info'}"}}
+                        = f.radio_button :capital_project_type, cpt.id, {:data => {:info => "#{raw render info_content_partial}"}}
                         = cpt.name        
                              
           = submit_tag "Continue", :class => 'btn btn-primary'
