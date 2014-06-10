@@ -10,13 +10,14 @@
           = " Program this project"
       %li.divider
       %li
-        = link_to capital_project_shift_fiscal_year_path(@project, :num_years => 1) do
+        = link_to shift_fiscal_year_capital_project_path(@project, :num_years => 1) do
           %i.fa.fa-arrow-right.fa-fw
           = " Defer project to next FY"
-      %li
-        = link_to capital_project_shift_fiscal_year_path(@project, :num_years => -1) do
-          %i.fa.fa-arrow-left.fa-fw
-          = " Move project to earlier FY"
+      - if @project.can_schedule_earlier?
+        %li
+          = link_to shift_fiscal_year_capital_project_path(@project, :num_years => -1) do
+            %i.fa.fa-arrow-left.fa-fw
+            = " Move project to earlier FY"
       %li
         = link_to "#" do
           %i.fa.fa-arrows-v.fa-fw

@@ -149,10 +149,19 @@ class CapitalProject < ActiveRecord::Base
     super(fy_year)
   end
   
+  # returns true if the project can be scheduled on year earlier
+  def can_schedule_earlier?
+    # return true if the projects fiscal year is greater than the current fiscal year
+    fy_year > current_fiscal_year_year
+  end
+  
   def name
     project_number
   end
     
+  def update_project_number
+    create_project_number
+  end
   #------------------------------------------------------------------------------
   #
   # Protected Methods

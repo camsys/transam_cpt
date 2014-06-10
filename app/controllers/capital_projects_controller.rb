@@ -143,14 +143,20 @@ class CapitalProjectsController < OrganizationAwareController
   def shift_fiscal_year
     num_years = params[:num_years].to_i
     new_project_year = @project.fy_year + num_years
-    if new_project_year < Date.today.year
-      notify_user(:alert, "Project #{@project.project_number} can't be scheduled earlier than #{}.")
+    # Check to see if they are attempting to move the project earlier than the current fiscal year
+    if new_project_year < current_fiscal_year_year
+      notify_user(:alert, "Project #{@project.project_number} can't be scheduled earlier than #{current_fiscal_year}.")
     else
       @project.fy_year = new_project_year
+      @project.update_project_number
       @project.save
-      notify_user(:notice, "The project was re-scheduled for #{}. The new project number is #{}.")
+      notify_user(:notice, "The project was re-scheduled for #{@project.fy_year}. The new project number is #{@project.project_number}.")
     end
-    redirect_to capital_project_url(@project)
+    if params[:view] == '1'
+      redirect_to capital_projects_path
+    else
+      redirect_to capital_project_path(@project)
+    end      
   end
   
   def edit
