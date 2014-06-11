@@ -60,10 +60,9 @@ class CapitalProjects::BuildController < OrganizationAwareController
     cp.capital_project_type_id = @proxy.capital_project_type
     
     if cp.save
-      msg = "The capital project was sucessfully created."
+      msg = "The capital project was sucessfully created. The number is #{cp.project_number}"
       notify_user(:notice, msg)
       capital_project_path(cp)
-      return
     else
       msg = "A problem occurred while saving your capital project."
       notify_user(:alert, msg)
