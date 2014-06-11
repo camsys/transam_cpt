@@ -44,7 +44,7 @@
         %td.right= format_as_currency(p.total_request)
 
         %td.center
-          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
+          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
           = link_to shift_fiscal_year_capital_project_path(p, :num_years => -1, :view => 1), :title => 'Schedule earlier' do
             %i.fa.fa-arrow-left.fa-fw
           = link_to shift_fiscal_year_capital_project_path(p, :num_years => +1, :view => 1), :title => 'Schedule later' do
