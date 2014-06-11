@@ -12,6 +12,7 @@ class CapitalProjectsController < OrganizationAwareController
   before_filter :check_for_cancel,  :only =>    [:create, :update, :runner]
   before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder]
   
+  INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
     
   def builder
@@ -116,6 +117,10 @@ class CapitalProjectsController < OrganizationAwareController
     #puts values.inspect
     @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :team_scope_code_id, :created_at)
       
+    # cache the set of object keys in case we need them later
+    cache_list(@projects, INDEX_KEY_LIST_VAR)
+      
+    # generate the chart data
     @report = Report.find_by_class_name('CapitalNeedsForecast')
     report_instance = @report.class_name.constantize.new
     @data = report_instance.get_data_from_result_list(@projects)
@@ -134,6 +139,11 @@ class CapitalProjectsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)    
 
     @page_title = "Project: #{@project.project_number}"
+
+    # get the @prev_record_path and @next_record_path view vars
+    get_next_and_prev_object_keys(@project, INDEX_KEY_LIST_VAR)
+    @prev_record_path = @prev_record_key.nil? ? "#" : capital_project_path(@prev_record_key)
+    @next_record_path = @next_record_key.nil? ? "#" : capital_project_path(@next_record_key)
 
     respond_to do |format|
       format.html # show.html.erb
