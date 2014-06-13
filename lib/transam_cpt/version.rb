@@ -1,3 +1,3 @@
 module TransamCpt
-  VERSION = "0.0.1n"
+  VERSION = "0.0.1o"
 end
