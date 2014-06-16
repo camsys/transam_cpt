@@ -67,8 +67,8 @@ class CapitalProjectsController < OrganizationAwareController
     values      = []
     
     # Only for the selected organization
-    conditions << 'organization_id = ?'
-    values << @organization.id
+    conditions << 'organization_id IN (?)'
+    values << @organization_list
     
     # See if we got search
     @fiscal_year = params[:fiscal_year]
