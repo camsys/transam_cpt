@@ -30,7 +30,7 @@ class CapitalNeedsForecast < AbstractReport
     
   end
   
-  def get_data(organization, params)
+  def get_data(organization_id_list, params)
     
     # Capital Needs by year
     analysis_year = Date.today.year
@@ -42,7 +42,7 @@ class CapitalNeedsForecast < AbstractReport
     (analysis_year..last_year).each do |year|
       report_row = CptReportRow.new(year)
       # get the capital projects for this analysis year
-      capital_projects =  CapitalProject.where('organization_id = ? AND fy_year = ?', organization.id, year)
+      capital_projects =  CapitalProject.where('capital_projects.organization_id IN (?) AND capital_projects.fy_year = ?', organization_id_list, year)
       capital_projects.find_each do |cp|
         report_row.add(cp)
       end
