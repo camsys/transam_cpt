@@ -7,8 +7,6 @@
 #------------------------------------------------------------------------------
 module AssetAliLookup
 
-  MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
-
   #
   # Returns an asset subtype based on an ALI code
   #

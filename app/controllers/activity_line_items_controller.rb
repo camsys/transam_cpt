@@ -1,11 +1,14 @@
 class ActivityLineItemsController < OrganizationAwareController
   
+  # Include the team ali code mixin
+  include AssetAliLookup
+  
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
   
   before_action :get_capital_project
   before_filter :check_for_cancel,        :only => [:create, :update]
-  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy]
+  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset]
   
   # GET /activity_line_items
   # GET /activity_line_items.json
@@ -22,9 +25,42 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
 
+    # Get the list of candidate assets that could be added to the ALI
+    asset_subtype = asset_subtype_from_ali_code(@activity_line_item.team_ali_code.code)
+    if asset_subtype.nil? 
+      @assets = []
+    else
+      @assets = Asset.where('organization_id = ? AND asset_subtype_id = ? AND scheduled_replacement_year = ?', @project.organization.id, asset_subtype.id, @project.fy_year)
+    end
+    
     @page_title = "#{@project.project_number}: #{@activity_line_item.name}"  
   end
 
+  # Add the specified asset to this ALI
+  def add_asset
+    asset = Asset.find_by_object_key(params[:asset])
+    if asset.nil?
+      notify_user(:alert, "Unable to add asset. Record not found!")
+      return      
+    else
+      @activity_line_item.assets << asset
+      notify_user(:notice, "Asset was sucesffully added to the ALI")
+    end
+    redirect_to :back
+  end
+
+  def remove_asset
+    asset = Asset.find_by_object_key(params[:asset])
+    if asset.nil?
+      notify_user(:alert, "Unable to remove asset. Record not found!")
+      return      
+    else
+      @activity_line_item.assets.delete(asset)
+      notify_user(:notice, "Asset was sucessfully removed from the ALI")
+    end
+    redirect_to :back
+  end
+  
   # GET /activity_line_items/new
   def new
 
