@@ -120,7 +120,7 @@ class ActivityLineItem < ActiveRecord::Base
   def total_estimated_value
     val = 0
     assets.each do |a|
-      val += a.estimated_value
+      val += a.estimated_value unless a.estimated_value.nil?
     end
     val
   end
@@ -128,7 +128,7 @@ class ActivityLineItem < ActiveRecord::Base
   def total_original_cost
     val = 0
     assets.each do |a|
-      val += a.cost
+      val += a.cost unless a.cost.nil?
     end
     val
   end
@@ -136,7 +136,7 @@ class ActivityLineItem < ActiveRecord::Base
   def total_estimated_replacement_cost
     val = 0
     assets.each do |a|
-      val += a.estimated_replacement_cost
+      val += a.estimated_replacement_cost unless a.estimated_replacement_cost.nil?
     end
     val
   end
