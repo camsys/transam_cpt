@@ -77,7 +77,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
     respond_to do |format|
       if @activity_line_item.update(form_params)
-        format.html { redirect_to @activity_line_item, notice: 'Activity line item was successfully updated.' }
+        format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -91,7 +91,7 @@ class ActivityLineItemsController < OrganizationAwareController
   def destroy
     @activity_line_item.destroy
     respond_to do |format|
-      format.html { redirect_to activity_line_items_url }
+      format.html { redirect_to capital_project_path(@project) }
       format.json { head :no_content }
     end
   end
