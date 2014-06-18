@@ -34,13 +34,13 @@
               %td.right= format_as_integer(ali.assets.count)
               
               %td.right= format_as_currency(ali.state_request)
-              %td.right= format_as_percentage(ali.state_request / ali.total_estimated_replacement_cost * 100.0)
+              %td.right= format_as_percentage(ali.state_request / ali.total_estimated_replacement_cost * 100.0) unless ali.state_request == 0
 
               %td.right= format_as_currency(ali.federal_request)
-              %td.right= format_as_percentage(ali.federal_request / ali.total_estimated_replacement_cost * 100.0)
+              %td.right= format_as_percentage(ali.federal_request / ali.total_estimated_replacement_cost * 100.0) unless ali.federal_request == 0
 
               %td.right= format_as_currency(ali.local_request)
-              %td.right= format_as_percentage(ali.local_request / ali.total_estimated_replacement_cost * 100.0)
+              %td.right= format_as_percentage(ali.local_request / ali.total_estimated_replacement_cost * 100.0) unless ali.local_request == 0
 
               %td.right= format_as_currency(ali.total_estimated_replacement_cost)
               
