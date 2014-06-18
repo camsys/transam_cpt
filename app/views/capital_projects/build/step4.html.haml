@@ -19,8 +19,10 @@
         %legend Justification
         = @proxy.justification.html_safe
         
-      = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
-      = link_to "Create project", next_wizard_path, :class => 'btn btn-primary'
+      %fieldset      
+        %legend
+        = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+        = link_to "Create project", next_wizard_path, :class => 'btn btn-primary'
 
   .col-md-3
     = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
