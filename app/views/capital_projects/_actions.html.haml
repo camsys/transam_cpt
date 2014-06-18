@@ -30,7 +30,7 @@
     - if can? :create, @project
       %li.divider
       %li
-        = link_to new_capital_project_path do
+        = link_to copy_capital_project_path(@project) do
           %i.fa.fa-copy.fa-fw
           = " Make a copy"
     - if can? :update, @project
