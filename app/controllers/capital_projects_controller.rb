@@ -10,7 +10,7 @@ class CapitalProjectsController < OrganizationAwareController
     
   #before_filter :authorize_admin
   before_filter :check_for_cancel,  :only =>    [:create, :update, :runner]
-  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :copy]
+  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder]
   
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -196,7 +196,6 @@ class CapitalProjectsController < OrganizationAwareController
   def copy
     
     new_project = @project.dup
-    new_project.name = "Copy of #{@project.name}"
     new_project.save
     @project.activity_line_items.each do |ali|
       new_ali = ali.dup
