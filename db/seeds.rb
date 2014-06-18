@@ -23,7 +23,8 @@ capital_project_types = [
   {:active => 1, :name => 'SOGR Rail mid-life rebuild project', :code => "SMR",  :description => 'SOGR Rail mid-life rebuild project'},
   {:active => 1, :name => 'SOGR Vehicle overhaul project',      :code => "VOH",  :description => 'SOGR Vehicle overhaul project'},
   {:active => 1, :name => 'Fleet expansion project',            :code => "FEX",  :description => 'Fleet expansion project'},
-  {:active => 1, :name => 'Facility construction project',      :code => "FCP",  :description => 'Facility construction project'},
+  {:active => 1, :name => 'Facility lease project',             :code => "FLP",  :description => 'Facility lease project'},
+  {:active => 1, :name => 'Facility purchase project',          :code => "FLP",  :description => 'Facility purchase project'},
   {:active => 1, :name => 'Facility renovation project',        :code => "FRP",  :description => 'Facility renovation project'},
   {:active => 1, :name => 'Operating assistance project',       :code => "OAP",  :description => 'Operating assistance project'},
   {:active => 1, :name => 'Other captial project',              :code => "OCP",  :description => 'Other captial project'}

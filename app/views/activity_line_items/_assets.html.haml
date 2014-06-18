@@ -1,6 +1,13 @@
-= render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => true}
-              
+.row
+  .col-md-12{:style => 'height:200px;overflow-y:auto;'}
+    = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => true, :delete => true}
+
 .row
   .col-md-12
-    = link_to "Add Assets", "#", :class => "btn btn-primary"
-  
+    %fieldset
+      %legend Add Assets
+      = simple_form_for [@project, @activity_line_item], :role => 'form' do |f|
+        .form-group
+          = f.association :assets, :class => 'form-control'
+        = f.submit :class => 'btn btn-primary'
+
