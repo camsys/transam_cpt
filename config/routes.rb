@@ -21,6 +21,10 @@ Rails.application.routes.draw do
     
     resources :activity_line_items do
       resources :comments      
+      member do
+        get 'add_asset'
+        get 'remove_asset'
+      end
     end
     
   end
