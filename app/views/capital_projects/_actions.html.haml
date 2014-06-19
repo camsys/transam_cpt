@@ -43,6 +43,6 @@
     - if can? :delete, @project
       %li.divider
       %li
-        = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure?. The action cannot be undone!."}  do
+        = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
           %i.fa.fa-trash-o.fa-fw
           = " Remove this project"
