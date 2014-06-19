@@ -262,6 +262,8 @@ class CapitalProjectsController < OrganizationAwareController
 
     respond_to do |format|
       if @project.update_attributes(form_params)
+        @project.update_project_number
+        @project.save
         notify_user(:notice, "Capital Project #{@project.name} was successfully updated.")
         format.html { redirect_to capital_project_url(@project) }
         format.json { head :no_content }
