@@ -44,7 +44,7 @@ class ActivityLineItemsController < OrganizationAwareController
       return      
     else
       @activity_line_item.assets << asset
-      notify_user(:notice, "Asset was sucesffully added to the ALI")
+      notify_user(:notice, "Asset was sucessfully added to the ALI")
     end
     redirect_to :back
   end
@@ -94,7 +94,8 @@ class ActivityLineItemsController < OrganizationAwareController
     
     respond_to do |format|
       if @activity_line_item.save
-        format.html { redirect_to capital_project_url(@project), notice: 'Activity line item was successfully created.' }
+        notify_user(:notice, "The ALI was successfully added to project #{@project.project_number}.")
+        format.html { redirect_to capital_project_url(@project) }
         format.json { render action: 'show', status: :created, location: @activity_line_item }
       else
         format.html { render action: 'new' }
@@ -113,6 +114,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
     respond_to do |format|
       if @activity_line_item.update(form_params)
+        notify_user(:notice, "The ALI was successfully updated")
         format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
         format.json { head :no_content }
       else
@@ -126,6 +128,7 @@ class ActivityLineItemsController < OrganizationAwareController
   # DELETE /activity_line_items/1.json
   def destroy
     @activity_line_item.destroy
+    notify_user(:notice, "The ALI was successfully removed from project #{@project.project_number}.")
     respond_to do |format|
       format.html { redirect_to capital_project_path(@project) }
       format.json { head :no_content }
