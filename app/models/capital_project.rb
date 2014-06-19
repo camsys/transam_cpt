@@ -12,6 +12,8 @@ class CapitalProject < ActiveRecord::Base
   include UniqueKey
   # Include the fiscal year mixin
   include FiscalYear
+  # Include the ali code mixin
+  include AssetAliLookup
 
   #------------------------------------------------------------------------------
   # Overrides
@@ -119,7 +121,49 @@ class CapitalProject < ActiveRecord::Base
   # Instance Methods
   #
   #------------------------------------------------------------------------------
+  
+  # Returns assets which could be added to this capital project
+  def candidate_assets
+    
+     # Start to set up the query
+    conditions  = []
+    values      = []
+    
+    # Only for the project organization
+    conditions << 'organization_id = ?'
+    values << organization.id
 
+    # 1 = SOGR Replacement
+    # 2 = SOGR Rehabilitation
+    # 3 = SOGR Rail Mid-life rebuild
+    if [1].include? capital_project_type.id
+      conditions << 'scheduled_replacement_year = ?'
+      values << fy_year
+    elsif [2,3].include? capital_project_type.id
+      conditions << 'scheduled_rehabilitation_year = ?'
+      values << fy_year
+    end    
+        
+    # Get the children of this project type and use it to select 
+    # possible  subtypes
+    asset_subtype_ids = []
+    team_ali_code.children.each do |ali|
+      # use the mixin to get the correct subtype from the ALI code
+      asset_subtype = asset_subtype_from_ali_code(ali.code)
+      unless asset_subtype.nil?
+        # add it to our list if not already in
+        asset_subtype_ids << asset_subtype.id unless asset_subtype_ids.include? asset_subtype.id
+      end
+    end
+    # add to our query
+    unless asset_subtype_ids.empty?
+      conditions << 'asset_subtype_id IN (?)'
+      values << asset_subtype_ids
+    end
+        
+    Asset.where(conditions.join(' AND '), *values).order(:asset_type_id, :asset_subtype_id)
+    
+  end
   def state_request
     val = 0
     activity_line_items.each do |a|
