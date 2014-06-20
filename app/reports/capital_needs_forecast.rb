@@ -33,7 +33,7 @@ class CapitalNeedsForecast < AbstractReport
   def get_data(organization_id_list, params)
     
     # Capital Needs by year
-    analysis_year = Date.today.year
+    analysis_year = current_fiscal_year_year
     last_year = analysis_year + MAX_FORECASTING_YEARS
 
     a = []
