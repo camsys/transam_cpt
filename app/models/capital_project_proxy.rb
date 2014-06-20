@@ -70,9 +70,9 @@ class CapitalProjectProxy < Proxy
     elsif project_subtype == '11'
       scope = '11.18.XX'
     elsif project_subtype == '12'
-      scope = '12.13.00'
+      scope = '12.13.XX'
     elsif project_subtype == '13'
-      scope = '12.18.00'
+      scope = '12.18.XX'
       
     # Facility Lease
     elsif project_subtype == '14'
@@ -80,9 +80,9 @@ class CapitalProjectProxy < Proxy
     elsif project_subtype == '15'
       scope = '11.46.XX'
     elsif project_subtype == '16'
-      scope = '12.36.00'
+      scope = '12.36.XX'
     elsif project_subtype == '17'
-      scope = '12.46.00'
+      scope = '12.46.XX'
       
     # Facility purchase
     elsif project_subtype == '18'
@@ -90,9 +90,9 @@ class CapitalProjectProxy < Proxy
     elsif project_subtype == '19'
       scope = '11.42.XX'
     elsif project_subtype == '20'
-      scope = '12.32.00'
+      scope = '12.32.XX'
     elsif project_subtype == '21'
-      scope = '12.42.00'
+      scope = '12.42.XX'
 
     # Facility rennovation
     elsif project_subtype == '22'
@@ -100,9 +100,9 @@ class CapitalProjectProxy < Proxy
     elsif project_subtype == '23'
       scope = '11.44.XX'
     elsif project_subtype == '24'
-      scope = '12.34.00'
+      scope = '12.34.XX'
     elsif project_subtype == '25'
-      scope = '12.44.00'
+      scope = '12.44.XX'
 
     # Operating assistance
     elsif project_subtype == '27'
