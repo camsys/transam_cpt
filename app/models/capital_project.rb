@@ -125,6 +125,16 @@ class CapitalProject < ActiveRecord::Base
   # Returns assets which could be added to this capital project
   def candidate_assets
     
+    # Ensure we have enough detail to work with
+    if organization.nil? or capital_project_type.nil?
+      return []
+    end
+
+    # Only suitable for vehicle replacement and rehabilitation projects so far
+    if capital_project_type.id > 3
+      return []
+    end
+    
      # Start to set up the query
     conditions  = []
     values      = []
@@ -145,20 +155,20 @@ class CapitalProject < ActiveRecord::Base
     end    
         
     # Get the children of this project type and use it to select 
-    # possible  subtypes
+    # possible subtypes
     asset_subtype_ids = []
     team_ali_code.children.each do |ali|
       # use the mixin to get the correct subtype from the ALI code
-      asset_subtype = asset_subtype_from_ali_code(ali.code)
-      unless asset_subtype.nil?
-        # add it to our list if not already in
-        asset_subtype_ids << asset_subtype.id unless asset_subtype_ids.include? asset_subtype.id
+      asset_subtypes = asset_subtypes_from_ali_code(ali.code)
+      asset_subtypes.each do |type|
+        # add it to our list
+        asset_subtype_ids << type.id
       end
     end
     # add to our query
     unless asset_subtype_ids.empty?
       conditions << 'asset_subtype_id IN (?)'
-      values << asset_subtype_ids
+      values << asset_subtype_ids.uniq
     end
         
     Asset.where(conditions.join(' AND '), *values).order(:asset_type_id, :asset_subtype_id)

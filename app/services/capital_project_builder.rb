@@ -10,51 +10,227 @@ class CapitalProjectBuilder
   
   # Include the fiscal year mixin
   include FiscalYear
+  # Include the ali code mixin
+  include AssetAliLookup
 
   # Max number of years to analyze forward
   MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
+
+  # Instance vars
+  attr_accessor :project_count
 
   #------------------------------------------------------------------------------
   #
   # Instance Methods
   #
   #------------------------------------------------------------------------------
+  def build(organization, options = {})
+    clear_all = options[:clear_all].blank? ? false : options[:clear_all]
 
+    Rails.logger.info "#{self.class.name} Started at #{Time.now}."
+    Rails.logger.info "Building Capital Projects for #{organization}."
+
+    sogr_replacement_project_type = CapitalProjectType.find_by_code('SRP')
+    sogr_rehabilitation_project_type = CapitalProjectType.find_by_code('SRH')
+    
+    if clear_all
+      projects = CapitalProject.where('organization_id = ? AND capital_project_type_id IN (?)', organization, [sogr_replacement_project_type.id, sogr_rehabilitation_project_type.id])
+      if projects.empty?
+        Rails.logger.info "No SOGR projects found."
+      else
+        Rails.logger.info "Removing #{projects.count} exisiting SOGR projects."
+        projects.each{|x| x.destroy}
+      end
+    end
+    # Run the builder keeping track of how many projects were created
+    @project_count = 0
+    
+    build_bottom_up(organization, options)
+    # Return the number of projects created
+    return @project_count
+  end
+
+  def build_bottom_up(organization, options)
+        
+    Rails.logger.debug "options = #{options.inspect}"
+    create_tasks = options[:create_tasks].blank? ? true : options[:create_tasks]
+    send_message = options[:send_message].blank? ? true : options[:send_message]
+
+    Rails.logger.info "  Options: create_tasks = '#{create_tasks}', send_message = '#{send_message}'"
+       
+    # Cache some commonly used objects
+    sys_user = User.find_by_first_name('system')
+    high_priority = PriorityType.find_by_name('High')
+    sogr_replacement_project_type = CapitalProjectType.find_by_code('SRP')
+    sogr_rehabilitation_project_type = CapitalProjectType.find_by_code('SRH')
+    
+    #--------------------------------------------------------------------------------------
+    # Basic Algorithm:
+    #
+    # Step 1: Loop through the list of possible scope codes for each fiscal year
+    # Step 2: Get the list of available assets for this scope in this fiscal year.
+    # Step 3: Build an ALI for each subcode (ALI) that has more than one available asset
+    # Step 4: Add assets the the ALIs
+    #
+    #--------------------------------------------------------------------------------------
+        
+    # Get the current fiscal year and the last year that we will generate projects for
+    start_year = current_fiscal_year_year
+    last_year = start_year + MAX_FORECASTING_YEARS
+    
+    Rails.logger.debug "start_year = #{start_year}, last_year  #{last_year}"
+    
+    # Only process road and rail assets for now
+
+    # Find all the assets for this organization
+    assets = Vehicle.where('organization_id = ?', organization.id)  
+    replace_scope = TeamAliCode.find_by_code('11.12.XX')
+    rehab_scope = TeamAliCode.find_by_code('11.14.XX')
+
+    # Busses. As some busses can be replaced within the planning horizon we 
+    # add additional replacement projects for repalcing the replacements
+    assets.each do |a|
+      year = a.scheduled_replacement_year
+      unless year.nil? or year > last_year
+        # Add the initial replacement 
+        add_to_project(a, replace_scope, year, sogr_replacement_project_type)
+        # See if this bus can be re-replaced within the planning time frame
+        policy = a.policy
+        max_service_life_years = policy.get_policy_item(a).max_service_life_years
+        year += max_service_life_years
+        puts "XXX Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
+        while year < last_year
+          # Add a future re-replacement project for the asset
+          add_to_project(a, replace_scope, year, sogr_replacement_project_type)
+          year += max_service_life_years
+        end 
+      end
+      year = a.scheduled_rehabilitation_year
+      unless year.nil? or year > last_year
+        add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
+      end
+    end
+    
+    # Rail Cars
+    assets = RailCar.where('organization_id = ?', organization.id)  
+    replace_scope = TeamAliCode.find_by_code('12.12.XX')
+    rehab_scope = TeamAliCode.find_by_code('12.14.XX')
+    assets.each do |a|
+      year = a.scheduled_replacement_year
+      unless year.nil? or year > last_year
+        add_to_project(a, replace_scope, year, sogr_replacement_project_type) 
+        # these assets are at least 25 year assets and will not be
+        # replaced again within the planning timeframe
+      end
+      year = a.scheduled_rehabilitation_year
+      unless year.nil? or year > last_year
+        add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
+      end
+    end
+    
+    # Traction
+    assets = Locomotive.where('organization_id = ?', organization.id)  
+    #replace_scope = TeamAliCode.find_by_code('12.12.XX')
+    #rehab_scope = TeamAliCode.find_by_code('12.14.XX')
+    assets.each do |a|
+      year = a.scheduled_replacement_year
+      unless year.nil? or year > last_year
+        add_to_project(a, replace_scope, year, sogr_replacement_project_type) 
+      end
+      year = a.scheduled_rehabilitation_year
+      unless year.nil? or year > last_year
+        add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
+      end
+    end
+
+  end
+
+  # Adds an asset to a SOGR project. If the project does not
+  # exist it is created first.
+  #
+  def add_to_project(asset, scope, year, sogr_project_type)
+
+    # Decode the scope so we can set the project up
+    if scope.type == "11"
+      focus = "Bus"  
+    elsif scope.type == "12"
+      focus = "Rail"  
+    else
+      focus = "Unknown"
+    end
+
+    if scope.category == "12"
+      request = "replacement" 
+      action = "Purchase"
+    elsif scope.category == "14"
+      request = "rehabilitation"  
+      action = "Rehabilitate"
+    else
+      request = "unknown"
+    end
+
+    # See if there is an existing project for this scope and year
+    project = CapitalProject.where('organization_id = ? AND team_ali_code_id = ? AND fy_year = ?', asset.organization.id, scope.id, year).first
+    if project.nil?
+      # create this project        
+      project_title = "#{focus} #{request} project"          
+      project = create_capital_project(asset.organization, year, scope, project_title, sogr_project_type)   
+      project.save
+      @project_count += 1
+    end
+    # See if there is an existing ALI for this asset
+    team_ali_code = TeamAliCode.find_by_code("#{scope.type_and_category}.#{asset.asset_subtype.ali_code}")
+    ali = ActivityLineItem.where('capital_project_id = ? AND team_ali_code_id = ?', project.id, team_ali_code.id).first
+    # if there is an exisiting ALI, see if the asset is in it
+    if ali
+      unless ali.assets.exists?(asset)
+        ali.assets << asset
+      end
+    else
+      # Create the ALI and add it to the project
+      ali_name = "#{action} #{team_ali_code.name} assets."
+      ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => team_ali_code})
+      ali.save 
+      
+      # Now add the asset to it
+      ali.assets << asset
+    end
+          
+  end
   #
   # Main method. Options include
   #
-  #   :type: replacement|rehabilitation|both (both)
   #   :create_tasks : true|false (true)
   #   :send_message : true|false (true)
   #
-  def build(organization, options = {})
+  def build_top_down(organization, options)
     
     Rails.logger.info "#{self.class.name} Started at #{Time.now}."
     Rails.logger.info "Building Capital Projects for #{organization}."
     
     Rails.logger.debug "options = #{options.inspect}"
-    type = options[:type].blank? ? :both : options[:type]
     create_tasks = options[:create_tasks].blank? ? true : options[:create_tasks]
     send_message = options[:send_message].blank? ? true : options[:send_message]
 
-    Rails.logger.info "  Options: type = '#{type}', create_tasks = '#{create_tasks}', send_message = '#{send_message}'"
+    Rails.logger.info "  Options: create_tasks = '#{create_tasks}', send_message = '#{send_message}'"
        
     # Cache some commonly used objects
     sys_user = User.find_by_first_name('system')
     high_priority = PriorityType.find_by_name('High')
-    replacement_project_type = CapitalProjectType.find_by_code('RP')
-    rehabilitation_project_type = CapitalProjectType.find_by_code('RH')
+    replacement_project_type = CapitalProjectType.find_by_code('SRP')
+    rehabilitation_project_type = CapitalProjectType.find_by_code('SRH')
     
-    
-    # There are two main types for this implementation -- rehabilitation projects and
-    # replacement projects -- we are not doing expansions yet
-    
-    # Algorithm -- for each FY, get the assets that are scheduled for replacement in that
-    # fiscal year, if there are any that are not already in a capital project, create a new project
-    # For each group of asset subtypes, create an activity line item and add the assets to the ALI
-    # and add the ALI to the project.
-
-    # Get the current fiscal year
+    #--------------------------------------------------------------------------------------
+    # Basic Algorithm:
+    #
+    # Step 1: Loop through the list of possible scope codes for each fiscal year
+    # Step 2: Get the list of available assets for this scope in this fiscal year.
+    # Step 3: Build an ALI for each subcode (ALI) that has more than one available asset
+    # Step 4: Add assets the the ALIs
+    #
+    #--------------------------------------------------------------------------------------
+        
+    # Get the current fiscal year and the last year that we will generate projects for
     start_year = current_fiscal_year_year
     last_year = start_year + MAX_FORECASTING_YEARS
     
@@ -62,50 +238,73 @@ class CapitalProjectBuilder
 
     # Keep track of how many projects were created
     project_count = 0
-    
-    # Loop over each asset type    
-    asset_types = AssetType.all.each do |asset_type|
-      Rails.logger.debug "Processing class = #{asset_type}"
+
+    # This is the list of TEAM scopes that will be processed
+    scope_codes = [
+      "11.12.XX", # Bus Purchase Replacement
+      '12.12.XX', # Rail Purchase Replacement
+      '11.14.XX', # Bus Rebuild
+      '12.14.XX'  # Rail Rebuild
+      ]
+        
+    #
+    # Step 1: Loop though each of the scope codes for each fiscal year and create a project
+    #         if it does not already exist
+    #
+    scope_codes.each do |scope_code|
+      scope = TeamAliCode.find_by_code(scope_code)
+
+      # Decode the scope so we can set the project up
+      if scope.type == "11"
+        focus = "Bus"  
+      elsif scope.type == "12"
+        focus = "Rail"  
+      else
+        focus = "Unknown"
+      end
+
+      if scope.category == "12"
+        request = "replacement" 
+        action = "Purchase"
+        project_type = replacement_project_type 
+      elsif scope.category == "14"
+        request = "rehabilitation"  
+        action = "Rehabilitate"
+        project_type = rehabilitation_project_type 
+      else
+        request = "unknown"
+      end
+
       # Loop over each fiscal year
       (start_year..last_year).each do |year|
-        # See how many assets are scheduled for replacement this FY that are not already associated with a capital project
-        assets = Asset.where('organization_id = ? AND asset_type_id = ? AND scheduled_replacement_year = ? AND id NOT IN (SELECT asset_id FROM activity_line_items_assets)', organization.id, asset_type.id, year)
-                
-        # If there are assets to program we create a new project
-        if assets.count > 0
-                    
-          Rails.logger.debug "Found #{assets.count} assets for FY #{year}"
-          # Create a new Capital Project
-          team_category = TeamAliCode.find_by_code('11.12.XX')       # Capital -> Bus -> Purchase/Replacement
-          title     = "Replacement of #{asset_type}s"          
-          project = create_capital_project(organization, year, team_category, title, replacement_project_type)
-          
-          # increment our counter
+        Rails.logger.info "Processing scope #{scope} for FY #{year}"
+
+        # See if there is an existing project for this org, this scope, and this year
+        project = CapitalProject.where('organization_id = ? AND team_ali_code_id = ? AND fy_year = ?', organization.id, scope.id, replacement_project_type.id).first
+        if project
+          # Hmmm what to do here?
+          Rails.logger.info "Project #{project.project_number} already exists. Skipping."
+          next
+        else          
+          # Create a new project
+          project_title = "#{focus} #{request} project"          
+          project = create_capital_project(organization, year, scope, project_title, project_type)   
+        end 
+        
+        # Step 2: Get the list of available assets for this project. The capital proejct can manage this
+        #         as it knows what assets it can have associated with it
+        assets = project.candidate_assets
+        Rails.logger.debug "Found #{assets.count} assets"
+        
+        # If the asset list is empty we can move on to the next fiscal year
+        if assets.empty?
+          next
+        else
+          # save this project as there will be at least one ALI
+          project.save
           project_count += 1
-          
           Rails.logger.info "Created new Capital Project #{project.project_number}"
-          
-          # Create ALIs for each asset subtype in this FY
-          asset_subtypes = AssetSubtype.where('asset_type_id = ?', asset_type.id)
-          # Filter the asset list by this asset subtype
-          asset_subtypes.each do |subtype|
-            Rails.logger.debug "Processing subtype = #{subtype}"
-            ali_assets = assets.where('asset_subtype_id = ?', subtype.id)
-            # if we have some assets we create an ALI
-            if ali_assets.count > 0
-              Rails.logger.debug "Found #{ali_assets.count} assets for subtype #{subtype}"
-              # Create a new ALI
-              name = "Purchase #{ali_assets.count} replacement #{subtype}"
-              sub_category = project.team_ali_code.children.where('name = ?', subtype.name).first              
-              ali = ActivityLineItem.new({:capital_project => project, :name => name, :team_ali_code => sub_category})
-              ali.save              
-              # Add the assets to this ALI
-              ali_assets.each do |a|
-                ali.assets << a
-              end
-            end
-          end  # asset_subtypes
-          
+
           if create_tasks
             # Generate a task for each manager to validate the project we just created
             managers = Role.find_by_name('manager').users.where('organization_id = ?', 1)
@@ -125,10 +324,39 @@ class CapitalProjectBuilder
               Rails.logger.debug "Task #{task.object_key} has been created."
             end
           end
-        end #create project        
+        end
+        
+        # Step 3: Build ALIs for each sub code for the scope
+        scope.children.each do |ali|
+          asset_subtypes = asset_subtypes_from_ali_code(ali.code)
+          unless asset_subtypes.empty?
+            # We found matching subtypes. See if we have any candidate assets that match
+            subtype_ids = []
+            asset_subtypes.each do |ast|
+              subtype_ids << ast.id
+            end
+            # Do a subquery on the candidate list
+            ali_assets = assets.where('asset_subtype_id IN (?)', subtype_ids)
+            unless ali_assets.empty?
+              # If we have candidates, go ahead and create an ALI
+              Rails.logger.debug "Found #{ali_assets.count} assets for ALI #{ali.code}"
+              
+              # Create a new ALI
+              ali_name = "#{action} #{ali_assets.count} #{focus} assets."
+              ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali})
+              ali.save 
+                           
+              # Step 4: Add the assets to this ALI
+              ali_assets.each do |a|
+                ali.assets << a
+              end
+            end
+          end
+        end            
       end
-    end   
-    # See if we need to send a message toe very manager in this org indicating that new proejcts have been created
+    end
+    
+    # See if we need to send a message to every manager in this org indicating that new proejcts have been created
     if project_count > 0 && send_message
       managers = Role.find_by_name('manager').users.where('organization_id = ?', 1)
       managers.each do |manager|
@@ -158,6 +386,7 @@ class CapitalProjectBuilder
   
   def create_capital_project(org, fiscal_year, team_category, title, capital_project_type)
 
+    puts "org = #{org}, fiscal_year = #{fiscal_year}, team_category = #{team_category}, title = #{title}, org = #{capital_project_type}"
     project = CapitalProject.new
     project.organization = org
     project.active = true
@@ -168,8 +397,8 @@ class CapitalProjectBuilder
     project.capital_project_type = capital_project_type
     project.title = title
     project.description = "Automatically generated by TransAM. Please provide a detailed description of this capital project."
-    project.justification = "To be completed. Please provide a detailed justificaiton for this capital project."
-    project.save
+    project.justification = "To be completed. Please provide a detailed justification for this capital project."
+    #project.save
     
     # return it
     project    

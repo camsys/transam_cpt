@@ -39,6 +39,7 @@
           - if popup
             %td.center
               %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_info_detail', :locals => {:asset => a}}"}}
+              %i.fa.fa-check-circle.action-icon.text-sucess{:data => {:action_path => inventory_path(a) }, :title => "View asset"}
               - if delete
                 %i.fa.fa-times-circle.action-icon.text-danger{:data => {:action_path => remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key)}, :title => 'Remove this asset'}
               

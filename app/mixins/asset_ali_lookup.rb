@@ -10,7 +10,7 @@ module AssetAliLookup
   #
   # Returns an asset subtype based on an ALI code
   #
-  def asset_subtype_from_ali_code(ali_code)
+  def asset_subtypes_from_ali_code(ali_code)
     # split the ali code on the dots
     elems = ali_code.split('.')
     major_type = elems[0]
@@ -31,22 +31,22 @@ module AssetAliLookup
     
     # No asset subtypes if it is not a bus or rail code
     if is_other
-      return nil
+      return []
     end
     
     # See if we are working with rolling stock or facilities
     if activity[0] == '1'
       # its rolling stock (Vehicle/RailCar/Locomotive)
-      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [Vehicle.new.asset_type_id, RailCar.new.asset_type_id, Locomotive.new.asset_type_id], type).first
+      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [Vehicle.new.asset_type_id, RailCar.new.asset_type_id, Locomotive.new.asset_type_id], type).to_a
     elsif activity[0] == '3'
       # station/stops/terminals (Transit Facilty)
-      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [TransitFacility.new.asset_type_id], type).first
+      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [TransitFacility.new.asset_type_id], type).to_a
     elsif activity[0] == '4'
       # Admin/maintenance/etc (Support Facilty)
-      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [SupporttFacility.new.asset_type_id], type).first
+      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [SupporttFacility.new.asset_type_id], type).to_a
     else
       # not handled
-      return nil
+      return []
     end
     
   end
