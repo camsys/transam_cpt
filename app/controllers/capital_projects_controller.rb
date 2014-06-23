@@ -65,11 +65,17 @@ class CapitalProjectsController < OrganizationAwareController
      # Start to set up the query
     conditions  = []
     values      = []
-    
-    # Only for the selected organization
+        
+    # Check to see if we got an organization to sub select on. 
+    @org_filter = params[:org_id]
     conditions << 'organization_id IN (?)'
-    values << @organization_list
-    
+    if @org_filter.blank?
+      values << @organization_list      
+    else
+      @org_filter = @org_filter.to_i
+      values << [@org_filter]
+    end
+
     # See if we got search
     @fiscal_year = params[:fiscal_year]
     unless @fiscal_year.blank?
@@ -77,6 +83,7 @@ class CapitalProjectsController < OrganizationAwareController
       conditions << 'fy_year = ?'
       values << @fiscal_year
     end
+
     @status_type_id = params[:status_type_id]
     unless @status_type_id.blank?
       @status_type_id = @status_type_id.to_i
