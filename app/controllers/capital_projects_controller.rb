@@ -187,7 +187,8 @@ class CapitalProjectsController < OrganizationAwareController
       # Create a transaction to manage all the updates
       CapitalProject.transaction do    
         
-        # Update the fiscal year for the project. This also creates a new project number       
+        # Update the fiscal year for the project. This also creates a new project number      
+        original_fiscal_year = @project.fy_year
         @project.fy_year = new_project_year
         @project.update_project_number
         @project.save
@@ -195,10 +196,13 @@ class CapitalProjectsController < OrganizationAwareController
         @project.activity_line_items.each do |ali|
           ali.assets.each do |a|
             if [1].include? @project.capital_project_type.id
-              # SOGR replacement projects
-              a.scheduled_replacement_year = @project.fy_year
-              a.scheduled_by_user = true
-              a.save
+              # SOGR replacement projects. Check to make sure that these are not replacements of replacments. If they are
+              # the fiscal year for the asset will be different from the fiscal year for the project
+              unless a.scheduled_replacement_year == original_fiscal_year
+                a.scheduled_replacement_year = @project.fy_year 
+                a.scheduled_by_user = true
+                a.save
+              end
             elsif [2,3].include?  @project.capital_project_type.id
               # SOGR rehabilitation or rail mid-year rebuild
               a.scheduled_rehabilitation_year = @project.fy_year
