@@ -9,6 +9,9 @@
     %a{:href => "#capital", :data =>{:toggle => 'tab'}}
       = "Capital Needs"
   %li
+    %a{:href => "#projects", :data =>{:toggle => 'tab'}}
+      = "Capital Projects (#{@org.capital_projects.count})"
+  %li
     %a{:href => "#users", :data =>{:toggle => 'tab'}}
       = "Users (#{@org.users.count})"
   %li
@@ -31,3 +34,6 @@
   .tab-pane.fade#capital
     .tab-content
       = render 'capital_projects/rollup_table'
+  .tab-pane.fade#projects
+    .tab-content
+      = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => @org.capital_projects}
