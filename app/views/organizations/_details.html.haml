@@ -2,15 +2,17 @@
   %li
     %a{:href => "#service", :data =>{:toggle => 'tab'}}
       = "Service Area"
-  %li
-    %a{:href => "#assets", :data =>{:toggle => 'tab'}}
-      = "Asset Summary"
-  %li
-    %a{:href => "#capital", :data =>{:toggle => 'tab'}}
-      = "Capital Needs"
-  %li
-    %a{:href => "#projects", :data =>{:toggle => 'tab'}}
-      = "Capital Projects (#{@org.capital_projects.count})"
+  - unless @org.assets.empty?
+    %li
+      %a{:href => "#assets", :data =>{:toggle => 'tab'}}
+        = "Asset Summary"
+  - if @org.respond_to? :capital_projects
+    %li
+      %a{:href => "#capital", :data =>{:toggle => 'tab'}}
+        = "Capital Needs"
+    %li
+      %a{:href => "#projects", :data =>{:toggle => 'tab'}}
+        = "Capital Projects (#{@org.capital_projects.count})"
   %li
     %a{:href => "#users", :data =>{:toggle => 'tab'}}
       = "Users (#{@org.users.count})"
@@ -25,15 +27,17 @@
   .tab-pane.fade#map
     .tab-content
       = render 'map'
-  .tab-pane.fade#assets
-    .tab-content
-      = render 'asset_summary'
+  - unless @org.assets.empty?
+    .tab-pane.fade#assets
+      .tab-content
+        = render 'asset_summary'
   .tab-pane.fade#users
     .tab-content
       = render 'users/index_table'
-  .tab-pane.fade#capital
-    .tab-content
-      = render 'capital_projects/rollup_table'
-  .tab-pane.fade#projects
-    .tab-content
-      = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => @org.capital_projects}
+  - if @org.respond_to? :capital_projects
+    .tab-pane.fade#capital
+      .tab-content
+        = render 'capital_projects/rollup_table'
+    .tab-pane.fade#projects
+      .tab-content
+        = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => @org.capital_projects}
