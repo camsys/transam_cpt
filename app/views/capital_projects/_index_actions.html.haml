@@ -1,7 +1,8 @@
 = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   = hidden_field_tag :capital_project_type_id, @capital_project_type_id
-  .form-group
-    = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any Organization...")
+  - if @organization_list.count > 1
+    .form-group
+      = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any Organization...")
   .form-group
     = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
   .form-group
