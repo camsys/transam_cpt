@@ -1,5 +1,8 @@
 class FundingSourcesController < OrganizationAwareController 
 
+  # Include the fiscal year mixin
+  include FiscalYear
+
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Funding Sources", :funding_sources_path
   
@@ -61,6 +64,7 @@ class FundingSourcesController < OrganizationAwareController
     add_breadcrumb "New Funding Source", new_funding_source_path
 
     @funding_source = FundingSource.new
+
   end
 
   # GET /funding_sources/1/edit
@@ -81,6 +85,14 @@ class FundingSourcesController < OrganizationAwareController
     
     respond_to do |format|
       if @funding_source.save
+        # Build a set of funding amounts
+        current_year = current_fiscal_year_year
+        last_year = current_year + MAX_FORECASTING_YEARS
+        (current_year..last_year).each do |year|
+          funding_amount = @funding_source.funding_amounts.build({:fy_year => year, :creator => current_user, :updator => current_user})
+          funding_amount.save
+        end
+        
         notify_user(:notice, "The Funding Source was successfully saved.")
         format.html { redirect_to funding_source_url(@funding_source) }
         format.json { render action: 'show', status: :created, location: @funding_source }
@@ -129,7 +141,7 @@ class FundingSourcesController < OrganizationAwareController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def form_params
-      params.require(:fudning_source).permit(funding_source_allowable_params)
+      params.require(:funding_source).permit(funding_source_allowable_params)
     end
 
   def check_for_cancel

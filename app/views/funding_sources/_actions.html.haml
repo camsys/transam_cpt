@@ -13,6 +13,10 @@
         = link_to edit_funding_source_path(@funding_source) do
           %i.fa.fa-edit.fa-fw
           = " Modify this funding source"
+      %li
+        = link_to edit_funding_source_path(@funding_source) do
+          %i.fa.fa-edit.fa-fw
+          = " Update the funding amounts"
       %li.divider
       %li
         = link_to funding_source_path(@funding_source), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do

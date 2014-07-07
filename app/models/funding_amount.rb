@@ -48,7 +48,7 @@ class FundingAmount < ActiveRecord::Base
   # Validations
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => :true, :uniqueness => :true
-  validates :funding_source_type_id,            :presence => :true
+  validates :funding_source_id,                 :presence => :true
   validates :created_by_id,                     :presence => :true
   validates :updated_by_id,                     :presence => :true
   validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 2000}
@@ -64,10 +64,10 @@ class FundingAmount < ActiveRecord::Base
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :object_key,
-    :funding_source_type_id, 
+    :funding_source_id, 
     :fy_year,
     :amount,
-    :is_actual, 
+    :estimated, 
     :active
   ]
   
@@ -97,6 +97,8 @@ class FundingAmount < ActiveRecord::Base
   # Set resonable defaults for a new capital project
   def set_defaults
     self.active ||= true
+    self.estimated ||= true
+    self.amount ||= 0
   end    
       
 end

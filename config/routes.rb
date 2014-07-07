@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   
-  resources :funding_sources
+  resources :funding_sources do
+    member do
+      get 'modify_amounts'
+      post 'update_amounts'
+    end
+    
+  end
 
   # Capital Project Controllers
   resources :capital_projects do

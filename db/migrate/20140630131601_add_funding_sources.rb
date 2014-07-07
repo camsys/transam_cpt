@@ -46,8 +46,8 @@ class AddFundingSources < ActiveRecord::Migration
       t.integer   :funding_source_id,                 :null => :false
       t.integer   :amount,                            :null => :false
       t.boolean   :estimated,                         :null => :false
-      t.integer   :created_by,                        :null => :false
-      t.integer   :updated_by,                        :null => :false
+      t.integer   :created_by_id,                     :null => :false
+      t.integer   :updated_by_id,                     :null => :false
       t.boolean   :active,                            :null => :false      
       t.timestamps
     end

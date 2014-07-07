@@ -2,8 +2,14 @@
   %li
     %a{:href => "#asst", :data =>{:toggle => 'tab'}}
       = "Funding Amounts"
+  %li
+    %a{:href => "#desc", :data =>{:toggle => 'tab'}}
+      = "Description"
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
+  .tab-pane.fade#desc
+    .tab-content
+      = @funding_source.description.html_safe
   .tab-pane.fade#asst
     .tab-content
-      = render :partial => 'funding_amounts_table', :locals => {:funding_source => @funding_source}
+      = render 'funding_amounts'

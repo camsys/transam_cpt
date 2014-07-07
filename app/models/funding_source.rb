@@ -42,6 +42,8 @@ class FundingSource < ActiveRecord::Base
   # Has many funding amounts
   has_many    :funding_amounts, :dependent => :destroy
     
+  accepts_nested_attributes_for :funding_amounts, :reject_if => lambda{|a| a[:amount].blank?}, :allow_destroy => true
+  
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
