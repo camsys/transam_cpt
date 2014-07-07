@@ -1,0 +1,32 @@
+- if funding_source.funding_amounts.empty?
+  %p There are no funding amounts for this fund.
+-else
+  %table.table.table-hover
+    %thead
+      %tr
+        %th.center Fiscal Year
+        %th.center Amount
+        %th.center Estimate
+        
+        %th.center Commited
+        %th.center Remaining
+              
+    %tbody
+      - funding_source.funding_amounts.each do |a|
+        %tr
+          %td.left= a.fiscal_year
+          %td.right= format_as_currency(a.amount)
+          %td.center= format_as_boolean(a.estimated)
+  
+          %td.right= 0.00
+          %td.right= format_as_percentage(0.0)
+              
+:javascript
+  $('.popup-details').popover({
+    trigger: 'hover',
+    container: 'body',
+    placement: 'left',
+    animation: 'true',
+    html: 'true'    
+  });  
+  

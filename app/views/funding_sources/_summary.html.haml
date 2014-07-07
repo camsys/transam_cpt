@@ -1,0 +1,27 @@
+%fieldset
+  %legend.panel-legend @funding_source.name
+  = format_field("Type",  @funding_source.funding_source_type)
+  = format_field("dotGrants ID", @funding_source.external_id)
+
+%fieldset
+  %legend.panel-legend Type
+  = format_field("State Administered", format_as_boolean(@funding_source.state_administered_federal_fund))
+  = format_field("Bond", format_as_boolean(@funding_source.bond_fund))
+  = format_field("Formula", format_as_boolean(@funding_source.formula_fund))
+  = format_field("Non-Committed", format_as_boolean(@funding_source.non_committed_fund))
+  = format_field("Contracted", format_as_boolean(@funding_source.contracted_fund))
+  = format_field("Discretionary", format_as_boolean(@funding_source.discretionary_fund))
+
+%fieldset
+  %legend.panel-legend Match
+  = format_field("State", format_as_percentage(@funding_source.state_match_requried))
+  = format_field("Federal", format_as_percentage(@funding_source.federal_match_requried))
+  = format_field("Local", format_as_percentage(@funding_source.local_match_requried))
+
+%fieldset
+  %legend.panel-legend Eligibility
+  = format_field("Rural", format_as_boolean(@activity_line_item.rural_providers))
+  = format_field("Urban", format_as_boolean(@activity_line_item.urban_providers))
+  = format_field("Shared Ride", format_as_boolean(@activity_line_item.shared_rider_providers))
+  = format_field("ICB", format_as_boolean(@activity_line_item.inter_city_bus_providers))
+  = format_field("ICR", format_as_boolean(@activity_line_item.inter_city_rail_providers))

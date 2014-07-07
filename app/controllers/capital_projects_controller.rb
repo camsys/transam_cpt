@@ -59,7 +59,6 @@ class CapitalProjectsController < OrganizationAwareController
   
   def index
 
-    @page_title = 'Unconstrained Capital Needs List'
     @fiscal_years = get_fiscal_years
    
      # Start to set up the query
@@ -144,8 +143,6 @@ class CapitalProjectsController < OrganizationAwareController
   def show
 
     add_breadcrumb @project.project_number, capital_project_path(@project)    
-
-    @page_title = "Project: #{@project.project_number}"
 
     # get the @prev_record_path and @next_record_path view vars
     get_next_and_prev_object_keys(@project, INDEX_KEY_LIST_VAR)

@@ -13,7 +13,6 @@ class AddFundingSources < ActiveRecord::Migration
       t.string    :object_key,          :limit => 12, :null => :false
       t.string    :name,                :limit => 64, :null => :false
       t.text      :description,                       :null => :false
-      
       t.integer   :funding_source_type_id,            :null => :false   
       t.string    :external_id,         :limit => 32
       
@@ -46,7 +45,7 @@ class AddFundingSources < ActiveRecord::Migration
       t.integer   :fy_year,                           :null => :false
       t.integer   :funding_source_id,                 :null => :false
       t.integer   :amount,                            :null => :false
-      t.boolean   :is_actual,                         :null => :false
+      t.boolean   :estimated,                         :null => :false
       t.integer   :created_by,                        :null => :false
       t.integer   :updated_by,                        :null => :false
       t.boolean   :active,                            :null => :false      

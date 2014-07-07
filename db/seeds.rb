@@ -55,8 +55,50 @@ reports = [
     }
 ]
 
-lookup_tables = %w{capital_project_status_types milestone_types capital_project_types }
-merge_tables = %w{reports }
+funding_source_types = [
+  {:active => 1, :name => 'Federal',  :description => 'Federal Funding Source'},
+  {:active => 1, :name => 'State',    :description => 'State Funding Source'}  
+]
+
+funding_sources = [
+  {
+    :active => 1, 
+    :name => '5307', 
+    :description => "The Urbanized Area Formula Funding program for transit capital and operating assistance in urbanized areas and for transportation related planning.  Eligible activities include planning, engineering design and evaluation of transit projects and other technical transportation-related studies; capital investments in bus and bus-related activities such as replacement of buses, overhaul of buses, rebuilding of buses, crime prevention and security equipment and construction of maintenance and passenger shelters.",     
+    :funding_source_type_id => 1,  
+    :external_id => "41",
+    :state_administered_federal_fund => 1,  
+    :bond_fund => 0, 
+    :formula_fund => 0, 
+    :non_committed_fund => 0,  
+    :contracted_fund => 1,     
+    :discretionary_fund => 0
+    },
+  {
+    :active => 1, 
+    :name => '1513', 
+    :description => "Operating Funds",     
+    :funding_source_type_id => 2,  
+    :external_id => "46",
+    :state_administered_federal_fund => 1,  
+    :bond_fund => 0, 
+    :formula_fund => 0, 
+    :non_committed_fund => 1,  
+    :contracted_fund => 1,     
+    :discretionary_fund => 1,
+    :state_match_requried => 100.0,
+    :federal_match_requried => 0.0,
+    :local_match_requried => 0.0,
+    :rural_providers => 1,
+    :urban_providers => 1,
+    :shared_rider_providers => 0,
+    :inter_city_bus_providers => 0,
+    :inter_city_rail_providers => 0
+    }
+]
+
+lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_sources}
+merge_tables = %w{ reports }
 
 puts ">>> Loading CPT Lookup Tables <<<<"
 lookup_tables.each do |table_name|

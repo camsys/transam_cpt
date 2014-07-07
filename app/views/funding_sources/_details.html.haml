@@ -1,0 +1,9 @@
+%ul.nav.nav-tabs
+  %li
+    %a{:href => "#asst", :data =>{:toggle => 'tab'}}
+      = "Funding Amounts"
+
+.tab-content{:style => 'max-height:400px;overflow-y: auto;'}
+  .tab-pane.fade#asst
+    .tab-content
+      = render :partial => 'funding_amounts_table', :locals => {:funding_source => @funding_source}

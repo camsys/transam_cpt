@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   
+  resources :funding_sources
+
   # Capital Project Controllers
   resources :capital_projects do
     
