@@ -32,6 +32,11 @@ class FundingSource < ActiveRecord::Base
   before_validation(:on => :create) do
     generate_unique_key(:object_key)
   end
+  
+  # Create a list of funding amounts after a funcing source has been created
+  after_create do    
+    create_funding_amounts
+  end
             
   #------------------------------------------------------------------------------
   # Associations
@@ -39,9 +44,14 @@ class FundingSource < ActiveRecord::Base
 
   # Has a single funding source type
   belongs_to  :funding_source_type
+
+  # Each funding source was created and updated by a user
+  belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
+  belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
+  
   # Has many funding amounts
   has_many    :funding_amounts, :dependent => :destroy
-    
+        
   accepts_nested_attributes_for :funding_amounts, :reject_if => lambda{|a| a[:amount].blank?}, :allow_destroy => true
   
   #------------------------------------------------------------------------------
@@ -51,6 +61,9 @@ class FundingSource < ActiveRecord::Base
   validates :name,                              :presence => true
   validates :description,                       :presence => true
   validates :funding_source_type_id,            :presence => true
+
+  validates :created_by_id,                     :presence => :true
+  validates :updated_by_id,                     :presence => :true
 
   validates :state_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
   validates :federal_match_requried,            :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
@@ -84,7 +97,8 @@ class FundingSource < ActiveRecord::Base
     :shared_rider_providers,
     :inter_city_bus_providers,
     :inter_city_rail_providers,
-    :active
+    :active,
+    :funding_amounts_attributes => [FundingAmount.allowable_params]
   ]
   
   #------------------------------------------------------------------------------
@@ -110,6 +124,16 @@ class FundingSource < ActiveRecord::Base
   #------------------------------------------------------------------------------
   protected 
 
+  def create_funding_amounts
+    # Build a set of funding amounts
+    current_year = current_fiscal_year_year
+    last_year = current_year + (MAX_FORECASTING_YEARS - 1)
+    (current_year..last_year).each do |year|
+      funding_amount = self.funding_amounts.build({:fy_year => year})
+      funding_amount.save
+    end    
+    
+  end
   # Set resonable defaults for a new capital project
   def set_defaults
     self.active ||= true

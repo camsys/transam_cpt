@@ -39,18 +39,12 @@ class FundingAmount < ActiveRecord::Base
 
   # Has a single funding source
   belongs_to  :funding_source
-    
-  # Each funding source was created and updated by a user
-  belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
-  belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
-    
+        
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => :true, :uniqueness => :true
   validates :funding_source_id,                 :presence => :true
-  validates :created_by_id,                     :presence => :true
-  validates :updated_by_id,                     :presence => :true
   validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 2000}
   validates :amount,                            :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
 
@@ -59,7 +53,7 @@ class FundingAmount < ActiveRecord::Base
   #------------------------------------------------------------------------------
   
   # default scope
-  default_scope { where(:active => true).order(:fy_year)  }
+  default_scope { order(:fy_year)  }
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
@@ -67,8 +61,7 @@ class FundingAmount < ActiveRecord::Base
     :funding_source_id, 
     :fy_year,
     :amount,
-    :estimated, 
-    :active
+    :estimated
   ]
   
   #------------------------------------------------------------------------------
@@ -87,6 +80,11 @@ class FundingAmount < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
+  # Override the mixin method and delegate to it
+  def fiscal_year
+    super(fy_year)
+  end
+  
   #------------------------------------------------------------------------------
   #
   # Protected Methods
@@ -96,7 +94,6 @@ class FundingAmount < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.active ||= true
     self.estimated ||= true
     self.amount ||= 0
   end    

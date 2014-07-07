@@ -7,7 +7,7 @@ class FundingSourcesController < OrganizationAwareController
   add_breadcrumb "Funding Sources", :funding_sources_path
   
   before_filter :check_for_cancel,        :only => [:create, :update]
-  before_action :set_funding_source,      :only => [:show, :edit, :update, :destroy]
+  before_action :set_funding_source,      :only => [:show, :edit, :update, :destroy, :edit_amounts, :update_amounts]
   
   INDEX_KEY_LIST_VAR    = "funding_source_key_list_cache_var"
   
@@ -75,6 +75,14 @@ class FundingSourcesController < OrganizationAwareController
 
   end
 
+  # GET /funding_sources/1/edit_amounts
+  def edit_amounts
+    
+    add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
+    add_breadcrumb "Update Funding Amounts"
+
+  end
+
   # POST /funding_sources
   # POST /funding_sources.json
   def create
@@ -84,15 +92,7 @@ class FundingSourcesController < OrganizationAwareController
     @funding_source = FundingSource.new(form_params)
     
     respond_to do |format|
-      if @funding_source.save
-        # Build a set of funding amounts
-        current_year = current_fiscal_year_year
-        last_year = current_year + MAX_FORECASTING_YEARS
-        (current_year..last_year).each do |year|
-          funding_amount = @funding_source.funding_amounts.build({:fy_year => year, :creator => current_user, :updator => current_user})
-          funding_amount.save
-        end
-        
+      if @funding_source.save        
         notify_user(:notice, "The Funding Source was successfully saved.")
         format.html { redirect_to funding_source_url(@funding_source) }
         format.json { render action: 'show', status: :created, location: @funding_source }
@@ -109,6 +109,25 @@ class FundingSourcesController < OrganizationAwareController
 
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     add_breadcrumb "Modify"
+
+    respond_to do |format|
+      if @funding_source.update(form_params)
+        notify_user(:notice, "The Funding Source was successfully updated.")
+        format.html { redirect_to funding_source_url(@funding_source) }
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @funding_source.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /funding_sources/1/update_amounts
+  # PATCH/PUT /funding_sources/1.json
+  def update_amounts
+
+    add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
+    add_breadcrumb "Update Funding Amounts"
 
     respond_to do |format|
       if @funding_source.update(form_params)

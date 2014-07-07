@@ -1,0 +1,27 @@
+= render(:partial => 'shared/form_errors', :locals => {:obj => @funding_source}) unless @funding_source.errors.empty?
+
+.row
+  .col-md-4
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-12
+            %h3.panel-title
+              %i.fa.fa-usd
+              = @funding_source.name
+      .panel-body    
+        = render 'summary'
+        
+  .col-md-8
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-12
+            %h3.panel-title
+              %i.fa.fa-folder-open
+              Funding Amounts
+                
+      .panel-body
+        = render 'funding_amounts_form'
+
+= render 'scripts'
