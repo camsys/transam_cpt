@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   
   resources :funding_sources do
     member do
-      get 'modify_amounts'
+      get 'edit_amounts'
       post 'update_amounts'
     end
     
