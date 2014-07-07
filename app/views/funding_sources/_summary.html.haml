@@ -1,5 +1,5 @@
 %fieldset
-  %legend.panel-legend @funding_source.name
+  %legend.panel-legend Fund
   = format_field("Type",  @funding_source.funding_source_type)
   = format_field("dotGrants ID", @funding_source.external_id)
 
@@ -20,8 +20,8 @@
 
 %fieldset
   %legend.panel-legend Eligibility
-  = format_field("Rural", format_as_boolean(@activity_line_item.rural_providers))
-  = format_field("Urban", format_as_boolean(@activity_line_item.urban_providers))
-  = format_field("Shared Ride", format_as_boolean(@activity_line_item.shared_rider_providers))
-  = format_field("ICB", format_as_boolean(@activity_line_item.inter_city_bus_providers))
-  = format_field("ICR", format_as_boolean(@activity_line_item.inter_city_rail_providers))
+  = format_field("Rural", format_as_boolean(@funding_source.rural_providers))
+  = format_field("Urban", format_as_boolean(@funding_source.urban_providers))
+  = format_field("Shared Ride", format_as_boolean(@funding_source.shared_rider_providers))
+  = format_field("ICB", format_as_boolean(@funding_source.inter_city_bus_providers))
+  = format_field("ICR", format_as_boolean(@funding_source.inter_city_rail_providers))

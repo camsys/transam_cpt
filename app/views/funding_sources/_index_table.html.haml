@@ -38,22 +38,22 @@
         %td.left= f.funding_source_type
         %td.right= f.external_id
 
-        %td= format_as_boolean(f.state_administered_federal_fund)      
-        %td= format_as_boolean(f.bond_fund)      
-        %td= format_as_boolean(f.formula_fund)      
-        %td= format_as_boolean(f.non_committed_fund)      
-        %td= format_as_boolean(f.contracted_fund)      
-        %td= format_as_boolean(f.discretionary_fund)      
+        %td.center= format_as_boolean(f.state_administered_federal_fund)      
+        %td.center= format_as_boolean(f.bond_fund)      
+        %td.center= format_as_boolean(f.formula_fund)      
+        %td.center= format_as_boolean(f.non_committed_fund)      
+        %td.center= format_as_boolean(f.contracted_fund)      
+        %td.center= format_as_boolean(f.discretionary_fund)      
 
-        %td= format_as_percentage(f.state_match_requried)      
-        %td= format_as_percentage(f.federal_match_requried)      
-        %td= format_as_percentage(f.local_match_requried)      
+        %td.right= format_as_percentage(f.state_match_requried)      
+        %td.right= format_as_percentage(f.federal_match_requried)      
+        %td.right= format_as_percentage(f.local_match_requried)      
 
-        %td= format_as_boolean(f.rural_providers)      
-        %td= format_as_boolean(f.urban_providers)      
-        %td= format_as_boolean(f.shared_rider_providers)      
-        %td= format_as_boolean(f.inter_city_bus_providers)      
-        %td= format_as_boolean(f.inter_city_rail_providers)      
+        %td.center= format_as_boolean(f.rural_providers)      
+        %td.center= format_as_boolean(f.urban_providers)      
+        %td.center= format_as_boolean(f.shared_rider_providers)      
+        %td.center= format_as_boolean(f.inter_city_bus_providers)      
+        %td.center= format_as_boolean(f.inter_city_rail_providers)      
 
         %td.center
           %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.name}", :content => "#{raw render :partial => 'funding_amounts_table', :locals => {:funding_source => f, :popup => false}}"}}

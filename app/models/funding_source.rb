@@ -39,6 +39,8 @@ class FundingSource < ActiveRecord::Base
 
   # Has a single funding source type
   belongs_to  :funding_source_type
+  # Has many funding amounts
+  has_many    :funding_amounts, :dependent => :destroy
     
   #------------------------------------------------------------------------------
   # Validations
@@ -48,9 +50,9 @@ class FundingSource < ActiveRecord::Base
   validates :description,                       :presence => true
   validates :funding_source_type_id,            :presence => true
 
-  validates :state_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nils => :true
-  validates :federal_match_requried,            :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nils => :true
-  validates :local_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nils => :true
+  validates :state_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
+  validates :federal_match_requried,            :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
+  validates :local_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
 
   #------------------------------------------------------------------------------
   # Scopes

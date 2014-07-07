@@ -1,4 +1,4 @@
-class FundingSourcesController < ApplicationController
+class FundingSourcesController < OrganizationAwareController 
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Funding Sources", :funding_sources_path
@@ -44,7 +44,7 @@ class FundingSourcesController < ApplicationController
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     
     # get the @prev_record_path and @next_record_path view vars
-    get_next_and_prev_object_keys(@project, INDEX_KEY_LIST_VAR)
+    get_next_and_prev_object_keys(@funding_source, INDEX_KEY_LIST_VAR)
     @prev_record_path = @prev_record_key.nil? ? "#" : funding_source_path(@prev_record_key)
     @next_record_path = @next_record_key.nil? ? "#" : funding_source_path(@next_record_key)
 

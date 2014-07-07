@@ -1,0 +1,12 @@
+= form_tag funding_sources_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+  .form-group
+    = select_tag(:funding_source_type_id, options_for_select(FundingSourceType.all.collect{|a| [a.name, a.id]}, :selected => @funding_source_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any Source...")
+
+:javascript
+  $(document).ready(function() {
+
+    $('#funding_source_type_id').change(function() {
+      $('#filter_form').submit();
+    });
+    
+  });  

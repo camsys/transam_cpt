@@ -59,7 +59,7 @@ class FundingAmount < ActiveRecord::Base
   #------------------------------------------------------------------------------
   
   # default scope
-  default_scope { where(:active => true) }
+  default_scope { where(:active => true).order(:fy_year)  }
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
