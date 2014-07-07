@@ -90,6 +90,8 @@ class FundingSourcesController < OrganizationAwareController
     add_breadcrumb "New Funding Source", new_funding_source_path
 
     @funding_source = FundingSource.new(form_params)
+    @funding_source.creator = current_user
+    @funding_source.updator = current_user
     
     respond_to do |format|
       if @funding_source.save        
@@ -110,6 +112,8 @@ class FundingSourcesController < OrganizationAwareController
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     add_breadcrumb "Modify"
 
+    @funding_source.updator = current_user
+
     respond_to do |format|
       if @funding_source.update(form_params)
         notify_user(:notice, "The Funding Source was successfully updated.")
@@ -128,6 +132,8 @@ class FundingSourcesController < OrganizationAwareController
 
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     add_breadcrumb "Update Funding Amounts"
+
+    @funding_source.updator = current_user
 
     respond_to do |format|
       if @funding_source.update(form_params)

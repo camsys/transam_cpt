@@ -57,6 +57,7 @@ class FundingAmount < ActiveRecord::Base
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
+    :id,
     :object_key,
     :funding_source_id, 
     :fy_year,
