@@ -73,8 +73,8 @@ funding_sources = [
     :non_committed_fund => 0,  
     :contracted_fund => 1,     
     :discretionary_fund => 0,
-    :created_by_id => syusyer_id,
-    :updated_by_id => syusyer_id
+    :created_by_id => sys_user_id,
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1, 
@@ -96,8 +96,8 @@ funding_sources = [
     :shared_rider_providers => 0,
     :inter_city_bus_providers => 0,
     :inter_city_rail_providers => 0,
-    :created_by_id => syusyer_id,
-    :updated_by_id => syusyer_id
+    :created_by_id => sys_user_id,
+    :updated_by_id => sys_user_id
     }
 ]
 
