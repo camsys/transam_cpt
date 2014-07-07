@@ -1,4 +1,4 @@
-%table.table.table-hover#datatable{:style => 'width=100%;'}
+%table.table.table-hover#datatable{:width => '100%'}
   %thead
     %tr
       %th.center{:colspan => 3} Fund
@@ -45,9 +45,9 @@
         %td.center= format_as_boolean(f.contracted_fund)      
         %td.center= format_as_boolean(f.discretionary_fund)      
 
-        %td.right= format_as_percentage(f.state_match_requried)      
-        %td.right= format_as_percentage(f.federal_match_requried)      
-        %td.right= format_as_percentage(f.local_match_requried)      
+        %td.right= format_as_percentage(f.state_match_requried, 3)      
+        %td.right= format_as_percentage(f.federal_match_requried, 3)      
+        %td.right= format_as_percentage(f.local_match_requried, 3)      
 
         %td.center= format_as_boolean(f.rural_providers)      
         %td.center= format_as_boolean(f.urban_providers)      
