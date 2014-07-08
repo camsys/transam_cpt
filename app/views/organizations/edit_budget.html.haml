@@ -1,0 +1,27 @@
+= render(:partial => 'shared/form_errors', :locals => {:obj => @org}) unless @org.errors.empty?
+
+.row
+  .col-md-4
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-12
+            %h3.panel-title
+              %i.fa.fa-list
+              Organization
+      .panel-body    
+        = render :partial => 'summary', :locals => {:org => @org} 
+        
+  .col-md-8
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-12
+            %h3.panel-title
+              %i.fa.usd
+              Budget
+                
+      .panel-body
+        = render 'budgets_form'
+
+= render 'scripts'

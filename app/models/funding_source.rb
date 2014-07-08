@@ -130,8 +130,8 @@ class FundingSource < ActiveRecord::Base
       funding_amount = self.funding_amounts.build({:fy_year => year})
       funding_amount.save
     end    
-    
   end
+  
   # Set resonable defaults for a new capital project
   def set_defaults
     self.active ||= true
