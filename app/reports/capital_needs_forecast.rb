@@ -10,13 +10,10 @@ class CapitalNeedsForecast < AbstractReport
   def get_data_from_result_list(capital_project_list)
     
     # Capital Needs by year
-    analysis_year = current_fiscal_year_year
-    last_year = analysis_year + MAX_FORECASTING_YEARS
-
     a = []
     labels = ['Fiscal Year', 'State', 'Federal', 'Local']
         
-    (analysis_year..last_year).each do |year|
+    (current_fiscal_year_year..last_fiscal_year_year).each do |year|
       report_row = CptReportRow.new(year)
       # get the capital projects for this analysis year
       capital_projects =  capital_project_list.where('fy_year = ?', year)
