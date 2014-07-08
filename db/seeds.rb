@@ -101,7 +101,7 @@ funding_sources = [
     }
 ]
 
-lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_sources}
+lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_sources funding_amounts}
 merge_tables = %w{ reports }
 
 puts ">>> Loading CPT Lookup Tables <<<<"
