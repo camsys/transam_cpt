@@ -45,7 +45,7 @@ class FundingAmount < ActiveRecord::Base
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => :true, :uniqueness => :true
   validates :funding_source_id,                 :presence => :true
-  validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 2000}
+  validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => current_fiscal_year_year}
   validates :amount,                            :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
 
   #------------------------------------------------------------------------------
