@@ -46,6 +46,7 @@ class CapitalProjectBuilder
     @project_count = 0
     
     build_bottom_up(organization, options)
+    
     # Return the number of projects created
     return @project_count
   end
@@ -76,7 +77,7 @@ class CapitalProjectBuilder
         
     # Get the current fiscal year and the last year that we will generate projects for
     start_year = current_fiscal_year_year
-    last_year = start_year + MAX_FORECASTING_YEARS
+    last_year = last_fiscal_year_year
     
     Rails.logger.debug "start_year = #{start_year}, last_year  #{last_year}"
     
@@ -232,7 +233,7 @@ class CapitalProjectBuilder
         
     # Get the current fiscal year and the last year that we will generate projects for
     start_year = current_fiscal_year_year
-    last_year = start_year + MAX_FORECASTING_YEARS
+    last_year = last_fiscal_year_year
     
     Rails.logger.debug "start_year = #{start_year}, last_year  #{last_year}"
 
