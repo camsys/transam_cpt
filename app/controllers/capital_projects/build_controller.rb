@@ -1,8 +1,5 @@
 class CapitalProjects::BuildController < OrganizationAwareController
 
-  #add_breadcrumb "Home", :root_path
-  #add_breadcrumb "Capital Projects", :capital_projects_path
-
   # Include the wizard functionality
   include Wicked::Wizard
 
@@ -15,7 +12,6 @@ class CapitalProjects::BuildController < OrganizationAwareController
   # Set the breadcrumbs
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
-  #add_breadcrumb "New Project", wizard_path(steps.first)
 
   steps :step1, :step2, :step3, :step4
 
