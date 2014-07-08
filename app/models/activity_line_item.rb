@@ -55,7 +55,8 @@ class ActivityLineItem < ActiveRecord::Base
   # Has 0 or more comments. Using a polynmorphic association
   has_many    :comments,  :as => :commentable
 
-  attr_reader :funding_requests
+  # Has 0 or more funding requests, These will be removed if the ALI is removed.
+  has_many    :funding_requests, :dependent => :destroy
   
   #------------------------------------------------------------------------------
   # Validations
@@ -152,7 +153,6 @@ class ActivityLineItem < ActiveRecord::Base
   # Set resonable defaults for a new activity line item
   def set_defaults
     self.active ||= true
-    @funding_requests = []
   end    
       
 end
