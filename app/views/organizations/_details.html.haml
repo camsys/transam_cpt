@@ -6,6 +6,10 @@
     %li
       %a{:href => "#assets", :data =>{:toggle => 'tab'}}
         = "Asset Summary"
+  - if @org.respond_to? :budgets
+    %li
+      %a{:href => "#budget", :data =>{:toggle => 'tab'}}
+        = "Budgets"
   - if @org.respond_to? :capital_projects
     %li
       %a{:href => "#capital", :data =>{:toggle => 'tab'}}
@@ -34,6 +38,10 @@
   .tab-pane.fade#users
     .tab-content
       = render 'users/index_table'
+  - if @org.respond_to? :budgets
+    .tab-pane.fade#budget
+      .tab-content
+        = render 'capital_projects/budgets_table'
   - if @org.respond_to? :capital_projects
     .tab-pane.fade#capital
       .tab-content

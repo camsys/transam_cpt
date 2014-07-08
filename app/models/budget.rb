@@ -38,14 +38,17 @@ class Budget < ActiveRecord::Base
 
   # Every budget record belongs to a transit agency
   belongs_to  :organization 
+
+  # Every budget record belongs to a funding source type
+  belongs_to  :funding_source_type 
         
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => :true, :uniqueness => :true
   validates :organization_id,                   :presence => :true
-  validates :funding_source_id,                 :presence => :true
-  validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => current_fiscal_year_year}
+  validates :funding_source_type_id,            :presence => :true
+  validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => Date.today.year}
   validates :amount,                            :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
 
   #------------------------------------------------------------------------------
@@ -60,7 +63,7 @@ class Budget < ActiveRecord::Base
     :id,
     :object_key,
     :organization_id,
-    :funding_source_id, 
+    :funding_source_type_id, 
     :fy_year,
     :amount,
     :estimated
