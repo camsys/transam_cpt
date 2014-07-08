@@ -13,9 +13,6 @@ class CapitalProjectBuilder
   # Include the ali code mixin
   include AssetAliLookup
 
-  # Max number of years to analyze forward
-  MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
-
   # Instance vars
   attr_accessor :project_count
 

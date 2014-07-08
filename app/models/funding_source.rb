@@ -126,9 +126,7 @@ class FundingSource < ActiveRecord::Base
 
   def create_funding_amounts
     # Build a set of funding amounts
-    current_year = current_fiscal_year_year
-    last_year = current_year + (MAX_FORECASTING_YEARS - 1)
-    (current_year..last_year).each do |year|
+    (current_fiscal_year_year..last_fiscal_year_year).each do |year|
       funding_amount = self.funding_amounts.build({:fy_year => year})
       funding_amount.save
     end    

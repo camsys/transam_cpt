@@ -3,8 +3,6 @@ class CapitalProjectsController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
   
-  MAX_FORECASTING_YEARS = SystemConfig.instance.num_forecasting_years   
-
   # Include the fiscal year mixin
   include FiscalYear
     
