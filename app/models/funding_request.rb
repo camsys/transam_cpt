@@ -3,7 +3,7 @@
 # FundingRequest
 #
 # Represents the amount of a fund has been requested by a transit agency to fund
-# wholly or in part an activity line item.
+# a capital project wholly or in part 
 #
 #------------------------------------------------------------------------------
 class FundingRequest < ActiveRecord::Base
@@ -83,6 +83,10 @@ class FundingRequest < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
+  def name
+    "#{funding_amount.funding_source.name}" unless funding_amount.nil?
+  end
+  
   #------------------------------------------------------------------------------
   #
   # Protected Methods
@@ -93,6 +97,7 @@ class FundingRequest < ActiveRecord::Base
   # Set resonable defaults for a new capital project
   def set_defaults
     self.active ||= true
+    self.amount ||= 0
   end    
       
 end

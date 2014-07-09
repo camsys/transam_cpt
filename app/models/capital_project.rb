@@ -174,30 +174,39 @@ class CapitalProject < ActiveRecord::Base
     Asset.where(conditions.join(' AND '), *values).order(:asset_type_id, :asset_subtype_id)
     
   end
+  
   def state_request
     val = 0
     activity_line_items.each do |a|
-      val += a.state_request
+      val += a.state_funds
     end
     val
   end
+  
   def federal_request
     val = 0
     activity_line_items.each do |a|
-      val += a.federal_request
+      val += a.federal_funds
     end
     val
   end
+  
   def local_request
     val = 0
     activity_line_items.each do |a|
-      val += a.local_request
+      val += a.local_funds
     end
     val
   end
+  
   def total_request
-    state_request + federal_request + local_request
+    val = 0
+    activity_line_items.each do |a|
+      val += a.total_funds
+    end
+    val
   end
+  
   # Override the mixin method and delegate to it
   def fiscal_year
     super(fy_year)
@@ -225,7 +234,7 @@ class CapitalProject < ActiveRecord::Base
 
   def create_project_number
     years = fiscal_year.split[1]
-    project_number = "CCA-G-#{years}-#{organization.short_name}-#{team_ali_code.type_and_category}-#{id}"
+    project_number = "CCA-#{years}-#{organization.short_name}-#{team_ali_code.type_and_category}-#{id}"
     self.update_attributes(:project_number => project_number)      
   end
 

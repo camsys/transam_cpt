@@ -23,11 +23,13 @@ Rails.application.routes.draw do
       get 'shift_fiscal_year'
       get 'copy'
     end
-    
+        
     resources :comments
     resources :documents
     
     resources :activity_line_items do
+      
+      resources :funding_requests
       resources :comments      
       member do
         get 'add_asset'
