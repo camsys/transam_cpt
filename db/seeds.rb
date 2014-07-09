@@ -74,7 +74,8 @@ funding_sources = [
     :contracted_fund => 1,     
     :discretionary_fund => 0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id
+    :updated_by_id => sys_user_id,
+    :default_amount => 50000000
     },
   {
     :active => 1, 
@@ -97,7 +98,8 @@ funding_sources = [
     :inter_city_bus_providers => 0,
     :inter_city_rail_providers => 0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id
+    :updated_by_id => sys_user_id,
+    :default_amount => 10000000
     }
 ]
 
@@ -105,7 +107,7 @@ funding_sources = [
 funding_amounts = [  
 ]
 
-lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_sources funding_amounts}
+lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_amounts}
 merge_tables = %w{ reports }
 
 puts ">>> Loading CPT Lookup Tables <<<<"
@@ -121,6 +123,21 @@ lookup_tables.each do |table_name|
   data.each do |row|
     x = klass.new(row)
     x.save!
+  end
+end
+
+puts ">>> Loading Funding Sources <<<<"
+table_name = 'funding_sources'
+puts "  Processing #{table_name}"
+start_fy = 2013
+end_fy = start_fy + 12
+data = eval(table_name)
+data.each do |row|
+  x = FundingSource.new(row.except(:default_amount))
+  x.save!
+  (start_fy..end_fy).each do |year|
+    funding_amount = x.build.funding_amount({:amount => row[:default_amount]})
+    funding_amount.save
   end
 end
 
