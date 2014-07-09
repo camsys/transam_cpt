@@ -119,7 +119,7 @@ class CapitalProjectsController < OrganizationAwareController
     
     #puts conditions.inspect
     #puts values.inspect
-    @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :team_scope_code_id, :created_at)
+    @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
       
     # cache the set of object keys in case we need them later
     cache_list(@projects, INDEX_KEY_LIST_VAR)

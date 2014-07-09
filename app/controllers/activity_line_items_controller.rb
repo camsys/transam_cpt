@@ -35,7 +35,8 @@ class ActivityLineItemsController < OrganizationAwareController
       @assets = Asset.where('organization_id = ? AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
     end
     
-    @page_title = "#{@project.project_number}: #{@activity_line_item.name}"  
+    @available_funds = FundingAmount.where('fy_year = ?', @project.fy_year)
+    
   end
 
   # Add the specified asset to this ALI
@@ -73,7 +74,6 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb "New Activity Line Item", new_capital_project_activity_line_item_path(@project)
 
-    @page_title = "#{@project.project_number}: New Activity Line Item"  
     @activity_line_item = ActivityLineItem.new
   end
 
@@ -84,7 +84,6 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
 
-    @page_title = "#{@project.project_number}: Update Activity Line Item"  
   end
 
   # POST /activity_line_items
@@ -96,7 +95,6 @@ class ActivityLineItemsController < OrganizationAwareController
 
     @activity_line_item = ActivityLineItem.new(form_params)
     @activity_line_item.capital_project = @project
-    @page_title = "#{@project.project_number}: New Activity Line Item"  
     
     respond_to do |format|
       if @activity_line_item.save

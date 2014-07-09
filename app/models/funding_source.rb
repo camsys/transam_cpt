@@ -65,9 +65,9 @@ class FundingSource < ActiveRecord::Base
   validates :created_by_id,                     :presence => :true
   validates :updated_by_id,                     :presence => :true
 
-  validates :state_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
-  validates :federal_match_requried,            :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
-  validates :local_match_requried,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
+  validates :state_match_required,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
+  validates :federal_match_required,            :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
+  validates :local_match_required,              :numericality => {:greater_than_or_equal_to => 0.0, :less_than_or_equal_to => 100.0}, :allow_nil => :true
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -82,9 +82,9 @@ class FundingSource < ActiveRecord::Base
     :name, 
     :description,
     :funding_source_type_id,
-    :state_match_requried,
-    :federal_match_requried,
-    :local_match_requried, 
+    :state_match_required,
+    :federal_match_required,
+    :local_match_required, 
     :external_id,
     :state_administered_federal_fund,
     :bond_fund,

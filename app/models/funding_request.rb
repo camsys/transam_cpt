@@ -83,6 +83,42 @@ class FundingRequest < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
+  # Returns the federal match required for this request
+  def federal_match
+    if federal?
+      val = amount
+    else
+      val = amount * funding_amount.funding_source.federal_match_required / 100.0
+    end
+    val
+  end
+  
+  # returns the state match required for this request
+  def state_match
+    if federal?
+      val = 0
+    else
+      val = amount * funding_amount.funding_source.state_match_required / 100.0
+    end
+    val
+  end
+  
+  # returns the local match required for this request
+  def local_match
+    if federal?
+      val = 0
+    else
+      val = amount * funding_amount.funding_source.local_match_required / 100.0
+    end
+    val
+  end
+  
+  # Returns true if this is a federal fund, false otherwise
+  def federal?
+    return false if funding_amount.nil?
+    funding_amount.funding_source.funding_source_type_id == 1  
+  end
+  
   def name
     "#{funding_amount.funding_source.name}" unless funding_amount.nil?
   end
@@ -96,7 +132,6 @@ class FundingRequest < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.active ||= true
     self.amount ||= 0
   end    
       

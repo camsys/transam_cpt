@@ -62,8 +62,8 @@ class FundingRequestsController < OrganizationAwareController
         
     respond_to do |format|
       if @funding_request.save
-        notify_user(:notice, "The Funding Request was successfully added to project #{@project.project_number}.")
-        format.html { redirect_to capital_project_url(@project) }
+        notify_user(:notice, "The Funding Request was successfully added to ALI #{@activity_line_item.name}.")
+        format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
         format.json { render action: 'show', status: :created, location: @funding_request }
       else
         format.html { render action: 'new' }
@@ -100,9 +100,9 @@ class FundingRequestsController < OrganizationAwareController
   # DELETE /funding_requests/1.json
   def destroy
     @funding_request.destroy
-    notify_user(:notice, "The funding request was successfully removed from project #{@project.project_number}.")
+    notify_user(:notice, "The Funding Request was successfully removed from ALI #{@activity_line_item.name}.")
     respond_to do |format|
-      format.html { redirect_to capital_project_path(@project) }
+      format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
       format.json { head :no_content }
     end
   end
@@ -114,7 +114,7 @@ class FundingRequestsController < OrganizationAwareController
     @funding_request = FundingRequest.find_by_object_key(params[:id])
   end
 
-  def set_activity_line_item
+  def get_activity_line_item
     @activity_line_item = ActivityLineItem.where('object_key = ?', params[:activity_line_item_id]).first unless params[:activity_line_item_id].blank?
   end
 
@@ -124,7 +124,7 @@ class FundingRequestsController < OrganizationAwareController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:funding_request).permit(funding_request_item_allowable_params)
+    params.require(:funding_request).permit(funding_request_allowable_params)
   end
 
   def check_for_cancel

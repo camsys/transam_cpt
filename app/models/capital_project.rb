@@ -207,6 +207,20 @@ class CapitalProject < ActiveRecord::Base
     val
   end
   
+  # Returns the total cost of the project
+  def total_cost
+    val = 0
+    activity_line_items.each do |a|
+      val += a.anticipated_cost
+    end
+    val    
+  end
+  
+  # Returns the amount that is not yet funded
+  def funding_difference
+    total_request - total_cost
+  end
+  
   # Override the mixin method and delegate to it
   def fiscal_year
     super(fy_year)

@@ -1,11 +1,14 @@
 .row
   .col-md-12{:style => 'height:200px;overflow-y:auto;'}
-    - if @project.funding_requests.empty?
-      %p There are no funding requests for this activity line item.
-    - else
-      = render 'funding_request_table'
+    = render :partial => 'funding_requests_table', :locals => {:ali => @activity_line_item, :popup => true}
 
 .row
   .col-md-12
-    = link_to "Add Funding Request", "#", :class => "btn btn-primary"
-  
+    %fieldset
+      %legend Add Funding Request
+      = simple_form_for([@project, @activity_line_item, FundingRequest.new],
+          :wrapper => :vertical_form,
+          :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+        = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name'        
+        = f.input :amount
+        = f.submit "Add Funding Request", :class => 'btn btn-primary'

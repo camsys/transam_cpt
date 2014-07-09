@@ -81,6 +81,10 @@ class FundingAmount < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
+  def name
+    "#{funding_source.name}: $#{amount}"
+  end
+  
   # Override the mixin method and delegate to it
   def fiscal_year
     super(fy_year)

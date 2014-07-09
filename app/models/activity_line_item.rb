@@ -110,44 +110,28 @@ class ActivityLineItem < ActiveRecord::Base
   def to_s
     name
   end
-  
-  # Returns the set of federal funding requests
-  def federal_funding_requests
-    #funding_requests.where("funding_amount.funding_source.funding_source_type_id = ?", 1)
-    []
-  end
-  # Returns the set of state funding requests
-  def state_funding_requests
-    #funding_requests.where("funding_amount.funding_source.funding_source_type_id = ?", 2)
-    []
-  end
-  # Returns the set of local funding requests
-  def local_funding_requests
-    #funding_requests.where("funding_amount.funding_source.funding_source_type_id = ?", 3)
-    []
-  end
-  
+    
   # Returns the total value of federal funds requested
   def federal_funds
     val = 0
-    federal_funding_requests.each do |a|
-      val += a.amount
+    funding_requests.each do |a|
+      val += a.federal_match
     end
     val
   end
   # Returns the total value of state funds requested
   def state_funds
     val = 0
-    state_funding_requests.each do |a|
-      val += a.amount
+    funding_requests.each do |a|
+      val += a.state_match
     end
     val
   end
   # Returns the total value of local funds requested
   def local_funds
     val = 0
-    local_funding_requests.each do |a|
-      val += a.amount
+    funding_requests.each do |a|
+      val += a.local_match
     end
     val
   end
@@ -162,13 +146,13 @@ class ActivityLineItem < ActiveRecord::Base
   
   # Returns the amount that is not yet funded
   def funding_difference
-    estimated_cost - total_funds
+    total_funds - anticipated_cost
   end
   
   # Returns the cost difference between the anticpated cost by the user and the cost estimated
   # by the system
   def cost_difference
-    anticpated_cost - estimated_cost
+    anticipated_cost - estimated_cost
   end
   
   # Returns the total estiamted value of the assets in this ALI
