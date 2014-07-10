@@ -87,6 +87,7 @@ class FundingAmount < ActiveRecord::Base
   # Returns the amount of the funding amount that has been requested but not committed to
   def total_requested
     val = 0
+    # TODO: filter this amount by requests that have not been committed
     funding_requests.each do |req|
       val += req.amount
     end
@@ -95,11 +96,15 @@ class FundingAmount < ActiveRecord::Base
   # Returns the amount of the funding amount that has been committed to
   def total_committed
     val = 0
+    # TODO: only tally requests that have been committed
     val
   end
-  # Returns the amount of the funding amount that has been committed to
+  # Returns the amount remaining in this fiscal year. This only
+  # takes into account funds that have been committed to as 
+  # TAs could allocate funds that will never be committed
   def total_remaining
-    amount - total_requested + total_committed
+    # TODO: check to see if this logic is correct   
+    amount - total_committed
   end
   
   def name
