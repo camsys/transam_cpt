@@ -8,6 +8,7 @@
         %th.center Amount
         %th.center Estimate
         
+        %th.center Requested
         %th.center Commited
         %th.center Remaining
               
@@ -18,8 +19,9 @@
           %td.right= format_as_currency(a.amount)
           %td.center= format_as_boolean(a.estimated)
   
-          %td.right= 0.00
-          %td.right= format_as_percentage(0.0)
+          %td.right= format_as_currency(a.total_requested)
+          %td.right= format_as_currency(a.total_committed)
+          %td.right= format_as_currency(a.total_remaining)
               
 :javascript
   $('.popup-details').popover({

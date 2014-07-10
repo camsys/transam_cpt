@@ -39,7 +39,10 @@ class FundingAmount < ActiveRecord::Base
 
   # Has a single funding source
   belongs_to  :funding_source
-        
+
+  # Has 0 or more funding requests
+  has_many    :funding_requests
+         
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -80,6 +83,24 @@ class FundingAmount < ActiveRecord::Base
   # Instance Methods
   #
   #------------------------------------------------------------------------------
+  
+  # Returns the amount of the funding amount that has been requested but not committed to
+  def total_requested
+    val = 0
+    funding_requests.each do |req|
+      val += req.amount
+    end
+    val
+  end
+  # Returns the amount of the funding amount that has been committed to
+  def total_committed
+    val = 0
+    val
+  end
+  # Returns the amount of the funding amount that has been committed to
+  def total_remaining
+    amount - total_requested + total_committed
+  end
   
   def name
     "#{funding_source.name}: $#{amount}"

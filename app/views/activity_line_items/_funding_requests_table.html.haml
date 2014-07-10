@@ -33,13 +33,13 @@
           %td.left= req.name
           
           %td.right= format_as_currency(req.federal_match)
-          %td.right= format_as_percentage(req.federal_match / req.amount * 100.0) unless req.federal_match == 0
+          %td.right= format_as_percentage(req.federal_match / req.amount * 100.0, 3) unless req.federal_match == 0
 
           %td.right= format_as_currency(req.state_match)
-          %td.right= format_as_percentage(req.state_match / req.amount * 100.0) unless req.state_match == 0
+          %td.right= format_as_percentage(req.state_match / req.amount * 100.0, 3) unless req.state_match == 0
 
           %td.right= format_as_currency(req.local_match)
-          %td.right= format_as_percentage(req.local_match / req.amount * 100.0) unless req.local_match == 0
+          %td.right= format_as_percentage(req.local_match / req.amount * 100.0, 3) unless req.local_match == 0
           
           %td.right= format_as_currency(req.amount)
 
