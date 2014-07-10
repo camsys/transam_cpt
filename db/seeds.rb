@@ -561,6 +561,11 @@ end
 puts ">>> Loading Funding Sources <<<<"
 table_name = 'funding_sources'
 puts "  Processing #{table_name}"
+if is_mysql
+  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
+else
+  ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY;")
+end
 data = eval(table_name)
 data.each do |row|
   x = FundingSource.new(row.except(:default_amount))
