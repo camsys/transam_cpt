@@ -14,9 +14,9 @@
 
 %fieldset
   %legend.panel-legend Match
-  = format_field("State", format_as_percentage(@funding_source.state_match_requried, 3))
-  = format_field("Federal", format_as_percentage(@funding_source.federal_match_requried, 3))
-  = format_field("Local", format_as_percentage(@funding_source.local_match_requried, 3))
+  = format_field("State", format_as_percentage(@funding_source.state_match_required, 3))
+  = format_field("Federal", format_as_percentage(@funding_source.federal_match_required, 3))
+  = format_field("Local", format_as_percentage(@funding_source.local_match_required, 3))
 
 %fieldset
   %legend.panel-legend Eligibility
