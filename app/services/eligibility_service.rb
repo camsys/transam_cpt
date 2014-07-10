@@ -69,8 +69,16 @@ class EligibilityService
     
     #puts conditions.inspect
     #puts values.inspect
-    a = FundingSource.where(conditions.join(' AND '), *values)
-    
+    # get the initial filtered list
+    funds = FundingSource.where(conditions.join(' AND '), *values)
+    # further filter to remove and funds which are already used up
+    funds.each do |fund|
+      if fund.total_remaining > 0
+        # add this as there are still funds available
+        a << funds
+      end
+    end
+     
     # return this list
     a    
   end
