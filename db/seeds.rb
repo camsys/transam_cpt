@@ -561,15 +561,13 @@ end
 puts ">>> Loading Funding Sources <<<<"
 table_name = 'funding_sources'
 puts "  Processing #{table_name}"
-start_fy = 2014
-end_fy = start_fy + 12
 data = eval(table_name)
 data.each do |row|
   x = FundingSource.new(row.except(:default_amount))
   x.save!
-  (start_fy..end_fy).each do |year|
-    funding_amount = x.funding_amounts.build(:amount => row[:default_amount], :fy_year => year, :estimated => true)
-    funding_amount.save!
+  x.funding.amounts.each do |fa|
+    fa.amount = row[:default_amount]
+    fa.save!
   end
 end
 
