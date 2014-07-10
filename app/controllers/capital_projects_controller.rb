@@ -121,20 +121,20 @@ class CapitalProjectsController < OrganizationAwareController
     #puts values.inspect
     @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
       
-    # cache the set of object keys in case we need them later
-    cache_list(@projects, INDEX_KEY_LIST_VAR)
-      
-    # generate the chart data
-    @report = Report.find_by_class_name('CapitalNeedsForecast')
-    report_instance = @report.class_name.constantize.new
-    @data = report_instance.get_data_from_result_list(@projects)
+    unless params[:format] == 'xls'
+      # cache the set of object keys in case we need them later
+      cache_list(@projects, INDEX_KEY_LIST_VAR)
+        
+      # generate the chart data
+      @report = Report.find_by_class_name('CapitalNeedsForecast')
+      report_instance = @report.class_name.constantize.new
+      @data = report_instance.get_data_from_result_list(@projects)      
+    end
     
-    # remember the view type
-    @view_type = get_view_type(SESSION_VIEW_TYPE_VAR)
-
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @projects }
+      format.xls
     end
   end
 
