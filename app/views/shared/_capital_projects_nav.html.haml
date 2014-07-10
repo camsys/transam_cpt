@@ -11,10 +11,13 @@
         %i.fa.fa-usd.fa-fw
         = " Funding Sources"
       %ul.dropdown-menu
-        - FundingSource.all.each do |x|
-          %li
-            = link_to x.name, funding_source_path(x)
-
+        - FundingSourceType.all.each do |x|
+          %li.text-left.dropdown-submenu
+            = link_to x.name, funding_sources_path(:funding_source_type_id => x.id)
+            %ul.dropdown-menu
+              - FundingSource.where('funding_source_type_id = ?', x.id).all.each do |s|
+                %li
+                  = link_to s.name, funding_source_path(s)
 
     %li.divider
     %li.text-left.dropdown-submenu
