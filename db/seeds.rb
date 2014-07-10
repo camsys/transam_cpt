@@ -570,7 +570,7 @@ data = eval(table_name)
 data.each do |row|
   x = FundingSource.new(row.except(:default_amount))
   x.save!
-  x.funding.amounts.each do |fa|
+  x.funding_amounts.each do |fa|
     fa.amount = row[:default_amount]
     fa.save!
   end
