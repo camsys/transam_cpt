@@ -1,0 +1,44 @@
+<script type="text/javascript">
+
+	google.load("visualization", "1", {
+		'packages': ['corechart']
+	});
+	
+
+  // Called when the Visualization API is loaded.
+  function draw_allocation_chart() {
+
+    // Create a data table
+    var allocation_data = new google.visualization.DataTable();
+    allocation_data.addColumn('string', 'Fiscal Year');
+    allocation_data.addColumn('number', 'Fund Amount');
+    allocation_data.addColumn('number', 'Requested');
+    allocation_data.addColumn('number', 'Committed');
+    allocation_data.addRows([
+   	<% @funding_source.funding_amounts.each do |a| %>
+		<%= raw "['#{a.fiscal_year}',#{a.amount},#{a.total_requested},#{a.total_committed}]," %>
+	<% end %>
+    ]);
+  
+    // specify options
+    var allocation_options = {
+      title: 'Fund Allocations',
+      hAxis: {title: 'Fiscal Year'},
+      vAxis: {title: '$'},
+      colors: ['green', 'blue', 'red'],
+      //legend: 'none'
+    };
+  
+    // Instantiate our chart object.
+    var allocation_chart = new google.visualization.AreaChart(document.getElementById('allocation_chart_div'));
+  
+    // Draw our chart with the created data and options
+    allocation_chart.draw(allocation_data, allocation_options);
+  };
+  
+  // Set callback to run when API is loaded
+  google.setOnLoadCallback(draw_allocation_chart);
+  	
+</script>
+
+

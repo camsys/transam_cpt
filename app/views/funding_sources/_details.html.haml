@@ -1,10 +1,13 @@
 %ul.nav.nav-tabs
   %li
-    %a{:href => "#asst", :data =>{:toggle => 'tab'}}
-      = "Funding Amounts"
-  %li
     %a{:href => "#desc", :data =>{:toggle => 'tab'}}
       = "Description"
+  %li
+    %a{:href => "#asst", :data =>{:toggle => 'tab'}}
+      = "Allocations"
+  %li
+    %a{:href => "#chrt", :data =>{:toggle => 'tab'}}
+      = "Chart"
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#desc
@@ -13,3 +16,6 @@
   .tab-pane.fade#asst
     .tab-content
       = render 'funding_amounts'
+  .tab-pane.fade#chrt
+    .tab-content
+      #allocation_chart_div{:style => "height:350px;"}
