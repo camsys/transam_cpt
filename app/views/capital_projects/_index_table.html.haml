@@ -5,9 +5,11 @@
       %th.left FY
       %th.left Project
       %th.left Scope
+
       %th.left Type
       %th.left Title				
       %th.center Status
+      %th.right Cost
 
       %th.right State
       %th.right Federal       
@@ -17,12 +19,14 @@
       %th.center
       				
   %tbody
-    - total_state = 0.0
-    - total_federal = 0.0
-    - total_local = 0.0
-    - total_total = 0.0
+    - total_cost = 0
+    - total_state = 0
+    - total_federal = 0
+    - total_local = 0
+    - total_total = 0
     
     - @projects.each do |p|
+      - total_cost += p.total_cost
       - total_state += p.state_request
       - total_federal += p.federal_request
       - total_local += p.local_request
@@ -37,6 +41,8 @@
             
         %td= p.title
         %td= p.capital_project_status_type
+
+        %td.right= format_as_currency(p.total_cost)
         
         %td.right= format_as_currency(p.state_request)
         %td.right= format_as_currency(p.federal_request)
@@ -53,6 +59,7 @@
   %tfoot
     %tr
       %td{:colspan => 7}            
+        %td.right= format_as_currency(total_cost)
         %td.right= format_as_currency(total_state)
         %td.right= format_as_currency(total_federal)
         %td.right= format_as_currency(total_local)
