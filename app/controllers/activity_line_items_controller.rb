@@ -36,7 +36,7 @@ class ActivityLineItemsController < OrganizationAwareController
     end
     
     # Load the eligibility service and use it to select funds which this ALI is eligible for
-    eligibilityService = eligibilityService.new
+    eligibilityService = EligibilityService.new
     @available_funds = eligibilityService.evaluate(@activity_line_item)
     
   end

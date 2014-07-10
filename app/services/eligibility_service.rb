@@ -34,7 +34,7 @@ class EligibilityService
       Rails.logger.info "ALI cannot be nil."
       return a
     end
-    capital_project = ali.project
+    capital_project = ali.capital_project
     if capital_project.nil?
       Rails.logger.info "ALI is not associated with a capital project."
       return a
@@ -48,14 +48,10 @@ class EligibilityService
     Rails.logger.info "Evaluating funding options for ALI #{ali}."
     
     
-     # Start to set up the query
+     # Start to set up the query. Start by fetchin a list of matching funds
     conditions  = []
     values      = []
-        
-    # Set the fiscal year
-    conditions << 'fy_year = ?'
-    values << capital_project.fy_year      
-    
+            
     # Check for rural compatibility
     if organization.urban_rural_type_id == RURAL or organization.urban_rural_type_id == BOTH
       conditions << 'rural_providers = ?'
@@ -67,15 +63,21 @@ class EligibilityService
       values << 1      
     end
     
-    #puts conditions.inspect
-    #puts values.inspect
-    # get the initial filtered list
-    funds = FundingSource.where(conditions.join(' AND '), *values)
+    eligible_funds = FundingSource.where(conditions.join(' AND '), *values)
+    #get the list of fund ids
+    fund_ids = []
+    eligible_funds.each do |fund|
+      fund_ids << fund.id
+    end
+    
+    # Get the list of funding amounts based on the selected set of funds
+    funding_amounts = FundingAmount.where('fy_year = ? AND funding_source_id IN (?)', capital_project.fy_year, fund_ids)
+
     # further filter to remove and funds which are already used up
-    funds.each do |fund|
+    funding_amounts.each do |fund|
       if fund.total_remaining > 0
         # add this as there are still funds available
-        a << funds
+        a << fund
       end
     end
      
