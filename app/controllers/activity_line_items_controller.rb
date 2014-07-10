@@ -35,7 +35,9 @@ class ActivityLineItemsController < OrganizationAwareController
       @assets = Asset.where('organization_id = ? AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
     end
     
-    @available_funds = FundingAmount.where('fy_year = ?', @project.fy_year)
+    # Load the eligibility service and use it to select funds which this ALI is eligible for
+    eligibilityService = eligibilityService.new
+    @available_funds = eligibilityService.evaluate(@activity_line_item)
     
   end
 
