@@ -34,11 +34,16 @@ class EligibilityService
       Rails.logger.info "ALI is not associated with a capital project."
       return a
     end
-    organization = capital_project.organization
+    organization = Organization.get_typed_organization(capital_project.organization)
     if organization.nil?
       Rails.logger.info "ALI is not associated with an organization."
       return a
     end
+
+    unless organization.type_of? :grantee
+      Rails.logger.info "ALI must be owned by a Grantee."
+      return a      
+    end    
     
     Rails.logger.info "Evaluating funding options for ALI #{ali}."
     
