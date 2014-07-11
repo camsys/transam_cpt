@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <NumberFormat ss:Format="&quot;$&quot;#,##0"/>
+  </Style>
+ </Styles>
+
+  <Worksheet ss:Name="Capital Projects">
+    <Table>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+
+      <Row>
+        <Cell><Data ss:Type="String">Fiscal Year</Data></Cell>
+        <Cell><Data ss:Type="String">Project #</Data></Cell>
+        <Cell><Data ss:Type="String">Scope</Data></Cell>
+        <Cell><Data ss:Type="String">Type</Data></Cell>
+        <Cell><Data ss:Type="String">Title</Data></Cell>
+        <Cell><Data ss:Type="String">Status</Data></Cell>
+        <Cell><Data ss:Type="String">State</Data></Cell>
+        <Cell><Data ss:Type="String">Federal</Data></Cell>
+        <Cell><Data ss:Type="String">Local</Data></Cell>
+        <Cell><Data ss:Type="String">Total</Data></Cell>
+      </Row>
+
+      <% @assets.each do |a| %>
+        <Row>
+          <Cell><Data ss:Type="String"><%= a.fiscal_year %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= a.project_number %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= a.team_ali_code %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= a.capital_project_type.code %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= a.title %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= a.capital_project_status_type %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(a.state_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(a.federal_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(a.local_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(a.total_request) %></Data></Cell>
+        </Row>
+      <% end %>
+
+    </Table>
+  </Worksheet>
+</Workbook>
