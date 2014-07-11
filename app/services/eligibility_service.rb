@@ -13,12 +13,7 @@
 #
 #------------------------------------------------------------------------------
 class EligibilityService
-  
-  # urban/rural types for orgs
-  RURAL = 1
-  URBAN = 2
-  BOTH = 3
-  
+    
   #------------------------------------------------------------------------------
   #
   # Evaluate
@@ -53,12 +48,12 @@ class EligibilityService
     values      = []
             
     # Check for rural compatibility
-    if organization.urban_rural_type_id == RURAL or organization.urban_rural_type_id == BOTH
+    if organization.service_type_rural?
       conditions << 'rural_providers = ?'
       values << 1      
     end
     # Check for urban compatibility
-    if organization.urban_rural_type_id == URBAN or organization.urban_rural_type_id == BOTH
+    if organization.service_type_urban?
       conditions << 'urban_providers = ?'
       values << 1      
     end
