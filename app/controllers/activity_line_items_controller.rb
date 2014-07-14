@@ -32,7 +32,7 @@ class ActivityLineItemsController < OrganizationAwareController
     else
       subtype_list = get_id_array(asset_subtypes)
       asset_list = get_id_array(@activity_line_item.assets)
-      @assets = Asset.where('organization_id = ? AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
+      @assets = Asset.where('organization_id = ? AND scheduled_disposition_date IS NULL AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
     end
     
     # Load the eligibility service and use it to select funds which this ALI is eligible for

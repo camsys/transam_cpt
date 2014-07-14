@@ -81,7 +81,7 @@ class CapitalProjectBuilder
     # Only process road and rail assets for now
 
     # Find all the assets for this organization
-    assets = Vehicle.where('organization_id = ?', organization.id)  
+    assets = Vehicle.where('organization_id = ? AND scheduled_disposition_date IS NULL', organization.id)  
     replace_scope = TeamAliCode.find_by_code('11.12.XX')
     rehab_scope = TeamAliCode.find_by_code('11.14.XX')
 
@@ -96,7 +96,7 @@ class CapitalProjectBuilder
         policy = a.policy
         max_service_life_years = policy.get_policy_item(a).max_service_life_years
         year += max_service_life_years
-        puts "XXX Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
+        Rails.logger.debug "Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
         while year < last_year
           # Add a future re-replacement project for the asset
           add_to_project(a, replace_scope, year, sogr_replacement_project_type)
@@ -110,7 +110,7 @@ class CapitalProjectBuilder
     end
     
     # Rail Cars
-    assets = RailCar.where('organization_id = ?', organization.id)  
+    assets = RailCar.where('organization_id = ? AND scheduled_disposition_date IS NULL', organization.id)  
     replace_scope = TeamAliCode.find_by_code('12.12.XX')
     rehab_scope = TeamAliCode.find_by_code('12.14.XX')
     assets.each do |a|
@@ -127,7 +127,7 @@ class CapitalProjectBuilder
     end
     
     # Traction
-    assets = Locomotive.where('organization_id = ?', organization.id)  
+    assets = Locomotive.where('organization_id = ? AND scheduled_disposition_date IS NULL', organization.id)  
     #replace_scope = TeamAliCode.find_by_code('12.12.XX')
     #rehab_scope = TeamAliCode.find_by_code('12.14.XX')
     assets.each do |a|

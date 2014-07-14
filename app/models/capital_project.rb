@@ -143,6 +143,9 @@ class CapitalProject < ActiveRecord::Base
     conditions << 'organization_id = ?'
     values << organization.id
 
+    # does not have a scheduled disposition date
+    conditions << 'scheduled_disposition_date IS NULL'
+    
     # 1 = SOGR Replacement
     # 2 = SOGR Rehabilitation
     # 3 = SOGR Rail Mid-life rebuild
