@@ -38,9 +38,5 @@ Rails.application.routes.draw do
     end
     
   end
-  
-  resources :activity_line_items do
-    resources :comments, :documents
-  end
-  
+    
 end
