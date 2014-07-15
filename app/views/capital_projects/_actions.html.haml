@@ -5,11 +5,6 @@
   %ul.dropdown-menu{:role => 'menu'}
     - if can? :update, @project
       %li
-        = link_to "#" do
-          %i.fa.fa-usd.fa-fw
-          = " Program this project"
-      %li.divider
-      %li
         = link_to shift_fiscal_year_capital_project_path(@project, :num_years => 1) do
           %i.fa.fa-arrow-right.fa-fw
           = " Defer project to next FY"
