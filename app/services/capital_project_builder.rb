@@ -88,6 +88,9 @@ class CapitalProjectBuilder
     # Busses. As some busses can be replaced within the planning horizon we 
     # add additional replacement projects for repalcing the replacements
     assets.each do |a|
+      #-----------------------------
+      # Process replacement projects
+      #-----------------------------      
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
         # Add the initial replacement 
@@ -103,6 +106,9 @@ class CapitalProjectBuilder
           year += max_service_life_years
         end 
       end
+      #-----------------------------
+      # Process rehabilitation projects
+      #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
         add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
@@ -114,12 +120,18 @@ class CapitalProjectBuilder
     replace_scope = TeamAliCode.find_by_code('12.12.XX')
     rehab_scope = TeamAliCode.find_by_code('12.14.XX')
     assets.each do |a|
+      #-----------------------------
+      # Process replacement projects
+      #-----------------------------      
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
         add_to_project(a, replace_scope, year, sogr_replacement_project_type) 
         # these assets are at least 25 year assets and will not be
         # replaced again within the planning timeframe
       end
+      #-----------------------------
+      # Process rehabilitation projects
+      #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
         add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
@@ -131,10 +143,16 @@ class CapitalProjectBuilder
     #replace_scope = TeamAliCode.find_by_code('12.12.XX')
     #rehab_scope = TeamAliCode.find_by_code('12.14.XX')
     assets.each do |a|
+      #-----------------------------
+      # Process replacement projects
+      #-----------------------------      
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
         add_to_project(a, replace_scope, year, sogr_replacement_project_type) 
       end
+      #-----------------------------
+      # Process rehabilitation projects
+      #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
         add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
