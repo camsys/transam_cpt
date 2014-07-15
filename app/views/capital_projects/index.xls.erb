@@ -22,8 +22,10 @@
     <Table>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="125"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="120"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
@@ -32,30 +34,34 @@
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
 
       <Row>
+        <Cell><Data ss:Type="String">Agency</Data></Cell>
         <Cell><Data ss:Type="String">Fiscal Year</Data></Cell>
         <Cell><Data ss:Type="String">Project #</Data></Cell>
         <Cell><Data ss:Type="String">Scope</Data></Cell>
         <Cell><Data ss:Type="String">Type</Data></Cell>
         <Cell><Data ss:Type="String">Title</Data></Cell>
         <Cell><Data ss:Type="String">Status</Data></Cell>
+        <Cell><Data ss:Type="String">Cost</Data></Cell>
         <Cell><Data ss:Type="String">State</Data></Cell>
         <Cell><Data ss:Type="String">Federal</Data></Cell>
         <Cell><Data ss:Type="String">Local</Data></Cell>
         <Cell><Data ss:Type="String">Total</Data></Cell>
       </Row>
 
-      <% @projects.each do |a| %>
+      <% @projects.each do |p| %>
         <Row>
-          <Cell><Data ss:Type="String"><%= a.fiscal_year %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= a.project_number %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= a.team_ali_code %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= a.capital_project_type.code %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= a.title %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= a.capital_project_status_type %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(a.state_request) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(a.federal_request) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(a.local_request) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(a.total_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.organization %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.fiscal_year %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.project_number %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.team_ali_code %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.capital_project_type.code %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.title %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.capital_project_status_type %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.total_cost) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.state_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.federal_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.local_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.total_request) %></Data></Cell>
         </Row>
       <% end %>
 
