@@ -9,6 +9,6 @@
       = simple_form_for([@project, @activity_line_item, FundingRequest.new],
           :wrapper => :vertical_form,
           :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-        = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name'        
-        = f.input :amount
+        = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true       
+        = f.input :amount, :required => true, :number => true, :range => [1000, 1000000]
         = f.submit "Add Funding Request", :class => 'btn btn-primary'

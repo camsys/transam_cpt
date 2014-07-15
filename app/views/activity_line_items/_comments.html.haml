@@ -11,6 +11,6 @@
       %legend Add Comment
       = form_for [@project, @activity_line_item, Comment.new], :role => 'form' do |f|
         .form-group
-          = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...'
+          = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :minlength => 10
         = f.submit :class => 'btn btn-primary'
   
