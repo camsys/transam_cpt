@@ -85,6 +85,15 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
 
   end
+  
+  # GET /activity_line_items/1/edit_cost
+  def edit_cost
+    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
+
+  end
 
   # POST /activity_line_items
   # POST /activity_line_items.json

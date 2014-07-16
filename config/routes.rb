@@ -31,7 +31,9 @@ Rails.application.routes.draw do
       
       resources :funding_requests
       resources :comments      
+      
       member do
+        get 'edit_cost'
         get 'add_asset'
         get 'remove_asset'
       end
