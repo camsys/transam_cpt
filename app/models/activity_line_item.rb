@@ -35,11 +35,6 @@ class ActivityLineItem < ActiveRecord::Base
   
   # Clean up any HABTM associations before the ali is destroyed
   before_destroy { assets.clear }
-
-  # Before saving this ALI, make sure the total estimated cost is updated
-  before_save do
-    update_estimated_cost
-  end  
   
   #------------------------------------------------------------------------------
   # Associations
