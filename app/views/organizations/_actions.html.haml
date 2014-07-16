@@ -8,8 +8,9 @@
         = link_to edit_organization_path(@org) do
           %i.fa.fa-edit.fa-fw
           = " Update this organization"
-      %li.divider
-      %li
-        = link_to edit_budget_organization_path(@org) do
-          %i.fa.fa-usd.fa-fw
-          = " Update the budget"
+      - if @org.type_of? :grantee
+        %li.divider
+        %li
+          = link_to edit_budget_organization_path(@org) do
+            %i.fa.fa-usd.fa-fw
+            = " Update the budget"
