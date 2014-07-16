@@ -52,7 +52,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :team_ali_code
     
   # Has 0 or more assets
-  has_and_belongs_to_many    :assets
+  has_and_belongs_to_many    :assets, :after_add => :update_estimated_cost, :after_remove => :update_estimated_cost
     
   # Has 0 or more milestones
   has_many    :milestones
@@ -184,7 +184,8 @@ class ActivityLineItem < ActiveRecord::Base
   
   # Update the estiamted cost of the ALI based on the assets
   def update_estimated_cost
-    self.estimated_cost = total_estimated_replacement_cost    
+    self.estimated_cost = total_estimated_replacement_cost 
+    self.save   
   end
   
   #------------------------------------------------------------------------------
@@ -193,7 +194,6 @@ class ActivityLineItem < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   protected 
-
 
   # Set resonable defaults for a new activity line item
   def set_defaults
