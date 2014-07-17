@@ -1,0 +1,44 @@
+%table.table.table-hover#datatable
+  %thead
+    %tr
+      %th.left Agency
+      %th.left FY
+      %th.left Fund  
+          
+      %th.right State
+      %th.right Federal       
+      %th.right Local
+      
+      %th.right Total
+      
+  %tbody
+    - total_state = 0
+    - total_federal = 0
+    - total_local = 0
+    - total_amount = 0
+    
+    - @funding_requests.each do |req|
+      - total_amount += req.amount
+      - total_state += req.state_match
+      - total_local += req.local_match
+      - total_federal += req.federal_match
+      
+      %tr
+        %td.left= req.activity_line_item.capital_project.organization
+        %td.center= req.activity_line_item.capital_project.fiscal_year
+        %td.left= req.funding_amount.funding_source
+        
+        %td.right= format_as_currency(req.state_match)
+        %td.right= format_as_currency(req.federal_match)
+        %td.right= format_as_currency(req.local_match)
+        %td.right= format_as_currency(req.amount)
+
+  %tfoot
+    %tr
+      %td{:colspan => 3}            
+      %td.right= format_as_currency(total_state)
+      %td.right= format_as_currency(total_federal)
+      %td.right= format_as_currency(total_local)
+      %td.right= format_as_currency(total_amount)
+
+= render 'shared/datatable_javascript'

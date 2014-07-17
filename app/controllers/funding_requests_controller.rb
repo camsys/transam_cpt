@@ -13,7 +13,52 @@ class FundingRequestsController < OrganizationAwareController
   def index
 
     # Render the project -> show action
-    redirect_to capital_project_activity_line_item_path(@project, @activity_line_item)
+    #redirect_to capital_project_activity_line_item_path(@project, @activity_line_item)
+    @fiscal_years = get_fiscal_years
+   
+     # Start to set up the query
+    conditions  = []
+    values      = []
+        
+    # Check to see if we got an organization to sub select on. 
+    @org_filter = params[:org_id]
+    conditions << 'organization_id IN (?)'
+    if @org_filter.blank?
+      values << @organization_list      
+    else
+      @org_filter = @org_filter.to_i
+      values << [@org_filter]
+    end
+
+    # See if we got fiscal year
+    @fiscal_year = params[:fiscal_year]
+    unless @fiscal_year.blank?
+      @fiscal_year = @fiscal_year.to_i
+      conditions << 'fy_year = ?'
+      values << @fiscal_year
+    end
+    
+    # Get the filter, if one is not found default to 0 
+    @capital_project_type_id = params[:capital_project_type_id]
+    if @capital_project_type_id.blank?
+      @capital_project_type_id = 0
+    else
+      @capital_project_type_id = @capital_project_type_id.to_i
+    end
+        
+    @funding_requests = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
+      
+    unless params[:format] == 'xls'
+      # cache the set of object keys in case we need them later
+      cache_list(@funding_requests, INDEX_KEY_LIST_VAR)        
+    end
+    
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render :json => @funding_requests }
+      format.xls
+    end
+    
     
   end
 

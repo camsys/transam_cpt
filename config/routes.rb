@@ -5,8 +5,10 @@ Rails.application.routes.draw do
       get 'edit_amounts'
       post 'update_amounts'
     end
-    
   end
+  
+  # Funding Requests -- index only
+  resources :funding_requests, :only => [:index]
 
   # Capital Project Controllers
   resources :capital_projects do
