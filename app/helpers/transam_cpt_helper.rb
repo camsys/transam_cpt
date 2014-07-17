@@ -9,8 +9,11 @@ module TransamCptHelper
   end
 
   #returns the budget remaining for the selected FY year for the selected org
-  def get_remaining_budget(org, fy_year)
-    1000
+  def get_remaining_state_budget(org, fy_year)
+    org.available_budgets(fy_year)[1]
+  end
+  def get_remaining_federal_budget(org, fy_year)
+    org.available_budgets(fy_year)[0]
   end
   
 end

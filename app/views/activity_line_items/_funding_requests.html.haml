@@ -1,3 +1,10 @@
+:ruby
+  fy_year = @project.fy_year
+  org = Organization.get_typed_organization(@project.organization) 
+  budgets = org.available_budgets(fy_year)
+  federal_budget_remainder = budgets[0]
+  state_budget_remainder = budgets[1]
+
 .row
   .col-md-12{:style => 'height:200px;overflow-y:auto;'}
     = render :partial => 'funding_requests_table', :locals => {:ali => @activity_line_item, :popup => true}
@@ -8,17 +15,29 @@
       %legend Add Funding Request
       - if @activity_line_item.anticipated_cost == 0
         %p
-          There are no costs associated with this ALI. Click "#{link_to('Here', edit_cost_capital_project_activity_line_item_path(@project, @activity_line_item))}" to set the expected cost of this ALI.
-      - elsif @activity_line_item.difference <= 0
+          There are no expected costs for this ALI. Click #{link_to('here', edit_cost_capital_project_activity_line_item_path(@project, @activity_line_item))} to enter the amount needed for thie ALI.
+      - elsif @activity_line_item.funding_difference > 0
         %p
           This ALI is fully funded. No more funding requests can be added.
-      - elsif get_remaining_budget(@project.organization, @activity_line_item.fy_year) < 1
-        %p
-          The budget for "#{@activity_line_item.fiscal_year}" has been exceeded. No more funding requests can be added for this fiscal year.
-      -else      
-        = simple_form_for([@project, @activity_line_item, FundingRequest.new],
-            :wrapper => :vertical_form,
-            :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-          = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true       
-          = f.input :amount, :required => true, :number => true, :range => [1000, 1000000]
-          = f.submit "Add Funding Request", :class => 'btn btn-primary'
+      - else
+        - if federal_budget_remainder < 1
+          %p.warning
+            The Federal budget for #{fy_year} has been exceeded. No more Federal funding requests can be created.
+        - else
+          %p
+            You have <strong>#{format_as_currency(federal_budget_remainder)}</strong> remaining in your Federal budget for #{@project.fiscal_year}.
+            
+        - if state_budget_remainder < 1
+          %p.warning
+            The State budget for #{fy_year} has been exceeded. No more State funding requests can be created.
+        - else
+          %p
+            You have <strong>#{format_as_currency(state_budget_remainder)}</strong> remaining in your State budget for #{@project.fiscal_year}.
+
+        - if federal_budget_remainder > 0 and state_budget_remainder > 0  
+          = simple_form_for([@project, @activity_line_item, FundingRequest.new],
+              :wrapper => :vertical_form,
+              :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+            = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true       
+            = f.input :amount, :required => true, :number => true, :range => [1000, 1000000]
+            = f.submit "Add Funding Request", :class => 'btn btn-primary'
