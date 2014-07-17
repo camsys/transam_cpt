@@ -8,6 +8,11 @@ class FundingRequestsController < OrganizationAwareController
   before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_funding_request,     :only => [:show, :edit, :update, :destroy]
   
+  # Include the fiscal year mixin
+  include FiscalYear
+
+  INDEX_KEY_LIST_VAR    = "funding_requests_key_list_cache_var"
+  
   # GET /funding_requests
   # GET /funding_requests.json
   def index
@@ -38,15 +43,41 @@ class FundingRequestsController < OrganizationAwareController
       values << @fiscal_year
     end
     
-    # Get the filter, if one is not found default to 0 
+    # See if we got a capital project type
     @capital_project_type_id = params[:capital_project_type_id]
-    if @capital_project_type_id.blank?
-      @capital_project_type_id = 0
-    else
+    unless @capital_project_type_id.blank?
       @capital_project_type_id = @capital_project_type_id.to_i
+      conditions << 'capital_project_type_id = ?'
+      values << @capital_project_type_id
+    end
+
+    # Get the funding source filter if there is one
+    @funding_source_id = params[:funding_source_id]
+    if @funding_source_id.blank?
+      @funding_source_id = 0
+    else
+      @funding_source_id = @funding_source_id.to_i
     end
         
-    @funding_requests = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
+    # We have to build the list of funding requests by iterating through the
+    # set of matching capital projects    
+    @funding_requests = []
+    projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id)
+    projects.each do |project|
+      project.activity_line_items.each do |ali|
+        ali.funding_requests.each do |request|
+          # If we got a funding source fitler, check that this request is for that source
+          if @funding_source_id > 0
+            if request.funding_amount.funding_source_id == @funding_source_id
+              @funding_requests << request 
+            end
+          else
+            # no funding source filter
+            @funding_requests << request
+          end
+        end
+      end
+    end  
       
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
