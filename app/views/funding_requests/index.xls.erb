@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <NumberFormat ss:Format="&quot;$&quot;#,##0"/>
+  </Style>
+ </Styles>
+
+  <Worksheet ss:Name="Capital Projects">
+    <Table>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+
+      <Row>
+        <Cell><Data ss:Type="String">Agency</Data></Cell>
+        <Cell><Data ss:Type="String">Fiscal Year</Data></Cell>
+        <Cell><Data ss:Type="String">Fund</Data></Cell>
+        <Cell><Data ss:Type="String">State</Data></Cell>
+        <Cell><Data ss:Type="String">Federal</Data></Cell>
+        <Cell><Data ss:Type="String">Local</Data></Cell>
+        <Cell><Data ss:Type="String">Total</Data></Cell>
+      </Row>
+
+      <% total_amount = 0 %>
+      <% total_state = 0 %>
+      <% total_local = 0 %>
+      <% total_federal = 0 %>
+
+      <% @funding_requests.each do |req| %>
+        <% total_amount += req.amount %>
+        <% total_state += req.state_match %>
+        <% total_local += req.local_match %>
+        <% total_federal += req.federal_match %>
+
+        <Row>
+          <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.organization %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.fiscal_year %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.funding_amount.funding_source %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(req.state_match) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(req.federal_match) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(req.local_match) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(req.amount) %></Data></Cell>
+        </Row>
+      <% end %>
+
+      <Row>
+        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell><Data ss:Type="String"></Data></Cell>
+        <Cell><Data ss:Type="String"><%= format_as_currency(total_state) %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= format_as_currency(total_federal) %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= format_as_currency(total_local) %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= format_as_currency(total_amount) %></Data></Cell>
+      </Row>
+
+    </Table>
+  </Worksheet>
+</Workbook>
