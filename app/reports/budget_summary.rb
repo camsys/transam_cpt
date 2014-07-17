@@ -7,7 +7,7 @@ class BudgetSummary < AbstractReport
     super(attributes)
   end    
   
-  def get_data(organization, params)
+  def get_data(organization_id_list, params)
     
     # Get the array of fiscal years from the mixin
     fy_list = get_fiscal_years
@@ -26,7 +26,7 @@ class BudgetSummary < AbstractReport
       row = ["#{type.name} Budget"]
       # process each FY for this row
       fy_list.each do |fy|
-        budget = Budget.where('organization_id = ? AND fy_year = ? AND funding_source_type_id =?', organization.id, fy[1], type.id).first
+        budget = Budget.where('organization_id IN (?) AND fy_year = ? AND funding_source_type_id =?', organization_id_list, fy[1], type.id).first
         if budget.nil?
           row << 0
         else
@@ -44,7 +44,7 @@ class BudgetSummary < AbstractReport
     fy_list.each do |fy|
       federal_amount = 0
       state_amount = 0
-      projects = CapitalProject.where('organization_id = ? AND fy_year = ?', organization.id, fy[1])
+      projects = CapitalProject.where('organization_id IN (?) AND fy_year = ?', organization_id_list, fy[1])
       projects.each do |p|
         federal_amount += p.federal_request
         state_amount += p.state_request

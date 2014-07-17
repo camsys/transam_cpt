@@ -52,6 +52,19 @@ reports = [
     :description => 'Displays a chart showing the funding forcast by fiscal year.',
     :chart_type => 'column',
     :chart_options => "{is3D : true, isStacked : true, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    },
+  {
+    :active => 1,
+    :belongs_to => 'report_type',
+    :type => "Capital Needs Report",
+    :name => 'Budget Summary',
+    :class_name => "BudgetSummary",
+    :view_name => "budget_summary",
+    :show_in_nav => 1,
+    :show_in_dashboard => 0,
+    :description => 'Displays a chart showing the budget summary for the current organization.',
+    :chart_type => "",
+    :chart_options => ""
     }
 ]
 
