@@ -1,0 +1,22 @@
+.row
+  .col-md-3
+    = dialog_tag('Activity Line Item Summary', {:icon => 'fa fa-list', :class => "form-part"}) do
+      = render :partial => 'summary', :locals => {:ali => @activity_line_item}
+  .col-md-6
+    = simple_form_for([@project, @activity_line_item],
+      :html => {:class => 'form-vertical' },
+      :wrapper => :vertical_form,
+      :wrapper_mappings => {}) do |f|
+      = dialog_tag('Financial Estimate', {:icon => 'fa fa-list', :class => "form-part"}) do
+        = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
+          %span.input-group-addon
+            %i.fa.fa-usd
+          = f.input_field :anticipated_cost, :class => "form-control"
+        = f.input :cost_justification, :placeholder => "Enter a justification for this anticipated cost..."
+        .form-group
+          = f.button :submit, :class => "btn btn-primary"
+  .col-md-3
+    = dialog_tag('Anticipated Cost Notes', {:icon => 'fa fa-book', :class => "form-part"}) do
+      = render 'anticipated_cost_notes'
+
+= render 'scripts'

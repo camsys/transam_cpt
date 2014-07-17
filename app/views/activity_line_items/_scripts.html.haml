@@ -18,8 +18,8 @@
               error.insertAfter(element);
           }
       }
-  }); 
-  
+  });
+
   // Use validation plugin to validate the forms before submittal
   $('#new_comment').validate({
     submitHandler: function(form) {
@@ -56,5 +56,8 @@
     } else {
       // Default to the firsdt tab if no tab is stored
       $('a[data-toggle="tab"]:first').tab('show');
-    }   
-  }); 
+    }
+  });
+
+  // Add text formatting to cost estimate comment box
+  $('#activity_line_item_cost_justification').wysihtml5();

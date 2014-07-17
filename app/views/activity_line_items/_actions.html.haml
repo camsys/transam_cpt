@@ -1,16 +1,20 @@
 - if can? :create, @project
   .btn-group.pull-right.panel-action
     %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-      I want to  
+      I want to
       %span.caret
     %ul.dropdown-menu{:role => 'menu'}
       %li
         = link_to edit_capital_project_activity_line_item_path(@project, @activity_line_item) do
           %i.fa.fa-edit.fa-fw
           = " Modify this ALI"
+      %li
+        = link_to edit_cost_capital_project_activity_line_item_path(@project, @activity_line_item) do
+          %i.fa.fa-edit.fa-fw
+          = " Adjust Est. Cost"
       %li.divider
       %li
         = link_to capital_project_activity_line_item_path(@project, @activity_line_item), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
           %i.fa.fa-trash-o.fa-fw
           = " Remove this ALI"
-          
+

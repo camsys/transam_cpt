@@ -1,15 +1,15 @@
 class ActivityLineItemsController < OrganizationAwareController
-  
+
   # Include the team ali code mixin
   include AssetAliLookup
-  
+
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
-  
+
   before_action :get_capital_project
   before_filter :check_for_cancel,        :only => [:create, :update]
-  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset]
-  
+  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset, :edit_cost]
+
   # GET /activity_line_items
   # GET /activity_line_items.json
   def index
@@ -21,7 +21,7 @@ class ActivityLineItemsController < OrganizationAwareController
   # GET /activity_line_items/1
   # GET /activity_line_items/1.json
   def show
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
 
@@ -34,11 +34,11 @@ class ActivityLineItemsController < OrganizationAwareController
       asset_list = get_id_array(@activity_line_item.assets)
       @assets = Asset.where('organization_id = ? AND scheduled_disposition_date IS NULL AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
     end
-    
+
     # Load the eligibility service and use it to select funds which this ALI is eligible for
     eligibilityService = EligibilityService.new
     @available_funds = eligibilityService.evaluate(@activity_line_item)
-    
+
   end
 
   # Add the specified asset to this ALI
@@ -46,7 +46,7 @@ class ActivityLineItemsController < OrganizationAwareController
     asset = Asset.find_by_object_key(params[:asset])
     if asset.nil?
       notify_user(:alert, "Unable to add asset. Record not found!")
-      return      
+      return
     else
       @activity_line_item.assets << asset
       notify_user(:notice, "Asset was sucessfully added to the ALI")
@@ -58,7 +58,7 @@ class ActivityLineItemsController < OrganizationAwareController
     asset = Asset.find_by_object_key(params[:asset])
     if asset.nil?
       notify_user(:alert, "Unable to remove asset. Record not found!")
-      return      
+      return
     else
       @activity_line_item.assets.delete(asset)
       # force the ALI to update its estimated costs
@@ -67,7 +67,7 @@ class ActivityLineItemsController < OrganizationAwareController
     end
     redirect_to :back
   end
-  
+
   # GET /activity_line_items/new
   def new
 
@@ -79,16 +79,16 @@ class ActivityLineItemsController < OrganizationAwareController
 
   # GET /activity_line_items/1/edit
   def edit
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
 
   end
-  
+
   # GET /activity_line_items/1/edit_cost
   def edit_cost
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
@@ -98,13 +98,13 @@ class ActivityLineItemsController < OrganizationAwareController
   # POST /activity_line_items
   # POST /activity_line_items.json
   def create
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb "New Activity Line Item", new_capital_project_activity_line_item_path(@project)
 
     @activity_line_item = ActivityLineItem.new(form_params)
     @activity_line_item.capital_project = @project
-    
+
     respond_to do |format|
       if @activity_line_item.save
         notify_user(:notice, "The ALI was successfully added to project #{@project.project_number}.")
