@@ -1,7 +1,6 @@
 class FundingRequestsController < OrganizationAwareController
     
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Capital Projects", :capital_projects_path
   
   before_action :get_capital_project
   before_action :get_activity_line_item
@@ -16,6 +15,8 @@ class FundingRequestsController < OrganizationAwareController
   # GET /funding_requests
   # GET /funding_requests.json
   def index
+
+    add_breadcrumb "Funding Requests"
 
     # Render the project -> show action
     #redirect_to capital_project_activity_line_item_path(@project, @activity_line_item)
