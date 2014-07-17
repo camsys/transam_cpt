@@ -1,32 +1,32 @@
 class FundingRequestsController < OrganizationAwareController
-    
+
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
-  
+
   before_action :get_capital_project
   before_action :get_activity_line_item
   before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_funding_request,     :only => [:show, :edit, :update, :destroy]
-  
+
   # GET /funding_requests
   # GET /funding_requests.json
   def index
 
     # Render the project -> show action
     redirect_to capital_project_activity_line_item_path(@project, @activity_line_item)
-    
+
   end
 
   # GET /funding_requests/1
   # GET /funding_requests/1.json
   def show
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb @funding_request.name
-    
+
   end
-  
+
   # GET /funding_requests/new
   def new
 
@@ -39,7 +39,7 @@ class FundingRequestsController < OrganizationAwareController
 
   # GET /funding_requests/1/edit
   def edit
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb @funding_request.name, capital_project_funding_request_path(@project, @funding_request)
@@ -50,7 +50,7 @@ class FundingRequestsController < OrganizationAwareController
   # POST /funding_requests
   # POST /funding_requests.json
   def create
-    
+
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "New Funding Request"
@@ -59,14 +59,15 @@ class FundingRequestsController < OrganizationAwareController
     @funding_request.activity_line_item = @activity_line_item
     @funding_request.creator = current_user
     @funding_request.updator = current_user
-        
+
     respond_to do |format|
-      if @funding_request.save
+      if @activity_line_item.anticipated_cost != 0 && @funding_request.save
         notify_user(:notice, "The Funding Request was successfully added to ALI #{@activity_line_item.name}.")
         format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
         format.json { render action: 'show', status: :created, location: @funding_request }
       else
-        format.html { render action: 'new' }
+        notify_user(:notice, "An anticipated cost is required before being able to add funding requests")
+        format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
         format.json { render json: @funding_request.errors, status: :unprocessable_entity }
       end
     end
@@ -108,7 +109,7 @@ class FundingRequestsController < OrganizationAwareController
   end
 
   private
-  
+
   # Use callbacks to share common setup or constraints between actions.
   def set_funding_request
     @funding_request = FundingRequest.find_by_object_key(params[:id])
