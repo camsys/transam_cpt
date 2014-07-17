@@ -6,9 +6,8 @@
     .col-md-8.col-md-offset-2
       = dialog_tag('Activity Line Item', {:icon => 'fa fa-list', :class => "form-part"}) do
         = f.input :name, :placeholder => "Enter a name..."
-        = f.input :anticipated_cost, :label => "Cost Estimate"
         = f.association :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name', :label => 'Sub Category'
-            
+
     .col-md-8.col-md-offset-2
       = f.button :submit, :class => "btn btn-primary"
       = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
