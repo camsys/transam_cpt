@@ -131,7 +131,11 @@ class ActivityLineItemsController < OrganizationAwareController
         format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: 'edit' }
+        if params[:activity_line_item][:anticipated_cost]
+          format.html { render action: 'edit_cost' }
+        else
+          format.html { render action: 'edit' }
+        end
         format.json { render json: @activity_line_item.errors, status: :unprocessable_entity }
       end
     end
