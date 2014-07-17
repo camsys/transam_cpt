@@ -11,8 +11,8 @@
 %fieldset
   %legend.panel-legend Costs
   = format_field("Original Cost", format_as_currency(ali.total_original_cost))
-  = format_field("Funds Required", format_as_currency(ali.anticipated_cost))
   = format_field("Estimated. Cost", format_as_currency(ali.estimated_cost))
+  = format_field("Funds Required", format_as_currency(ali.anticipated_cost))
   = format_field("Cost Difference", format_as_currency(ali.cost_difference))
 
 %fieldset
@@ -21,4 +21,4 @@
   = format_field("Federal", format_as_currency(ali.federal_funds))
   = format_field("Local",   format_as_currency(ali.local_funds))
   = format_field("Total",   format_as_currency(ali.total_funds))
-  = format_field("Difference", format_as_currency(ali.funding_difference))
+  = format_field("Funding Shortfall", format_as_currency(ali.funding_difference))
