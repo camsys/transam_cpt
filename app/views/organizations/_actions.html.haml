@@ -1,7 +1,7 @@
 - if can? :update, @org or can? :update, Budget
   .btn-group.pull-right.panel-action
     %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-      I want to
+      I want to  
       %span.caret
     %ul.dropdown-menu{:role => 'menu'}
       - if can? :update, @org
@@ -12,10 +12,6 @@
       - if @org.type_of? :grantee and can? :update, Budget
         %li.divider
         %li
-          = link_to edit_federal_budget_organization_path(@org) do
+          = link_to edit_budget_organization_path(@org) do
             %i.fa.fa-usd.fa-fw
-            = " Update the federal budget"
-        %li
-          = link_to edit_state_budget_organization_path(@org) do
-            %i.fa.fa-usd.fa-fw
-            = " Update the state budget"
+            = " Update the budget"

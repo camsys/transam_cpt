@@ -1,26 +1,10 @@
-= simple_form_for(@org,
-  :url => update_budget_organization_path(@org),
-  :as => :organization,
-  :html => {:class => 'form-horizontal' },
-  :method => 'POST',
-  :wrapper => :horizontal_form,
-  :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
-  .col-md-12
-    = f.simple_fields_for :budgets, @budgets do |i_f|
-      = inactive_thumbnail_tag({:class => 'col-sm-3 text-center', :icon => 'fa fa-calendar', :title => "#{i_f.object.fiscal_year}"}) do
-        = i_f.input :id, :as => :hidden
-        = i_f.input :object_key, :as => :hidden
-        = i_f.input :fy_year, :as => :hidden
-        = i_f.input :funding_source_type_id, :as => :hidden
-        = i_f.input :amount, :wrapper => :vertical_prepend, :label => false do
-          %span.input-group-addon
-            %i.fa.fa-usd
-          = i_f.input_field :amount, :class => 'form-control'
-        %label
-          = 'Estimated?'
-          = i_f.input_field :estimated, boolean_style: :inline, :class => 'form-control', :style => 'margin:4px 21px 0;'
-
-
-  .col-md-12
-    = f.button :submit, :class => "btn btn-primary"
-
+%fieldset
+  %legend= "#{i_f.object.fiscal_year}: #{i_f.object.funding_source_type}"
+  = i_f.input :id, :as => :hidden
+  = i_f.input :object_key, :as => :hidden
+  = i_f.input :fy_year, :as => :hidden
+  = i_f.input :funding_source_type_id, :as => :hidden
+  = i_f.input :amount
+  = i_f.input :estimated
+  
+  
