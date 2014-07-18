@@ -1,9 +1,12 @@
-%fieldset
-  %legend= "#{i_f.object.fiscal_year}"
+= inactive_thumbnail_tag({:class => 'col-sm-3 text-center', :icon => 'fa fa-calendar', :title => "#{i_f.object.fiscal_year}"}) do
   = i_f.input :id, :as => :hidden
   = i_f.input :object_key, :as => :hidden
   = i_f.input :fy_year, :as => :hidden
-  = i_f.input :amount
-  = i_f.input :estimated
-  
-  
+  = i_f.input :amount, :wrapper => :vertical_prepend, :label => false do
+    %span.input-group-addon
+      %i.fa.fa-usd
+    = i_f.input_field :amount, :class => 'form-control'
+
+  %label
+    = 'Estimated?'
+    = i_f.input_field :estimated, boolean_style: :inline, :class => 'form-control', :style => 'margin:4px 21px 0;'
