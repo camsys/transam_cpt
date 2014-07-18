@@ -47,7 +47,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :team_ali_code
 
   # Has 0 or more assets
-  has_and_belongs_to_many    :assets, :after_add => :update_estimated_cost, :after_remove => :update_estimated_cost
+  has_and_belongs_to_many    :assets, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
 
   # Has 0 or more milestones
   has_many    :milestones
@@ -64,7 +64,7 @@ class ActivityLineItem < ActiveRecord::Base
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :capital_project_id,                :presence => true
   validates :name,                              :presence => true
-  validates :anticipated_cost,                  :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :anticipated_cost,                  :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
   validates :team_ali_code_id,                  :presence => true
 
   #------------------------------------------------------------------------------
@@ -177,10 +177,10 @@ class ActivityLineItem < ActiveRecord::Base
     val
   end
 
-  # Update the estiamted cost of the ALI based on the assets
+  # Update the estimated cost of the ALI based on the assets
   def update_estimated_cost
     self.estimated_cost = total_estimated_replacement_cost
-    self.save
+    save
   end
 
   #------------------------------------------------------------------------------
@@ -189,6 +189,17 @@ class ActivityLineItem < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   protected
+  
+  # Callback to update the estimated costs when another asset is added
+  def after_add_asset_callback(asset)
+    self.estimated_cost += asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
+    save
+  end
+  # Callback to update the estimated costs when an asset is removed
+  def after_remove_asset_callback(asset)
+    self.estimated_cost -= asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
+    save
+  end
 
   # Set resonable defaults for a new activity line item
   def set_defaults
