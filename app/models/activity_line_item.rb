@@ -66,8 +66,6 @@ class ActivityLineItem < ActiveRecord::Base
   validates :name,                              :presence => true
   validates :anticipated_cost,                  :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
   validates :team_ali_code_id,                  :presence => true
-  validates :cost_justification,                :presence => true
-
 
   #------------------------------------------------------------------------------
   # Scopes
