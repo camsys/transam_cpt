@@ -235,6 +235,10 @@ class CapitalProject < ActiveRecord::Base
     fy_year > current_fiscal_year_year
   end
   
+  def to_s
+    project_number
+  end
+  
   def name
     project_number
   end

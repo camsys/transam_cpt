@@ -93,7 +93,7 @@ class CapitalProjectsController < OrganizationAwareController
     @capital_project_status_type_id = params[:capital_project_status_type_id]
     unless @capital_project_status_type_id.blank?
       @capital_project_status_type_id = @capital_project_status_type_id.to_i
-      if @capital_project_type_id > 0
+      if @capital_project_status_type_id > 0
         conditions << 'capital_project_status_type_id = ?'
         values << @capital_project_status_type_id
       end

@@ -15,6 +15,8 @@
   .form-group
     = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
   .form-group
+    = select_tag(:capital_project_status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_status_type_id), :class => "form-control", :prompt => "Any project status...")
+  .form-group
     = select_tag(:capital_project_type_id, options_for_select(CapitalProjectType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_type_id), :class => "form-control", :prompt => "Any project type...")
   .form-group
     = select_tag(:funding_source_id, options_for_select(FundingSource.all.collect{|a| [a.name, a.id]}, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")

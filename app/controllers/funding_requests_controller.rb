@@ -1,7 +1,6 @@
 class FundingRequestsController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Capital Projects", :capital_projects_path
 
   before_action :get_capital_project
   before_action :get_activity_line_item
