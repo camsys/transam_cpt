@@ -1,8 +1,21 @@
-%table.table.table-hover#datatable
+:ruby
+  total_state = 0
+  total_federal = 0
+  total_local = 0
+  total_amount = 0
+  old_fy_year = 0
+  fy_amount = 0
+  fy_state = 0
+  fy_local = 0
+  fy_federal = 0
+  
+%table.table.table-hover
   %thead
     %tr
       %th.left Agency
       %th.left FY
+      %th.left Project
+      %th.left Status  
       %th.left Fund  
           
       %th.right State
@@ -12,20 +25,40 @@
       %th.right Total
       
   %tbody
-    - total_state = 0
-    - total_federal = 0
-    - total_local = 0
-    - total_amount = 0
-    
     - @funding_requests.each do |req|
       - total_amount += req.amount
       - total_state += req.state_match
       - total_local += req.local_match
       - total_federal += req.federal_match
+
+      - fy_year = req.activity_line_item.capital_project.fy_year
+      - if old_fy_year > 0 and old_fy_year != fy_year
+        %tr
+          %td.left{:colspan => 5}
+          %td.right.sub_total= format_as_currency(fy_state)
+          %td.right.sub_total= format_as_currency(fy_federal)
+          %td.right.sub_total= format_as_currency(fy_local)
+          %td.right.sub_total= format_as_currency(fy_amount)
+        %tr
+          %td.left{:colspan => 9}              
+
+        - fy_amount = req.amount
+        - fy_state = req.state_match
+        - fy_local = req.local_match
+        - fy_federal = req.federal_match
+      - else
+        - fy_amount += req.amount
+        - fy_state += req.state_match
+        - fy_local += req.local_match
+        - fy_federal += req.federal_match
       
+      - old_fy_year = fy_year
+           
       %tr
         %td.left= req.activity_line_item.capital_project.organization
         %td.center= req.activity_line_item.capital_project.fiscal_year
+        %td.left= req.activity_line_item.capital_project
+        %td.left= req.activity_line_item.capital_project.capital_project_status_type
         %td.left= req.funding_amount.funding_source
         
         %td.right= format_as_currency(req.state_match)
@@ -33,12 +66,20 @@
         %td.right= format_as_currency(req.local_match)
         %td.right= format_as_currency(req.amount)
 
+    %tr
+      %td.left{:colspan => 5}  
+      %td.right.sub_total= format_as_currency(fy_state)
+      %td.right.sub_total= format_as_currency(fy_federal)
+      %td.right.sub_total= format_as_currency(fy_local)
+      %td.right.sub_total= format_as_currency(fy_amount)
+    %tr
+      %td.left{:colspan => 9}             
+
   %tfoot
     %tr
-      %td{:colspan => 3}            
+      %td.left{:colspan => 5}            
       %td.right= format_as_currency(total_state)
       %td.right= format_as_currency(total_federal)
       %td.right= format_as_currency(total_local)
       %td.right= format_as_currency(total_amount)
 
-= render 'shared/datatable_javascript'
