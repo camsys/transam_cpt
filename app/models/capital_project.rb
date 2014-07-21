@@ -259,7 +259,7 @@ class CapitalProject < ActiveRecord::Base
   def set_defaults
     self.active ||= true
     self.emergency ||= false
-    self.capital_project_status_type_id ||= 1
+    self.capital_project_status_type_id ||= CapitalProjectStatusType.find_by_name('Unapproved')
     # Set the fiscal year to the current fiscal year which can be different from
     # the calendar year
     self.fy_year ||= current_fiscal_year_year 

@@ -138,6 +138,16 @@ class FundingRequestsController < OrganizationAwareController
     respond_to do |format|
       if @funding_request.save
         notify_user(:notice, "The Funding Request was successfully added to ALI #{@activity_line_item.name}.")
+        # See if the capital proejct is fully funded
+        if @funding_request.activity_line_item.funding_difference == 0
+          notify_user(:notice, "ALI #{@activity_line_item.name} is fully funded.")          
+        end
+        if @funding_request.activity_line_item.capital_project.funding_difference == 0
+          capital_project = @funding_request.activity_line_item.capital_project
+          capital_project.capital_project_status_type = CapitalProjectStatusType.find_by_name('Programmed')
+          capital_project.save
+          notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")          
+        end
         format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
         format.json { render action: 'show', status: :created, location: @funding_request }
       else

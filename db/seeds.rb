@@ -12,9 +12,10 @@ sys_user_id = 1
 #------------------------------------------------------------------------------
 
 capital_project_status_types = [
-  {:active => 1, :name => 'Status 1',       :description => 'Status 1'},
-  {:active => 1, :name => 'Status 2',       :description => 'Status 2'},
-  {:active => 1, :name => 'Status 3',       :description => 'Status 3'}
+  {:active => 1, :name => 'Unprogrammed', :description => 'The Capital Project has no funds or is only partially funded.'},
+  {:active => 1, :name => 'Programmed',   :description => 'The Capital Project has been fully funded by not approved.'},
+  {:active => 1, :name => 'Pending',      :description => 'The Capital Project has been fully funded and has been submitted for approval.'},
+  {:active => 1, :name => 'Approved',     :description => 'The Capital Project has been approved.'}
 ]
 
 capital_project_types = [
