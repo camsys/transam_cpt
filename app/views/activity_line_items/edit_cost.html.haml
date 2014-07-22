@@ -8,7 +8,7 @@
       :html => {:class => 'form-vertical' },
       :wrapper => :vertical_form,
       :wrapper_mappings => {}) do |f|
-      = dialog_tag('Financial Estimate', {:icon => 'fa fa-usd', :class => "form-part"}) do
+      = dialog_tag('ALI Cost', {:icon => 'fa fa-usd', :class => "form-part"}) do
         = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
           %span.input-group-addon
             %i.fa.fa-usd
@@ -18,7 +18,7 @@
           = f.button :submit, :class => "btn btn-primary"
   
   .col-md-3
-    = dialog_tag('Anticipated Cost Notes', {:icon => 'fa fa-book', :class => "form-part"}) do
+    = dialog_tag('Notes', {:icon => 'fa fa-book', :class => "form-part"}) do
       = render 'anticipated_cost_notes'
 
 = render 'scripts'
