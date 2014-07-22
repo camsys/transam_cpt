@@ -6,7 +6,7 @@
   .form-group
     = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
   .form-group
-    = select_tag(:status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @status_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any Status...")
+    = select_tag(:capital_project_status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_status_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any Status...")
 
 .btn-group.pull-right.panel-action
   %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
@@ -22,7 +22,7 @@
 :javascript
   $(document).ready(function() {
 
-    $('#fiscal_year, #status_type_id, #org_id').change(function() {
+    $('#fiscal_year, #capital_project_status_type_id, #org_id').change(function() {
       $('#filter_form').submit();
     });
     
