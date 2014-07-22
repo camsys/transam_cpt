@@ -11,6 +11,9 @@
         %th.center Requested
         %th.center Commited
         %th.center Remaining
+
+        - if popup
+          %th.center
               
     %tbody
       - funding_source.funding_amounts.each do |a|
@@ -22,6 +25,10 @@
           %td.right= format_as_currency(a.total_requested)
           %td.right= format_as_currency(a.total_committed)
           %td.right= format_as_currency(a.total_remaining)
+
+          - if popup
+            %td.center
+              %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{funding_source.name}: #{a.fiscal_year}", :content => "#{raw render :partial => 'funding_requests_popup_table', :locals => {:funding_amount => a}}"}}
               
 :javascript
   $('.popup-details').popover({
