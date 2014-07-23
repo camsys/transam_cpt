@@ -183,8 +183,19 @@ class FundingRequestsController < OrganizationAwareController
   # DELETE /funding_requests/1
   # DELETE /funding_requests/1.json
   def destroy
+
+    # Save the capital project
+    capital_project = @funding_request.activity_line_item.capital_project
     @funding_request.destroy
     notify_user(:notice, "The Funding Request was successfully removed from ALI #{@activity_line_item.name}.")
+
+    # Check to see if teh capital project status needs to change after removing
+    # the funding request
+    if capital_project.funding_difference != 0
+      capital_project.capital_project_status_type = CapitalProjectStatusType.find_by_name('Unprogrammed')
+      capital_project.save
+    end
+    
     respond_to do |format|
       format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
       format.json { head :no_content }
