@@ -1,5 +1,6 @@
 :ruby
   fy_year = @project.fy_year
+  fiscal_year = @project.fiscal_year
   org = Organization.get_typed_organization(@project.organization) 
   budgets = org.available_budgets(fy_year)
   federal_budget_remainder = budgets[0]
@@ -16,15 +17,15 @@
   %p.text-warning
     You need <strong>#{format_as_currency(amount_needed)}</strong> additional funds to program this project.
   - if federal_budget_remainder < 1
-    %p.warning
-      The Federal budget for #{fy_year} has been exceeded. No more Federal funding requests can be created.
+    %p.text-danger
+      The Federal budget for #{fiscal_year} has been exceeded. No more Federal funding requests can be created.
   - else
     %p.text-info
       You have <strong>#{format_as_currency(federal_budget_remainder)}</strong> remaining in your Federal budget for #{@project.fiscal_year}.
       
   - if state_budget_remainder < 1
-    %p.text-warning
-      The State budget for #{fy_year} has been exceeded. No more State funding requests can be created.
+    %p.text-danger
+      The State budget for #{fiscal_year} has been exceeded. No more State funding requests can be created.
   - else
     %p.text-info
       You have <strong>#{format_as_currency(state_budget_remainder)}</strong> remaining in your State budget for #{@project.fiscal_year}.
