@@ -1,13 +1,3 @@
-= form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
-  = hidden_field_tag :capital_project_type_id, @capital_project_type_id
-  - if @organization_list.count > 1
-    .form-group
-      = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any Organization...")
-  .form-group
-    = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
-  .form-group
-    = select_tag(:capital_project_status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_status_type_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any Status...")
-
 .btn-group.pull-right.panel-action
   %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
     I want to  
@@ -18,11 +8,22 @@
         %i.fa.fa-fw.fa-file-excel-o
         = " Export list to Excel"
 
+= form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+  = hidden_field_tag :capital_project_type_id, @capital_project_type_id
+  - if @organization_list.count > 1
+    .form-group
+      = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any Organization...")
+  .form-group
+    = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
+  .form-group
+    = select_tag(:capital_project_status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_status_type_id), :class => "form-control", :prompt => "Any Status...")
+  .form-group
+    = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any Funding Source...")
 
 :javascript
   $(document).ready(function() {
 
-    $('#fiscal_year, #capital_project_status_type_id, #org_id').change(function() {
+    $('#fiscal_year, #capital_project_status_type_id, #org_id, #funding_source_id').change(function() {
       $('#filter_form').submit();
     });
     

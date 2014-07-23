@@ -99,6 +99,23 @@ class CapitalProjectsController < OrganizationAwareController
       end
     end
     
+    # Filter by funding source. This takes more work
+    @funding_source_id = params[:funding_source_id]
+    unless @funding_source_id.blank?
+      @funding_source_id = @funding_source_id.to_i
+      if @funding_source_id > 0
+        # Use a custom query to join across the four tables
+        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE funding_amount_id IN (SELECT id FROM funding_amounts WHERE funding_source_id = #{@funding_source_id})))"
+        cps = CapitalProject.connection.execute(query, :skip_logging)
+        ids = []
+        cps.each do |cp|
+          ids << cp[0]
+        end
+        conditions << 'id IN (?)'
+        values << ids
+      end
+    end
+    
     # Get the capital project status type filter, if one is not found default to 0 
     @capital_project_type_id = params[:capital_project_type_id]
     if @capital_project_type_id.blank?
@@ -109,8 +126,10 @@ class CapitalProjectsController < OrganizationAwareController
         
     #puts conditions.inspect
     #puts values.inspect
+    
+    # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter
     @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
-      
+    
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
       cache_list(@projects, INDEX_KEY_LIST_VAR)
