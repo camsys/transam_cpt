@@ -10,6 +10,8 @@ class ActivityLineItemsController < OrganizationAwareController
   before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset, :edit_cost]
 
+  INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
+
   # GET /activity_line_items
   # GET /activity_line_items.json
   def index
@@ -34,6 +36,14 @@ class ActivityLineItemsController < OrganizationAwareController
       asset_list = get_id_array(@activity_line_item.assets)
       @assets = Asset.where('organization_id = ? AND scheduled_disposition_date IS NULL AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
     end
+
+    # Set up the cache list for the ALI
+    cache_list(@project.activity_line_items, INDEX_KEY_LIST_VAR)
+    
+    # get the @prev_record_path and @next_record_path view vars
+    get_next_and_prev_object_keys(@activity_line_item, INDEX_KEY_LIST_VAR)
+    @prev_record_path = @prev_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @prev_record_key)
+    @next_record_path = @next_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @next_record_key)
 
     # Load the eligibility service and use it to select funds which this ALI is eligible for
     eligibilityService = EligibilityService.new
