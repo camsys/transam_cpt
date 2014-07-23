@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
   
+  resources :organizations, :controller => 'cpt_organizations' do
+    member do
+      get 'edit_budget'
+      post 'update_budget'
+     end
+  end
+  
   resources :funding_sources do
     member do
       get 'edit_amounts'
@@ -37,7 +44,7 @@ Rails.application.routes.draw do
       member do
         get 'edit_cost'
         get 'add_asset'
-        get 'remove_asset'
+        delete 'remove_asset'
       end
     end
     
