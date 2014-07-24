@@ -7,27 +7,13 @@
   %ul.dropdown-menu
 
     %li.text-left.dropdown-submenu
-      = link_to funding_sources_path do
-        %i.fa.fa-usd.fa-fw
-        = " Funding Sources"
-      %ul.dropdown-menu
-        - FundingSourceType.all.each do |x|
-          %li.text-left.dropdown-submenu
-            = link_to x.name, funding_sources_path(:funding_source_type_id => x.id)
-            %ul.dropdown-menu
-              - FundingSource.where('funding_source_type_id = ?', x.id).all.each do |s|
-                %li
-                  = link_to s.name, funding_source_path(s)
-
-    %li.divider
-    %li.text-left.dropdown-submenu
       = link_to capital_projects_path do
-        %i.fa.fa-usd.fa-fw
+        %i.fa.fa-list-ul.fa-fw
         = " Capital Needs Lists"
       %ul.dropdown-menu
         %li
           = link_to "All Capital Projects", capital_projects_path(:capital_project_status_type_id => 0)
-        %li.divider  
+        %li.divider
         %li
           = link_to "Candidate Projects", capital_projects_path(:capital_project_status_type_id => 1)
         %li
@@ -54,3 +40,24 @@
         = link_to builder_capital_projects_path do
           %i.fa.fa-cogs.fa-fw
           = " Build/Update SOGR Projects"
+
+%li.nav-item.dropdown{:class => get_nav_link_class('funding_sources')}
+  = link_to funding_sources_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
+    %i.fa.fa-money.fa-2x
+    %br
+    = " Funding Sources"
+    %b.caret
+  %ul.dropdown-menu
+    - FundingSourceType.all.each do |x|
+      %li.text-left.dropdown-submenu
+        = link_to x.name, funding_sources_path(:funding_source_type_id => x.id)
+        %ul.dropdown-menu
+          - FundingSource.where('funding_source_type_id = ?', x.id).all.each do |s|
+            %li
+              = link_to s.name, funding_source_path(s)
+    - if can? :create, CapitalProject
+      %li.divider
+      %li.text-left
+        = link_to new_funding_source_path do
+          %i.fa.fa-plus.fa-fw
+          = " New Funding Source"

@@ -1,14 +1,9 @@
 - if can? :create, @funding_source
   .btn-group.pull-right.panel-action
     %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-      I want to  
+      I want to
       %span.caret
     %ul.dropdown-menu{:role => 'menu'}
-      %li
-        = link_to new_funding_source_path do
-          %i.fa.fa-usd.fa-fw
-          = " Add a funding source"
-      %li.divider
       %li
         = link_to edit_funding_source_path(@funding_source) do
           %i.fa.fa-edit.fa-fw
@@ -22,4 +17,4 @@
         = link_to funding_source_path(@funding_source), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do
           %i.fa.fa-trash-o.fa-fw
           = " Remove this funding source"
-          
+
