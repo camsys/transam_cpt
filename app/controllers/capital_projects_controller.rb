@@ -99,23 +99,6 @@ class CapitalProjectsController < OrganizationAwareController
       end
     end
     
-    # Filter by funding source. This takes more work
-    @funding_source_id = params[:funding_source_id]
-    unless @funding_source_id.blank?
-      @funding_source_id = @funding_source_id.to_i
-      if @funding_source_id > 0
-        # Use a custom query to join across the four tables
-        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE funding_amount_id IN (SELECT id FROM funding_amounts WHERE funding_source_id = #{@funding_source_id})))"
-        cps = CapitalProject.connection.execute(query, :skip_logging)
-        ids = []
-        cps.each do |cp|
-          ids << cp[0]
-        end
-        conditions << 'id IN (?)'
-        values << ids
-      end
-    end
-    
     # Get the capital project status type filter, if one is not found default to 0 
     @capital_project_type_id = params[:capital_project_type_id]
     if @capital_project_type_id.blank?
@@ -123,7 +106,48 @@ class CapitalProjectsController < OrganizationAwareController
     else
       @capital_project_type_id = @capital_project_type_id.to_i
     end
-        
+    
+    # Filter by funding source and/or asset type. This takes more work and each uses a custom query to pre-select
+    # capital projects that meet this partial match
+    
+    # Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
+    @funding_source_id = params[:funding_source_id]
+    unless @funding_source_id.blank?
+      @funding_source_id = @funding_source_id.to_i
+      if @funding_source_id > 0
+        capital_project_ids = []
+        # Use a custom query to join across the five tables
+        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE funding_amount_id IN (SELECT id FROM funding_amounts WHERE funding_source_id = #{@funding_source_id})))"
+        cps = CapitalProject.connection.execute(query, :skip_logging)
+        cps.each do |cp|
+          capital_project_ids << cp[0]
+        end
+        conditions << 'id IN (?)'
+        values << capital_project_ids.uniq  # make sure there are no duplicates
+      end
+    end
+
+    # Filter by asset type. Requires jopining across CP <- ALI <- ALI-Assets <- Assets
+    @asset_subtype_id = params[:asset_subtype_id]
+    unless @asset_subtype_id.blank?
+      @asset_subtype_id = @asset_subtype_id.to_i
+      if @asset_subtype_id > 0
+        capital_project_ids = []
+        # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
+        asset_ids = Asset.where('asset_subtype_id = ? AND organization_id IN (?)', @asset_subtype_id, values[0]).pluck(:id)
+        unless asset_ids.empty?
+          # now get CPs by subselecting on CP <- ALI <- ALI-Assets        
+          query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
+          cps = CapitalProject.connection.execute(query, :skip_logging)
+          cps.each do |cp|
+            capital_project_ids << cp[0]
+          end
+        end
+        conditions << 'id IN (?)'
+        values << capital_project_ids.uniq  # make sure there are no duplicates
+      end
+    end
+            
     #puts conditions.inspect
     #puts values.inspect
     

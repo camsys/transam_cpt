@@ -19,11 +19,13 @@
     = select_tag(:capital_project_status_type_id, options_for_select(CapitalProjectStatusType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_status_type_id), :class => "form-control", :prompt => "Any Status...")
   .form-group
     = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any Funding Source...")
+  .form-group
+    = select_tag(:asset_subtype_id, option_groups_from_collection_for_select(AssetType.all, :asset_subtypes, :name, :id, :name, :selected => @asset_subtype_id), :class => "form-control", :prompt => "Any Asset Type...")
 
 :javascript
   $(document).ready(function() {
 
-    $('#fiscal_year, #capital_project_status_type_id, #org_id, #funding_source_id').change(function() {
+    $('#fiscal_year, #capital_project_status_type_id, #org_id, #funding_source_id, #asset_subtype_id').change(function() {
       $('#filter_form').submit();
     });
     
