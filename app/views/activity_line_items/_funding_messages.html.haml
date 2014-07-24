@@ -5,7 +5,7 @@
   budgets = org.available_budgets(fy_year)
   federal_budget_remainder = budgets[0]
   state_budget_remainder = budgets[1]
-  amount_needed = @activity_line_item.funding_difference >= 0 ? 0 : @activity_line_item.funding_difference * -1
+  amount_needed = @activity_line_item.funding_difference >= 0 ? @activity_line_item.funding_difference : 0
 
 - if @activity_line_item.anticipated_cost == 0
   %p.text-warning
@@ -15,7 +15,7 @@
     This ALI is fully funded. No more funding requests can be added.
 - else
   %p.text-warning
-    You need <strong>#{format_as_currency(amount_needed)}</strong> additional funds to program this project.
+    You need <strong>#{format_as_currency(amount_needed)}</strong> additional funds to program this ALI.
   - if federal_budget_remainder < 1
     %p.text-danger
       The Federal budget for #{fiscal_year} has been exceeded. No more Federal funding requests can be created.

@@ -141,7 +141,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Returns the amount that is not yet funded
   def funding_difference
-    total_funds - anticipated_cost
+    anticipated_cost - total_funds
   end
 
   # Returns the cost difference between the anticpated cost by the user and the cost estimated
