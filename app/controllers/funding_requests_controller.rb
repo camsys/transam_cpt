@@ -189,7 +189,7 @@ class FundingRequestsController < OrganizationAwareController
     @funding_request.destroy
     notify_user(:notice, "The Funding Request was successfully removed from ALI #{@activity_line_item.name}.")
 
-    # Check to see if teh capital project status needs to change after removing
+    # Check to see if the capital project status needs to change after removing
     # the funding request
     if capital_project.funding_difference != 0
       capital_project.capital_project_status_type = CapitalProjectStatusType.find_by_name('Unprogrammed')
