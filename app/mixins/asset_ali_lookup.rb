@@ -43,7 +43,7 @@ module AssetAliLookup
       return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [TransitFacility.new.asset_type_id], type).to_a
     elsif activity[0] == '4'
       # Admin/maintenance/etc (Support Facilty)
-      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [SupporttFacility.new.asset_type_id], type).to_a
+      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [SupportFacility.new.asset_type_id], type).to_a
     else
       # not handled
       return []
