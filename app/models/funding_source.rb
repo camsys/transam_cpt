@@ -94,7 +94,7 @@ class FundingSource < ActiveRecord::Base
     :discretionary_fund,
     :rural_providers,
     :urban_providers,
-    :shared_rider_providers,
+    :shared_ride_providers,
     :inter_city_bus_providers,
     :inter_city_rail_providers,
     :active,
