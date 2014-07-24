@@ -1,9 +1,9 @@
-%fieldset
-  %legend= "#{i_f.object.fiscal_year}"
-  = i_f.input :id, :as => :hidden
-  = i_f.input :object_key, :as => :hidden
-  = i_f.input :fy_year, :as => :hidden
-  = i_f.input :amount
-  = i_f.input :estimated
-  
+%tr
+  %td
+    = "#{i_f.object.fiscal_year}"
+    = i_f.input :id, :as => :hidden
+    = i_f.input :object_key, :as => :hidden
+    = i_f.input :fy_year, :as => :hidden
+  %td= i_f.input :amount, :label => false
+  %td= i_f.input :estimated, :label => false
   
