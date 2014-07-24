@@ -221,7 +221,7 @@ class CapitalProject < ActiveRecord::Base
   
   # Returns the amount that is not yet funded
   def funding_difference
-    total_request - total_cost
+    total_cost - total_request
   end
   
   # Override the mixin method and delegate to it

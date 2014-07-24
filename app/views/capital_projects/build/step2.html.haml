@@ -19,118 +19,158 @@
               
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 1
-                  = "Purchase replacement busses"        
+                  = f.radio_button :project_subtype, 11
+                  = "Purchase replacement busses (11.12.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 2
-                  = "Lease replacement busses"        
+                  = f.radio_button :project_subtype, 12
+                  = "Lease replacement busses (11.16.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 3
-                  = "Purchase replacement rail cars"        
+                  = f.radio_button :project_subtype, 13
+                  = "Purchase replacement rail cars (12.12.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 4
-                  = "Lease replacement rail cars"        
+                  = f.radio_button :project_subtype, 14
+                  = "Lease replacement rail cars (12.16.XX)"        
                   
             - elsif @proxy.capital_project_type == '2'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 5
-                  = "Rebuild busses"        
+                  = f.radio_button :project_subtype, 21
+                  = "Rebuild busses (11.14.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 6
-                  = "Rebuild rail cars"        
+                  = f.radio_button :project_subtype, 22
+                  = "Rebuild rail cars (12.14.XX)"        
                   
             - elsif @proxy.capital_project_type == '3'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 7, :selected => true
-                  = "Perform mid-life rebuild of rail cars"    
+                  = f.radio_button :project_subtype, 31, :selected => true
+                  = "Perform mid-life rebuild of rail cars  (12.15.XX)"    
                       
             - elsif @proxy.capital_project_type == '4'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 8
-                  = "Ovehaul busses"        
+                  = f.radio_button :project_subtype, 41
+                  = "Ovehaul busses (11.17.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 9
-                  = "Overhaul rail cars"        
+                  = f.radio_button :project_subtype, 42
+                  = "Overhaul rail cars (12.17.XX)"        
                       
             - elsif @proxy.capital_project_type == '5'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 10
-                  = "Purchase expansion busses"        
+                  = f.radio_button :project_subtype, 51
+                  = "Purchase expansion busses (11.13.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 11
-                  = "Lease expansion busses"        
+                  = f.radio_button :project_subtype, 52
+                  = "Lease expansion busses (11.18.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 12
-                  = "Purchase expansion rail cars"        
+                  = f.radio_button :project_subtype, 53
+                  = "Purchase expansion rail cars (12.13.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 13
-                  = "Lease expansion rail cars"        
+                  = f.radio_button :project_subtype, 54
+                  = "Lease expansion rail cars (12.18.XX)"        
                   
             - elsif @proxy.capital_project_type == '6'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 14
-                  = "Lease bus station/stops/terminals"        
+                  = f.radio_button :project_subtype, 61
+                  = "Lease bus station/stops/terminals (11.36.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 15
-                  = "Lease bus support facilities"        
+                  = f.radio_button :project_subtype, 62
+                  = "Lease bus support facilities (11.46.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 16
-                  = "Lease rail station/stops/terminals"        
+                  = f.radio_button :project_subtype, 63
+                  = "Lease rail station/stops/terminals (12.36.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 17
-                  = "Lease rail support facilities"        
+                  = f.radio_button :project_subtype, 64
+                  = "Lease rail support facilities (12.46.XX)"        
 
             - elsif @proxy.capital_project_type == '7'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 18
-                  = "Purchase bus station/stops/terminals"        
+                  = f.radio_button :project_subtype, 71
+                  = "Purchase bus station/stops/terminals (11.32.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 19
-                  = "Purchase bus support facilities"        
+                  = f.radio_button :project_subtype, 72
+                  = "Purchase bus support facilities (11.42.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 20
-                  = "Purchase rail station/stops/terminals"        
+                  = f.radio_button :project_subtype, 73
+                  = "Purchase rail station/stops/terminals (12.32.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 21
-                  = "Purchase rail support facilities"        
+                  = f.radio_button :project_subtype, 74
+                  = "Purchase rail support facilities (12.42.XX)"        
 
             - elsif @proxy.capital_project_type == '8'
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 22
-                  = "Renovate bus station/stops/terminals"        
+                  = f.radio_button :project_subtype, 81
+                  = "Renovate bus station/stops/terminals (11.34.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 23
-                  = "Renovate bus support facilities"        
+                  = f.radio_button :project_subtype, 82
+                  = "Renovate bus support facilities (11.44.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 24
-                  = "Renovate rail station/stops/terminals"        
+                  = f.radio_button :project_subtype, 83
+                  = "Renovate rail station/stops/terminals (12.34.XX)"        
               .form-group
                 %label
-                  = f.radio_button :project_subtype, 25
-                  = "Renovate rail support facilities"        
+                  = f.radio_button :project_subtype, 84
+                  = "Renovate rail support facilities (12.44.XX)"        
+
+            - elsif @proxy.capital_project_type == '9'
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 91
+                  = "Purchase bus transit enhancements (11.92.XX)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 92
+                  = "Lease bus transit enhancements (11.95.XX)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 93
+                  = "Renovate bus transit enhancements (11.94.XX)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 94
+                  = "Purchase rail transit enhancements (12.92.XX)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 95
+                  = "Lease rail transit enhancements (12.95.XX)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 96
+                  = "Renovate rail transit enhancements (12.94.XX)"        
+
+            - elsif @proxy.capital_project_type == '10'
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 101
+                  = "Operating Assistance - 50% Federal Share (30.09.01 or 04)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 102
+                  = "Operating Assistance - 80% Federal Share (UZA) (30.09.80)"        
+              .form-group
+                %label
+                  = f.radio_button :project_subtype, 103
+                  = "Operating Assistance - 80% CMAQ (30.80.01)"        
                                        
           = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'

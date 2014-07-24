@@ -27,8 +27,9 @@ capital_project_types = [
   {:active => 1, :name => 'Facility lease project',             :code => "FLP",  :description => 'Facility lease project'},
   {:active => 1, :name => 'Facility purchase project',          :code => "FLP",  :description => 'Facility purchase project'},
   {:active => 1, :name => 'Facility renovation project',        :code => "FRP",  :description => 'Facility renovation project'},
+  {:active => 1, :name => 'Transit enhancement project',        :code => "TRE",  :description => 'Transit Enhancement project'},
   {:active => 1, :name => 'Operating assistance project',       :code => "OAP",  :description => 'Operating assistance project'},
-  {:active => 1, :name => 'Other captial project',              :code => "OCP",  :description => 'Other captial project'}
+  {:active => 1, :name => 'Other capital project',              :code => "OCP",  :description => 'Other capital project'}
 ]
 
 milestone_types = [
