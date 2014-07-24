@@ -24,6 +24,10 @@ class TeamAliCode < ActiveRecord::Base
     end
     a.reverse.join(join_str)
   end
+  def scope
+    elems = code.split('.')
+    "#{elems[0]}#{elems[1].first}"
+  end
   def type
     code.split('.')[0]
   end
