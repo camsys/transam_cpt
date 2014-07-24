@@ -1,0 +1,14 @@
+<tbody>
+  <tr>
+    <td><%= i_f.object.fiscal_year %></td>
+    <td class='center'>
+      <%= i_f.input :amount, wrapper: :vertical_prepend, :label => false do %>
+        <span class="input-group-addon">
+          <i class="fa fa-usd"></i>
+        </span>
+        <%= i_f.input_field :amount, class: 'form-control' %>
+      <% end %>
+    </td>
+    <td class='center'><%= i_f.input :estimated, :label => false %></td>
+  </tr>
+</tbody>

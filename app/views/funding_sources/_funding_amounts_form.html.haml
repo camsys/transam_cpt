@@ -5,8 +5,17 @@
   :wrapper => :horizontal_form,
   :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
   .col-md-12
-    = f.simple_fields_for :funding_amounts do |i_f|
-      = render 'funding_amount_form', :i_f => i_f
-            
+    %table.table.table-hover.table-condensed.table-responsive
+      %thead
+        %tr
+          %th Fiscal Year
+          %th.center Amount
+          %th.center Estimated?
+      = f.simple_fields_for :funding_amounts do |i_f|
+        = i_f.input :id, :as => :hidden
+        = i_f.input :object_key, :as => :hidden
+        = i_f.input :fy_year, :as => :hidden
+        = render 'funding_amount_form', :i_f => i_f
+
   .col-md-12
     = f.button :submit, :class => "btn btn-primary"
