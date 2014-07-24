@@ -1,6 +1,6 @@
 :ruby
   fy_year = @project.fy_year
-  org = Organization.get_typed_organization(@project.organization) 
+  org = Organization.get_typed_organization(@project.organization)
   budgets = org.available_budgets(fy_year)
   federal_budget_remainder = budgets[0]
   state_budget_remainder = budgets[1]
@@ -17,15 +17,18 @@
         = render 'funding_messages'
 
       .col-md-6
-        - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference > 0
-          - if federal_budget_remainder > 0 or state_budget_remainder > 0  
+        - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference < 0
+          - if federal_budget_remainder > 0 or state_budget_remainder > 0
             = simple_form_for([@project, @activity_line_item, FundingRequest.new],
                 :wrapper => :vertical_form,
                 :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-              = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true       
-              = f.input :amount, :wrapper=> :vertical_prepend, :label => "Amount" do
-                %span.input-group-addon
-                  %i.fa.fa-usd
-                = f.input_field :amount, :class => "form-control", :number => true, :min => 1000
-  
+              .row
+                .col-sm-6
+                  = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true
+                .col-sm-6
+                  = f.input :amount, :wrapper=> :vertical_prepend, :label => "Amount" do
+                    %span.input-group-addon
+                      %i.fa.fa-usd
+                    = f.input_field :amount, :class => "form-control", :number => true, :range => [1000, 1000000], :min => 1000, :max => 1000000
+
               = f.submit "Add Funding Request", :class => 'btn btn-primary'
