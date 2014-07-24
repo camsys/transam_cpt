@@ -48,7 +48,7 @@ class EligibilityService
     Rails.logger.info "Evaluating funding options for ALI #{ali}."
     
     
-     # Start to set up the query. Start by fetchin a list of matching funds
+     # Start to set up the query. Start by fetching a list of matching funds
     conditions  = []
     values      = []
             
@@ -62,8 +62,23 @@ class EligibilityService
       conditions << 'urban_providers = ?'
       values << 1      
     end
+    # Check for shared ride
+    if organization.service_type_shared_ride?
+      conditions << 'shared_ride_providers = ?'
+      values << 1      
+    end
+    # Check for ICB
+    if organization.service_type_intercity_bus?
+      conditions << 'inter_city_bus_providers = ?'
+      values << 1      
+    end
+    # Check for ICW
+    if organization.service_type_intercity_rail?
+      conditions << 'inter_city_rail_providers = ?'
+      values << 1      
+    end
     
-    eligible_funds = FundingSource.where(conditions.join(' AND '), *values)
+    eligible_funds = FundingSource.where(conditions.join(' OR '), *values)
     #get the list of fund ids
     fund_ids = []
     eligible_funds.each do |fund|
