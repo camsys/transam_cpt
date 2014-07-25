@@ -29,6 +29,6 @@
                   = f.input :amount, :wrapper=> :vertical_prepend, :label => "Amount" do
                     %span.input-group-addon
                       %i.fa.fa-usd
-                    = f.input_field :amount, :class => "form-control", :number => true, :range => [1000, 1000000], :min => 1000, :max => 1000000
+                    = f.input_field :amount, :class => "form-control", :number => true, :range => [100, 10000000], :min => 100, :max => 10000000
 
               = f.submit "Add Funding Request", :class => 'btn btn-primary'
