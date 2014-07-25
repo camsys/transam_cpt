@@ -17,7 +17,7 @@
         = render 'funding_messages'
 
       .col-md-6
-        - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference < 0
+        - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference > 0
           - if federal_budget_remainder > 0 or state_budget_remainder > 0
             = simple_form_for([@project, @activity_line_item, FundingRequest.new],
                 :wrapper => :vertical_form,
