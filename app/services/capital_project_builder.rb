@@ -27,11 +27,11 @@ class CapitalProjectBuilder
     Rails.logger.info "#{self.class.name} Started at #{Time.now}."
     Rails.logger.info "Building Capital Projects for #{organization}."
 
-    sogr_replacement_project_type = CapitalProjectType.find_by_code('SRP')
-    sogr_rehabilitation_project_type = CapitalProjectType.find_by_code('SRH')
+    replacement_project_type = CapitalProjectType.find_by_code('R')
+    rehabilitation_project_type = CapitalProjectType.find_by_code('I')
     
     if clear_all
-      projects = CapitalProject.where('organization_id = ? AND capital_project_type_id IN (?)', organization, [sogr_replacement_project_type.id, sogr_rehabilitation_project_type.id])
+      projects = CapitalProject.where('organization_id = ? AND capital_project_type_id IN (?)', organization, [replacement_project_type.id, rehabilitation_project_type.id])
       if projects.empty?
         Rails.logger.info "No SOGR projects found."
       else
@@ -59,8 +59,8 @@ class CapitalProjectBuilder
     # Cache some commonly used objects
     sys_user = User.find_by_first_name('system')
     high_priority = PriorityType.find_by_name('High')
-    sogr_replacement_project_type = CapitalProjectType.find_by_code('SRP')
-    sogr_rehabilitation_project_type = CapitalProjectType.find_by_code('SRH')
+    replacement_project_type = CapitalProjectType.find_by_code('R')
+    rehabilitation_project_type = CapitalProjectType.find_by_code('I')
     
     #--------------------------------------------------------------------------------------
     # Basic Algorithm:
@@ -94,7 +94,7 @@ class CapitalProjectBuilder
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
         # Add the initial replacement 
-        add_to_project(a, replace_scope, year, sogr_replacement_project_type)
+        add_to_project(a, replace_scope, year, replacement_project_type)
         # See if this bus can be re-replaced within the planning time frame
         policy = a.policy
         max_service_life_years = policy.get_policy_item(a).max_service_life_years
@@ -102,7 +102,7 @@ class CapitalProjectBuilder
         Rails.logger.debug "Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
         while year < last_year
           # Add a future re-replacement project for the asset
-          add_to_project(a, replace_scope, year, sogr_replacement_project_type)
+          add_to_project(a, replace_scope, year, replacement_project_type)
           year += max_service_life_years
         end 
       end
@@ -111,7 +111,7 @@ class CapitalProjectBuilder
       #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
-        add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
+        add_to_project(a, rehab_scope, year, rehabilitation_project_type)
       end
     end
     
@@ -125,7 +125,7 @@ class CapitalProjectBuilder
       #-----------------------------      
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
-        add_to_project(a, replace_scope, year, sogr_replacement_project_type) 
+        add_to_project(a, replace_scope, year, replacement_project_type) 
         # these assets are at least 25 year assets and will not be
         # replaced again within the planning timeframe
       end
@@ -134,7 +134,7 @@ class CapitalProjectBuilder
       #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
-        add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
+        add_to_project(a, rehab_scope, year, rehabilitation_project_type)
       end
     end
     
@@ -148,14 +148,14 @@ class CapitalProjectBuilder
       #-----------------------------      
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
-        add_to_project(a, replace_scope, year, sogr_replacement_project_type) 
+        add_to_project(a, replace_scope, year, replacement_project_type) 
       end
       #-----------------------------
       # Process rehabilitation projects
       #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
-        add_to_project(a, rehab_scope, year, sogr_rehabilitation_project_type)
+        add_to_project(a, rehab_scope, year, rehabilitation_project_type)
       end
     end
 
@@ -164,7 +164,7 @@ class CapitalProjectBuilder
   # Adds an asset to a SOGR project. If the project does not
   # exist it is created first.
   #
-  def add_to_project(asset, scope, year, sogr_project_type)
+  def add_to_project(asset, scope, year, project_type)
 
     # Decode the scope so we can set the project up
     if scope.type == "11"
@@ -190,7 +190,7 @@ class CapitalProjectBuilder
     if project.nil?
       # create this project        
       project_title = "#{focus} #{request} project"          
-      project = create_capital_project(asset.organization, year, scope, project_title, sogr_project_type)   
+      project = create_capital_project(asset.organization, year, scope, project_title, project_type)   
       project.save
       @project_count += 1
     end
