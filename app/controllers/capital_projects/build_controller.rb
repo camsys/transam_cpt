@@ -13,7 +13,7 @@ class CapitalProjects::BuildController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  steps :step1, :step2, :step3, :step4
+  steps :step1, :step2, :step3, :step4, :step5
 
   def show
 
@@ -70,11 +70,11 @@ class CapitalProjects::BuildController < OrganizationAwareController
     cp.justification = proxy.justification
     cp.fy_year = proxy.fiscal_year
     cp.organization = @organization
-    cp.team_ali_code = proxy.scope
+    cp.team_ali_code = proxy.scope(5)
     cp.emergency = false
     cp.active = true
     cp.capital_project_status_type_id = 1
-    cp.capital_project_type_id = proxy.capital_project_type
+    cp.capital_project_type = CapitalProjectType.find_by_name(proxy.capital_project_type)
 
     if cp.save
       puts "Save Worked #{cp.inspect}"

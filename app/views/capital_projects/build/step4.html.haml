@@ -4,29 +4,24 @@
       = render 'new_project_instructions'
       
   .col-md-6
-    = dialog_tag('Step 4 of 4: Confirm selections', {:class => "header-part"}) do
-      %fieldset
-        %legend Project Details
-        = format_field("Name", @proxy.name)
-        = format_field("Fiscal Year", @proxy.fiscal_year)
-        = format_field("Scope", @proxy.scope)
-        = format_field("Scope Context", @proxy.scope.context)
-        = format_field("Scope Type", @proxy.scope.name)
-      %fieldset
-        %legend Description
-        = @proxy.description.html_safe
-      %fieldset
-        %legend Justification
-        = @proxy.justification.html_safe
+    = dialog_tag('Step 4 of 5: Description and Justification', {:class => "header-part"}) do
+      %div{:style => 'padding:20px;'}
+        .row
+          %p= @proxy.scope(4).description
+        = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
+          .form-group
+            %label Project Description
+            = f.text_area :description, :rows => 3, :class => "form-control", :placeholder => "Enter a description for this project..."
+          .form-group
+            %label Justification
+            = f.text_area :justification, :rows => 6 , :class => "form-control", :placeholder => "Enter a justification for this project..."
         
-      %fieldset      
-        %legend
-        = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
-        = link_to "Create project", next_wizard_path, :class => 'btn btn-primary'
+          = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+          = submit_tag "Continue", :class => 'btn btn-primary'
 
   .col-md-3
     = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
-      = render 'summary'
+      = render 'step4_info'
 
 = render 'scripts'
 

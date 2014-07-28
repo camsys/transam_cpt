@@ -11,6 +11,12 @@ class TeamAliCode < ActiveRecord::Base
   def full_name
     "#{code} #{name}"
   end
+  def description(join_str = '->')
+    a = []
+    a << context(join_str)
+    a << "#{name} (#{code})"
+    a.join(join_str)
+  end
   def to_s
     code
   end

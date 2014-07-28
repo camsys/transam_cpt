@@ -4,29 +4,36 @@
       = render 'new_project_instructions'
       
   .col-md-6
-    = dialog_tag('Step 3 of 4: Description and Justification', {:class => "header-part"}) do
+    = dialog_tag('Step 3 of 5: Project Subcategory', {:class => "header-part"}) do        
       %div{:style => 'padding:20px;'}
+        .row
+          %p= @proxy.scope(3).description
         = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
-          .form-group
-            %label Project Description
-            = f.text_area :description, :rows => 3, :class => "form-control", :placeholder => "Enter a description for this project..."
-          .form-group
-            %label Justification
-            = f.text_area :justification, :rows => 6 , :class => "form-control", :placeholder => "Enter a justification for this project..."
-        
+          .radio
+            .row
+              - @proxy.scope(3).children.each_slice(4) do |col|
+                .col-md-6
+                  - col.each do |cpt|
+                    .form-group
+                      %label
+                        = f.radio_button :team_ali_code, cpt.id
+                        = cpt.name        
+                                       
           = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
-
+              
   .col-md-3
     = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
-      = render 'description_and_justification_info'
+      = render 'step3_info'
 
 = render 'scripts'
 
 :javascript
-
-  // Document Ready
-  $(document).ready(function(){
-    $('#capital_project_proxy_description').wysihtml5();
-    $('#capital_project_proxy_justification').wysihtml5();
+  // Create a select handler that changes out the info panel based on the user selecting a proejct type
+  $('input[name=project_type]').change(function() {
+    // Get the data element and display the contents in the info panel
+    val = $(this).data('info');
+    //alert(val);
+    $('#action-info').html(val);
   });
+  

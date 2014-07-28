@@ -4,189 +4,26 @@
       = render 'new_project_instructions'
       
   .col-md-6
-    = dialog_tag('Step 2 of 4: Project Information', {:class => "header-part"}) do
+    = dialog_tag('Step 2 of 5: Project Category', {:class => "header-part"}) do
       %div{:style => 'padding:20px;'}
         = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
-          .form-group
-            %label Project Name
-            = f.text_field :name, :placeholder => "Enter a name for this project...", :class => "form-control"
-          .form-group
-            %label Fiscal Year
-            = f.select(:fiscal_year, options_for_select(@fiscal_years, :selected => @proxy.fiscal_year), {:prompt => "Select the fiscal year"}, :class => "form-control")           
-          %label Project Type
+          .row
+            %p= @proxy.scope(2).description
           .radio
-            - if @proxy.capital_project_type == '1'
-              
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 11
-                  = "Purchase replacement busses (11.12.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 12
-                  = "Lease replacement busses (11.16.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 13
-                  = "Purchase replacement rail cars (12.12.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 14
-                  = "Lease replacement rail cars (12.16.XX)"        
-                  
-            - elsif @proxy.capital_project_type == '2'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 21
-                  = "Rebuild busses (11.14.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 22
-                  = "Rebuild rail cars (12.14.XX)"        
-                  
-            - elsif @proxy.capital_project_type == '3'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 31, :selected => true
-                  = "Perform mid-life rebuild of rail cars  (12.15.XX)"    
-                      
-            - elsif @proxy.capital_project_type == '4'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 41
-                  = "Ovehaul busses (11.17.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 42
-                  = "Overhaul rail cars (12.17.XX)"        
-                      
-            - elsif @proxy.capital_project_type == '5'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 51
-                  = "Purchase expansion busses (11.13.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 52
-                  = "Lease expansion busses (11.18.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 53
-                  = "Purchase expansion rail cars (12.13.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 54
-                  = "Lease expansion rail cars (12.18.XX)"        
-                  
-            - elsif @proxy.capital_project_type == '6'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 61
-                  = "Lease bus station/stops/terminals (11.36.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 62
-                  = "Lease bus support facilities (11.46.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 63
-                  = "Lease rail station/stops/terminals (12.36.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 64
-                  = "Lease rail support facilities (12.46.XX)"        
-
-            - elsif @proxy.capital_project_type == '7'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 71
-                  = "Purchase bus station/stops/terminals (11.32.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 72
-                  = "Purchase bus support facilities (11.42.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 73
-                  = "Purchase rail station/stops/terminals (12.32.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 74
-                  = "Purchase rail support facilities (12.42.XX)"        
-
-            - elsif @proxy.capital_project_type == '8'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 81
-                  = "Renovate bus station/stops/terminals (11.34.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 82
-                  = "Renovate bus support facilities (11.44.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 83
-                  = "Renovate rail station/stops/terminals (12.34.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 84
-                  = "Renovate rail support facilities (12.44.XX)"        
-
-            - elsif @proxy.capital_project_type == '9'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 91
-                  = "Purchase bus transit enhancements (11.92.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 92
-                  = "Lease bus transit enhancements (11.95.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 93
-                  = "Renovate bus transit enhancements (11.94.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 94
-                  = "Purchase rail transit enhancements (12.92.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 95
-                  = "Lease rail transit enhancements (12.95.XX)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 96
-                  = "Renovate rail transit enhancements (12.94.XX)"        
-
-            - elsif @proxy.capital_project_type == '10'
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 101
-                  = "Operating Assistance - 50% Federal Share (30.09.01 or 04)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 102
-                  = "Operating Assistance - 80% Federal Share (UZA) (30.09.80)"        
-              .form-group
-                %label
-                  = f.radio_button :project_subtype, 103
-                  = "Operating Assistance - 80% CMAQ (30.80.01)"        
-                                       
+            .row
+              - @proxy.scope(2).children.each_slice(4) do |col|
+                .col-md-6
+                  - col.each do |cpt|
+                    .form-group
+                      %label
+                        = f.radio_button :category, cpt.category.first
+                        = cpt.full_name        
+                             
           = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
               
   .col-md-3
     = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
-      = render 'specifics'
+      = render 'step2_info'
 
 = render 'scripts'
-
-:javascript
-  // Create a select handler that changes out the info panel based on the user selecting a proejct type
-  $('input[name=project_type]').change(function() {
-    // Get the data element and display the contents in the info panel
-    val = $(this).data('info');
-    //alert(val);
-    $('#action-info').html(val);
-  });
-  
