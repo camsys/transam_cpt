@@ -8,7 +8,8 @@ class ActivityLineItemsController < OrganizationAwareController
 
   before_action :get_capital_project
   before_filter :check_for_cancel,        :only => [:create, :update]
-  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset, :edit_cost]
+  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset, :edit_cost, :edit_milestones]
+  before_filter :reformat_date_fields,    :only => [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
 
@@ -92,7 +93,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
-    add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Modify"
 
   end
 
@@ -101,7 +102,30 @@ class ActivityLineItemsController < OrganizationAwareController
 
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
-    add_breadcrumb "Modify", capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Update Cost"
+
+  end
+
+  # GET /activity_line_items/1/edit_milestones
+  def edit_milestones
+
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Update Milestones"
+    
+    # Check to see if any milestones have been added, if not we create them
+    if @activity_line_item.milestones.empty?
+      today = Date.today
+      # see which set of milestones we need based on the ALI
+      if @activity_line_item.team_ali_code.is_vehicle_delivery?
+        milestone_types = MilestoneType.vehicle_delivery_milestones
+      else
+        milestone_types = MilestoneType.other_project_milestones
+      end 
+      milestone_types.all.each do |mt|
+        @activity_line_item.milestones.create(:milestone_type_id => mt.id, :milestone_date => today)
+      end
+    end
 
   end
 
@@ -163,19 +187,39 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_activity_line_item
-      @activity_line_item = ActivityLineItem.find_by_object_key(params[:id])
-    end
 
-    def get_capital_project
-      @project = CapitalProject.where('object_key = ?', params[:capital_project_id]).first unless params[:capital_project_id].blank?
-    end
+  def reformat_date_fields
+  
+    unless params[:activity_line_item][:milestones_attributes].blank?
+      #puts 'Before reformat'
+      #puts params[:activity_line_item][:milestones_attributes].inspect
+      
+      params[:activity_line_item][:milestones_attributes].each do |milestone_hash|
+        #puts milestone_hash.inspect
+        date_str = milestone_hash[1]['milestone_date']
+        form_date = Date.strptime(date_str, '%m-%d-%Y')
+        milestone_hash[1]['milestone_date'] = form_date.strftime('%Y-%m-%d')
+      end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def form_params
-      params.require(:activity_line_item).permit(activity_line_item_allowable_params)
+      #puts 'After reformat'
+      #puts params[:activity_line_item][:milestones_attributes].inspect
+
     end
+  end
+  
+  # Use callbacks to share common setup or constraints between actions.
+  def set_activity_line_item
+    @activity_line_item = ActivityLineItem.find_by_object_key(params[:id])
+  end
+
+  def get_capital_project
+    @project = CapitalProject.where('object_key = ?', params[:capital_project_id]).first unless params[:capital_project_id].blank?
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def form_params
+    params.require(:activity_line_item).permit(activity_line_item_allowable_params)
+  end
 
   def check_for_cancel
     unless params[:cancel].blank?

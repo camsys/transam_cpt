@@ -41,6 +41,10 @@ class TeamAliCode < ActiveRecord::Base
     elems = code.split('.')
     "#{elems[0]}.#{elems[1]}"
   end
-  
+  # Returns true if the ALI requires one or more vehicles to be deliverd
+  # categories XX.12.XX, XX.13.XX, XX.16.XX, XX.18.XX
+  def is_vehicle_delivery?
+    ['12', '13', '16', '18'].include? category
+  end
 end
 

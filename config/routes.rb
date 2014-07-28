@@ -43,6 +43,7 @@ Rails.application.routes.draw do
       
       member do
         get 'edit_cost'
+        get 'edit_milestones'
         get 'add_asset'
         delete 'remove_asset'
       end

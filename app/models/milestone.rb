@@ -34,22 +34,18 @@ class Milestone < ActiveRecord::Base
 
   belongs_to :milestone_type
   
-  # Each milestone was recorded by a user
-  belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
-
   validates :object_key,          :presence => true
   validates :milestone_type_id,   :presence => true  
   validates :milestone_date,      :presence => true  
   validates :comments,            :presence => true
-  validates :created_by_id,       :presence => true
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
+    :id,
     :object_key,
     :milestone_type_id,
     :milestone_date,
-    :comments,
-    :created_by_id
+    :comments
   ]
   
   #------------------------------------------------------------------------------

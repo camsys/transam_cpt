@@ -50,7 +50,10 @@ class ActivityLineItem < ActiveRecord::Base
   has_and_belongs_to_many    :assets, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
 
   # Has 0 or more milestones
-  has_many    :milestones
+  has_many    :milestones, :dependent => :destroy
+
+  # Use a nested form to set the milestones
+  accepts_nested_attributes_for :milestones, :allow_destroy => true
 
   # Has 0 or more funding requests, These will be removed if the project is removed.
   has_many    :funding_requests, :dependent => :destroy
@@ -83,7 +86,9 @@ class ActivityLineItem < ActiveRecord::Base
     :anticipated_cost,
     :cost_justification,
     :active,
-    :asset_ids => []
+    :asset_ids => [],
+    :milestones_attributes => [Milestone.allowable_params]
+    
   ]
 
   #------------------------------------------------------------------------------
