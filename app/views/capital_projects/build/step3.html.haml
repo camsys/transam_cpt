@@ -17,7 +17,7 @@
                     .form-group
                       %label
                         = f.radio_button :team_ali_code, cpt.id
-                        = cpt.name        
+                        = cpt.full_name        
                                        
           = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
