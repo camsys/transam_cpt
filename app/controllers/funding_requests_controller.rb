@@ -50,6 +50,14 @@ class FundingRequestsController < OrganizationAwareController
       values << @capital_project_type_id
     end
 
+    # See if we got a capital project status type
+    @capital_project_status_type_id = params[:capital_project_status_type_id]
+    unless @capital_project_status_type_id.blank?
+      @capital_project_status_type_id = @capital_project_status_type_id.to_i
+      conditions << 'capital_project_status_type_id = ?'
+      values << @capital_project_status_type_id
+    end
+
     # Get the funding source filter if there is one
     @funding_source_id = params[:funding_source_id]
     if @funding_source_id.blank?
