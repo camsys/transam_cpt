@@ -5,15 +5,12 @@
 
 #form
   .row
-    .col-md-3
-      = dialog_tag('Asset Information', {:icon => 'fa fa-book', :class => "header_part"}) do
-        = render 'builder_instructions'
-    .col-md-6
-      = dialog_tag('Capital Project Builder Details', {:icon => 'fa fa-book', :class => "header_part"}) do
-        = render 'builder_form'
-    .col-md-3
+    .col-md-4
       = dialog_tag('Capital Project Builder Notes', {:icon => 'fa fa-book', :class => "header_part"}) do
         = render 'builder_notes'
+    .col-md-8
+      = dialog_tag('Capital Project Builder Details', {:icon => 'fa fa-book', :class => "header_part"}) do
+        = render 'builder_form'
 
 :javascript
 
