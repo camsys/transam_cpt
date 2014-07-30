@@ -11,12 +11,17 @@
             %p= @proxy.scope(2).description
           .radio
             .row
-              - @proxy.scope(2).children.each_slice(4) do |col|
+              - @proxy.scope(2).children.each_slice(5) do |col|
                 .col-md-6
                   - col.each do |cpt|
                     .form-group
+                    - unless cpt.category == '7X' || cpt.category == '80'
                       %label
                         = f.radio_button :category, cpt.category.first
+                        = cpt.full_name
+                    - else
+                      %label
+                        = f.radio_button :category, cpt.category.first, disabled: true
                         = cpt.full_name
 
           = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
