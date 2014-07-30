@@ -29,15 +29,9 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
 
     # Get the list of candidate assets that could be added to the ALI
-    asset_subtypes = asset_subtypes_from_ali_code(@activity_line_item.team_ali_code.code)
-    if asset_subtypes.empty?
-      @assets = []
-    else
-      subtype_list = get_id_array(asset_subtypes)
-      asset_list = get_id_array(@activity_line_item.assets)
-      @assets = Asset.where('organization_id = ? AND scheduled_disposition_date IS NULL AND id NOT IN (?) AND asset_subtype_id IN (?) AND scheduled_replacement_year = ?', @project.organization.id, asset_list, subtype_list, @project.fy_year)
-    end
-
+    matcher = AliAssetMatcherService.new
+    @assets = matcher.match(@activity_line_item, {})
+    
     # Set up the cache list for the ALI
     cache_list(@project.activity_line_items, INDEX_KEY_LIST_VAR)
     
