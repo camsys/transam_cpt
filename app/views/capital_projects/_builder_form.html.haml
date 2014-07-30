@@ -4,10 +4,11 @@
   :method => 'post',
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-  = f.input :asset_type_id, :collection => AssetType.all, :prompt => 'Select type of assets to process...'
-  = f.input :project_type,  :collection => ['Replacement', 'Rehabilitation', 'Both'], :as => :radio_buttons
-  = f.submit "Start...", :class => "btn btn-primary", :id => "submit_button"
-  = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
+  .col-md-8.col-md-offset-2
+    = f.input :asset_type_id, :collection => AssetType.all, :prompt => 'Select type of assets to process...'
+    = f.input :project_type,  :collection => ['Replacement', 'Rehabilitation', 'Both'], :as => :radio_buttons
+    = f.submit "Start...", :class => "btn btn-primary", :id => "submit_button"
+    = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
 
 :javascript
 

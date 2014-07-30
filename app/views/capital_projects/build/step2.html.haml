@@ -1,8 +1,8 @@
 .row
   .col-md-3
-    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+    = dialog_tag('Overview', {:icon => "fa fa-info-circle", :class => "header-part"}) do
       = render 'new_project_instructions'
-      
+
   .col-md-6
     = dialog_tag('Step 2 of 5: Project Category', {:class => "header-part"}) do
       %div{:style => 'padding:20px;'}
@@ -17,13 +17,13 @@
                     .form-group
                       %label
                         = f.radio_button :category, cpt.category.first
-                        = cpt.full_name        
-                             
-          = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+                        = cpt.full_name
+
+          = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
-              
+
   .col-md-3
-    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+    = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do
       = render 'step2_info'
 
 = render 'scripts'

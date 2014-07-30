@@ -1,8 +1,8 @@
 .row
   .col-md-3
-    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+    = dialog_tag('Overview', {:icon => "fa fa-info-circle", :class => "header-part"}) do
       = render 'new_project_instructions'
-      
+
   .col-md-6
     = dialog_tag('Step 4 of 5: Description and Justification', {:class => "header-part"}) do
       %div{:style => 'padding:20px;'}
@@ -15,12 +15,12 @@
           .form-group
             %label Justification
             = f.text_area :justification, :rows => 6 , :class => "form-control", :placeholder => "Enter a justification for this project..."
-        
-          = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+
+          = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
 
   .col-md-3
-    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+    = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do
       = render 'step4_info'
 
 = render 'scripts'

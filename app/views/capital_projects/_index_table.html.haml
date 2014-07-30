@@ -4,46 +4,46 @@
       %th.left Agency
       %th.left FY
       %th.left Project
-      %th.left Scope
+      %th.center Scope
 
-      %th.left Type
-      %th.left Title				
+      %th.center Type
+      %th.left Title
       %th.center Status
       %th.right Cost
 
       %th.right State
-      %th.right Federal       
+      %th.right Federal
       %th.right Local
       %th.right Total
-      
+
       %th.center
-      				
+
   %tbody
     - total_cost = 0
     - total_state = 0
     - total_federal = 0
     - total_local = 0
     - total_total = 0
-    
+
     - @projects.each do |p|
       - total_cost += p.total_cost
       - total_state += p.state_request
       - total_federal += p.federal_request
       - total_local += p.local_request
       - total_total += p.total_request
-      
+
       %tr.popup-details{:data => {:action_path => capital_project_path(p)}}
         %td= p.organization
         %td= p.fiscal_year
         %td= p.project_number
-        %td= p.team_ali_code.scope
+        %td.center= p.team_ali_code.scope
         %td.center= p.capital_project_type.code
-            
+
         %td= p.title
-        %td= p.capital_project_status_type
+        %td.center= p.capital_project_status_type
 
         %td.right= format_as_currency(p.total_cost)
-        
+
         %td.right= format_as_currency(p.state_request)
         %td.right= format_as_currency(p.federal_request)
         %td.right= format_as_currency(p.local_request)
@@ -58,7 +58,7 @@
 
   %tfoot
     %tr
-      %td{:colspan => 7}            
+      %td{:colspan => 7}
         %td.right= format_as_currency(total_cost)
         %td.right= format_as_currency(total_state)
         %td.right= format_as_currency(total_federal)
@@ -73,5 +73,5 @@
     container: 'body',
     placement: 'left',
     animation: 'true',
-    html: 'true'    
-  });  
+    html: 'true'
+  });
