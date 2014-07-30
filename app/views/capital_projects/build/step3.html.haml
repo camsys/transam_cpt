@@ -1,10 +1,10 @@
 .row
   .col-md-3
-    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+    = dialog_tag('Overview', {:icon => "fa fa-info-circle", :class => "header-part"}) do
       = render 'new_project_instructions'
-      
+
   .col-md-6
-    = dialog_tag('Step 3 of 5: Project Subcategory', {:class => "header-part"}) do        
+    = dialog_tag('Step 3 of 5: Project Subcategory', {:class => "header-part"}) do
       %div{:style => 'padding:20px;'}
         .row
           %p= @proxy.scope(3).description
@@ -17,13 +17,13 @@
                     .form-group
                       %label
                         = f.radio_button :team_ali_code, cpt.id
-                        = cpt.full_name        
-                                       
-          = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
+                        = cpt.full_name
+
+          = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
-              
+
   .col-md-3
-    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+    = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do
       = render 'step3_info'
 
 = render 'scripts'
@@ -36,4 +36,4 @@
     //alert(val);
     $('#action-info').html(val);
   });
-  
+

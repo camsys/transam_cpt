@@ -1,8 +1,8 @@
 .row
   .col-md-3
-    = dialog_tag('Instructions', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+    = dialog_tag('Overview', {:icon => "fa fa-info-circle", :class => "header-part"}) do
       = render 'new_project_instructions'
-      
+
   .col-md-6
     = dialog_tag('Step 5 of 5: Confirm selections', {:class => "header-part"}) do
       = format_field("Name", @proxy.name)
@@ -13,12 +13,12 @@
       = format_field("Scope Type", @proxy.scope(5).name)
       = format_field("Description", @proxy.description.html_safe)
       = format_field("Justification", @proxy.justification.html_safe)
-        
-      = link_to "Go back", previous_wizard_path, :class => 'btn btn-primary'
-      = link_to "Create project", next_wizard_path, :class => 'btn btn-primary'
+
+      = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
+      = link_to "Create Project", next_wizard_path, :class => 'btn btn-primary'
 
   .col-md-3
-    = dialog_tag('Info', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+    = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do
       = render 'step5_info'
 
 = render 'scripts'
