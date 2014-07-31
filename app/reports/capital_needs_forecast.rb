@@ -11,7 +11,8 @@ class CapitalNeedsForecast < AbstractReport
     
     # Capital Needs by year
     a = []
-    labels = ['Fiscal Year', 'State', 'Federal', 'Local']
+    #labels = ['Fiscal Year', 'State', 'Federal', 'Local']
+    labels = ['Fiscal Year', 'Estimated', 'Requested', 'Approved']
         
     (current_fiscal_year_year..last_fiscal_year_year).each do |year|
       report_row = CptReportRow.new(year)
@@ -20,7 +21,7 @@ class CapitalNeedsForecast < AbstractReport
       capital_projects.find_each do |cp|
         report_row.add(cp)
       end
-      a << [fiscal_year(year), report_row.state_request, report_row.federal_request, report_row.local_request]
+      a << [fiscal_year(year), report_row.estimated_cost, report_row.total_requested, report_row.total_approved]
     end
     
     return {:labels => labels, :data => a}      

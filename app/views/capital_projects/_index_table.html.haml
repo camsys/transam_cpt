@@ -26,7 +26,7 @@
     - total_total = 0
 
     - @projects.each do |p|
-      - total_cost += p.total_cost
+      - total_cost += p.total_estimated_cost
       - total_state += p.state_request
       - total_federal += p.federal_request
       - total_local += p.local_request
@@ -42,7 +42,7 @@
         %td= p.title
         %td.center= p.capital_project_status_type
 
-        %td.right= format_as_currency(p.total_cost)
+        %td.right= format_as_currency(p.total_estimated_cost)
 
         %td.right= format_as_currency(p.state_request)
         %td.right= format_as_currency(p.federal_request)
@@ -51,10 +51,6 @@
 
         %td.center
           %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
-          = link_to shift_fiscal_year_capital_project_path(p, :num_years => -1, :view => 1), :title => 'Schedule earlier' do
-            %i.fa.fa-arrow-left.fa-fw
-          = link_to shift_fiscal_year_capital_project_path(p, :num_years => +1, :view => 1), :title => 'Schedule later' do
-            %i.fa.fa-arrow-right.fa-fw
 
   %tfoot
     %tr

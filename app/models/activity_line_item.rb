@@ -155,7 +155,7 @@ class ActivityLineItem < ActiveRecord::Base
     anticipated_cost - estimated_cost
   end
 
-  # Returns the total estiamted value of the assets in this ALI
+  # Returns the total estimated value of the assets in this ALI
   def total_estimated_value
     val = 0
     assets.each do |a|
