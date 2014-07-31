@@ -10,15 +10,14 @@
         = f.association :team_ali_code, :collection => TeamAliCode.bus_categories, :label_method => 'full_name', :label => 'Scope'
         = f.association :capital_project_type, :label => 'Project Type'
         = f.input :emergency, :as => :radio_buttons
-    
+
     .col-md-8
       = dialog_tag('Project Description', {:icon => 'fa fa-book', :class => "header_part"}) do
         = f.input :description, :input_html => { :rows => 3 }, :placeholder => "Enter a description for this project..."
         = f.input :justification, :input_html => { :rows => 6 }, :placeholder => "Enter a justification for this project..."
-        
+
     .col-md-12
       = f.button :submit, :class => "btn btn-primary"
-      = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
 
 :javascript
 
