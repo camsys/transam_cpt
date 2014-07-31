@@ -1,38 +1,48 @@
 .row
   = simple_form_for(@funding_source,
-    :html => {:class => 'form-horizontal' },
-    :wrapper => :horizontal_form,
-    :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
+    :html => {:class => 'form-vertical' },
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
     .col-md-4
       = dialog_tag('Fund Details', {:icon => 'fa fa-book', :class => "header_part"}) do
         = f.input :name, :placeholder => "Enter a name for this fund..."
         = f.association :funding_source_type
         = f.input :external_id, :label => 'dotGrants ID'
-        = f.input :description, :input_html => { :rows => 6 }, :placeholder => "Enter a description for this fund..."
-    
+        = f.input :description, :class => 'form-control', :input_html => { :rows => 4 }, :placeholder => "Enter a description for this fund..."
+
     .col-md-4
       = dialog_tag('Type', {:icon => 'fa fa-book', :class => "header_part"}) do
-        = f.input :state_administered_federal_fund
-        = f.input :bond_fund
-        = f.input :formula_fund
-        = f.input :non_committed_fund
-        = f.input :contracted_fund
-        = f.input :discretionary_fund
+        .col-md-5.col-md-offset-4
+          = f.input :state_administered_federal_fund
+          = f.input :bond_fund
+          = f.input :formula_fund
+          = f.input :non_committed_fund
+          = f.input :contracted_fund
+          = f.input :discretionary_fund
 
     .col-md-4
       = dialog_tag('Rules', {:icon => 'fa fa-book', :class => "header_part"}) do
-        = f.input :state_match_required
-        = f.input :federal_match_required
-        = f.input :local_match_required
+        = f.input :state_match_required, :wrapper => :vertical_append do
+          = f.input_field :state_match_required, :class => 'form-control'
+          %span.input-group-addon
+            = "%"
+        = f.input :federal_match_required, :wrapper => :vertical_append do
+          = f.input_field :federal_match_required, :class => 'form-control'
+          %span.input-group-addon
+            = "%"
+        = f.input :local_match_required, :wrapper => :vertical_append do
+          = f.input_field :local_match_required, :class => 'form-control'
+          %span.input-group-addon
+            = "%"
+        .col-md-4.col-md-offset-4
+          = f.input :rural_providers
+          = f.input :urban_providers
+          = f.input :shared_ride_providers
+          = f.input :inter_city_bus_providers
+          = f.input :inter_city_rail_providers
 
-        = f.input :rural_providers
-        = f.input :urban_providers
-        = f.input :shared_ride_providers
-        = f.input :inter_city_bus_providers
-        = f.input :inter_city_rail_providers
-        
     .col-md-12
-      = f.button :submit, :class => "btn btn-primary"
+      = f.button :submit, :class => "btn btn-primary", :value => "Create Funding Source"
 
 :javascript
 
