@@ -82,7 +82,8 @@ class CapitalProjectBuilder
 
     # Find all the assets for this organization
     assets = Vehicle.where('organization_id = ? AND scheduled_disposition_date IS NULL', organization.id)  
-    replace_scope = TeamAliCode.find_by_code('11.12.XX')
+    # Project scopes
+    replace_scope = TeamAliCode.find_by_code('11.12.XX')  # assume replacements are purchased not leased
     rehab_scope = TeamAliCode.find_by_code('11.14.XX')
 
     # Busses. As some busses can be replaced within the planning horizon we 
@@ -93,9 +94,10 @@ class CapitalProjectBuilder
       #-----------------------------      
       year = a.scheduled_replacement_year
       unless year.nil? or year > last_year
-        # Add the initial replacement 
+        # Add the initial replacement. If the project does not exist it is created
         add_to_project(a, replace_scope, year, replacement_project_type)
-        # See if this bus can be re-replaced within the planning time frame
+        
+        # See if the bus replacement can be replaced within the planning time frame
         policy = a.policy
         max_service_life_years = policy.get_policy_item(a).max_service_life_years
         year += max_service_life_years
@@ -111,6 +113,7 @@ class CapitalProjectBuilder
       #-----------------------------      
       year = a.scheduled_rehabilitation_year
       unless year.nil? or year > last_year
+        # This will create the project if it does not exist
         add_to_project(a, rehab_scope, year, rehabilitation_project_type)
       end
     end

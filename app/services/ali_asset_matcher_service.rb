@@ -76,19 +76,16 @@ class AliAssetMatcherService
       values << ali.asset_ids
     end
         
-    # Get the children of this project type and use it to select 
-    # possible subtypes
     asset_subtype_ids = []
-    ali.team_ali_code.children.each do |child|
-      # use the mixin to get the correct subtype from the ALI code
-      asset_subtypes = asset_subtypes_from_ali_code(child.code)
-      asset_subtypes.each do |type|
-        # add it to our list
-        asset_subtype_ids << type.id
-      end
+    # use the mixin to get the correct subtype from the ALI code
+    asset_subtypes = asset_subtypes_from_ali_code(ali.team_ali_code.code)
+    asset_subtypes.each do |type|
+      # add it to our list
+      asset_subtype_ids << type.id
     end
     # If there are no matching codes there is nothing else to do
     if asset_subtype_ids.empty?
+      Rails.logger.info "There are no matching asset subtypes for code #{ali.team_ali_code.code}."
       return a
     end
     # add to our query
@@ -104,8 +101,13 @@ class AliAssetMatcherService
       values << fy_year
     end    
     
-    a = Asset.where(conditions.join(' AND '), *values).order(:asset_type_id, :asset_subtype_id)
+    Rails.logger.debug conditions.inspect
+    Rails.logger.debug values.inspect
     
+    a = Asset.where(conditions.join(' AND '), *values).order(:asset_type_id, :asset_subtype_id)
+
+    Rails.logger.debug "Found #{a.size} mathcing assets."
+
     # return this list
     a    
   end
