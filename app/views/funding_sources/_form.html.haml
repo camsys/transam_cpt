@@ -12,13 +12,12 @@
 
     .col-md-4
       = dialog_tag('Type', {:icon => 'fa fa-book', :class => "header-part"}) do
-        .col-md-5.col-md-offset-4
-          = f.input :state_administered_federal_fund
-          = f.input :bond_fund
-          = f.input :formula_fund
-          = f.input :non_committed_fund
-          = f.input :contracted_fund
-          = f.input :discretionary_fund
+        = f.input :state_administered_federal_fund
+        = f.input :bond_fund
+        = f.input :formula_fund
+        = f.input :non_committed_fund
+        = f.input :contracted_fund
+        = f.input :discretionary_fund
 
     .col-md-4
       = dialog_tag('Rules', {:icon => 'fa fa-book', :class => "header-part"}) do
@@ -34,12 +33,12 @@
           = f.input_field :local_match_required, :class => 'form-control'
           %span.input-group-addon
             = "%"
-        .col-md-4.col-md-offset-4
-          = f.input :rural_providers
-          = f.input :urban_providers
-          = f.input :shared_ride_providers
-          = f.input :inter_city_bus_providers
-          = f.input :inter_city_rail_providers
+
+        = f.input :rural_providers
+        = f.input :urban_providers
+        = f.input :shared_ride_providers
+        = f.input :inter_city_bus_providers
+        = f.input :inter_city_rail_providers
 
     .col-md-12
       = f.button :submit, :class => "btn btn-primary"
