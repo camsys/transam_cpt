@@ -8,22 +8,22 @@
   fy_state = 0
   fy_local = 0
   fy_federal = 0
-  
+
 %table.table.table-hover
   %thead
     %tr
       %th.left Agency
       %th.left FY
       %th.left Project
-      %th.left Status  
-      %th.left Fund  
-          
+      %th.left Status
+      %th.left Fund
+
       %th.right State
-      %th.right Federal       
+      %th.right Federal
       %th.right Local
-      
+
       %th.right Total
-      
+
   %tbody
     - @funding_requests.each do |req|
       - total_amount += req.amount
@@ -40,7 +40,7 @@
           %td.right.sub_total= format_as_currency(fy_local)
           %td.right.sub_total= format_as_currency(fy_amount)
         %tr
-          %td.left{:colspan => 9}              
+          %td.left{:colspan => 9}
 
         - fy_amount = req.amount
         - fy_state = req.state_match
@@ -51,33 +51,33 @@
         - fy_state += req.state_match
         - fy_local += req.local_match
         - fy_federal += req.federal_match
-      
+
       - old_fy_year = fy_year
-           
+
       %tr
         %td.left= req.activity_line_item.capital_project.organization
-        %td.center= req.activity_line_item.capital_project.fiscal_year
+        %td.left= req.activity_line_item.capital_project.fiscal_year
         %td.left= req.activity_line_item.capital_project
         %td.left= req.activity_line_item.capital_project.capital_project_status_type
         %td.left= req.funding_amount.funding_source
-        
+
         %td.right= format_as_currency(req.state_match)
         %td.right= format_as_currency(req.federal_match)
         %td.right= format_as_currency(req.local_match)
         %td.right= format_as_currency(req.amount)
 
     %tr
-      %td.left{:colspan => 5}  
+      %td.left{:colspan => 5}
       %td.right.sub_total= format_as_currency(fy_state)
       %td.right.sub_total= format_as_currency(fy_federal)
       %td.right.sub_total= format_as_currency(fy_local)
       %td.right.sub_total= format_as_currency(fy_amount)
     %tr
-      %td.left{:colspan => 9}             
+      %td.left{:colspan => 9}
 
   %tfoot
     %tr
-      %td.left{:colspan => 5}            
+      %td.left{:colspan => 5}
       %td.right= format_as_currency(total_state)
       %td.right= format_as_currency(total_federal)
       %td.right= format_as_currency(total_local)

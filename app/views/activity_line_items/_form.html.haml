@@ -1,13 +1,28 @@
 .row
   = simple_form_for([@project, @activity_line_item],
-    :html => {:class => 'form-horizontal' },
-    :wrapper => :horizontal_form,
-    :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
-    .col-md-8.col-md-offset-2
+    :html => {:class => 'form-vertical' },
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+    .col-md-3
+      = dialog_tag('Overview', {:icon => 'fa fa-info-circle', :class => "form-part"}) do
+        %p
+          <strong>Activity Line Items</strong> are where the details of your capital projects are built. Here, you can group together various records from the inventory into cohesive line items, to be presented as part of a whole project.
+        %p
+          Once created, you can add individual <strong>assets</strong>, request <strong>funds</strong> from specific funding sources, input <strong>milestones</strong> for the line item, as well as discuss the ALIs and their impacts with other users in the <strong>comments</strong>.
+        %p
+          Make sure, before you begin to program your capital project, that your organization's <strong>budget</strong> is set for the fiscal year in which you plan to carry out the project. This way, the funds can be requested against the most up-to-date numbers.
+
+    .col-md-6
       = dialog_tag('Activity Line Item', {:icon => 'fa fa-list', :class => "form-part"}) do
         = f.input :name, :placeholder => "Enter a name..."
         = f.association :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name', :label => 'Sub Category'
 
-    .col-md-8.col-md-offset-2
+    .col-md-3
+      = dialog_tag('Instructions', {:icon => 'fa fa-info-circle', :class => "form-part"}) do
+        %p
+          To maintain transparency, enter a descriptive <strong>name</strong> for the activity line item. This should be a name that is easy to associate with the ALI details, such as "Purchase 30' Buses" or "Lease Dual Mode Buses".
+        %p
+          Next, select the <strong>subcategory</strong> most appropriate for your ALI. It is important to match this subcategory to the asset type with which you will be dealing.
+
+    .col-md-12
       = f.button :submit, :class => "btn btn-primary"
-      = submit_tag 'Cancel', :name => 'cancel', :class=>"btn btn-warning"
