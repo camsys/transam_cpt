@@ -13,9 +13,9 @@
   %thead
     %tr
       %th.left Agency
-      %th.left FY
+      %th.center FY
       %th.left Project
-      %th.left Status
+      %th.center Status
       %th.left Fund
 
       %th.right State
@@ -56,9 +56,9 @@
 
       %tr
         %td.left= req.activity_line_item.capital_project.organization
-        %td.left= req.activity_line_item.capital_project.fiscal_year
+        %td.center= req.activity_line_item.capital_project.fiscal_year
         %td.left= req.activity_line_item.capital_project
-        %td.left= req.activity_line_item.capital_project.capital_project_status_type
+        %td.center= req.activity_line_item.capital_project.capital_project_status_type
         %td.left= req.funding_amount.funding_source
 
         %td.right= format_as_currency(req.state_match)

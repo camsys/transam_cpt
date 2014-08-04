@@ -2,7 +2,7 @@
   %thead
     %tr
       %th.left Agency
-      %th.left FY
+      %th.center FY
       %th.left Project
       %th.center Scope
 
@@ -34,7 +34,7 @@
 
       %tr.popup-details{:data => {:action_path => capital_project_path(p)}}
         %td= p.organization
-        %td= p.fiscal_year
+        %td.center= p.fiscal_year
         %td= p.project_number
         %td.center= p.team_ali_code.scope
         %td.center= p.capital_project_type.code
