@@ -5,17 +5,17 @@
 
   .col-md-6
     = dialog_tag('Step 5 of 5: Confirm selections', {:class => "header-part"}) do
-      = format_field("Name", @proxy.name)
-      = format_field("Type", @proxy.capital_project_type)
-      = format_field("Fiscal Year", @proxy.fiscal_year)
-      = format_field("Scope", @proxy.scope(5))
-      = format_field("Scope Context", @proxy.scope(5).context)
-      = format_field("Scope Type", @proxy.scope(5).name)
-      = format_field("Description", @proxy.description.html_safe)
-      = format_field("Justification", @proxy.justification.html_safe)
+      .col-md-12
+        = format_field("Name", @proxy.name)
+        = format_field("Project Type", @proxy.capital_project_type)
+        = format_field("Fiscal Year", @proxy.fiscal_year)
+        = format_field("Scope Context", @proxy.scope(5).context)
+        = format_field("Scope Type", @proxy.scope(5).name)
+        = format_field("Description", @proxy.description.html_safe)
+        = format_field("Justification", @proxy.justification.html_safe)
 
-      = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
-      = link_to "Create Project", next_wizard_path, :class => 'btn btn-primary'
+        = link_to "Back", previous_wizard_path, :class => 'btn btn-primary'
+        = link_to "Create Project", next_wizard_path, :class => 'btn btn-primary'
 
   .col-md-3
     = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do

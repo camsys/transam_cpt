@@ -16,10 +16,10 @@
                   - col.each do |cpt|
                     .form-group
                       %label
-                        = f.radio_button :category, cpt.category.first, disabled: cpt.category.eql?('7X') || cpt.category.eql?('80')
+                        = f.radio_button :category, cpt.category.first, :required => true, :disabled => (cpt.category.eql?('7X') || cpt.category.eql?('80'))
                         = cpt.full_name
 
-          = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
+          = link_to "Back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
 
   .col-md-3
@@ -27,3 +27,6 @@
       = render 'step2_info'
 
 = render 'scripts'
+
+:javascript
+

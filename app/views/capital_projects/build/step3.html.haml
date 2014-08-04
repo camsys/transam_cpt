@@ -16,10 +16,10 @@
                   - col.each do |cpt|
                     .form-group
                       %label
-                        = f.radio_button :team_ali_code, cpt.id
+                        = f.radio_button :team_ali_code, cpt.id, :required => true
                         = cpt.full_name
 
-          = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
+          = link_to "Back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
 
   .col-md-3
@@ -27,13 +27,4 @@
       = render 'step3_info'
 
 = render 'scripts'
-
-:javascript
-  // Create a select handler that changes out the info panel based on the user selecting a proejct type
-  $('input[name=project_type]').change(function() {
-    // Get the data element and display the contents in the info panel
-    val = $(this).data('info');
-    //alert(val);
-    $('#action-info').html(val);
-  });
 

@@ -11,12 +11,12 @@
         = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
           .form-group
             %label Project Description
-            = f.text_area :description, :rows => 3, :class => "form-control", :placeholder => "Enter a description for this project..."
+            = f.text_area :description, :rows => 4, :class => "form-control", :placeholder => "Enter a description for this project...", :required => true, :minlength => 10
           .form-group
             %label Justification
-            = f.text_area :justification, :rows => 6 , :class => "form-control", :placeholder => "Enter a justification for this project..."
+            = f.text_area :justification, :rows => 4 , :class => "form-control", :placeholder => "Enter a justification for this project...", :required => true, :minlength => 10
 
-          = link_to "Go Back", previous_wizard_path, :class => 'btn btn-primary'
+          = link_to "Back", previous_wizard_path, :class => 'btn btn-primary'
           = submit_tag "Continue", :class => 'btn btn-primary'
 
   .col-md-3
@@ -24,11 +24,3 @@
       = render 'step4_info'
 
 = render 'scripts'
-
-:javascript
-
-  // Document Ready
-  $(document).ready(function(){
-    $('#capital_project_proxy_description').wysihtml5();
-    $('#capital_project_proxy_justification').wysihtml5();
-  });

@@ -9,19 +9,19 @@
         = form_for @proxy, :url => wizard_path, :method => :put, :role => 'form' do |f|
           .form-group
             %label Project Name
-            = f.text_field :name, :placeholder => "Enter a name for this project...", :class => "form-control"
+            = f.text_field :name, :placeholder => "Enter a name for this project...", :class => "form-control", :required => true, :minlength => 10
           .form-group
             %label Fiscal Year
-            = f.select(:fiscal_year, options_for_select(@fiscal_years, :selected => @proxy.fiscal_year), {:prompt => "Select the fiscal year"}, :class => "form-control")
+            = f.select(:fiscal_year, options_for_select(@fiscal_years, :selected => @proxy.fiscal_year), {:prompt => "Select the fiscal year"}, :required => true, :class => "form-control")
           .form-group
             %label Project Type
-            = f.select(:capital_project_type, options_for_select(CapitalProjectType.all, :selected => @proxy.capital_project_type), {:prompt => "Select the type of project"}, :class => "form-control")
+            = f.select(:capital_project_type, options_for_select(CapitalProjectType.all, :selected => @proxy.capital_project_type), {:prompt => "Select the type of project"}, :required => true, :class => "form-control")
 
           %label Scope
           .radio
             .form-group
               %label
-                = f.radio_button :mode, 1, checked: true
+                = f.radio_button :mode, 1, :required => true
                 = "Bus"
             .form-group
               %label
