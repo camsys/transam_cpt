@@ -13,8 +13,8 @@
         .col-md-6
           = f.input :organization_id, :collection => current_user.organizations, :label_method => 'coded_name',  :include_blank => "Any..." unless current_user.organizations.count < 2
           = f.input :capital_project_type_id, :collection => CapitalProjectType.all, :include_blank => "Any...", :label => "Capital Project Type"
-        .col-md-6
           = f.input :fy_year, :collection => @searcher.fiscal_years, :include_blank => "Any...", :label => "Fiscal Year"
+        .col-md-6
           = f.input :keywords, :label => "Keywords"
       .col-md-12
         = f.button :submit, 'Search', :class=>"btn btn-primary", :id => 'submit_btn'
