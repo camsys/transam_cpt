@@ -43,3 +43,13 @@
                     %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
                     %i.fa.fa-check-circle.action-icon.text-success{:data => {:action_path => add_asset_capital_project_activity_line_item_path(@project, @activity_line_item, :asset => a.object_key)}, :title => 'Add this asset to the ALI'}
 
+
+:javascript
+  $('.popup-details').popover({
+    trigger: 'hover',
+    container: 'body',
+    placement: 'left',
+    animation: 'true',
+    html: 'true'    
+  });  
+  

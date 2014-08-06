@@ -38,7 +38,7 @@
           %td.right= format_as_currency(a.estimated_replacement_cost)
           - if popup
             %td.center
-              %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_info_detail', :locals => {:asset => a}}"}}
+              %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
               - if delete
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger
@@ -50,12 +50,3 @@
         %td.right= format_as_currency(ali.total_estimated_value) 
         %td.right= format_as_currency(ali.total_estimated_replacement_cost) 
 
-:javascript
-  $('.popup-details').popover({
-    trigger: 'hover',
-    container: 'body',
-    placement: 'left',
-    animation: 'true',
-    html: 'true'    
-  });  
-  
