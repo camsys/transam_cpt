@@ -17,7 +17,6 @@ class CapitalProjectsController < OrganizationAwareController
 
     add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
     
-    @page_title = 'Capital Needs List Builder'
     @builder_proxy = BuilderProxy.new
     @message = "Creating SOGR capital projects. This process might take a while."
     
@@ -26,7 +25,6 @@ class CapitalProjectsController < OrganizationAwareController
   def runner
 
     add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
-    @page_title = 'Capital Project Builder'
 
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
@@ -191,7 +189,6 @@ class CapitalProjectsController < OrganizationAwareController
 
     add_breadcrumb "New", new_capital_project_path    
     
-    @page_title = "New Capital Project"
     @project = CapitalProject.new
     
     @fiscal_years = get_fiscal_years
@@ -252,7 +249,6 @@ class CapitalProjectsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)    
     add_breadcrumb "Modify", edit_capital_project_path(@project)    
     
-    @page_title = "Update #{@project.project_number}"
     @fiscal_years = get_fiscal_years
     
   end
@@ -274,7 +270,6 @@ class CapitalProjectsController < OrganizationAwareController
   def create
 
     add_breadcrumb "New", new_capital_project_path    
-    @page_title = "New Capital Project"
 
     @project = CapitalProject.new(form_params)
     @project.organization = @organization
@@ -296,7 +291,6 @@ class CapitalProjectsController < OrganizationAwareController
 
     add_breadcrumb @project.project_number, capital_project_path(@project)    
     add_breadcrumb "Modify", edit_capital_project_path(@project)    
-    @page_title = "Modify #{@project.project_number}"
     @fiscal_years = get_fiscal_years
 
     respond_to do |format|
