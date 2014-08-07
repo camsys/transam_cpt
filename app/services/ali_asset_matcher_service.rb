@@ -66,6 +66,9 @@ class AliAssetMatcherService
     # must belong to the org that owns the capital project
     conditions << 'organization_id = ?'
     values << capital_project.organization.id      
+
+    # cant already be disposed
+    conditions << 'disposition_date IS NULL'
                 
     # cant be scheduled for disposition
     conditions << 'scheduled_disposition_date IS NULL'
