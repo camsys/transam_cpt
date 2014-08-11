@@ -18,20 +18,6 @@ capital_project_status_types = [
   {:active => 1, :name => 'Approved',     :description => 'The Capital Project has been approved.'}
 ]
 
-#capital_project_types = [
-#  {:active => 1, :name => 'SOGR Fleet replacement project',     :code => "SRP",  :description => 'SOGR Fleet Replacement Project'},
-#  {:active => 1, :name => 'SOGR Fleet rebuild project',         :code => "SRH",  :description => 'SOGR Fleet Rehabilitation Project'},
-#  {:active => 1, :name => 'SOGR Rail mid-life rebuild project', :code => "SMR",  :description => 'SOGR Rail mid-life rebuild project'},
-#  {:active => 1, :name => 'SOGR Vehicle overhaul project',      :code => "VOH",  :description => 'SOGR Vehicle overhaul project'},
-#  {:active => 1, :name => 'Fleet expansion project',            :code => "FEX",  :description => 'Fleet expansion project'},
-#  {:active => 1, :name => 'Facility lease project',             :code => "FLP",  :description => 'Facility lease project'},
-#  {:active => 1, :name => 'Facility purchase project',          :code => "FLP",  :description => 'Facility purchase project'},
-#  {:active => 1, :name => 'Facility renovation project',        :code => "FRP",  :description => 'Facility renovation project'},
-#  {:active => 1, :name => 'Transit enhancement project',        :code => "TRE",  :description => 'Transit Enhancement project'},
-#  {:active => 1, :name => 'Operating assistance project',       :code => "OAP",  :description => 'Operating assistance project'},
-#  {:active => 1, :name => 'Other capital project',              :code => "OCP",  :description => 'Other capital project'}
-#]
-
 capital_project_types = [
   {:active => 1, :name => 'Replacement',    :code => "R",  :description => 'The capital project is aimed at replacing existing assets.'},
   {:active => 1, :name => 'Expansion',      :code => "E",  :description => 'The capital project is aimed at enhancing the service fleet or operations.'},
