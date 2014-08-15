@@ -1,0 +1,38 @@
+.row
+  .col-md-12.well.well-sm
+    .row{:style => 'border-bottom: 1px solid #666666;margin-bottom:5px;'}
+      .col-md-6
+        %h4= "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description}"
+      .col-md-6
+        .btn-group.pull-right.panel-action
+          %button.btn.btn-default.dropdown-toggle{:style => 'width:150px', :data => {:toggle => 'dropdown'}}
+            Actions... 
+            %span.caret
+          %ul.dropdown-menu{:role => 'menu'}
+            %li
+              = link_to action_scheduler_path(asset, :year => @year, :action_type => SchedulerController::DEFER_TO_NEXT_YEAR_ACTION), :remote => true do
+                %i.fa.fa-fw.fa-file-excel-o
+                = " Defer replacement to #{format_as_fiscal_year(@next_fy_year)}"
+            %li
+              = link_to action_scheduler_path(asset, :year => @year, :action_type => SchedulerController::REHABILITATE_ACTION), :remote => true do
+                %i.fa.fa-fw.fa-file-excel-o
+                = " Rehabilitate in #{format_as_fiscal_year(@next_fy_year)}"
+            %li
+              = link_to action_scheduler_path(asset, :year => @year, :action_type => SchedulerController::REMOVE_FROM_SERVICE_ACTION), :remote => true do
+                %i.fa.fa-fw.fa-file-excel-o
+                = " Remove from service in #{format_as_fiscal_year(@next_fy_year)}"
+    .row
+      .col-md-4
+        = format_field("Age", asset.age.to_s + " yrs")
+        = format_field("Mileage", format_as_integer(asset.reported_mileage) ) if asset.type_of? :vehicle
+        = format_field("Rating", format_as_decimal(asset.reported_condition_rating))
+        = format_field("Policy Year", format_as_fiscal_year(asset.policy_replacement_year))
+      .col-md-4
+        = format_field("Original Cost", format_as_currency(asset.purchase_cost))
+        = format_field("Purchase Date", format_as_date(asset.purchase_date))
+        = format_field("Purchased New", format_as_boolean(asset.purchased_new))
+        = format_field("Est. Cost", format_as_currency(asset.estimated_replacement_cost))
+      .col-md-4
+        = format_field("Scheduled Year", format_as_fiscal_year(asset.scheduled_replacement_year)) unless asset.scheduled_replacement_year.blank?
+        = format_field("Scheduled Rehabilitation", format_as_fiscal_year(asset.scheduled_rehabilitation_year)) unless asset.scheduled_rehabilitation_year.blank?
+              

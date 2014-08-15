@@ -1,0 +1,6 @@
+%p
+  = "Found #{@assets.size} assets for this plan."
+
+- @assets.each do |a|
+  = render :partial => 'repeater', :locals => {:asset => a}
+  

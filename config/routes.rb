@@ -14,6 +14,13 @@ Rails.application.routes.draw do
     end
   end
   
+  # Asset replacement/rehabilitation
+  resources :scheduler, :only => [:index] do
+    member do
+      get 'action'
+    end
+  end
+  
   # Funding Requests -- index only
   resources :funding_requests, :only => [:index]
 
