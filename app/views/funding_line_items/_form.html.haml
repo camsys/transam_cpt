@@ -1,0 +1,30 @@
+.row
+  = simple_form_for(@funding_line_item,
+    :html => {:class => 'form-vertical' },
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+    = f.input :active, :label => "FPN Status"
+    = f.association :funding_source
+    = f.input :fy_year, :label => 'Fiscal Year'
+    
+    = f.input :federal_project_number
+    = f.input :amount, :wrapper => :vertical_append do
+      = f.input_field :amount, :class => 'form-control'
+      %span.input-group-addon
+        = "$"
+    = f.input :pcnt_operating_assistance, :wrapper => :vertical_append do
+      = f.input_field :pcnt_operating_assistance, :class => 'form-control'
+      %span.input-group-addon
+        = "%"
+
+    = f.association :funding_line_item_type
+    
+    = f.button :submit, :class => "btn btn-primary"
+
+:javascript
+
+  // Document Ready
+  $(document).ready(function(){
+    transam.make_same_height('.header-part');
+  });

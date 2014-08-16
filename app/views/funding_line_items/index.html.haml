@@ -1,0 +1,21 @@
+.row
+  .col-md-12
+    .panel.panel-default.header-part
+      .panel-heading
+        .row
+          .col-md-3
+            %h3.panel-title
+              %i.fa.fa-list
+              Funds Available
+          .col-md-9
+            = render 'index_actions'
+      .panel-body
+        - if @funding_line_items.empty?
+          %p No matching funds found
+        - else
+          .col-md-12
+            .chart#chart
+          .col-md-12                
+            = render 'index_table'
+
+= render 'index_scripts'

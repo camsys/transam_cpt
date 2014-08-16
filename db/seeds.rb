@@ -591,11 +591,19 @@ funding_sources = [
     }
 ]
 
+# Funding Line Item Types
+funding_line_item_types = [
+  {:active => 1, :name => 'Earmark',        :code => "EM",  :description => 'Funds are earmarked.'},
+  {:active => 1, :name => 'Flex Funds',     :code => "FF",  :description => 'Funds are flex funds.'},
+  {:active => 1, :name => 'Formula',        :code => "FR",  :description => 'Funds are formular funds.'},
+  {:active => 1, :name => 'Discretioanry',  :code => "DS",  :description => 'Funds are discretionary.'}
+]
+
 # No funding amounts at this time
 funding_amounts = [
 ]
 
-lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_amounts }
+lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_line_item_types funding_amounts }
 merge_tables = %w{ reports }
 
 puts ">>> Loading CPT Lookup Tables <<<<"

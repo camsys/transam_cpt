@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       post 'update_amounts'
     end
   end
+
+  resources :funding_line_items
   
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
