@@ -111,6 +111,11 @@ class FundingLineItem < ActiveRecord::Base
     amount - committed
   end
   
+  # Returns the amount that is not earmarked for operating assistance
+  def non_operating_funds
+    amount - operating_funds
+  end
+  
   def operating_funds
     
     amount * (pcnt_operating_assistance / 100.0)

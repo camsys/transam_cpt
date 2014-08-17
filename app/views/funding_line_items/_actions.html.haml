@@ -1,0 +1,16 @@
+.btn-group.pull-right.panel-action
+  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+    I want to  
+    %span.caret
+  %ul.dropdown-menu{:role => 'menu'}
+    - if can? :update, @funding_line_item
+      %li
+        = link_to edit_funding_line_item_path(@funding_line_item) do
+          %i.fa.fa-edit.fa-fw
+          = " Update this appropriation"
+    - if can? :delete, @funding_line_item
+      %li.divider
+      %li
+        = link_to funding_line_item_path(@funding_line_item), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
+          %i.fa.fa-trash-o.fa-fw
+          = " Remove this appropriation"

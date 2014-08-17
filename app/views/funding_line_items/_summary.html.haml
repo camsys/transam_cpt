@@ -1,0 +1,21 @@
+.panel-body    
+  %fieldset
+    = format_field("Fund", @funding_line_item.funding_source)
+    = format_field("Fiscal Year", @funding_line_item.fiscal_year)
+    = format_field("FPN", @funding_line_item.federal_project_number)
+    = format_field("Active", format_as_boolean(@funding_line_item.active))
+    = format_field("Appropriation Amount", format_as_currency(@funding_line_item.amount))
+    = format_field("Payment Source", @funding_line_item.funding_line_item_type.name)
+    
+  %fieldset
+    %legend.panel-legend Budget
+    = format_field("Funds", format_as_currency(@funding_line_item.non_operating_funds))
+    = format_field("Committed", format_as_currency(@funding_line_item.committed))
+    = format_field("Remaining", format_as_currency(@funding_line_item.available))
+
+  - unless @funding_line_item.pcnt_operating_assistance == 0
+    %fieldset
+      %legend.panel-legend Operating Assistance Budget
+      = format_field("Operating Assistance", format_as_currency(@funding_line_item.operating_funds))
+      = format_field("Committed", format_as_currency(@funding_line_item.committed))
+      = format_field("Remaining", format_as_currency(@funding_line_item.available))

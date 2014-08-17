@@ -14,7 +14,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :funding_line_items
+  resources :funding_line_items do
+    resources :comments
+  end
   
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
