@@ -35,8 +35,8 @@ class FundingRequest < ActiveRecord::Base
   # Associations
   #------------------------------------------------------------------------------
 
-  # Has a single funding amount which is draws on
-  belongs_to  :funding_amount
+  # Has a single funding line item which it draws on
+  belongs_to  :funding_line_item
 
   # Has a single activity line item that it applies to
   belongs_to  :activity_line_item

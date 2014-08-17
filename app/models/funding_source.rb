@@ -49,11 +49,9 @@ class FundingSource < ActiveRecord::Base
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
   belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
   
-  # Has many funding amounts
-  has_many    :funding_amounts, :dependent => :destroy
-        
-  accepts_nested_attributes_for :funding_amounts, :reject_if => lambda{|a| a[:amount].blank?}, :allow_destroy => true
-  
+  # Has many funding line items
+  has_many    :funding_line_items, :dependent => :destroy
+          
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -97,8 +95,7 @@ class FundingSource < ActiveRecord::Base
     :shared_ride_providers,
     :inter_city_bus_providers,
     :inter_city_rail_providers,
-    :active,
-    :funding_amounts_attributes => [FundingAmount.allowable_params]
+    :active
   ]
   
   #------------------------------------------------------------------------------

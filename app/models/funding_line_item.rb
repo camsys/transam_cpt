@@ -50,7 +50,10 @@ class FundingLineItem < ActiveRecord::Base
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
   belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
 
-  # Has 0 or more comments. Using a polymorphic association, These will be removed if the funding line item is removed
+  # Has 0 or more funding requests drawing down on it. These will be removed if the funding line item is removed
+  has_many    :funding_requests, :dependent => :destroy
+
+  # Has 0 or more comments. Using a polymorphic association. These will be removed if the funding line item is removed
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
   #------------------------------------------------------------------------------
@@ -103,7 +106,12 @@ class FundingLineItem < ActiveRecord::Base
     
   # returns the amount of funds already committed
   def committed
-    0
+    val = 0
+    # TODO: filter this amount by requests that have not been committed
+    funding_requests.each do |req|
+      val += req.amount
+    end
+    val
   end
   
   # Returns the amount of funds available

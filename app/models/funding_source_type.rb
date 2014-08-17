@@ -2,7 +2,7 @@
 #
 # FundingSourceType
 #
-# Lookup Table for types of funding sources. Initailly: state/federal.
+# Lookup Table for types of funding sources. Initially: state/federal.
 #
 #------------------------------------------------------------------------------
 class FundingSourceType < ActiveRecord::Base
@@ -12,7 +12,6 @@ class FundingSourceType < ActiveRecord::Base
         
   # default scope
   default_scope { where(:active => true) }
- 
  
   def to_s
     name

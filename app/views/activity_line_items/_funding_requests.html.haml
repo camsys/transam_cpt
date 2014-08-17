@@ -24,7 +24,7 @@
                 :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
               .row
                 .col-sm-6
-                  = f.input :funding_amount_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true
+                  = f.input :funding_line_item_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true
                 .col-sm-6
                   = f.input :amount, :wrapper=> :vertical_prepend, :label => "Amount" do
                     %span.input-group-addon
