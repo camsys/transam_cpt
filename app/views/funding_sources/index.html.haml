@@ -10,9 +10,11 @@
           .col-md-8
             = render 'index_actions'
       .panel-body
-        - if @funding_sources.empty?
-          %p No matching funding sources found
-        - else
-          = render 'index_table'
+        .row
+          .col-md12
+          - if @funding_sources.empty?
+            %p No matching funding sources found
+          - else
+            = render 'index_table'
 
 = render 'index_scripts'

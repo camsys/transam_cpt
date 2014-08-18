@@ -84,12 +84,16 @@ class EligibilityService
     eligible_funds.each do |fund|
       fund_ids << fund.id
     end
+    # Add an impossible value so the query does not break
+    if fund_ids.empty?
+      fund_ids << -1
+    end
     
     # Get the list of funding line items based on the selected set of funds
-    funding_line_items = FundingLineItem.where('active = 1 AND funding_source_id IN (?)', capital_project.fy_year, fund_ids).order('fy_year')
+    funding_line_items = FundingLineItem.where('active = 1 AND funding_source_id IN (?)', fund_ids).order('fy_year')
 
     # further filter to remove and funds which are already used up
-    funding_amounts.each do |fund|
+    funding_line_items.each do |fund|
       if fund.available > 0
         # add this as there are still uncommitted funds available
         a << fund

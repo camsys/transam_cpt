@@ -61,25 +61,29 @@
   %ul.dropdown-menu
     %li.text-left.dropdown-submenu
       = link_to funding_sources_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
-        %i.fa.fa-money.fa-2x
-        %br
+        %i.fa.fa-money.fa-fw
         = " Funding Sources"
-      - FundingSourceType.all.each do |x|
-        %li.text-left.dropdown-submenu
-          = link_to x.name, funding_sources_path(:funding_source_type_id => x.id)
-          %ul.dropdown-menu
-            - FundingSource.where('funding_source_type_id = ?', x.id).all.each do |s|
-              %li
-                = link_to s.name, funding_source_path(s)
+      %ul.dropdown-menu
+        - FundingSourceType.all.each do |x|
+          %li.text-left.dropdown-submenu
+            = link_to x.name, funding_sources_path(:funding_source_type_id => x.id)
+            %ul.dropdown-menu
+              - FundingSource.where('funding_source_type_id = ?', x.id).each do |s|
+                %li
+                  = link_to s.name, funding_source_path(s)
     %li.divider
-    %li.text-left
+    %li.text-left.dropdown-submenu
       = link_to funding_line_items_path do
         %i.fa.fa-usd.fa-fw
-        = " Available Funds"
+        = " Appropriations"
+      %ul.dropdown-menu
+        - FundingSource.where('funding_source_type_id = 1').each do |s|
+          %li
+            = link_to s.name, funding_line_items_path(:funding_source_id => s.id)
         
     - if can? :create, FundingLineItem
       %li.divider
       %li.text-left
         = link_to new_funding_line_item_path do
           %i.fa.fa-plus.fa-fw
-          = " New Funding Line Item"
+          = " New Appropriation"

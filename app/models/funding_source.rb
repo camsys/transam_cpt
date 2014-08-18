@@ -32,12 +32,7 @@ class FundingSource < ActiveRecord::Base
   before_validation(:on => :create) do
     generate_unique_key(:object_key)
   end
-  
-  # Create a list of funding amounts after a funcing source has been created
-  after_create do    
-    create_funding_amounts
-  end
-            
+              
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -124,14 +119,6 @@ class FundingSource < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   protected 
-
-  def create_funding_amounts
-    # Build a set of funding amounts
-    (current_fiscal_year_year..last_fiscal_year_year).each do |year|
-      funding_amount = self.funding_amounts.build({:fy_year => year})
-      funding_amount.save
-    end    
-  end
   
   # Set resonable defaults for a new capital project
   def set_defaults

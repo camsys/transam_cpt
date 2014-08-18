@@ -4,24 +4,27 @@
   %table.table.table-hover
     %thead
       %tr
-        %th.center{:colspan => 2} Fund
-        %th.center{:colspan => 2} Federal
-        %th.center{:colspan => 2} State
+        %th.center{:colspan => 5} Federal
+        %th.center{:colspan => 5} State
         %th.center{:colspan => 2} Local
-        %th.center
-
+        %th
+          
       %tr
-        %th Name
+        %th Fund
         %th Authorization
-        
         %th.right Amount				
-        %th.right %       
+        %th.right Max %             
+        %th.right Act %       
+        
+        %th Fund
+        %th Authorization
+        %th.right Amount       
+        %th.right Rqd %       
+        %th.right Act %       
         
         %th.right Amount       
-        %th.right %       
-        
-        %th.right Amount       
-        %th.right %       
+        %th.right Rqd %       
+        %th.right Act %       
         
         %th.right Total
             
@@ -29,33 +32,25 @@
       - ali.funding_requests.each do |req|
         %tr
           
-          %td.left= req.name
-          %td.left= req.name
-          
-          %td.right= format_as_currency(req.federal_match)
-          %td.right= format_as_percentage(req.federal_match / req.amount * 100.0, 3) unless req.federal_match == 0
+          %td.left= req.federal_funding_line_item.funding_source
+          %td.left= req.federal_funding_line_item          
+          %td.right= format_as_currency(req.federal_amount)
+          %td.right= format_as_percentage(req.federal_funding_line_item.funding_source.federal_match_required, 3)
+          %td.right= format_as_percentage(req.federal_percentage, 3)
 
-          %td.right= format_as_currency(req.state_match)
-          %td.right= format_as_percentage(req.state_match / req.amount * 100.0, 3) unless req.state_match == 0
+          %td.left= req.state_funding_line_item.funding_source unless req.state_funding_line_item.nil?
+          %td.left= req.state_funding_line_item          
+          %td.right= format_as_currency(req.state_amount)
+          %td.right= format_as_percentage(req.federal_funding_line_item.funding_source.state_match_required, 3)
+          %td.right= format_as_percentage(req.state_percentage, 3)
 
-          %td.right= format_as_currency(req.local_match)
-          %td.right= format_as_percentage(req.local_match / req.amount * 100.0, 3) unless req.local_match == 0
+          %td.right= format_as_currency(req.local_amount)
+          %td.right= format_as_percentage(req.federal_funding_line_item.funding_source.local_match_required, 3) 
+          %td.right= format_as_percentage(req.local_percentage, 3)
           
-          %td.right= format_as_currency(req.amount)
+          %td.right= format_as_currency(req.total_amount)
 
           - unless popup == false
             %td.center
               = link_to capital_project_activity_line_item_funding_request_path(@project, ali, req), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                 %i.fa.fa-times-circle.action-icon.text-danger
-
-    %tfoot
-      %tr
-        %td{:colspan => "2"} 
-        %td.right= format_as_currency(ali.federal_funds) 
-        %td
-        %td.right= format_as_currency(ali.state_funds) 
-        %td
-        %td.right= format_as_currency(ali.local_funds) 
-        %td
-        %td.right= format_as_currency(ali.total_funds) 
-              

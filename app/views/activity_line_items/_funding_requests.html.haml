@@ -6,29 +6,47 @@
   state_budget_remainder = budgets[1]
 
 .row
-  .col-md-12{:style => 'height:200px;overflow-y:auto;'}
+  .col-md-12{:style => 'height:160px;overflow-y:auto;'}
     = render :partial => 'funding_requests_table', :locals => {:ali => @activity_line_item, :popup => true}
 
 .row
   .col-md-12
     %fieldset
       %legend Add Funding Request
-      .col-md-6
+      .col-md-12
         = render 'funding_messages'
 
-      .col-md-6
-        - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference > 0
-          - if federal_budget_remainder > 0 or state_budget_remainder > 0
+      - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference > 0
+        - if federal_budget_remainder > 0 or state_budget_remainder > 0
+          .col-md-12
             = simple_form_for([@project, @activity_line_item, FundingRequest.new],
-                :wrapper => :vertical_form,
-                :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+                :wrapper => :horizontal_form,
+                :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
               .row
-                .col-sm-6
-                  = f.input :funding_line_item_id, :collection => @available_funds, :label => 'Fund', :label_method => 'name', :required => true
-                .col-sm-6
-                  = f.input :amount, :wrapper=> :vertical_prepend, :label => "Amount" do
+                .col-xs-6
+                  = f.input :federal_funding_line_item_id, :collection => @available_funds, :label => 'Federal Fund', :label_method => 'details', :required => true
+                .col-xs-3
+                  = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
                     %span.input-group-addon
                       %i.fa.fa-usd
-                    = f.input_field :amount, :class => "form-control", :number => true, :range => [100, 10000000], :min => 100, :max => 10000000
+                    = f.input_field :federal_amount, :class => "form-control", :number => true, :min => 0, :max => 10000000
 
-              = f.submit "Add Funding Request", :class => 'btn btn-primary'
+              .row
+                .col-xs-6
+                  = f.input :state_funding_line_item_id, :collection => @available_funds, :label => 'State Fund', :label_method => 'details', :required => true
+                .col-xs-3
+                  = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+                    %span.input-group-addon
+                      %i.fa.fa-usd
+                    = f.input_field :state_amount, :class => "form-control", :number => true, :min => 0, :max => 10000000
+
+              .row
+                .col-xs-6
+                  = f.input :amount, :wrapper=> :horizontal_prepend, :label => "Local match" do
+                    %span.input-group-addon
+                      %i.fa.fa-usd
+                    = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0
+              .row
+                .col-xs-6
+                  .col-xs-offset-3.col-xs-3
+                    = f.submit "Add", :class => 'btn btn-primary'

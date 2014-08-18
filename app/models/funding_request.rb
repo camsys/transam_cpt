@@ -35,8 +35,11 @@ class FundingRequest < ActiveRecord::Base
   # Associations
   #------------------------------------------------------------------------------
 
-  # Has a single funding line item which it draws on
-  belongs_to  :funding_line_item
+  # Has 0 or 1 federal funding line item which it draws on
+  belongs_to  :federal_funding_line_item, :class_name => "FundingLineItem", :foreign_key => :federal_funding_line_item_id
+
+  # Has 0 or 1 state funding line item which it draws on
+  belongs_to  :state_funding_line_item,   :class_name => "FundingLineItem", :foreign_key => :state_funding_line_item_id
 
   # Has a single activity line item that it applies to
   belongs_to  :activity_line_item
@@ -49,9 +52,12 @@ class FundingRequest < ActiveRecord::Base
   # Validations
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => :true, :uniqueness => :true
-  validates :funding_amount_id,                 :presence => :true
+  validates :federal_funding_line_item_id,      :presence => :true
+  validates :state_funding_line_item_id,        :presence => :true
   validates :activity_line_item_id,             :presence => :true
-  validates :amount,                            :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :federal_amount,                    :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
+  validates :state_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
+  validates :local_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
   validates :created_by_id,                     :presence => :true
   validates :updated_by_id,                     :presence => :true
 
@@ -62,9 +68,12 @@ class FundingRequest < ActiveRecord::Base
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :object_key,
-    :funding_amount_id, 
+    :federal_funding_line_item_id, 
+    :state_funding_line_item_id, 
     :activity_line_item_id, 
-    :amount
+    :federal_amount,
+    :state_amount,
+    :local_amount
   ]
   
   #------------------------------------------------------------------------------
@@ -83,44 +92,34 @@ class FundingRequest < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
-  # Returns the federal match required for this request
-  def federal_match
-    if federal?
-      val = amount
+  def total_amount
+    federal_amount + state_amount + local_amount
+  end
+  
+  def federal_percentage
+    if total_amount > 0
+      pcnt = federal_amount / total_amount.to_f * 100.0
     else
-      val = amount * funding_amount.funding_source.federal_match_required / 100.0
+      pcnt = 0.0
     end
-    val
   end
-  
-  # returns the state match required for this request
-  def state_match
-    if federal?
-      val = 0
+  def state_percentage
+    if total_amount > 0
+      pcnt = state_amount / total_amount.to_f * 100.0
     else
-      val = amount * funding_amount.funding_source.state_match_required / 100.0
+      pcnt = 0.0
     end
-    val
   end
-  
-  # returns the local match required for this request
-  def local_match
-    if federal?
-      val = 0
+  def local_percentage
+    if total_amount > 0
+      pcnt = local_amount / total_amount.to_f * 100.0
     else
-      val = amount * funding_amount.funding_source.local_match_required / 100.0
+      pcnt = 0.0
     end
-    val
   end
-  
-  # Returns true if this is a federal fund, false otherwise
-  def federal?
-    return false if funding_amount.nil?
-    funding_amount.funding_source.funding_source_type_id == 1  
-  end
-  
+      
   def name
-    "#{funding_amount.funding_source.name}" unless funding_amount.nil?
+    "#{federal_funding_line_item.funding_source.name}" unless federal_funding_line_item.nil?
   end
   
   #------------------------------------------------------------------------------
@@ -132,7 +131,9 @@ class FundingRequest < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.amount ||= 0
+    self.federal_amount ||= 0
+    self.state_amount ||= 0
+    self.local_amount ||= 0
   end    
       
 end

@@ -7,13 +7,8 @@ Rails.application.routes.draw do
      end
   end
   
-  resources :funding_sources do
-    member do
-      get 'edit_amounts'
-      post 'update_amounts'
-    end
-  end
-
+  resources :funding_sources
+  
   resources :funding_line_items do
     resources :comments
   end

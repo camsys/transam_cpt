@@ -4,7 +4,7 @@ class FundingLineItemsController < OrganizationAwareController
   include FiscalYear
 
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Funding Line Items", :funding_line_items_path
+  add_breadcrumb "Funds", :funding_sources_path
   
   before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_funding_line_item,   :only => [:show, :edit, :update, :destroy]
@@ -15,15 +15,35 @@ class FundingLineItemsController < OrganizationAwareController
   # GET /funding_line_items.json
   def index
     
+    @fiscal_years = get_fiscal_years
+    
      # Start to set up the query
     conditions  = []
     values      = []
         
-    @funding_source_type_id = params[:funding_source_type_id]
-    unless @funding_source_type_id.blank?
-      @funding_source_type_id = @funding_source_type_id.to_i
-      conditions << 'funding_source_type_id = ?'
-      values << @funding_source_type_id
+    # Check to see if we got an organization to sub select on. 
+    @org_filter = params[:org_id]
+    conditions << 'organization_id IN (?)'
+    if @org_filter.blank?
+      values << @organization_list      
+    else
+      @org_filter = @org_filter.to_i
+      values << [@org_filter]
+    end
+
+    # See if we got search
+    @fiscal_year = params[:fiscal_year]
+    unless @fiscal_year.blank?
+      @fiscal_year = @fiscal_year.to_i
+      conditions << 'fy_year = ?'
+      values << @fiscal_year
+    end
+        
+    @funding_source_id = params[:funding_source_id]
+    unless @funding_source_id.blank?
+      @funding_source_id = @funding_source_id.to_i
+      conditions << 'funding_source_id = ?'
+      values << @funding_source_id
     end
         
     #puts conditions.inspect
@@ -33,6 +53,13 @@ class FundingLineItemsController < OrganizationAwareController
     # cache the set of object keys in case we need them later
     cache_list(@funding_line_items, INDEX_KEY_LIST_VAR)
       
+    if @funding_source_id.blank?
+      add_breadcrumb "All"
+    else 
+      add_breadcrumb FundingSource.find(@funding_source_id)
+    end
+    add_breadcrumb "Appropriations"
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @funding_line_items }
@@ -44,6 +71,8 @@ class FundingLineItemsController < OrganizationAwareController
   # GET /funding_line_items/1.json
   def show
     
+    add_breadcrumb @funding_line_item.funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_line_item.funding_source.funding_source_type)
+    add_breadcrumb @funding_line_item.funding_source, funding_source_path(@funding_line_item.funding_source)
     add_breadcrumb @funding_line_item.name, funding_line_item_path(@funding_line_item)
     
     # get the @prev_record_path and @next_record_path view vars
@@ -64,6 +93,9 @@ class FundingLineItemsController < OrganizationAwareController
     add_breadcrumb "New Funding Line Item", new_funding_line_item_path
 
     @funding_line_item = FundingLineItem.new
+    unless params[:funding_source_id].blank?
+      @funding_line_item.funding_source = FundingSource.find(params[:funding_source_id])
+    end
 
   end
 

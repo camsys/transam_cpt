@@ -3,8 +3,8 @@
     %a{:href => "#desc", :data =>{:toggle => 'tab'}}
       = "Description"
   %li
-    %a{:href => "#asst", :data =>{:toggle => 'tab'}}
-      = "Allocations"
+    %a{:href => "#appr", :data =>{:toggle => 'tab'}}
+      = "Appropriations"
   %li
     %a{:href => "#chrt", :data =>{:toggle => 'tab'}}
       = "Chart"
@@ -13,9 +13,9 @@
   .tab-pane.fade#desc
     .tab-content
       = @funding_source.description.html_safe
-  .tab-pane.fade#asst
+  .tab-pane.fade#appr
     .tab-content
-      = render 'funding_amounts'
+      = render 'appropriations'
   .tab-pane.fade#chrt
     .tab-content
       #allocation_chart_div{:style => "height:350px;"}

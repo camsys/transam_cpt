@@ -45,7 +45,7 @@
         %td.right= format_as_currency(f.available)
                
         %td.center
-          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.federal_project_number}: Activity Line Items"}}
+          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.federal_project_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
 
   %tfoot
     %tr

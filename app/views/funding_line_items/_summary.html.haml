@@ -2,7 +2,6 @@
   %fieldset
     = format_field("Fund", @funding_line_item.funding_source)
     = format_field("Fiscal Year", @funding_line_item.fiscal_year)
-    = format_field("FPN", @funding_line_item.federal_project_number)
     = format_field("Active", format_as_boolean(@funding_line_item.active))
     = format_field("Appropriation Amount", format_as_currency(@funding_line_item.amount))
     = format_field("Payment Source", @funding_line_item.funding_line_item_type.name)

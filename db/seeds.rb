@@ -596,7 +596,7 @@ funding_line_item_types = [
   {:active => 1, :name => 'Earmark',        :code => "EM",  :description => 'Funds are earmarked.'},
   {:active => 1, :name => 'Flex Funds',     :code => "FF",  :description => 'Funds are flex funds.'},
   {:active => 1, :name => 'Formula',        :code => "FR",  :description => 'Funds are formular funds.'},
-  {:active => 1, :name => 'Discretioanry',  :code => "DS",  :description => 'Funds are discretionary.'}
+  {:active => 1, :name => 'Discretionary',  :code => "DS",  :description => 'Funds are discretionary.'}
 ]
 
 # No funding amounts at this time

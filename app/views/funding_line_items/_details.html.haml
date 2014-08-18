@@ -1,7 +1,7 @@
 %ul.nav.nav-tabs
   %li
     %a{:href => "#alloc", :data =>{:toggle => 'tab'}}
-      = "Allocations"
+      = "Allocations (#{@funding_line_item.funding_requests.count})"
   %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
       = "Comments (#{@funding_line_item.comments.count})"
@@ -9,7 +9,7 @@
 .tab-content
   .tab-pane.fade#alloc
     .tab-content
-      = render 'funding_amounts'
+      = render :partial => 'funding_requests/index_table', :locals => {:funding_requests => @funding_line_item.funding_requests}
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'

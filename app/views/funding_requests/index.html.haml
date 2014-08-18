@@ -14,4 +14,4 @@
           %p No matching funding requests found
         - else
           .col-md-12                
-            = render 'index_table'
+            = render :partial => 'index_table', :locals => {:funding_requests => @funding_requests}

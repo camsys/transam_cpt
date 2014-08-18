@@ -56,7 +56,7 @@
         %td.center= format_as_boolean(f.inter_city_rail_providers)      
 
         %td.center
-          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.name}", :content => "#{raw render :partial => 'funding_amounts_table', :locals => {:funding_source => f, :popup => false}}"}}
+          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.name}", :content => "#{raw render :partial => 'appropriations_table', :locals => {:funding_source => f, :popup => false}}"}}
 
 = render 'shared/datatable_javascript'
 

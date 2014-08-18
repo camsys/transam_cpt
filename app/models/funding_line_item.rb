@@ -2,9 +2,9 @@
 #
 # FundingLineItem
 #
-# Represents a line item allocation of a Federal Fund for a transit agency. The
+# Represents a line item allocation of a Fund for a transit agency. The
 # line item could be applied for but not awarded in which case it will have a 
-# temporary FPN assigned
+# temporary project number assigned
 #
 #------------------------------------------------------------------------------
 class FundingLineItem < ActiveRecord::Base
@@ -47,11 +47,8 @@ class FundingLineItem < ActiveRecord::Base
   belongs_to  :funding_line_item_type
 
   # Each funding line item was created and updated by a user
-  belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
-  belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
-
-  # Has 0 or more funding requests drawing down on it. These will be removed if the funding line item is removed
-  has_many    :funding_requests, :dependent => :destroy
+  belongs_to  :creator, :class_name => "User", :foreign_key => "created_by_id"
+  belongs_to  :updator, :class_name => "User", :foreign_key => "updated_by_id"
 
   # Has 0 or more comments. Using a polymorphic association. These will be removed if the funding line item is removed
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
@@ -62,8 +59,8 @@ class FundingLineItem < ActiveRecord::Base
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :organization_id,                   :presence => true
   validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => Date.today.year}
-  validates :funding_source_id,         :presence => true
-  validates :funding_line_item_type_id,           :presence => true
+  validates :funding_source_id,                 :presence => true
+  validates :funding_line_item_type_id,         :presence => true
   validates :amount,                            :presence => true, :numericality => {:only_integer => :true, :greater_than => 0}
   validates :pcnt_operating_assistance,         :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
 
@@ -104,12 +101,23 @@ class FundingLineItem < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
     
+  # Returns the set of funding requests for this funding line item
+  def funding_requests
+    
+    if federal?
+      FundingRequest.where('federal_funding_line_item_id = ?', id)
+    else
+      FundingRequest.where('state_funding_line_item_id = ?', id)
+    end
+    
+  end
+  
   # returns the amount of funds already committed
   def committed
     val = 0
     # TODO: filter this amount by requests that have not been committed
     funding_requests.each do |req|
-      val += req.amount
+      val += req.total_amount
     end
     val
   end
@@ -130,6 +138,18 @@ class FundingLineItem < ActiveRecord::Base
    
   end
   
+  # Returns true if the funding line item is associated with a federal fund, false otherwise
+  def federal?
+    
+    if funding_source
+      (funding_source.funding_source_type_id == 1)
+    else
+      false
+    end
+    
+  end
+  
+  
   # Override the mixin method and delegate to it
   def fiscal_year
     super(fy_year)
@@ -141,6 +161,10 @@ class FundingLineItem < ActiveRecord::Base
   
   def name
     federal_project_number
+  end
+
+  def details
+    "#{funding_source}: #{federal_project_number} ($#{available})"
   end
     
   #------------------------------------------------------------------------------

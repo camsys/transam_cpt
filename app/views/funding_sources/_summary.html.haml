@@ -1,10 +1,6 @@
 %fieldset
-  %legend.panel-legend Fund
   = format_field("Type",  @funding_source.funding_source_type)
   = format_field("dotGrants ID", @funding_source.external_id)
-
-%fieldset
-  %legend.panel-legend Type
   = format_field("State Administered", format_as_boolean(@funding_source.state_administered_federal_fund))
   = format_field("Bond", format_as_boolean(@funding_source.bond_fund))
   = format_field("Formula", format_as_boolean(@funding_source.formula_fund))

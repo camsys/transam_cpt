@@ -6,12 +6,12 @@
           .col-md-3
             %h3.panel-title
               %i.fa.fa-list
-              Funds Available
+              Appropriations
           .col-md-9
             = render 'index_actions'
       .panel-body
         - if @funding_line_items.empty?
-          %p No matching funds found
+          %p No matching appropriations found
         - else
           .col-md-12
             .chart#chart

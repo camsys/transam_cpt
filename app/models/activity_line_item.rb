@@ -115,15 +115,16 @@ class ActivityLineItem < ActiveRecord::Base
   def federal_funds
     val = 0
     funding_requests.each do |a|
-      val += a.federal_match
+      val += a.federal_amount
     end
     val
   end
+  
   # Returns the total value of state funds requested
   def state_funds
     val = 0
     funding_requests.each do |a|
-      val += a.state_match
+      val += a.state_amount
     end
     val
   end
@@ -131,7 +132,7 @@ class ActivityLineItem < ActiveRecord::Base
   def local_funds
     val = 0
     funding_requests.each do |a|
-      val += a.local_match
+      val += a.local_amount
     end
     val
   end
@@ -139,7 +140,7 @@ class ActivityLineItem < ActiveRecord::Base
   def total_funds
     val = 0
     funding_requests.each do |a|
-      val += a.amount
+      val += a.total_amount
     end
     val
   end

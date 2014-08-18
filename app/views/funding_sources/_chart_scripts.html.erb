@@ -12,11 +12,11 @@
     var allocation_data = new google.visualization.DataTable();
     allocation_data.addColumn('string', 'Fiscal Year');
     allocation_data.addColumn('number', 'Fund Amount');
-    allocation_data.addColumn('number', 'Requested');
     allocation_data.addColumn('number', 'Committed');
+    allocation_data.addColumn('number', 'Available');
     allocation_data.addRows([
-   	<% @funding_source.funding_amounts.each do |a| %>
-		<%= raw "['#{a.fiscal_year}',#{a.amount},#{a.total_requested},#{a.total_committed}]," %>
+   	<% @funding_source.funding_line_items.each do |a| %>
+		<%= raw "['#{a.fiscal_year}',#{a.amount},#{a.committed},#{a.available}]," %>
 	<% end %>
     ]);
   

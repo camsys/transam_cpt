@@ -11,12 +11,21 @@
     %li
       = link_to new_funding_line_item_path do
         %i.fa.fa-fw.fa-usd
-        = " Register a new fund"
+        = " Register a new appropriation"
+
+= form_tag funding_line_items_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+  - if @organization_list.count > 1
+    .form-group
+      = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any organization...")
+  .form-group
+    = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
+  .form-group
+    = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all.collect, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any Source...")
 
 :javascript
   $(document).ready(function() {
 
-    $('#fiscal_year, #capital_project_status_type_id, #capital_project_type_id, #org_id, #funding_source_id, #asset_subtype_id').change(function() {
+    $('#org_id, #fiscal_year, #funding_source_id').change(function() {
       $('#filter_form').submit();
     });
     

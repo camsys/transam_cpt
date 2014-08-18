@@ -1,26 +1,29 @@
 .row
   = simple_form_for(@funding_line_item,
-    :html => {:class => 'form-vertical' },
-    :wrapper => :vertical_form,
-    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+    :html => {:class => 'form-horizontal' },
+    :wrapper => :horizontal_form,
+    :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
 
-    = f.input :active, :label => "FPN Status"
-    = f.association :funding_source
+    = f.association :funding_source, :label => 'Fund'
     = f.input :fy_year, :label => 'Fiscal Year'
     
     = f.input :federal_project_number
-    = f.input :amount, :wrapper => :vertical_append do
+    = f.input :active, :label => "FPN active", :as => :radio_buttons
+    = f.association :funding_line_item_type, :label => 'FPN Type'
+    
+    = f.input :amount, :wrapper => :horizontal_append, :label => 'Appropriation amount' do
       = f.input_field :amount, :class => 'form-control'
       %span.input-group-addon
         = "$"
-    = f.input :pcnt_operating_assistance, :wrapper => :vertical_append do
+        
+    = f.input :pcnt_operating_assistance, :wrapper => :horizontal_append, :label => 'Percent operating assistance' do
       = f.input_field :pcnt_operating_assistance, :class => 'form-control'
       %span.input-group-addon
         = "%"
 
-    = f.association :funding_line_item_type
     
-    = f.button :submit, :class => "btn btn-primary"
+    .col-md-offset-3.col-md-9
+      = f.button :submit, :class => "btn btn-primary"
 
 :javascript
 

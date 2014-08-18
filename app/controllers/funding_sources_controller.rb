@@ -4,10 +4,10 @@ class FundingSourcesController < OrganizationAwareController
   include FiscalYear
 
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Funding Sources", :funding_sources_path
+  add_breadcrumb "Funds", :funding_sources_path
   
   before_filter :check_for_cancel,        :only => [:create, :update]
-  before_action :set_funding_source,      :only => [:show, :edit, :update, :destroy, :edit_amounts, :update_amounts]
+  before_action :set_funding_source,      :only => [:show, :edit, :update, :destroy]
   
   INDEX_KEY_LIST_VAR    = "funding_source_key_list_cache_var"
   
@@ -18,7 +18,7 @@ class FundingSourcesController < OrganizationAwareController
      # Start to set up the query
     conditions  = []
     values      = []
-        
+
     @funding_source_type_id = params[:funding_source_type_id]
     unless @funding_source_type_id.blank?
       @funding_source_type_id = @funding_source_type_id.to_i
@@ -29,10 +29,16 @@ class FundingSourcesController < OrganizationAwareController
     #puts conditions.inspect
     #puts values.inspect
     @funding_sources = FundingSource.where(conditions.join(' AND '), *values)
-      
+
     # cache the set of object keys in case we need them later
     cache_list(@funding_sources, INDEX_KEY_LIST_VAR)
-      
+
+    if @funding_source_type_id.blank?
+      add_breadcrumb "All"
+    else 
+      add_breadcrumb FundingSourceType.find(@funding_source_type_id)
+    end
+          
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @funding_sources }
@@ -44,6 +50,7 @@ class FundingSourcesController < OrganizationAwareController
   # GET /funding_sources/1.json
   def show
     
+    add_breadcrumb @funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_source.funding_source_type)
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     
     # get the @prev_record_path and @next_record_path view vars
@@ -70,16 +77,9 @@ class FundingSourcesController < OrganizationAwareController
   # GET /funding_sources/1/edit
   def edit
     
+    add_breadcrumb @funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_source.funding_source_type)
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     add_breadcrumb "Modify"
-
-  end
-
-  # GET /funding_sources/1/edit_amounts
-  def edit_amounts
-    
-    add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
-    add_breadcrumb "Update Funding Amounts"
 
   end
 
@@ -109,6 +109,7 @@ class FundingSourcesController < OrganizationAwareController
   # PATCH/PUT /funding_sources/1.json
   def update
 
+    add_breadcrumb @funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_source.funding_source_type)
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     add_breadcrumb "Modify"
 
@@ -126,26 +127,6 @@ class FundingSourcesController < OrganizationAwareController
     end
   end
 
-  # PATCH/PUT /funding_sources/1/update_amounts
-  # PATCH/PUT /funding_sources/1.json
-  def update_amounts
-
-    add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
-    add_breadcrumb "Update Funding Amounts"
-
-    @funding_source.updator = current_user
-
-    respond_to do |format|
-      if @funding_source.update(form_params)
-        notify_user(:notice, "The Funding Source was successfully updated.")
-        format.html { redirect_to funding_source_url(@funding_source) }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @funding_source.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
   # DELETE /funding_sources/1
   # DELETE /funding_sources/1.json

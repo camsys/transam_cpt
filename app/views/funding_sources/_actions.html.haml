@@ -1,17 +1,20 @@
-- if can? :create, @funding_source
-  .btn-group.pull-right.panel-action
-    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-      I want to
-      %span.caret
-    %ul.dropdown-menu{:role => 'menu'}
+.btn-group.pull-right.panel-action
+  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+    I want to
+    %span.caret
+  %ul.dropdown-menu{:role => 'menu'}
+    - if can? :create, FundingLineItem
+      %li
+        = link_to new_funding_line_item_path(:funding_source_id => @funding_source.id) do
+          %i.fa.fa-plus.fa-fw
+          = " Add an appropriation"
+    - if can? :update, @funding_source
+      %li.divider
       %li
         = link_to edit_funding_source_path(@funding_source) do
           %i.fa.fa-edit.fa-fw
           = " Modify this funding source"
-      %li
-        = link_to edit_amounts_funding_source_path(@funding_source) do
-          %i.fa.fa-usd.fa-fw
-          = " Update the funding amounts"
+    - if can? :delete, @funding_source
       %li.divider
       %li
         = link_to funding_source_path(@funding_source), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone."}  do

@@ -1,0 +1,14 @@
+.row
+  .col-md-3
+    = dialog_tag('Overview', {:icon => "fa fa-info-circle", :class => "header-part"}) do
+      = render 'information'
+        
+  .col-md-6
+    = dialog_tag('New Appropriation', {:class => "header-part"}) do
+      = render 'form'
+
+  .col-md-3
+    = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do
+      = render 'instructions'
+
+= render 'scripts'
