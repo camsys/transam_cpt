@@ -1,0 +1,35 @@
+.row
+  = simple_form_for(@funding_line_item,
+    :html => {:class => 'form-horizontal' },
+    :wrapper => :horizontal_form,
+    :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
+
+    = f.input :funding_source_id, :as => :hidden
+    
+    = f.association :funding_source, :label => 'Fund', :disabled => true
+    = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal Year'
+    
+    = f.input :project_number
+    = f.input :active, :label => "FPN active", :as => :radio_buttons
+    = f.association :funding_line_item_type, :label => 'FPN Type'
+    
+    = f.input :amount, :wrapper => :horizontal_append, :label => 'Appropriation amount' do
+      = f.input_field :amount, :class => 'form-control'
+      %span.input-group-addon
+        = "$"
+        
+    = f.input :pcnt_operating_assistance, :wrapper => :horizontal_append, :label => 'Percent operating assistance' do
+      = f.input_field :pcnt_operating_assistance, :class => 'form-control'
+      %span.input-group-addon
+        = "%"
+
+    
+    .col-md-offset-3.col-md-9
+      = f.button :submit, :class => "btn btn-primary"
+
+:javascript
+
+  // Document Ready
+  $(document).ready(function(){
+    transam.make_same_height('.header-part');
+  });

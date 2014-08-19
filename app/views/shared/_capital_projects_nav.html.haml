@@ -77,13 +77,11 @@
         %i.fa.fa-usd.fa-fw
         = " Appropriations"
       %ul.dropdown-menu
-        - FundingSource.where('funding_source_type_id = 1').each do |s|
-          %li
-            = link_to s.name, funding_line_items_path(:funding_source_id => s.id)
-        
-    - if can? :create, FundingLineItem
-      %li.divider
-      %li.text-left
-        = link_to new_funding_line_item_path do
-          %i.fa.fa-plus.fa-fw
-          = " New Appropriation"
+        - FundingSourceType.all.each do |x|
+          %li.text-left.dropdown-submenu
+            = link_to x.name, funding_line_items_path(:funding_source_type_id => x.id)
+            %ul.dropdown-menu
+              - FundingSource.where('funding_source_type_id = ?', x.id).each do |s|
+                - if s.funding_line_items.where('organization_id = ?', @organization.id).count > 0
+                  %li
+                    = link_to s.name, funding_line_items_path(:funding_source_id => s.id)

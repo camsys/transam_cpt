@@ -48,7 +48,7 @@ class FundingLineItemsController < OrganizationAwareController
         
     #puts conditions.inspect
     #puts values.inspect
-    @funding_line_items = FundingLineItem.where(conditions.join(' AND '), *values)
+    @funding_line_items = FundingLineItem.where(conditions.join(' AND '), *values).order('funding_source_id, fy_year')
       
     # cache the set of object keys in case we need them later
     cache_list(@funding_line_items, INDEX_KEY_LIST_VAR)
@@ -90,13 +90,18 @@ class FundingLineItemsController < OrganizationAwareController
   # GET /funding_line_items/new
   def new
 
+    @funding_source = FundingSource.find(params[:funding_source_id])
+    @fiscal_years = get_fiscal_years
+    
+    add_breadcrumb @funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_source.funding_source_type)
     add_breadcrumb "New Funding Line Item", new_funding_line_item_path
 
     @funding_line_item = FundingLineItem.new
-    unless params[:funding_source_id].blank?
-      @funding_line_item.funding_source = FundingSource.find(params[:funding_source_id])
+    @funding_line_item.funding_source = @funding_source
+    unless @funding_source.federal?
+      @funding_line_item.funding_line_item_type = FundingLineItemType.find_by_code('OT') 
     end
-
+    
   end
 
   # GET /funding_line_items/1/edit
@@ -111,12 +116,17 @@ class FundingLineItemsController < OrganizationAwareController
   # POST /funding_line_items.json
   def create
     
-    add_breadcrumb "New Funding Line Item", new_funding_line_item_path
 
     @funding_line_item = FundingLineItem.new(form_params)
     @funding_line_item.organization = @organization
     @funding_line_item.creator = current_user
     @funding_line_item.updator = current_user
+
+    @funding_source = @funding_line_item.funding_source
+    @fiscal_years = get_fiscal_years
+    
+    add_breadcrumb @funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_source.funding_source_type)
+    add_breadcrumb "New Funding Line Item", new_funding_line_item_path
     
     respond_to do |format|
       if @funding_line_item.save        

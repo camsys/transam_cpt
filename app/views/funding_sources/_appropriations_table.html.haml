@@ -1,62 +1,10 @@
 - if funding_source.funding_line_items.empty?
   %p There are no appropriations for this fund.
 -else
-  %table.table.table-hover
-    %thead
-      %tr
-        %th.left Fund
-        %th.center FY
-        %th.left Proj. Num
-        %th.center Awarded
-        %th.center Active
-  
-        %th.center Type
-        %th.right Amount
-        %th.right Pcnt Op.
-        %th.right Amount Op.
-        %th.right Committed
-        %th.right Available
-        
-        %th.center
-  
-    %tbody
-      - total = 0
-      - operating = 0
-      - committed = 0
-      - available = 0
-  
-      - funding_source.funding_line_items.where('organization_id = ?', @organization.id).each do |f|
-        - total += f.amount
-        - operating += f.operating_funds
-        - committed += f.committed
-        - available += f.available
-  
-        %tr.popup-details{:data => {:action_path => funding_line_item_path(f)}}
-          %td= f.funding_source
-          %td.center= f.fiscal_year
-          %td.left= f.project_number
-          %td.center= format_as_boolean(f.awarded)
-          %td.center= format_as_boolean(f.active)
-          
-          %td.center= f.funding_line_item_type.code
-          %td.right= format_as_currency(f.amount)
-          %td.right= format_as_percentage(f.pcnt_operating_assistance)
-          %td.right= format_as_currency(f.operating_funds)
-          %td.right= format_as_currency(f.committed)
-          %td.right= format_as_currency(f.available)
-                 
-          %td.center
-            %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.project_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
-  
-    %tfoot
-      %tr
-        %td{:colspan => 6}
-        %td.right= format_as_currency(total)
-        %td.right
-        %td.right= format_as_currency(operating)
-        %td.right= format_as_currency(committed)
-        %td.right= format_as_currency(available)
-
+  - if funding_source.federal?
+    = render :partial => 'federal_appropriations_table', :locals => {:funding_line_items => funding_source.funding_line_items.where('organization_id = ?', @organization.id).order('fy_year')}
+  - else
+    = render :partial => 'state_appropriations_table', :locals => {:funding_line_items => funding_source.funding_line_items.where('organization_id = ?', @organization.id).order('fy_year')}
 
 :javascript
   $('.popup-details').popover({

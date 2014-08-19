@@ -114,7 +114,7 @@ class FundingLineItem < ActiveRecord::Base
     
   end
   
-  # returns the amount of funds already committed
+  # returns the amount of funds committed but not spent
   def committed
     val = 0
     # TODO: filter this amount by requests that have not been committed
@@ -126,7 +126,7 @@ class FundingLineItem < ActiveRecord::Base
   
   # Returns the amount of funds available
   def available
-    amount - spent - committed
+    [amount - spent - committed, 0].max
   end
   
   # Returns the amount that is not earmarked for operating assistance
@@ -144,7 +144,7 @@ class FundingLineItem < ActiveRecord::Base
   def federal?
     
     if funding_source
-      (funding_source.funding_source_type_id == 1)
+      funding_source.federal?
     else
       false
     end
@@ -162,11 +162,15 @@ class FundingLineItem < ActiveRecord::Base
   end
   
   def name
-    project_number
+    project_number.blank? ? 'N/A' : project_number
   end
 
   def details
-    "#{funding_source}: #{project_number} ($#{available})"
+    if project_number.blank?
+      "#{funding_source} #{fiscal_year} ($#{available})"
+    else
+      "#{funding_source} #{fiscal_year}: #{project_number} ($#{available})"
+    end
   end
     
   #------------------------------------------------------------------------------

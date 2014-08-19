@@ -1,14 +1,25 @@
+:ruby
+  if @funding_line_item.federal?
+    info_view = 'federal_information'
+    form_view = 'federal_form'
+    inst_view = 'federal_instructions'
+  else
+    info_view = 'state_information'
+    form_view = 'state_form'
+    inst_view = 'state_instructions'
+  end
+  
 .row
   .col-md-3
     = dialog_tag('Overview', {:icon => "fa fa-info-circle", :class => "header-part"}) do
-      = render 'information'
+      = render info_view
         
   .col-md-6
     = dialog_tag('New Appropriation', {:class => "header-part"}) do
-      = render 'form'
+      = render form_view
 
   .col-md-3
     = dialog_tag('Instructions', {:icon => "fa fa-question-circle", :class => "header-part"}) do
-      = render 'instructions'
+      = render inst_view
 
 = render 'scripts'

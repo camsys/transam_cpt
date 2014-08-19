@@ -109,10 +109,14 @@ class FundingSource < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
+  def federal?
+    (funding_source_type_id == 1)
+  end
+  
   def to_s
     name
   end
-  
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
