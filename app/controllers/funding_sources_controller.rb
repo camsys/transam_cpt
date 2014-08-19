@@ -46,6 +46,23 @@ class FundingSourcesController < OrganizationAwareController
     
   end
 
+  # returns details for an funding source
+  def details
+    
+    if params[:funding_line_item_id]
+      line_item = FundingLineItem.find(params[:funding_line_item_id])
+      @funding_source = line_item.funding_source
+    elsif params[:funding_source_id]
+      @funding_source = FundingSource.find(params[:funding_source_id])
+    end
+    
+    respond_to do |format|
+      format.js 
+      format.json { render :json => @funding_source.to_json }
+    end
+    
+  end    
+
   # GET /funding_sources/1
   # GET /funding_sources/1.json
   def show

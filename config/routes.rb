@@ -7,7 +7,11 @@ Rails.application.routes.draw do
      end
   end
   
-  resources :funding_sources
+  resources :funding_sources do
+    collection do
+        get 'details'      
+    end
+  end
   
   resources :funding_line_items do
     resources :comments
