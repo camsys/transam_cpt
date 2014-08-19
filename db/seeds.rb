@@ -71,7 +71,7 @@ funding_source_types = [
 funding_sources = [
   {
     :active => 1,
-    :name => '5307',
+    :name => '5307 FTA Capital Improvements: ICR',
     :description => "The Urbanized Area Formula Funding Program (5307). Provides transit capital and operating assistance in urbanized areas and for transportation related planning.  Eligible activities include planning, engineering design and evaluation of transit projects and other technical transportation-related studies; capital investments in bus and bus-related activities such as replacement of buses, overhaul of buses, rebuilding of buses, crime prevention and security equipment and construction of maintenance and passenger shelters.",
     :funding_source_type_id => 1,
     :external_id => "41",
@@ -90,12 +90,11 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 50000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
-    :name => '5309',
+    :name => '5309 FTA Capital Discretionary: ICR',
     :description => "Bus and Bus Facilities (5309). The transit capital investment program. The New Starts program provides funds for construction of new fixed guideway systems or extensions to existing fixed guideway systems. The Small Starts program provides funds to capital projects that either (a) meet the definition of a fixed guideway for at least 50 percent of the project length in the peak period or (b) are corridor-based bus projects with 10 minute peak/15 minute off-peak headways or better while operating at least 14 hours per weekday.",
     :funding_source_type_id => 1,
     :external_id => "42",
@@ -114,12 +113,11 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 50000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
-    :name => '5310',
+    :name => '5310 FTA Capital Improvements: Grants',
     :description => "Transportation for Elderly Persons and Persons with Disabilities (5310). Federal Elderly and Persons with Disabilities program to be used for related preventative maintenance, contracting for service, provision of a fixed-route paratransit service, leasing of equipment or facilities, safety equipment and facilities, facilities that incorporate community services (such as day care or health care), and transit enhancements.",
     :funding_source_type_id => 1,
     :external_id => "43",
@@ -138,12 +136,11 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 50000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
-    :name => '5311',
+    :name => '5311 ARRA',
     :description => "Rural Transit Assistance Program (5311(b)(3)). Aims to assist in the design and implementation of training and technical assistance projects and other support services tailored to meet the needs of transit operators in nonurbanized areas.",
     :funding_source_type_id => 1,
     :external_id => "44",
@@ -162,12 +159,11 @@ funding_sources = [
     :federal_match_required => 100.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 50000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
-    :name => '5316',
+    :name => '5316 Capital Improvements: WAW, JARC',
     :description => "Job Access and Reverse Commute Program (5316). Aims to address the unique transportation challenges faced by welfare recipients and low-income persons seeking to obtain and maintain employment.",
     :funding_source_type_id => 1,
     :external_id => "48",
@@ -186,12 +182,11 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 50000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
-    :name => '5317',
+    :name => '5317 Capital Improvements: New Freedom',
     :description => "New Freedom Program. Aims to provide additional tools to overcome existing barriers facing Americans with disabilities seeking integration into the work force and full participation in society.",
     :funding_source_type_id => 1,
     :external_id => "49",
@@ -210,8 +205,7 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 50000000
+    :updated_by_id => sys_user_id
     },
   # {
   #   :active => 1,
@@ -250,8 +244,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -274,8 +267,7 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 3.33,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -298,8 +290,7 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 0.645,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -322,8 +313,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -346,8 +336,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -370,8 +359,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -394,8 +382,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -418,8 +405,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -442,8 +428,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -466,8 +451,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -490,8 +474,7 @@ funding_sources = [
     :federal_match_required => 0.0,
     :local_match_required => 0.0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -514,8 +497,7 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 3.33,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -538,8 +520,7 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 3.33,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -562,8 +543,7 @@ funding_sources = [
     :federal_match_required => 0,
     :local_match_required => 0,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     },
   {
     :active => 1,
@@ -586,8 +566,7 @@ funding_sources = [
     :federal_match_required => 80.0,
     :local_match_required => 3.33,
     :created_by_id => sys_user_id,
-    :updated_by_id => sys_user_id,
-    :default_amount => 10000000
+    :updated_by_id => sys_user_id
     }
 ]
 
@@ -596,14 +575,11 @@ funding_line_item_types = [
   {:active => 1, :name => 'Earmark',        :code => "EM",  :description => 'Funds are earmarked.'},
   {:active => 1, :name => 'Flex Funds',     :code => "FF",  :description => 'Funds are flex funds.'},
   {:active => 1, :name => 'Formula',        :code => "FR",  :description => 'Funds are formular funds.'},
-  {:active => 1, :name => 'Discretionary',  :code => "DS",  :description => 'Funds are discretionary.'}
+  {:active => 1, :name => 'Discretionary',  :code => "DS",  :description => 'Funds are discretionary.'},
+  {:active => 1, :name => 'Other',          :code => "OT",  :description => 'Other.'}
 ]
 
-# No funding amounts at this time
-funding_amounts = [
-]
-
-lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_line_item_types funding_amounts }
+lookup_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_line_item_types }
 merge_tables = %w{ reports }
 
 puts ">>> Loading CPT Lookup Tables <<<<"
@@ -634,10 +610,6 @@ data = eval(table_name)
 data.each do |row|
   x = FundingSource.new(row.except(:default_amount))
   x.save!
-  x.funding_amounts.each do |fa|
-    fa.amount = row[:default_amount]
-    fa.save!
-  end
 end
 
 puts ">>> Loading CPT Merge Tables <<<<"

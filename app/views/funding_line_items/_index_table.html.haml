@@ -4,7 +4,7 @@
       %th.left Agency
       %th.left Fund
       %th.center FY
-      %th.left FPN
+      %th.left Project Number
       %th.center Awarded
       %th.center Active
 
@@ -33,7 +33,7 @@
         %td= f.organization
         %td= f.funding_source
         %td.center= f.fiscal_year
-        %td.left= f.federal_project_number
+        %td.left= f.project_number
         %td.center= format_as_boolean(f.awarded)
         %td.center= format_as_boolean(f.active)
         
@@ -45,7 +45,7 @@
         %td.right= format_as_currency(f.available)
                
         %td.center
-          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.federal_project_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
+          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.project_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
 
   %tfoot
     %tr

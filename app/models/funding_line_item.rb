@@ -58,10 +58,11 @@ class FundingLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   validates :object_key,                        :presence => true, :uniqueness => true
   validates :organization_id,                   :presence => true
-  validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => Date.today.year}
+  validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1990}
   validates :funding_source_id,                 :presence => true
   validates :funding_line_item_type_id,         :presence => true
   validates :amount,                            :presence => true, :numericality => {:only_integer => :true, :greater_than => 0}
+  validates :spent,                             :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
   validates :pcnt_operating_assistance,         :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
 
 
@@ -78,9 +79,10 @@ class FundingLineItem < ActiveRecord::Base
     :fy_year,
     :funding_source_id,
     :funding_line_item_type_id,
-    :federal_project_number, 
+    :project_number, 
     :awarded,
     :amount,
+    :spent,
     :pcnt_operating_assistance,
     :active
   ]
@@ -124,7 +126,7 @@ class FundingLineItem < ActiveRecord::Base
   
   # Returns the amount of funds available
   def available
-    amount - committed
+    amount - spent - committed
   end
   
   # Returns the amount that is not earmarked for operating assistance
@@ -156,15 +158,15 @@ class FundingLineItem < ActiveRecord::Base
   end
   
   def to_s
-    federal_project_number
+    project_number
   end
   
   def name
-    federal_project_number
+    project_number
   end
 
   def details
-    "#{funding_source}: #{federal_project_number} ($#{available})"
+    "#{funding_source}: #{project_number} ($#{available})"
   end
     
   #------------------------------------------------------------------------------
@@ -179,6 +181,7 @@ class FundingLineItem < ActiveRecord::Base
     self.active ||= true
     self.awarded ||= false
     self.amount ||= 0
+    self.spent ||= 0
     self.pcnt_operating_assistance ||= 0
     
     # Set the fiscal year to the current fiscal year which can be different from
