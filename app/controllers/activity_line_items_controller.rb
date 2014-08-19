@@ -42,7 +42,8 @@ class ActivityLineItemsController < OrganizationAwareController
 
     # Load the eligibility service and use it to select funds which this ALI is eligible for
     eligibilityService = EligibilityService.new
-    @available_funds = eligibilityService.evaluate(@activity_line_item)
+    @available_federal_funds = eligibilityService.evaluate(@activity_line_item, {:federal => true})
+    @available_state_funds   = eligibilityService.evaluate(@activity_line_item, {:state => true})
 
   end
 

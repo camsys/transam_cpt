@@ -46,11 +46,19 @@ class EligibilityService
     end    
     
     Rails.logger.info "Evaluating funding options for ALI #{ali}."
-    
+
+    federal = options[:federal].blank? ? false : options[:federal]
+    state = options[:state].blank? ? false : options[:state]
+    Rails.logger.debug "Options: federal #{federal}, state #{state}."
     
      # Start to set up the query. Start by fetching a list of matching funds
     conditions  = []
     values      = []
+    
+    # if both federal and state are set we want both types
+    types = []
+    types << 1 if federal
+    types << 2 if state
             
     # Check for rural compatibility
     if organization.service_type_rural?
@@ -78,7 +86,7 @@ class EligibilityService
       values << 1      
     end
     
-    eligible_funds = FundingSource.where(conditions.join(' OR '), *values)
+    eligible_funds = FundingSource.where('funding_source_type_id IN (?)', types).where(conditions.join(' OR '), *values)
     #get the list of fund ids
     fund_ids = []
     eligible_funds.each do |fund|
@@ -90,7 +98,7 @@ class EligibilityService
     end
     
     # Get the list of funding line items based on the selected set of funds
-    funding_line_items = FundingLineItem.where('active = 1 AND funding_source_id IN (?)', fund_ids).order('fy_year')
+    funding_line_items = FundingLineItem.where('organization_id = ? AND active = 1 AND funding_source_id IN (?)', organization.id, fund_ids).order('fy_year')
 
     # further filter to remove and funds which are already used up
     funding_line_items.each do |fund|
