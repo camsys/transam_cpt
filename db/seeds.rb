@@ -52,14 +52,14 @@ reports = [
     :active => 1,
     :belongs_to => 'report_type',
     :type => "Capital Needs Report",
-    :name => 'Budget Summary',
-    :class_name => "BudgetSummary",
-    :view_name => "budget_summary",
+    :name => 'Cash Flow Forecast',
+    :class_name => "CashFlowForecast",
+    :view_name => "cash_flow_forecast",
     :show_in_nav => 1,
     :show_in_dashboard => 0,
-    :description => 'Displays a chart showing the budget summary for the current organization.',
-    :chart_type => "",
-    :chart_options => ""
+    :description => 'Displays a chart showing the cash flow forecast for the current organization.',
+    :chart_type => "area",
+    :chart_options => "{is3D : false, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     }
 ]
 

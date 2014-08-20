@@ -76,9 +76,20 @@ class FundingLineItemsController < OrganizationAwareController
     end
     add_breadcrumb "Appropriations"
 
+    unless params[:format] == 'xls'
+      # cache the set of object keys in case we need them later
+      cache_list(@projects, INDEX_KEY_LIST_VAR)
+        
+      # generate the chart data
+      @report = Report.find_by_class_name('CashFlowForecast')
+      report_instance = @report.class_name.constantize.new
+      @data = report_instance.get_data_from_result_list(@funding_line_items)      
+    end
+    
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @funding_line_items }
+      format.xls
     end
     
   end

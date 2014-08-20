@@ -14,7 +14,7 @@
           %p No matching appropriations found
         - else
           .col-md-12
-            .chart#chart
+            .chart{:id => "chart_#{@report.id}"}
           .col-md-12                
             = render 'index_table'
 
