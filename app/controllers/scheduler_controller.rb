@@ -15,15 +15,25 @@ class SchedulerController < OrganizationAwareController
   # fiscal year.
   def index
 
-    @year = params[:year].blank? ? next_fiscal_year_year : params[:year].to_i
-    @next_fy_year = @year + 1
-
+    year = current_fiscal_year_year
+    
+    @year_1 = year + 1
+    @year_2 = year + 2
+    @year_3 = year + 3
+    
     # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
     # renderers
-    @assets = get_assets(@year)        
+    @year_1_assets = get_assets(@year_1)        
+    @year_2_assets = get_assets(@year_2)        
+    @year_3_assets = get_assets(@year_3)        
    
   end
   
+  # process a request to laod a scheduler update form
+  def loader
+    @asset = Asset.find_by_object_key(params[:id])
+    
+  end
   # process a scheduler action. These are generally ajaxed
   def action
     asset = Asset.find_by_object_key(params[:id])

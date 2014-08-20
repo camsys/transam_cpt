@@ -19,8 +19,9 @@ Rails.application.routes.draw do
   
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
-    member do
-      get 'action'
+    collection do
+      post 'action'
+      get  'loader'
     end
   end
   

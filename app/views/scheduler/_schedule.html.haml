@@ -1,6 +1,8 @@
-%p
-  = "Found #{@assets.size} assets for this plan."
+.panel.panel-default
+  .panel-body
+    .budget{:id => "budget_#{year}"}
+      = "Found #{assets.size} assets for this year."
 
-- @assets.each do |a|
-  = render :partial => 'repeater', :locals => {:asset => a}
+- assets.each do |a|
+  = render :partial => 'repeater', :locals => {:asset => a, :year => year}
   
