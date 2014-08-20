@@ -12,6 +12,7 @@
       %th.right Amount
       %th.right Pcnt Op.
       %th.right Amount Op.
+      %th.right Spent
       %th.right Committed
       %th.right Available
       
@@ -20,12 +21,14 @@
   %tbody
     - total = 0
     - operating = 0
+    - spent = 0
     - committed = 0
     - available = 0
 
     - @funding_line_items.each do |f|
       - total += f.amount
       - operating += f.operating_funds
+      - spent += f.spent
       - committed += f.committed
       - available += f.available
 
@@ -33,7 +36,7 @@
         %td= f.organization
         %td= f.funding_source
         %td.center= f.fiscal_year
-        %td.left= f.project_number
+        %td.left= f.name
         %td.center= format_as_boolean(f.awarded)
         %td.center= format_as_boolean(f.active)
         
@@ -41,6 +44,7 @@
         %td.right= format_as_currency(f.amount)
         %td.right= format_as_percentage(f.pcnt_operating_assistance)
         %td.right= format_as_currency(f.operating_funds)
+        %td.right= format_as_currency(f.spent)
         %td.right= format_as_currency(f.committed)
         %td.right= format_as_currency(f.available)
                
@@ -53,6 +57,7 @@
       %td.right= format_as_currency(total)
       %td.right
       %td.right= format_as_currency(operating)
+      %td.right= format_as_currency(spent)
       %td.right= format_as_currency(committed)
       %td.right= format_as_currency(available)
 

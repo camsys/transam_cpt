@@ -158,7 +158,7 @@ class FundingLineItem < ActiveRecord::Base
   end
   
   def to_s
-    project_number
+    name
   end
   
   def name

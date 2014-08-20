@@ -45,11 +45,27 @@ class FundingLineItemsController < OrganizationAwareController
       conditions << 'funding_source_id = ?'
       values << @funding_source_id
     end
-        
+
     #puts conditions.inspect
     #puts values.inspect
-    @funding_line_items = FundingLineItem.where(conditions.join(' AND '), *values).order('funding_source_id, fy_year')
-      
+    query = FundingLineItem.where(conditions.join(' AND '), *values).order('funding_source_id, fy_year')
+
+    # Check for joined queries
+    @funding_source_type_id = params[:funding_source_type_id]
+    unless @funding_source_type_id.blank?
+      @funding_source_type_id = @funding_source_type_id.to_i
+      query = query.joins(:funding_source).where('funding_sources.funding_source_type_id = ?', @funding_source_type_id)
+    end
+
+    # Check for joined queries
+    @discretionary_type_id = params[:discretionary_type_id]
+    unless @discretionary_type_id.blank?
+      @discretionary_type_id = @discretionary_type_id.to_i
+      query = query.joins(:funding_source).where('funding_sources.discretionary_fund = ?', @discretionary_type_id)
+    end
+        
+    @funding_line_items = query  
+    
     # cache the set of object keys in case we need them later
     cache_list(@funding_line_items, INDEX_KEY_LIST_VAR)
       

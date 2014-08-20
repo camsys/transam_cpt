@@ -18,14 +18,17 @@
     .form-group
       = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any organization...")
   .form-group
+    = select_tag(:funding_source_type_id, options_for_select(FundingSourceType.all.collect{|a| [a.name, a.id]}, :selected => @funding_source_type_id), :class => "form-control", :style => "width: 200px;", :prompt => "Any type...")
+  .form-group
+    = select_tag(:discretionary_type_id, options_for_select([['Discretionary', 1], ['Non-Discretionary', 0]], :selected => @discretionary_type_id), :class => "form-control", :style => "width: 200px;", :prompt => "Any...")
+  .form-group
     = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
   .form-group
     = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all.collect, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :style => "width: 100px;", :prompt => "Any Source...")
-
 :javascript
   $(document).ready(function() {
 
-    $('#org_id, #fiscal_year, #funding_source_id').change(function() {
+    $('#org_id, #fiscal_year, #funding_source_id, #funding_source_type_id, #discretionary_type_id').change(function() {
       $('#filter_form').submit();
     });
     
