@@ -119,7 +119,11 @@ class FundingLineItem < ActiveRecord::Base
     val = 0
     # TODO: filter this amount by requests that have not been committed
     funding_requests.each do |req|
-      val += req.total_amount
+      if federal?
+        val += req.federal_amount
+      else
+        val += req.state_amount
+      end
     end
     val
   end
