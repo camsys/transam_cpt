@@ -1,2 +1,1 @@
-var elem_id = '#<%= @asset.object_key %>_form_panel';
-$(elem_id).html("<%= escape_javascript(render 'action_form') %>");
+$('#<%= @asset.object_key %>_form_panel').html("<%= escape_javascript(render 'action_form') %>").fadeIn();

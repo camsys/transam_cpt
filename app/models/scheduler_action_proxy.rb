@@ -16,7 +16,7 @@ class SchedulerActionProxy < Proxy
   attr_accessor     :replace_fuel_type_id
 
   attr_accessor     :rehabilitate
-  attr_accessor     :replace_different
+  attr_accessor     :replace_fy_year
   
   # Basic validations. Just checking that the form is complete
   validates :action_id, :object_key, :presence => true 
