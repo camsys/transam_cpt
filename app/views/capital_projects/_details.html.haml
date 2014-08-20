@@ -1,16 +1,20 @@
 %ul.nav.nav-tabs
   %li
     %a{:href => "#alis", :data =>{:toggle => 'tab'}}
-      = "Activity Line Items (#{@project.activity_line_items.count})"
+      %span.badge.pull-right= @project.activity_line_items.count
+      = "Activity Line Items "
   %li
     %a{:href => "#mpms", :data =>{:toggle => 'tab'}}
-      = "MPMS Projects (#{@project.mpms_projects.count})"
+      %span.badge.pull-right= @project.mpms_projects.count
+      = "MPMS Projects "
   %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-      = "Comments (#{@project.comments.count})"
+      %span.badge.pull-right= @project.comments.count
+      = "Comments "
   %li
     %a{:href => "#docs", :data =>{:toggle => 'tab'}}
-      = "Supporting Documents (#{@project.documents.count})"
+      %span.badge.pull-right= @project.documents.count
+      = "Supporting Documents "
 
 .tab-content
   .tab-pane.fade#alis
