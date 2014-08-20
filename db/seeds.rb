@@ -59,7 +59,7 @@ reports = [
     :show_in_dashboard => 0,
     :description => 'Displays a chart showing the cash flow forecast for the current organization.',
     :chart_type => "area",
-    :chart_options => "{is3D : false, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    :chart_options => "{is3D : false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     }
 ]
 
