@@ -8,12 +8,29 @@ module TransamCptHelper
     end
   end
 
-  #returns the budget remaining for the selected FY year for the selected org
-  def get_remaining_state_budget(org, fy_year)
-    org.available_budgets(fy_year)[1]
+  # Returns the correct swimlane icon color for an asset
+  def get_swimlane_icon(asset, year)
+    
+    if asset.scheduled_disposition_date and asset.scheduled_disposition_date.year == year
+      'fa-times-circle'      
+    elsif asset.scheduled_rehabilitation_year == year
+      'fa-wrench'            
+    elsif asset.scheduled_replacement_year == year 
+      'fa-refresh'
+    else
+      'fa-warning'
+    end
   end
-  def get_remaining_federal_budget(org, fy_year)
-    org.available_budgets(fy_year)[0]
+  
+  # Returns the correct swimlane panel color for an asset
+  def get_swimlane_class(asset, year)
+    if asset.in_backlog?
+      'panel-default'
+    elsif asset.scheduled_replacement_year and asset.scheduled_replacement_year < asset.policy_replacement_year 
+      'panel-warning'
+    else
+      'panel-info'
+    end
   end
   
 end

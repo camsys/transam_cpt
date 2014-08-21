@@ -7,9 +7,17 @@ class SchedulerController < OrganizationAwareController
   include FiscalYear
   
   # Controller actions that can be invoked from the view
-  DEFER_TO_NEXT_YEAR_ACTION    = '1'
-  REHABILITATE_ACTION          = '2'
-  REMOVE_FROM_SERVICE_ACTION   = '3'
+  REPLACE_ACTION              = '1'
+  REHABILITATE_ACTION         = '2'
+  REMOVE_FROM_SERVICE_ACTION  = '3'
+    
+  YES = '1'
+  NO = '0'
+  
+  BOOLEAN_SELECT = [
+    ['Yes', YES],
+    ['No', NO]
+  ]
           
   # Returns the list of assets that are scheduled for replacement/rehabilitation in teh given
   # fiscal year.
@@ -29,36 +37,70 @@ class SchedulerController < OrganizationAwareController
    
   end
   
-  # process a request to laod a scheduler update form
+  # Process a request to load a scheduler update form. This is ajaxed
   def loader
+
     @asset = Asset.find_by_object_key(params[:id])
+    @current_year = params[:year].to_i
+    
+    year = current_fiscal_year_year
+    
+    @year_1 = year + 1
+    @year_2 = year + 2
+    @year_3 = year + 3
+
+    @actions = []
+    @actions << ["Replace",      REPLACE_ACTION]
+    @actions << ["Rehabilitate", REHABILITATE_ACTION]
+    @actions << ["Remove from service (no replacement)", REMOVE_FROM_SERVICE_ACTION]
+
+    @fiscal_years = []
+    (@year_1..@year_1 + 3).each do |yr|
+      @fiscal_years << [fiscal_year(yr), yr]
+    end
     
   end
-  # process a scheduler action. These are generally ajaxed
-  def action
-    asset = Asset.find_by_object_key(params[:id])
-    action_type = params[:action_type]
-
-    @year = params[:year].blank? ? next_fiscal_year_year : params[:year].to_i
-    @next_fy_year = @year + 1
   
-    if action_type == DEFER_TO_NEXT_YEAR_ACTION
-      asset.scheduled_replacement_year = @next_fy_year
+  # Process a scheduler action. These are generally ajaxed
+  def action
+    
+    proxy = SchedulerActionProxy.new(params[:scheduler_action_proxy])
+    
+    asset = Asset.find_by_object_key(proxy.object_key)
+  
+    if proxy.action_id == REPLACE_ACTION
+      Rails.logger.debug "Updating asset #{asset.object_key}. New scheduled replacement year = #{proxy.fy_year.to_i}"
+      asset.scheduled_replacement_year = proxy.fy_year.to_i
+      asset.replacement_reason_type_id = proxy.reason_id.to_i
+      asset.save
+      #notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description} is scheduled for replacement in #{fiscal_year(proxy.year.to_i)}"
+      
+    elsif proxy.action_id == REHABILITATE_ACTION
+      asset.scheduled_rehabilitation_year = proxy.fy_year.to_i
+      asset.scheduled_replacement_year = asset.scheduled_rehabilitation_year + proxy.extend_eul_years.to_i
+      asset.save
+      #notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description} is now scheduled for replacement in #{fiscal_year(proxy.replace_fy_year.to_i)}"
+      
+    elsif proxy.action_id == REMOVE_FROM_SERVICE_ACTION
       asset.scheduled_rehabilitation_year = nil
-      asset.save
-      notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} is now scheduled for replacement in #{fiscal_year(@year)}"
-    elsif action_type == REHABILITATE_ACTION
       asset.scheduled_replacement_year = nil
-      asset.scheduled_rehabilitation_year = @next_fy_year
+      num_years = proxy.fy_year.to_i - current_fiscal_year_year
+      asset.scheduled_disposition_date = Date.today + num_years.years
       asset.save
-      notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} is now scheduled for rehabilitation in #{fiscal_year(@year)}"
-    elsif action_type == REMOVE_FROM_SERVICE_ACTION
-      notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} is now scheduled to be removed from service in #{fiscal_year(@year)}"
-    else
-      notify_user :alert, "Unknown action"
+  
     end
 
-    @assets = get_assets(@year)        
+    year = current_fiscal_year_year
+    
+    @year_1 = year + 1
+    @year_2 = year + 2
+    @year_3 = year + 3
+
+    # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
+    # renderers
+    @year_1_assets = get_assets(@year_1)        
+    @year_2_assets = get_assets(@year_2)        
+    @year_3_assets = get_assets(@year_3)        
     
   end
   

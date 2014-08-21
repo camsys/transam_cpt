@@ -1,12 +1,17 @@
 .row
-  .col-md-4
-    = dialog_tag(format_as_fiscal_year(@year_1), {:icon => "fa fa-calendar", :class => 'swimlane'}) do
-      = render :partial => 'schedule', :locals => {:year => @year_1, :assets => @year_1_assets}  
-  .col-md-4
-    = dialog_tag(format_as_fiscal_year(@year_2), {:icon => "fa fa-calendar", :class => 'swimlane'}) do
-      = render :partial => 'schedule', :locals => {:year => @year_2, :assets => @year_2_assets}  
-  .col-md-4
-    = dialog_tag(format_as_fiscal_year(@year_3), {:icon => "fa fa-calendar", :class => 'swimlane'}) do
-      = render :partial => 'schedule', :locals => {:year => @year_3, :assets => @year_3_assets}  
-
-= render 'index_scripts'
+  .col-md-3
+    .panel.panel-default.swimlane
+      .panel-heading
+        .row
+          .col-md-6
+            %h3.panel-title
+              %i.fa.fa-list
+              Project
+          .col-md-6
+            = render 'index_actions'
+      .panel-body    
+        = render 'summary'
+        
+  .col-md-9
+    #schedules
+      = render 'schedules'

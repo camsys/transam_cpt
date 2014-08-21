@@ -11,12 +11,15 @@ class SchedulerActionProxy < Proxy
 
   # reason asset is being replaced
   attr_accessor     :reason_id
-
+  # replacement asset type and fuel type
   attr_accessor     :replace_subtype_id
   attr_accessor     :replace_fuel_type_id
 
-  attr_accessor     :rehabilitate
-  attr_accessor     :replace_fy_year
+  # Number of years to extend the useful life  
+  attr_accessor     :extend_eul_years  
+
+  # year that the action will take place
+  attr_accessor     :fy_year
   
   # Basic validations. Just checking that the form is complete
   validates :action_id, :object_key, :presence => true 

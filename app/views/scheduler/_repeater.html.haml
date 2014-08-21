@@ -1,53 +1,58 @@
-.panel.panel-info
+.panel{:class => "#{get_swimlane_class(asset, year)}"}
   .panel-heading
     .button-group.pull-right
-      %button.btn.btn-warning.btn-xs{:id => "#{asset.object_key}_edit"}
+      %button.btn.btn-warning.btn-xs{:id => "#{asset.object_key}_#{year}_edit"}
         %i.fa.fa-edit
-      %button.btn.btn-primary.btn-xs{:data => {:toggle => 'collapse', :target => "##{asset.object_key}_body"}}
-        %i.fa.fa-plus{:id => "#{asset.object_key}_icon"}
+      %button.btn.btn-primary.btn-xs{:data => {:toggle => 'collapse', :target => "##{asset.object_key}_#{year}_body"}}
+        %i.fa.fa-plus{:id => "#{asset.object_key}_#{year}_icon"}
         
-    %h3.panel-title= "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description}"
-  .panel-body.collapse{:id => "#{asset.object_key}_body"}
+    %h3.panel-title
+      %i.fa{:class => "#{get_swimlane_icon(asset, year)}"}
+      = "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description}"
+  .panel-body.collapse{:id => "#{asset.object_key}_#{year}_body"}
     .row
       .col-md-6
         = format_field("Age", asset.age.to_s + " yrs")
         = format_field("Mileage", format_as_integer(asset.reported_mileage) ) if asset.type_of? :vehicle
         = format_field("Rating", format_as_decimal(asset.reported_condition_rating))
         = format_field("Policy Year", format_as_fiscal_year(asset.policy_replacement_year))
-        = format_field("Scheduled Year", format_as_fiscal_year(asset.scheduled_replacement_year)) unless asset.scheduled_replacement_year.blank?
-        = format_field("Scheduled Rehabilitation", format_as_fiscal_year(asset.scheduled_rehabilitation_year)) unless asset.scheduled_rehabilitation_year.blank?
+        = format_field("Rehab", format_as_fiscal_year(asset.scheduled_rehabilitation_year)) unless asset.scheduled_rehabilitation_year.blank?
+        = format_field("Replace", format_as_fiscal_year(asset.scheduled_replacement_year)) unless asset.scheduled_replacement_year.blank?
+        = format_field("Reason", asset.replacement_reason_type) unless asset.replacement_reason_type.blank?
+        = format_field("Dispose", format_as_fiscal_year(asset.scheduled_disposition_date.year)) unless asset.scheduled_disposition_date.blank?
       .col-md-6
         = format_field("Original Cost", format_as_currency(asset.purchase_cost))
         = format_field("Purchase Date", format_as_date(asset.purchase_date))
         = format_field("Purchased New", format_as_boolean(asset.purchased_new))
-        = format_field("Est. Cost", format_as_currency(asset.estimated_replacement_cost))
+        = format_field("Est. Replacement Cost", format_as_currency(asset.estimated_replacement_cost))
     
-    .row{:id => "#{asset.object_key}_form_panel"}
+    .row{:id => "#{asset.object_key}_#{year}_form_panel"}
 
 :javascript
 
-  $('##{asset.object_key}_edit').hide();
+  $('##{asset.object_key}_#{year}_edit').hide();
   
   // Update the icons in the header based on collapsing the panels
-  $('##{asset.object_key}_body').on('hide.bs.collapse', function () {
-    $('##{asset.object_key}_icon').removeClass('fa-minus');
-    $('##{asset.object_key}_icon').addClass('fa-plus');   
-    $('##{asset.object_key}_edit').hide();
-    $('##{asset.object_key}_form_panel').html("");
+  $('##{asset.object_key}_#{year}_body').on('hide.bs.collapse', function () {
+    $('##{asset.object_key}_#{year}_icon').removeClass('fa-minus');
+    $('##{asset.object_key}_#{year}_icon').addClass('fa-plus');   
+    $('##{asset.object_key}_#{year}_edit').hide();
+    $('##{asset.object_key}_#{year}_form_panel').html("");
   });
-  $('##{asset.object_key}_body').on('show.bs.collapse', function () {
-    $('##{asset.object_key}_icon').removeClass('fa-plus');
-    $('##{asset.object_key}_icon').addClass('fa-minus');   
-    $('##{asset.object_key}_edit').show();
-    $('##{asset.object_key}_form_panel').html("");
+  $('##{asset.object_key}_#{year}_body').on('show.bs.collapse', function () {
+    $('##{asset.object_key}_#{year}_icon').removeClass('fa-plus');
+    $('##{asset.object_key}_#{year}_icon').addClass('fa-minus');   
+    $('##{asset.object_key}_#{year}_edit').show();
+    $('##{asset.object_key}_#{year}_form_panel').html("");
   });  
   
   // Install a click handler for the edit button
-  $('##{asset.object_key}_edit').click(function() {
-    var val = '#{asset.object_key}';
-    var url = '/scheduler/loader.js?id=' + val;
+  $('##{asset.object_key}_#{year}_edit').click(function() {
+    var var_key = '#{asset.object_key}';
+    var var_year = '#{year}';
+    var url = '/scheduler/loader.js?year=' + var_year + '&id=' + var_key;
     transam.ajax_render_action(url, 'get');       
-    $('##{asset.object_key}_form_panel').html("");
+    $('##{asset.object_key}_#{year}_form_panel').html("");
   });
     
   

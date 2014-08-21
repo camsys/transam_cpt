@@ -1,22 +1,28 @@
 .panel.panel-default
   .panel-body
-    = simple_form_for(SchedulerActionProxy.new,
+    = simple_form_for(SchedulerActionProxy.new({:object_key => @asset.object_key}),
       :url => action_scheduler_index_path,
-      :method => 'put',
+      :method => 'post',
+      :remote => true,
       :html => {:class => 'form-vertical' },
       :wrapper => :vertical_form,
       :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
-      = f.input :object_key, :as => :hidden
-      = f.input :action_id, :collection => [['Replace this year', 1],['Replace later', 2],['Remove from fleet', 3]]
+      = f.input :object_key, :as => :hidden       
+       
+      = f.input :action_id, :collection => @actions, :prompt => "Select action to be taken..."
       
-      = f.input :reason_id, :collection => [['Reached EUL', 1],['Damaged beyond repair', 2],['Other', 3]], :label => 'Reason for replacing'          
+      = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal year', :prompt => "Select..."          
+      = f.input :reason_id, :collection => ReplacementReasonType.all, :label => 'Reason for replacing', :prompt => "Select..."          
 
-      = f.input :replace_subtype_id, :collection => @asset.asset_type.asset_subtypes, :label => 'Substitute vehicle'          
-      = f.input :replace_fuel_type_id, :collection => FuelType.all, :label => 'Substitute fuel'          
+      .row
+        .col-xs-6      
+          = f.input :replace_subtype_id, :collection => @asset.asset_type.asset_subtypes, :prompt => "Leave blank for no change"         
+        .col-xs-6      
+          = f.input :replace_fuel_type_id, :collection => FuelType.all, :class => 'col-md-6', :prompt => "Leave blank for no change"            
 
-      = f.input :replace_fy_year, :collection => [['FY 16-17', 2016],['FY 17-18', 2017],['FY 18-19', 2018]], :label => 'Replacement year'          
-      = f.input :rehabilitate, :collection => [['Yes', 1] ,['No', 0]], :as => :radio_buttons, :label => 'Rehab/Overhaul this year?'
+      = f.input :extend_eul_years, :collection => [1,2,3,4,5,6,7,8,9,10], :label => 'Extend useful life', :prompt => "Select..."          
+      
                   
       = f.button :submit, "Update", :class => "btn btn-success"
       = button_tag 'Cancel', :type => 'button', :name => 'cancel', :class=>"btn btn-warning", :id => "#{@asset.object_key}_cancel"
@@ -24,24 +30,24 @@
 :javascript
   
   $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
-  $('.scheduler_action_proxy_rehabilitate, .scheduler_action_proxy_replace_fy_year').hide();
+  $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_extend_eul_years').hide();
 
   $('#scheduler_action_proxy_action_id').change(function(){
-    var val =$(this).val();
+    var val = $(this).val();
     if (val == 1) {
-      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').show();
-      $('.scheduler_action_proxy_rehabilitate').hide();
+      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_fy_year').show();
+      $('.scheduler_action_proxy_extend_eul_years').hide();
     } else if (val == 2) {
       $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
-      $('.scheduler_action_proxy_rehabilitate').show();
-    } else {
-      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
-      $('.scheduler_action_proxy_rehabilitate').hide();
+      $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_extend_eul_years').show();
+    } else if (val == 3) {
+      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_extend_eul_years').hide();
+      $('.scheduler_action_proxy_fy_year').show();
     }
   });
    // Install a click handler for the cancel button
   $('##{@asset.object_key}_cancel').click(function() {
     //alert('Cancel');
-    $('##{@asset.object_key}_form_panel').html("").fadeOut();
+    $('##{@asset.object_key}_#{@current_year}_form_panel').html("").fadeOut();
   });
           
