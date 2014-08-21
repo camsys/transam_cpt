@@ -5,13 +5,25 @@ class CapitalProjectSearcher < BaseSearcher
 
   # Include the fiscal year mixin
   include FiscalYear
+  include NumericSanitizers
 
   # add any search params to this list
   attr_accessor :organization_id,
-                :capital_project_type_id,
-                :keywords,
-                :fy_year
-           
+                :capital_project_type,
+                :funding_source,
+                :capital_project_status_type,
+                :team_ali_code,
+                :asset_type,
+                :asset_subtype,
+                # Comparator-based (<=>)
+                :fy_year,
+                :fy_year_comparator,
+                :total_cost,
+                :total_cost_comparator,
+                # Custom Logic
+                :keyword,
+                :included_assets
+
   # Return the name of the form to display
   def form_view
     'capital_project_search_form'
@@ -29,48 +41,105 @@ class CapitalProjectSearcher < BaseSearcher
   def initialize(attributes = {})
     super(attributes)
   end    
-  
-  private
+
+  protected
 
   # Performs the query by assembling the conditions from the set of conditions below.
   def perform_query
     # Create a class instance of the asset type which can be used to perform
     # active record queries
-    Rails.logger.info conditions
-    CapitalProject.where(conditions).limit(MAX_ROWS_RETURNED)  
+    Rails.logger.info "conditions: #{queries.to_sql}"
+    queries.limit(MAX_ROWS_RETURNED)  
   end
 
-  # Add any new conditions here. The property name must end with _conditions
-  def organization_conditions
-    if organization_id.blank?
-      ["capital_projects.organization_id in (?)", get_id_list(user.organizations)]
-    else
-      ["capital_projects.organization_id = ?", organization_id]
+  # Take a series of methods which return AR queries and reduce them down to a single LARGE query
+  def queries
+    condition_parts.reduce(:merge)
+  end
+
+  def condition_parts
+    private_methods(false).grep(/_conditions$/).map { |m| send(m) }.compact
+  end
+  
+  private
+
+
+  #---------------------------------------------------
+  # Simple Equality Queries
+  #---------------------------------------------------
+
+  def capital_project_type_conditions
+    CapitalProject.where(capital_project_type_id: capital_project_type) unless capital_project_type.blank?
+  end
+
+  def capital_project_status_type_conditions
+    CapitalProject.where(capital_project_status_type_id: capital_project_status_type) unless capital_project_status_type.blank?
+  end
+
+  def team_ali_code_conditions
+    CapitalProject.where(team_ali_code_id: team_ali_code) unless team_ali_code.blank?
+  end
+
+
+  
+  #---------------------------------------------------
+  # Comparator Queries
+  #---------------------------------------------------
+  def fiscal_year_conditions
+    unless fy_year.blank?
+      case fy_year_comparator
+      when "-1" # Before Year X
+        CapitalProject.where("fy_year < ?", fy_year)
+      when "1"  # After Year X
+        CapitalProject.where("fy_year > ?", fy_year)
+      end
     end
   end
-  
-  def project_type_conditions
-    ["capital_projects.capital_project_type_id = ?", capital_project_type_id] unless capital_project_type_id.blank?
+
+  def total_cost_conditions # gonna be tricky...
+    unless total_cost.blank?
+      total_cost_as_float = sanitize_to_float(total_cost)
+      case total_cost_comparator
+      when "-1" # Less than X dollars
+        CapitalProject.joins(:activity_line_items).group("capital_projects.id").having("sum(activity_line_items.anticipated_cost) < ?", total_cost_as_float)
+      when "1"  # More than X dollars
+        CapitalProject.joins(:activity_line_items).group("capital_projects.id").having("sum(activity_line_items.anticipated_cost) > ?", total_cost_as_float)
+      end
+    end
   end
 
-  def fiscal_year_conditions
-    ["capital_projects.fy_year = ?", fy_year] unless fy_year.blank?
-  end
-  
+
+  #---------------------------------------------------
+  # Custom Queries # When the logic does not fall into the above categories, place the method here
+  #    Example: joins, ORs, and LIKEs
+  #---------------------------------------------------
   def keyword_conditions
-    ["capital_projects.title LIKE ?", "%#{keywords}%"] unless keywords.blank?
+    unless keyword.blank?
+      searchable_columns = %w(title description justification project_number) # add any freetext-searchable fields here
+      keyword.strip!
+      search_str = searchable_columns.map { |x| "#{x} LIKE :keyword"}.to_sentence(:words_connector => " OR ", :last_word_connector => " OR ")
+      CapitalProject.where(search_str, :keyword => "%#{keyword}%")
+    end
+  end
+
+  def asset_type_conditions
+    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}) unless asset_type.blank?
   end
   
-  def minimum_price_conditions
-    #["products.price >= ?", minimum_price] unless minimum_price.blank?
+  def asset_subtype_conditions
+    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}) unless asset_subtype.blank?
   end
   
-  def maximum_price_conditions
-    #["products.price <= ?", maximum_price] unless maximum_price.blank?
-  end
-  
-  def category_conditions
-    #["products.category_id = ?", category_id] unless category_id.blank?
+  # def funding_source_conditions
+  #   CapitalProject.joins().where(funding_source_id: funding_source) unless funding_source.blank?
+  # end
+
+  def organization_conditions
+    if organization_id.blank?
+      CapitalProject.where(organization_id: get_id_list(user.organizations))
+    else
+      CapitalProject.where(organization_id: organization_id)
+    end
   end
   
 end
