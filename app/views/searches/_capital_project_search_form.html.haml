@@ -61,6 +61,7 @@
                   = f.input :capital_project_type, :collection => CapitalProjectType.all, :label => "Capital Project Type"
                   = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.all, :label_method => :full_name
                   -# REMOVING FOR NOW= f.input :funding_source, :collection => FundingSource.all, :label_method => :name, :label => "Funding Source"
+                  = f.input :funding_source, :collection => [["Federal","F"], ["State","S"]]
             .col-sm-4
               %fieldset
                 %legend.panel-legend Included Assets
