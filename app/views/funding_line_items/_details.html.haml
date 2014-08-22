@@ -1,10 +1,15 @@
 %ul.nav.nav-tabs
   %li
     %a{:href => "#alloc", :data =>{:toggle => 'tab'}}
-      = "Allocations (#{@funding_line_item.funding_requests.count})"
+      %span.badge.pull-right= @funding_line_item.funding_requests.count
+      = "Allocations"
   %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-      = "Comments (#{@funding_line_item.comments.count})"
+      %span.badge.pull-right= @funding_line_item.comments.count
+      = "Comments"
+  %li
+    %a{:href => "#chrt", :data =>{:toggle => 'tab'}}
+      = "Cash Flow"
 
 .tab-content
   .tab-pane.fade#alloc
@@ -16,3 +21,6 @@
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'
+  .tab-pane.fade#chrt
+    .tab-content
+      #chart_div{:style => "height:350px;"}

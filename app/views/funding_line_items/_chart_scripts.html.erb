@@ -24,11 +24,11 @@
 		var chart_data = new google.visualization.DataTable();
 		
 	    chart_data.addColumn('string', 'Fiscal Year');
-	    chart_data.addColumn('number', 'Allocated');
+	    chart_data.addColumn('number', 'Amount');
 	    chart_data.addColumn('number', 'Spent');
 	    chart_data.addColumn('number', 'Committed');
 		
-		<% @funding_source.cash_flow(@organization.id).each do |row| %>
+		<% @funding_line_item.cash_flow.each do |row| %>
 			chart_data.addRow(
 				<% row.each_with_index do |el, idx| %>
 					<% if idx == 0 %>

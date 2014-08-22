@@ -70,6 +70,9 @@ class FundingSourcesController < OrganizationAwareController
     add_breadcrumb @funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @funding_source.funding_source_type)
     add_breadcrumb @funding_source.name, funding_source_path(@funding_source)
     
+    # Set teh funding line items
+    @funding_line_items = @funding_source.funding_line_items.where('organization_id = ?', @organization.id).order('fy_year')
+    
     # get the @prev_record_path and @next_record_path view vars
     get_next_and_prev_object_keys(@funding_source, INDEX_KEY_LIST_VAR)
     @prev_record_path = @prev_record_key.nil? ? "#" : funding_source_path(@prev_record_key)

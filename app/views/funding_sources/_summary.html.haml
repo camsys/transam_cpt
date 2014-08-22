@@ -9,10 +9,10 @@
   = format_field("Discretionary", format_as_boolean(@funding_source.discretionary_fund))
 
 %fieldset
-  %legend.panel-legend Match
-  = format_field("State", format_as_percentage(@funding_source.state_match_required, 3))
-  = format_field("Federal", format_as_percentage(@funding_source.federal_match_required, 3))
-  = format_field("Local", format_as_percentage(@funding_source.local_match_required, 3))
+  %legend.panel-legend
+  = format_field("Federal Match", format_as_percentage(@funding_source.federal_match_required, 3))
+  = format_field("State Match", format_as_percentage(@funding_source.state_match_required, 3))
+  = format_field("Local Match", format_as_percentage(@funding_source.local_match_required, 3))
 
 %fieldset
   %legend.panel-legend Eligibility

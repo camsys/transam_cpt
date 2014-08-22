@@ -4,10 +4,11 @@
       = "Description"
   %li
     %a{:href => "#appr", :data =>{:toggle => 'tab'}}
+      %span.badge.pull-right= @funding_line_items.count
       = "Appropriations"
   %li
     %a{:href => "#chrt", :data =>{:toggle => 'tab'}}
-      = "Chart"
+      = "Cash Flow"
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#desc
@@ -18,4 +19,4 @@
       = render 'appropriations'
   .tab-pane.fade#chrt
     .tab-content
-      #allocation_chart_div{:style => "height:350px;"}
+      #chart_div{:style => "height:350px;"}

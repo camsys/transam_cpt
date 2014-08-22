@@ -8,7 +8,7 @@
 #
 #------------------------------------------------------------------------------
 class FundingLineItem < ActiveRecord::Base
-    
+        
   # Include the unique key mixin
   include UniqueKey
   # Include the fiscal year mixin
@@ -103,6 +103,31 @@ class FundingLineItem < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
     
+  # Generates a cash flow summary for the funding source
+  def cash_flow
+        
+    a = []
+    cum_committed = 0
+    
+    total_amount = amount.nil? ? 0 : amount
+    total_spent = spent.nil? ? 0 : spent
+    
+    (fy_year..last_fiscal_year_year).each do |yr|
+      year_committed = 0
+      
+      #list = line_items.where('fy_year = ?', yr)
+      #list.each do |fli|
+      #  year_committed += fli.committed
+      #end
+
+      cum_committed += year_committed
+      
+      # Add this years summary to the cumulative amounts
+      a << [fiscal_year(yr), total_amount, total_spent, cum_committed]
+    end
+    a
+      
+  end
   # Returns the set of funding requests for this funding line item
   def funding_requests
     
@@ -157,8 +182,12 @@ class FundingLineItem < ActiveRecord::Base
   
   
   # Override the mixin method and delegate to it
-  def fiscal_year
-    super(fy_year)
+  def fiscal_year(year = nil)
+    if year
+      super(year)
+    else
+      super(fy_year)
+    end
   end
   
   def to_s

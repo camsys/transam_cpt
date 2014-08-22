@@ -1,16 +1,20 @@
 %ul.nav.nav-tabs
   %li
     %a{:href => "#asst", :data =>{:toggle => 'tab'}}
-      = "Assets (#{@activity_line_item.assets.count})"
+      %span.badge.pull-right= @activity_line_item.assets.count
+      = "Assets"
   %li
     %a{:href => "#fund", :data =>{:toggle => 'tab'}}
-      = "Funding Requests (#{@activity_line_item.funding_requests.count})"
+      %span.badge.pull-right= @activity_line_item.funding_requests.count
+      = "Funding Requests"
   %li
     %a{:href => "#mile", :data =>{:toggle => 'tab'}}
-      = "Milestones (#{@activity_line_item.milestones.count})"
+      %span.badge.pull-right= @activity_line_item.milestones.count
+      = "Milestones"
   %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-      = "Comments (#{@activity_line_item.comments.count})"
+      %span.badge.pull-right= @activity_line_item.comments.count
+      = "Comments"
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#asst

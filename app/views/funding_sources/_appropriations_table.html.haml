@@ -2,9 +2,9 @@
   %p There are no appropriations for this fund.
 -else
   - if funding_source.federal?
-    = render :partial => 'federal_appropriations_table', :locals => {:funding_line_items => funding_source.funding_line_items.where('organization_id = ?', @organization.id).order('fy_year')}
+    = render :partial => 'federal_appropriations_table', :locals => {:funding_line_items => @funding_line_items}
   - else
-    = render :partial => 'state_appropriations_table', :locals => {:funding_line_items => funding_source.funding_line_items.where('organization_id = ?', @organization.id).order('fy_year')}
+    = render :partial => 'state_appropriations_table', :locals => {:funding_line_items => @funding_line_items}
 
 :javascript
   $('.popup-details').popover({

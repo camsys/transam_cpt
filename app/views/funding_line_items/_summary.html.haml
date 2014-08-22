@@ -1,20 +1,19 @@
 .panel-body    
-  %fieldset
-    = format_field("Fund", @funding_line_item.funding_source)
-    = format_field("Fiscal Year", @funding_line_item.fiscal_year)
-    = format_field("Active", format_as_boolean(@funding_line_item.active))
-    = format_field("Appropriation Amount", format_as_currency(@funding_line_item.amount))
-    = format_field("Payment Source", @funding_line_item.funding_line_item_type.name)
+  = format_field("Fund", @funding_line_item.funding_source)
+  = format_field("Fiscal Year", @funding_line_item.fiscal_year)
+  = format_field("Active", format_as_boolean(@funding_line_item.active))
+  = format_field("Appropriation Amount", format_as_currency(@funding_line_item.amount))
+  = format_field("Payment Source", @funding_line_item.funding_line_item_type.name)
     
   %fieldset
-    %legend.panel-legend Budget
+    %legend.panel-legend
     = format_field("Spent", format_as_currency(@funding_line_item.spent))
     = format_field("Committed", format_as_currency(@funding_line_item.committed))
     = format_field("Available", format_as_currency(@funding_line_item.available))
 
   - if @funding_line_item.federal?
     %fieldset
-      %legend.panel-legend Operating Assistance Budget
+      %legend.panel-legend
       = format_field("Operating Assistance", format_as_currency(@funding_line_item.operating_funds))
       = format_field("Committed", format_as_currency(@funding_line_item.committed))
       = format_field("Remaining", format_as_currency(@funding_line_item.available))

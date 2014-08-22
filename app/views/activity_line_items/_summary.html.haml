@@ -1,22 +1,19 @@
 %fieldset
-  %legend.panel-legend Project
   = format_field("Project",  link_to(ali.capital_project.project_number, ali.capital_project))
   = format_field("Fiscal Year", ali.capital_project.fiscal_year)
-
-%fieldset
-  %legend.panel-legend Details
   = format_field("Name", ali.name)
   = format_field("Scope", ali.team_ali_code)
+  = format_field("Asset Count", format_as_integer(ali.assets.count))
 
 %fieldset
-  %legend.panel-legend Costs
+  %legend.panel-legend
   = format_field("Original Cost", format_as_currency(ali.total_original_cost))
   = format_field("Estimated Cost", format_as_currency(ali.estimated_cost))
   = format_field("Funds Required", format_as_currency(ali.anticipated_cost))
   = format_field("Cost Difference", format_as_currency(ali.cost_difference))
 
 %fieldset
-  %legend.panel-legend Funding Summary
+  %legend.panel-legend
   = format_field("State",   format_as_currency(ali.state_funds))
   = format_field("Federal", format_as_currency(ali.federal_funds))
   = format_field("Local",   format_as_currency(ali.local_funds))
