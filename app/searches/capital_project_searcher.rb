@@ -138,10 +138,10 @@ class CapitalProjectSearcher < BaseSearcher
   # Funding Source type is wrapped up in the structure of funding requests (will have state_funding_source_id or federal_funding_source_id column populated)
   def funding_source_conditions
     unless funding_source.blank?
-      case funding_source
-      when "F"
+      case FundingSourceType.find(funding_source).name
+      when "Federal"
         CapitalProject.joins(:activity_line_items => {:funding_requests => :federal_funding_line_item})
-      when "S"
+      when "State"
         CapitalProject.joins(:activity_line_items => {:funding_requests => :state_funding_line_item})
       end
     end
