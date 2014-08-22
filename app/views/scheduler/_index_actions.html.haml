@@ -13,7 +13,7 @@
         %i.fa.fa-gears.fa-fw
         = " Update my capital projects"
 
-= form_tag scheduler_index_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+= form_tag scheduler_index_path, :id => 'filter_form', :method => "get", :remote => true, :class => 'navbar-form navbar-right panel-action' do
   - if @organization_list.count > 1
     .form-group
       = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any organization...")
