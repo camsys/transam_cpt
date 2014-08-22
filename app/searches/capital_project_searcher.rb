@@ -10,7 +10,6 @@ class CapitalProjectSearcher < BaseSearcher
   # add any search params to this list
   attr_accessor :organization_id,
                 :capital_project_type,
-                :funding_source,
                 :capital_project_status_type,
                 :team_ali_code,
                 :asset_type,
@@ -21,6 +20,7 @@ class CapitalProjectSearcher < BaseSearcher
                 :total_cost,
                 :total_cost_comparator,
                 # Custom Logic
+                :funding_source,
                 :keyword,
                 :included_assets
 
@@ -110,6 +110,11 @@ class CapitalProjectSearcher < BaseSearcher
 
 
   #---------------------------------------------------
+  # Simple Checkbox Queries
+  #---------------------------------------------------
+
+
+  #---------------------------------------------------
   # Custom Queries # When the logic does not fall into the above categories, place the method here
   #    Example: joins, ORs, and LIKEs
   #---------------------------------------------------
@@ -130,9 +135,17 @@ class CapitalProjectSearcher < BaseSearcher
     CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}) unless asset_subtype.blank?
   end
   
-  # def funding_source_conditions
-  #   CapitalProject.joins().where(funding_source_id: funding_source) unless funding_source.blank?
-  # end
+  # Funding Source type is wrapped up in the structure of funding requests (will have state_funding_source_id or federal_funding_source_id column populated)
+  def funding_source_conditions
+    unless funding_source.blank?
+      case FundingSourceType.find(funding_source).name
+      when "Federal"
+        CapitalProject.joins(:activity_line_items => {:funding_requests => :federal_funding_line_item})
+      when "State"
+        CapitalProject.joins(:activity_line_items => {:funding_requests => :state_funding_line_item})
+      end
+    end
+  end
 
   def organization_conditions
     if organization_id.blank?
