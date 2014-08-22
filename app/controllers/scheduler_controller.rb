@@ -1,5 +1,7 @@
 class SchedulerController < OrganizationAwareController
    
+  before_filter :set_view_vars,  :only =>    [:index, :loader, :action]
+   
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Scheduler", :scheduler_index_path
   
@@ -106,13 +108,28 @@ class SchedulerController < OrganizationAwareController
   
   protected
   
-  def get_assets(year)
+  # Sets the view variables that control the filters. called before each action is invoked
+  def set_view_vars
 
+    @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
+    @asset_subtype_id = params[:asset_subtype_id].blank? ? nil : params[:asset_subtype_id].to_i
+    
+  end
+  def get_assets(year)
+    
     # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
     # renderers
     assets = []
-    list = Asset.where('organization_id = ? AND disposition_date IS NULL AND (scheduled_replacement_year = ? OR scheduled_rehabilitation_year = ? OR YEAR(scheduled_disposition_date) = ?)', current_user.organization, year, year, year)   
-    list.each do |a|
+    # check to see if there is a filter on the organization
+    org = @org_id.blank? ? current_user.organization.id : @org_id
+    query = Asset.where('organization_id = ? AND disposition_date IS NULL AND (scheduled_replacement_year = ? OR scheduled_rehabilitation_year = ? OR YEAR(scheduled_disposition_date) = ?)', org, year, year, year)   
+
+    # check to see if there is a filter on the asset subtype
+    unless @asset_subtype_id.blank?
+      query = query.where('asset_subtype_id = ?', @asset_subtype_id)
+    end
+    
+    query.each do |a|
       assets << Asset.get_typed_asset(a)
     end
     

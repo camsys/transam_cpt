@@ -50,7 +50,9 @@
   $('##{asset.object_key}_#{year}_edit').click(function() {
     var var_key = '#{asset.object_key}';
     var var_year = '#{year}';
-    var url = '/scheduler/loader.js?year=' + var_year + '&id=' + var_key;
+    var var_org_filter = '#{@org_id}';
+    var var_asset_filter = '#{@asset_subtype_id}';
+    var url = '/scheduler/loader.js?year=' + var_year + '&id=' + var_key + '&org_id=' + var_org_filter + '&asset_subtype_id=' + var_asset_filter;
     transam.ajax_render_action(url, 'get');       
     $('##{asset.object_key}_#{year}_form_panel').html("");
   });

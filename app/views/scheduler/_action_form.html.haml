@@ -8,6 +8,9 @@
       :wrapper => :vertical_form,
       :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
+      = hidden_field_tag :asset_subtype_id, @asset_subtype_id
+      = hidden_field_tag :org_id, @org_id
+      
       = f.input :object_key, :as => :hidden       
        
       = f.input :action_id, :collection => @actions, :prompt => "Select action to be taken..."
