@@ -12,10 +12,12 @@
         = "Capital Needs"
     %li
       %a{:href => "#projects", :data =>{:toggle => 'tab'}}
-        = "Capital Projects (#{@org.capital_projects.count})"
+        %span.badge.pull-right= @org.capital_projects.count
+        = "Capital Projects"
   %li
     %a{:href => "#users", :data =>{:toggle => 'tab'}}
-      = "Users (#{@org.users.count})"
+      %span.badge.pull-right= @org.users.count
+      = "Users"
   %li
     %a{:href => "#map", :data =>{:toggle => 'tab'}}
       = "Map"
