@@ -29,15 +29,9 @@ class SchedulerController < OrganizationAwareController
     ['No', NO]
   ]
           
-  # Returns the list of assets that are scheduled for replacement/rehabilitation in teh given
-  # fiscal year.
+  # Returns the list of assets that are scheduled for replacement/rehabilitation in the given
+  # fiscal years.
   def index
-
-    year = current_fiscal_year_year
-    
-    @year_1 = year + 1
-    @year_2 = year + 2
-    @year_3 = year + 3
     
     # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
     # renderers
@@ -53,12 +47,6 @@ class SchedulerController < OrganizationAwareController
     @asset = Asset.find_by_object_key(params[:id])
     @current_year = params[:year].to_i
     
-    year = current_fiscal_year_year
-    
-    @year_1 = year + 1
-    @year_2 = year + 2
-    @year_3 = year + 3
-
     @actions = ACTIONS
 
     @fiscal_years = []
@@ -104,11 +92,6 @@ class SchedulerController < OrganizationAwareController
   
     end
 
-    year = current_fiscal_year_year
-    
-    @year_1 = year + 1
-    @year_2 = year + 2
-    @year_3 = year + 3
 
     # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
     # renderers
@@ -124,8 +107,38 @@ class SchedulerController < OrganizationAwareController
   def set_view_vars
 
     @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
-    @asset_subtype_id = params[:asset_subtype_id].blank? ? nil : params[:asset_subtype_id].to_i
     
+    @asset_subtype_id = params[:asset_subtype_id].blank? ? nil : params[:asset_subtype_id].to_i
+
+    # This is the first year that the user can plan for
+    first_year = current_fiscal_year_year + 1
+    # This is the last year of a 3 year plan
+    last_year = last_fiscal_year_year - 2
+    # This is an array of years that the user can plan for
+    years = (first_year..last_year).to_a
+    
+    # Set the view up. Start year is the first year in the view
+    @start_year = params[:start_year].blank? ? first_year + 1 : params[:start_year].to_i
+    @year_1 = @start_year
+    @year_2 = @start_year + 1
+    @year_3 = @start_year + 2
+    
+    # Add ability to page year by year
+    @total_rows = years.size
+    # get the index of the start year in the array      
+    current_index = years.index(@start_year)
+    @row_number = current_index + 1
+    if current_index == 0
+      @prev_record_path = "#"
+    else
+      @prev_record_path = scheduler_index_path(:start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+    end
+    if current_index < @total_rows
+      @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+    else
+      @next_record_path = "#"
+    end
+            
   end
   def get_assets(year)
     
