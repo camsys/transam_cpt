@@ -12,6 +12,14 @@ class SchedulerController < OrganizationAwareController
   REPLACE_ACTION              = '1'
   REHABILITATE_ACTION         = '2'
   REMOVE_FROM_SERVICE_ACTION  = '3'
+  RESET_ACTION                = '4'
+    
+  ACTIONS = [
+    ["Replace", REPLACE_ACTION],
+    ["Rehabilitate", REHABILITATE_ACTION],
+    ["Remove from service (no replacement)", REMOVE_FROM_SERVICE_ACTION],
+    ["Reset to policy", RESET_ACTION]
+  ]
     
   YES = '1'
   NO = '0'
@@ -51,10 +59,7 @@ class SchedulerController < OrganizationAwareController
     @year_2 = year + 2
     @year_3 = year + 3
 
-    @actions = []
-    @actions << ["Replace",      REPLACE_ACTION]
-    @actions << ["Rehabilitate", REHABILITATE_ACTION]
-    @actions << ["Remove from service (no replacement)", REMOVE_FROM_SERVICE_ACTION]
+    @actions = ACTIONS
 
     @fiscal_years = []
     (@year_1..@year_1 + 3).each do |yr|
@@ -88,6 +93,13 @@ class SchedulerController < OrganizationAwareController
       asset.scheduled_replacement_year = nil
       num_years = proxy.fy_year.to_i - current_fiscal_year_year
       asset.scheduled_disposition_date = Date.today + num_years.years
+      asset.save
+      
+    elsif proxy.action_id == RESET_ACTION
+      asset.scheduled_rehabilitation_year = nil
+      asset.scheduled_replacement_year = asset.policy_replacement_year
+      asset.scheduled_disposition_date = nil
+      
       asset.save
   
     end
