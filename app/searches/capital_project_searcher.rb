@@ -32,6 +32,10 @@ class CapitalProjectSearcher < BaseSearcher
   def results_view
     'capital_project_search_results_table'
   end
+  
+  def cache_variable_name
+    CapitalProjectsController::INDEX_KEY_LIST_VAR
+  end
 
   # return a select array of fiscal years             
   def fiscal_years
