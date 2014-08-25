@@ -58,8 +58,8 @@ reports = [
     :show_in_nav => 1,
     :show_in_dashboard => 0,
     :description => 'Displays a chart showing the cash flow forecast for the current organization.',
-    :chart_type => "area",
-    :chart_options => "{is3D : false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    :chart_type => "combo",
+    :chart_options => "{is3D : false, seriesType: 'bars', series: {3: {type: 'line'}}, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     }
 ]
 

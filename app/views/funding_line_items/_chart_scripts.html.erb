@@ -5,14 +5,14 @@
 	});
 	
 	var div_id = 'chart_div';
-	var chart_type = 'area';
+	var chart_type = 'combo';
 	var chart_options = {
       hAxis: {title: 'Fiscal Year'},
       vAxis: {title: '$'},
       fontSize: 10,
       isStacked: false,
-      colors: ['green', 'blue', 'red'],
-      //legend: 'none'
+	  seriesType: "bars",
+	  series: {3: {type: "line"}}
     };
   
 
@@ -27,6 +27,7 @@
 	    chart_data.addColumn('number', 'Amount');
 	    chart_data.addColumn('number', 'Spent');
 	    chart_data.addColumn('number', 'Committed');
+	    chart_data.addColumn('number', 'Balance');
 		
 		<% @funding_line_item.cash_flow.each do |row| %>
 			chart_data.addRow(

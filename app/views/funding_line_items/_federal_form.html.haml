@@ -9,7 +9,7 @@
     = f.association :funding_source, :label => 'Fund', :disabled => true
     = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal Year'
     
-    = f.input :project_number
+    = f.input :project_number, :label => 'FPN'
     = f.input :active, :label => "FPN active", :as => :radio_buttons
     = f.association :funding_line_item_type, :label => 'FPN Type'
     

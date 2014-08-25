@@ -5,14 +5,14 @@
 	});
 	
 	var div_id = 'chart_div';
-	var chart_type = 'area';
+	var chart_type = 'combo';
 	var chart_options = {
       hAxis: {title: 'Fiscal Year'},
       vAxis: {title: '$'},
       fontSize: 10,
       isStacked: false,
-      colors: ['green', 'blue', 'red'],
-      //legend: 'none'
+	  seriesType: "bars",
+	  series: {3: {type: "line"}}
     };
   
 
@@ -27,6 +27,7 @@
 	    chart_data.addColumn('number', 'Allocated');
 	    chart_data.addColumn('number', 'Spent');
 	    chart_data.addColumn('number', 'Committed');
+	    chart_data.addColumn('number', 'Balance');
 		
 		<% @funding_source.cash_flow(@organization.id).each do |row| %>
 			chart_data.addRow(
@@ -34,7 +35,7 @@
 					<% if idx == 0 %>
 						['<%= row[idx] %>', 
 					<% else %>
-						{v: <%= row[idx].to_i %>, f: '<%= format_as_currency(row[1]) %>'}, 
+						{v: <%= row[idx].to_i %>, f: '<%= format_as_currency(row[idx]) %>'}, 
 					<% end %>
 				<% end %>
 			]);

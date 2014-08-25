@@ -109,8 +109,8 @@ class FundingSource < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
-  # Generates a cash flow summary for the funding source
-  def cash_flow(org_id = nil)
+  # Generates a cash forecast for the funding source
+  def cash_forecast(org_id = nil)
     
     if org_id
       line_items = funding_line_items.where('organization_id = ?', org_id)
@@ -143,6 +143,41 @@ class FundingSource < ActiveRecord::Base
       
       # Add this years summary to the cumulative amounts
       a << [fiscal_year(yr), cum_amount, cum_spent, cum_committed]
+    end
+    a
+      
+  end
+
+  # Generates a cash flow for the funding source
+  def cash_flow(org_id = nil)
+    
+    if org_id
+      line_items = funding_line_items.where('organization_id = ?', org_id)
+    else
+      line_items = funding_line_items
+    end
+    
+    first_year = line_items.first.fy_year
+    
+    a = []
+    balance = 0
+    
+    (first_year..last_fiscal_year_year).each do |yr|
+      year_amount = 0
+      year_spent = 0
+      year_committed = 0
+      
+      list = line_items.where('fy_year = ?', yr)
+      list.each do |fli|
+        year_amount += fli.amount
+        year_spent += fli.spent
+        year_committed += fli.committed
+      end
+      
+      balance += year_amount - (year_spent + year_committed)
+      
+      # Add this years summary to the array
+      a << [fiscal_year(yr), year_amount, year_spent, year_committed, balance]
     end
     a
       
