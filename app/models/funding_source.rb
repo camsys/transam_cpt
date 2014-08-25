@@ -118,7 +118,7 @@ class FundingSource < ActiveRecord::Base
       line_items = funding_line_items
     end
     
-    first_year = line_items.first.fy_year
+    first_year = line_items.empty? ? current_fiscal_year_year : line_items.first.fy_year
     
     a = []
     cum_amount = 0
@@ -157,7 +157,7 @@ class FundingSource < ActiveRecord::Base
       line_items = funding_line_items
     end
     
-    first_year = line_items.first.fy_year
+    first_year = line_items.empty? ? current_fiscal_year_year : line_items.first.fy_year
     
     a = []
     balance = 0
