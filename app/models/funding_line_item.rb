@@ -49,7 +49,7 @@ class FundingLineItem < ActiveRecord::Base
   # Each funding line item was created and updated by a user
   belongs_to  :creator, :class_name => "User", :foreign_key => "created_by_id"
   belongs_to  :updator, :class_name => "User", :foreign_key => "updated_by_id"
-
+  
   # Has 0 or more documents. Using a polymorphic association. These will be removed if the funding line item is removed
   has_many    :documents,   :as => :documentable, :dependent => :destroy
 
@@ -64,7 +64,7 @@ class FundingLineItem < ActiveRecord::Base
   validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1990}
   validates :funding_source_id,                 :presence => true
   validates :funding_line_item_type_id,         :presence => true
-  validates :amount,                            :presence => true, :numericality => {:only_integer => :true, :greater_than => 0}
+  #validates :amount,                            :presence => true, :numericality => {:only_integer => :true, :greater_than => 0}
   validates :spent,                             :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
   validates :pcnt_operating_assistance,         :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
 
@@ -106,32 +106,30 @@ class FundingLineItem < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
     
-  # Generates a cash flow summary for the funding source
+  # Generates a cash flow summary for the funding line item
   def cash_flow
         
     a = []
-    cum_committed = 0
-    
-    total_amount = amount.nil? ? 0 : amount
-    total_spent = spent.nil? ? 0 : spent
-    
+    balance = amount
+        
     (fy_year..last_fiscal_year_year).each do |yr|
       year_committed = 0
       
-      #list = line_items.where('fy_year = ?', yr)
-      #list.each do |fli|
-      #  year_committed += fli.committed
-      #end
-
-      cum_committed += year_committed
+      list = funding_requests
+      list.each do |fr|
+        if fr.activity_line_item.capital_project.fy_year == yr
+          year_committed += federal? ? fr.federal_amount : fr.state_amount
+        end
+      end
       
-      # Add this years summary to the cumulative amounts
-      a << [fiscal_year(yr), total_amount, total_spent, cum_committed]
+      balance -= (spent + year_committed)
+      
+      # Add this years summary to the array
+      a << [fiscal_year(yr), amount, spent, year_committed, balance]
     end
     a
       
-  end
-  # Returns the set of funding requests for this funding line item
+  end  # Returns the set of funding requests for this funding line item
   def funding_requests
     
     if federal?
