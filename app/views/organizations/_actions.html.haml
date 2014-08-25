@@ -1,4 +1,4 @@
-- if can? :update, @org or can? :update, Budget
+- if can? :update, @org
   .btn-group.pull-right.panel-action
     %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
       I want to  
@@ -9,9 +9,3 @@
           = link_to edit_organization_path(@org) do
             %i.fa.fa-edit.fa-fw
             = " Update this organization"
-      - if @org.type_of? :grantee and can? :update, Budget
-        %li.divider
-        %li
-          = link_to edit_budget_organization_path(@org) do
-            %i.fa.fa-usd.fa-fw
-            = " Update the budget"

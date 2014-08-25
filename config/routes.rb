@@ -1,10 +1,6 @@
 Rails.application.routes.draw do
   
   resources :organizations, :controller => 'cpt_organizations' do
-    member do
-      get 'edit_budget'
-      post 'update_budget'
-     end
   end
   
   resources :funding_sources do
