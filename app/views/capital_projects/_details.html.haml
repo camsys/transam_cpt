@@ -8,13 +8,13 @@
       %span.badge.pull-right= @project.mpms_projects.count
       = "MPMS Projects "
   %li
-    %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @project.comments.count
-      = "Comments "
-  %li
     %a{:href => "#docs", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @project.documents.count
       = "Supporting Documents "
+  %li
+    %a{:href => "#comm", :data =>{:toggle => 'tab'}}
+      %span.badge.pull-right= @project.comments.count
+      = "Comments "
 
 .tab-content
   .tab-pane.fade#alis

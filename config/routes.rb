@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   
   resources :funding_line_items do
     resources :comments
+    resources :documents
   end
   
   # Asset replacement/rehabilitation

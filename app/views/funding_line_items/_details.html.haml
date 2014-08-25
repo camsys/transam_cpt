@@ -4,6 +4,10 @@
       %span.badge.pull-right= @funding_line_item.funding_requests.count
       = "Allocations"
   %li
+    %a{:href => "#docs", :data =>{:toggle => 'tab'}}
+      %span.badge.pull-right= @funding_line_item.documents.count
+      = "Supporting Documents "
+  %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @funding_line_item.comments.count
       = "Comments"
@@ -18,6 +22,9 @@
         %p There are no projects that use this fund.
       - else
         = render :partial => 'funding_requests/index_table', :locals => {:funding_requests => @funding_line_item.funding_requests}
+  .tab-pane.fade#docs
+    .tab-content
+      = render 'documents'
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'

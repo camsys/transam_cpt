@@ -50,6 +50,9 @@ class FundingLineItem < ActiveRecord::Base
   belongs_to  :creator, :class_name => "User", :foreign_key => "created_by_id"
   belongs_to  :updator, :class_name => "User", :foreign_key => "updated_by_id"
 
+  # Has 0 or more documents. Using a polymorphic association. These will be removed if the funding line item is removed
+  has_many    :documents,   :as => :documentable, :dependent => :destroy
+
   # Has 0 or more comments. Using a polymorphic association. These will be removed if the funding line item is removed
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
