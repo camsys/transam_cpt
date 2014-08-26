@@ -119,7 +119,7 @@ class CapitalProjectBuilder
     end
     
     # Rail Cars
-    assets = RailCar.where('organization_id = ? disposition_date IS NULL AND scheduled_disposition_date IS NULL', organization.id)  
+    assets = RailCar.where('organization_id = ? AND disposition_date IS NULL AND scheduled_disposition_date IS NULL', organization.id)  
     replace_scope = TeamAliCode.find_by_code('12.12.XX')
     rehab_scope = TeamAliCode.find_by_code('12.14.XX')
     assets.each do |a|
@@ -142,7 +142,7 @@ class CapitalProjectBuilder
     end
     
     # Traction
-    assets = Locomotive.where('organization_id = ? disposition_date IS NULL AND scheduled_disposition_date IS NULL', organization.id)  
+    assets = Locomotive.where('organization_id = ? AND disposition_date IS NULL AND scheduled_disposition_date IS NULL', organization.id)  
     #replace_scope = TeamAliCode.find_by_code('12.12.XX')
     #rehab_scope = TeamAliCode.find_by_code('12.14.XX')
     assets.each do |a|
