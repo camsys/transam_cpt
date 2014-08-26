@@ -111,11 +111,13 @@ class CapitalProjectsController < OrganizationAwareController
     # Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
     @funding_source_id = params[:funding_source_id]
     unless @funding_source_id.blank?
-      @funding_source_id = @funding_source_id.to_i
+      funding_source = FundingSource.find(@funding_source_id)
+      @funding_source_id = funding_source.id
+      column_name = funding_source.federal? ? 'federal_funding_line_item_id' : 'state_funding_line_item_id'
       if @funding_source_id > 0
         capital_project_ids = []
         # Use a custom query to join across the five tables
-        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE funding_amount_id IN (SELECT id FROM funding_amounts WHERE funding_source_id = #{@funding_source_id})))"
+        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE #{column_name} IN (SELECT id FROM funding_line_items WHERE funding_source_id = #{@funding_source_id})))"
         cps = CapitalProject.connection.execute(query, :skip_logging)
         cps.each do |cp|
           capital_project_ids << cp[0]
