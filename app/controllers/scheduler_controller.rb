@@ -118,7 +118,7 @@ class SchedulerController < OrganizationAwareController
     years = (first_year..last_year).to_a
     
     # Set the view up. Start year is the first year in the view
-    @start_year = params[:start_year].blank? ? first_year + 1 : params[:start_year].to_i
+    @start_year = params[:start_year].blank? ? first_year : params[:start_year].to_i
     @year_1 = @start_year
     @year_2 = @start_year + 1
     @year_3 = @start_year + 2
