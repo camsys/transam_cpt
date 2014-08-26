@@ -60,6 +60,11 @@ class EligibilityService
     types << 1 if federal
     types << 2 if state
             
+    # If federal check for state administered federal funds
+    if federal
+      conditions << 'state_administered_federal_fund = ?'
+      values << 1            
+    end
     # Check for rural compatibility
     if organization.service_type_rural?
       conditions << 'rural_providers = ?'
