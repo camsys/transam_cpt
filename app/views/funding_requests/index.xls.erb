@@ -18,7 +18,7 @@
   </Style>
  </Styles>
 
-  <Worksheet ss:Name="Capital Projects">
+  <Worksheet ss:Name="Funding Requests">
     <Table>
       <Column ss:AutoFitWidth="1" ss:Width="90"/>
       <Column ss:AutoFitWidth="1" ss:Width="90"/>
@@ -27,48 +27,58 @@
       <Column ss:AutoFitWidth="1" ss:Width="90"/>
       <Column ss:AutoFitWidth="1" ss:Width="90"/>
       <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
+      <Column ss:AutoFitWidth="1" ss:Width="90"/>
 
       <Row>
+        <Cell><Data ss:Type="String">Object Key</Data></Cell>
         <Cell><Data ss:Type="String">Agency</Data></Cell>
         <Cell><Data ss:Type="String">Fiscal Year</Data></Cell>
-        <Cell><Data ss:Type="String">Fund</Data></Cell>
-        <Cell><Data ss:Type="String">State</Data></Cell>
-        <Cell><Data ss:Type="String">Federal</Data></Cell>
-        <Cell><Data ss:Type="String">Local</Data></Cell>
-        <Cell><Data ss:Type="String">Total</Data></Cell>
-      </Row>
+        <Cell><Data ss:Type="String">Capital Project</Data></Cell>
+        <Cell><Data ss:Type="String">Status</Data></Cell>
+        
+        <Cell><Data ss:Type="String">Fed. Fund</Data></Cell>
+        <Cell><Data ss:Type="String">Fed. FPN</Data></Cell>
+        <Cell><Data ss:Type="String">Fed. Amount</Data></Cell>
 
-      <% total_amount = 0 %>
-      <% total_state = 0 %>
-      <% total_local = 0 %>
-      <% total_federal = 0 %>
+        <Cell><Data ss:Type="String">State Fund</Data></Cell>
+        <Cell><Data ss:Type="String">State Num</Data></Cell>
+        <Cell><Data ss:Type="String">State Amount</Data></Cell>
+        
+        <Cell><Data ss:Type="String">Local Source</Data></Cell>
+        <Cell><Data ss:Type="String">Local Amount</Data></Cell>
+        
+        <Cell><Data ss:Type="String">Total</Data></Cell>
+
+      </Row>
 
       <% @funding_requests.each do |req| %>
-        <% total_amount += req.amount %>
-        <% total_state += req.state_match %>
-        <% total_local += req.local_match %>
-        <% total_federal += req.federal_match %>
-
         <Row>
-          <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.organization %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.object_key %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.organization.short_name %></Data></Cell>
           <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.fiscal_year %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= req.funding_amount.funding_source %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(req.state_match) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(req.federal_match) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(req.local_match) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(req.amount) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.capital_project_status_type %></Data></Cell>
+          
+          <Cell><Data ss:Type="String"><%= req.federal_funding_line_item.funding_source %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.federal_funding_line_item %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.federal_amount %></Data></Cell>
+
+          <Cell><Data ss:Type="String"><%= req.state_funding_line_item.funding_source %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.state_funding_line_item %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.state_amount %></Data></Cell>
+
+          <Cell><Data ss:Type="String"></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.local_amount %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.total_amount %></Data></Cell>
+
         </Row>
       <% end %>
-
-      <Row>
-        <Cell><Data ss:Type="String"></Data></Cell>
-        <Cell><Data ss:Type="String"></Data></Cell>
-        <Cell><Data ss:Type="String"></Data></Cell>
-        <Cell><Data ss:Type="String"><%= format_as_currency(total_state) %></Data></Cell>
-        <Cell><Data ss:Type="String"><%= format_as_currency(total_federal) %></Data></Cell>
-        <Cell><Data ss:Type="String"><%= format_as_currency(total_local) %></Data></Cell>
-        <Cell><Data ss:Type="String"><%= format_as_currency(total_amount) %></Data></Cell>
-      </Row>
 
     </Table>
   </Worksheet>
