@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <NumberFormat ss:Format="&quot;$&quot;#,##0"/>
+  </Style>
+ </Styles>
+
+  <Worksheet ss:Name="Appropriations">
+      <Table>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+        <Column ss:AutoFitWidth="1" ss:Width="85"/>
+
+        <Row>
+          <Cell><Data ss:Type="String">Object Key</Data></Cell>
+          <Cell><Data ss:Type="String">Agency</Data></Cell>
+          <Cell><Data ss:Type="String">Fund</Data></Cell>
+          <Cell><Data ss:Type="String">Fiscal Year</Data></Cell>
+          <Cell><Data ss:Type="String">FPN/Authorization</Data></Cell>
+          <Cell><Data ss:Type="String">Awarded</Data></Cell>
+          <Cell><Data ss:Type="String">Active</Data></Cell>
+          <Cell><Data ss:Type="String">Type</Data></Cell>
+          <Cell><Data ss:Type="String">Amount</Data></Cell>
+          <Cell><Data ss:Type="String">Percent Operating</Data></Cell>
+          <Cell><Data ss:Type="String">Amount Opertating</Data></Cell>
+          <Cell><Data ss:Type="String">Spent</Data></Cell>
+          <Cell><Data ss:Type="String">Committed</Data></Cell>
+          <Cell><Data ss:Type="String">Available</Data></Cell>
+		</Row>
+		
+		<% @funding_line_items.each do |a| %>
+		<Row>
+		    <Cell><Data ss:Type="String"><%= a.object_key %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= a.organization.short_name %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= a.funding_source %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= a.fiscal_year %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= a.name %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= format_as_yes_no(a.awarded) %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= format_as_yes_no(a.active) %></Data></Cell>
+		    <Cell><Data ss:Type="String"><%= a.funding_line_item_type %></Data></Cell>
+		    <Cell><Data ss:Type="Number"><%= a.amount %></Data></Cell>
+		    <Cell><Data ss:Type="Number"><%= a.pcnt_operating_assistance %></Data></Cell>
+		    <Cell><Data ss:Type="Number"><%= a.operating_funds %></Data></Cell>
+		    <Cell><Data ss:Type="Number"><%= a.spent %></Data></Cell>
+		    <Cell><Data ss:Type="Number"><%= a.committed %></Data></Cell>
+		    <Cell><Data ss:Type="Number"><%= a.available %></Data></Cell>		
+		</Row>
+		<% end %>
+		
+		
+      </Table>
+  </Worksheet>
+</Workbook>
+

@@ -66,8 +66,6 @@ class FundingLineItemsController < OrganizationAwareController
         
     @funding_line_items = query  
     
-    # cache the set of object keys in case we need them later
-    cache_list(@funding_line_items, INDEX_KEY_LIST_VAR)
       
     if @funding_source_id.blank?
       add_breadcrumb "All"
@@ -78,7 +76,7 @@ class FundingLineItemsController < OrganizationAwareController
 
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
-      cache_list(@projects, INDEX_KEY_LIST_VAR)
+      cache_list(@funding_line_items, INDEX_KEY_LIST_VAR)
         
       # generate the chart data
       @report = Report.find_by_class_name('CashFlowForecast')
