@@ -75,7 +75,7 @@ class FundingRequestsController < OrganizationAwareController
         ali.funding_requests.each do |request|
           # If we got a funding source fitler, check that this request is for that source
           if @funding_source_id > 0
-            if request.funding_amount.funding_source_id == @funding_source_id
+            if request.federal_funding_line_item.funding_source_id == @funding_source_id or request.state_funding_line_item.funding_source_id == @funding_source_id
               @funding_requests << request 
             end
           else
