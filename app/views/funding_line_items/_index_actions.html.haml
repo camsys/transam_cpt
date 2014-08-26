@@ -7,11 +7,6 @@
       = link_to funding_line_items_path(:format => 'xls') do
         %i.fa.fa-fw.fa-file-excel-o
         = " Export list to Excel"
-    %li.divider
-    %li
-      = link_to new_funding_line_item_path do
-        %i.fa.fa-fw.fa-usd
-        = " Register a new appropriation"
 
 = form_tag funding_line_items_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   - if @organization_list.count > 1
