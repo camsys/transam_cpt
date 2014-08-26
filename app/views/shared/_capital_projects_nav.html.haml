@@ -1,6 +1,6 @@
-%li.nav-item.dropdown{:class => get_nav_link_class('capital_projects')}
+%li.nav-item.dropdown{:class => get_nav_link_class(['capital_projects', 'build', 'activity_line_items', 'scheduler'])}
   = link_to capital_projects_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
-    %i.fa.fa-bank.fa-2x
+    %i.fa.fa-road.fa-2x
     %br
     = " Capital Planning"
     %b.caret
@@ -27,11 +27,6 @@
 
     %li.divider
     %li.text-left
-      = link_to funding_requests_path do
-        %i.fa.fa-usd.fa-fw
-        = " Funding Requests"
-    %li.divider
-    %li.text-left
       = link_to new_search_path(:search_type => SearchesController::CAPITAL_PLAN_SEARCH_TYPE) do
         %i.fa.fa-search.fa-fw
         = " Search Capital Projects"
@@ -47,16 +42,16 @@
           %i.fa.fa-cogs.fa-fw
           = " Build/Update SOGR Projects"
 
-%li.nav-item.dropdown{:class => get_nav_link_class('funding_sources')}
+%li.nav-item.dropdown{:class => get_nav_link_class(['funding_sources', 'funding_requests', 'funding_line_items'])}
   = link_to funding_sources_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
-    %i.fa.fa-money.fa-2x
+    %i.fa.fa-bank.fa-2x
     %br
     = " Funding"
     %b.caret
   %ul.dropdown-menu
     %li.text-left.dropdown-submenu
       = link_to funding_sources_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
-        %i.fa.fa-money.fa-fw
+        %i.fa.fa-bank.fa-fw
         = " Funding Sources"
       %ul.dropdown-menu
         - FundingSourceType.all.each do |x|
@@ -66,10 +61,15 @@
               - FundingSource.where('funding_source_type_id = ?', x.id).each do |s|
                 %li
                   = link_to s.name, funding_source_path(s)
+        %li.divider
+        %li.text-left
+          = link_to new_search_path(:search_type => SearchesController::FUNDING_SOURCE_SEARCH_TYPE) do
+            %i.fa.fa-search.fa-fw
+            = " Search Funding Sources"
     %li.divider
     %li.text-left.dropdown-submenu
       = link_to funding_line_items_path do
-        %i.fa.fa-usd.fa-fw
+        %i.fa.fa-gavel.fa-fw
         = " Appropriations"
       %ul.dropdown-menu
         - FundingSourceType.all.each do |x|
@@ -80,3 +80,8 @@
                 - if s.funding_line_items.where('organization_id = ?', @organization.id).count > 0
                   %li
                     = link_to s.name, funding_line_items_path(:funding_source_id => s.id)
+    %li.divider
+    %li.text-left
+      = link_to funding_requests_path do
+        %i.fa.fa-usd.fa-fw
+        = " Funding Requests"
