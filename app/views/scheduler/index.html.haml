@@ -1,5 +1,5 @@
 .row
-  .col-md-3
+  .col-md-2
     .panel.panel-default.header-part
       .panel-heading
         .row
@@ -10,16 +10,18 @@
       .panel-body    
         = render 'summary'
         
-  .col-md-9
+  .col-md-10
     .panel.panel-default.header-part
       .panel-heading
         .row
-          .col-md-6
+          .col-md-3
             %h3.panel-title
               %i.fa.fa-list
               Planning
-          .col-md-6
+          .col-md-9
             = render 'index_actions'
       .panel-body    
+        #plan_summary
+          = render 'capital_projects/capital_plan_summary'
         #schedules
           = render 'schedules'

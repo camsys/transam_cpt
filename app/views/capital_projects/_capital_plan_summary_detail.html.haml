@@ -1,0 +1,23 @@
+:ruby
+  if [@year_1, @year_2, @year_3].include? year
+    panel_type = 'panel-default'
+    panel_bg = 'bg-default'
+  else
+    panel_type = 'panel-success'
+    panel_bg = 'bg-success'
+  end
+  
+.col-md-1
+  .panel{:class => "#{panel_type}"}
+    .panel-body{:class => "#{panel_bg}", :style => 'padding: 5px 0 0 0;'}
+      %p.text-center <strong>#{format_as_fiscal_year(year)}</strong>
+      %p.text-center
+        %i.fa.fa-refresh.fa-fw
+        = format_as_integer(num_replace)      
+      %p.text-center
+        %i.fa.fa-wrench.fa-fw
+        = format_as_integer(num_rehab)
+      %p.text-center
+        = format_as_currency(cost)
+  
+  

@@ -7,11 +7,6 @@
       = link_to '#' do
         %i.fa.fa-file-excel-o.fa-fw
         = " Export this plan to Excel"
-    %li.divider
-    %li
-      = link_to '#' do
-        %i.fa.fa-gears.fa-fw
-        = " Update my capital projects"
 
 = form_tag scheduler_index_path, :id => 'filter_form', :method => "get", :remote => true, :class => 'navbar-form navbar-right panel-action' do
   - if @organization_list.count > 1

@@ -92,6 +92,9 @@ class SchedulerController < OrganizationAwareController
   
     end
 
+    # Update the capital projects with this new data
+    builder = CapitalProjectBuilder.new
+    builder.update_asset_schedule(asset)
 
     # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
     # renderers
