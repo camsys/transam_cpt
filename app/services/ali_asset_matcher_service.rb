@@ -101,7 +101,7 @@ class AliAssetMatcherService
       values << capital_project.fy_year
     elsif ['14', '15', '17'].include? ali.team_ali_code.category
       conditions << 'scheduled_rehabilitation_year = ?'
-      values << fy_year
+      values << capital_project.fy_year
     end    
     
     Rails.logger.debug conditions.inspect
