@@ -13,8 +13,21 @@
         - if @projects.empty?
           %p No matching capital projects found
         - else
-          .col-md-12
-            .chart{:id => "chart_#{@report.id}"}
+          %ul.nav.nav-tabs
+            %li
+              %a{:href => "#summary", :data =>{:toggle => 'tab'}}
+                = "Plan Summary"
+            %li
+              %a{:href => "#chart", :data =>{:toggle => 'tab'}}
+                = "Capital Needs Chart"
+          .tab-content{:style => 'min-height: 0;'}
+            .tab-pane.fade#chart
+              .col-md-12
+              .chart{:id => "chart_#{@report.id}"}
+            .tab-pane.fade#summary
+              .col-md-12
+                = render 'capital_plan_summary'
+            
           .col-md-12                
             = render 'index_table'
 
