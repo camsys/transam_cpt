@@ -5,12 +5,15 @@
 
 #form
   .row
-    .col-md-4
-      = dialog_tag('Capital Project Builder Notes', {:icon => 'fa fa-book', :class => "header_part"}) do
+    .col-md-3
+      = dialog_tag('SOGR Project Builder', {:icon => 'fa fa-book', :class => "header_part"}) do
         = render 'builder_notes'
-    .col-md-8
-      = dialog_tag('Capital Project Builder Details', {:icon => 'fa fa-book', :class => "header_part"}) do
+    .col-md-6
+      = dialog_tag('Capital Project Builder Details', {:icon => 'fa fa-cogs', :class => "header_part"}) do
         = render 'builder_form'
+    .col-md-3
+      = dialog_tag('Instructions', {:icon => 'fa fa-info-circle', :class => "header_part"}) do
+        = render 'builder_instructions'
 
 :javascript
 
@@ -26,9 +29,6 @@
       $('#form').hide();
       return true;
     });
-
-    // Disable the submit button
-    $('#submit_button').attr("disabled", "disabled");
 
     // Fix the view
     transam.make_same_height('.header_part');

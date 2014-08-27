@@ -18,7 +18,7 @@ class CapitalProjectsController < OrganizationAwareController
     add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
     
     @builder_proxy = BuilderProxy.new
-    @message = "Creating SOGR capital projects. This process might take a while."
+    @message = "Creating SOGR projects. This process might take a while."
     
   end
   
@@ -31,9 +31,16 @@ class CapitalProjectsController < OrganizationAwareController
       # Sleep for a couple of seconds so that the screen can display the waiting 
       # message and the user can read it.
       sleep 2
+      
       # Run the builder
+      options = {}
+      options[:asset_type_ids] = @builder_proxy.asset_types
+      options[:purchase_alis] = @builder_proxy.finance_type == '1' ? true : false
+      
+      #puts options.inspect
       builder = CapitalProjectBuilder.new
-      num_created = builder.build(@organization)
+      num_created = builder.build(@organization, options)
+  
       # Let the user know the results
       if num_created > 0
         msg = "Capital Project Builder completed. #{num_created} projects were added to your capital needs list."
