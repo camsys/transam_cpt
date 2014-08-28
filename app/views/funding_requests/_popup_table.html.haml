@@ -38,11 +38,11 @@
         %td.left= req.activity_line_item.capital_project
         %td.left= req.activity_line_item.capital_project.capital_project_status_type
         
-        %td.left= req.federal_funding_line_item.funding_source
+        %td.left= req.federal_funding_line_item.funding_source unless req.federal_funding_line_item.nil?
         %td.left= req.federal_funding_line_item
         %td.right= format_as_currency(req.federal_amount)
 
-        %td.left= req.state_funding_line_item.funding_source
+        %td.left= req.state_funding_line_item.funding_source unless req.state_funding_line_item.nil?
         %td.left= req.state_funding_line_item
         %td.right= format_as_currency(req.state_amount)
  
