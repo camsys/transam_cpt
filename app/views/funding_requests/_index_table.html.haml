@@ -48,7 +48,9 @@
       - fy_year = req.activity_line_item.capital_project.fy_year
       - if old_fy_year > 0 and old_fy_year != fy_year
         %tr
-          %td.left{:colspan => 6}
+          %td.left
+          %td.center.sub_total= "#{format_as_fiscal_year(old_fy_year)} Totals"
+          %td.left{:colspan => 4}
           %td.right.sub_total= format_as_currency(fy_federal)
           %td.left{:colspan => 2}
           %td.right.sub_total= format_as_currency(fy_state)
@@ -76,11 +78,11 @@
         %td.left= req.activity_line_item.capital_project
         %td.center= req.activity_line_item.capital_project.capital_project_status_type
         
-        %td.left= req.federal_funding_line_item.funding_source
+        %td.left= req.federal_funding_line_item.funding_source unless req.federal_funding_line_item.nil?
         %td.left= req.federal_funding_line_item
         %td.right= format_as_currency(req.federal_amount)
 
-        %td.left= req.state_funding_line_item.funding_source
+        %td.left= req.state_funding_line_item.funding_source unless req.state_funding_line_item.nil?
         %td.left= req.state_funding_line_item
         %td.right= format_as_currency(req.state_amount)
 
@@ -90,7 +92,9 @@
         %td.right= format_as_currency(req.total_amount)
 
     %tr
-      %td.left{:colspan => 6}
+      %td.left
+      %td.center.sub_total= "#{format_as_fiscal_year(old_fy_year)} Totals"
+      %td.left{:colspan => 4}
       %td.right.sub_total= format_as_currency(fy_federal)
       %td.left{:colspan => 2}
       %td.right.sub_total= format_as_currency(fy_state)
@@ -102,7 +106,9 @@
 
   %tfoot
     %tr
-      %td.left{:colspan => 6}
+      %td.left
+      %td.center All FY Totals
+      %td.left{:colspan => 4}
       %td.right= format_as_currency(total_federal)
       %td.left{:colspan => 2}
       %td.right= format_as_currency(total_state)
