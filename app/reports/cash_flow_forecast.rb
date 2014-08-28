@@ -17,7 +17,11 @@ class CashFlowForecast < AbstractReport
   def get_data_from_result_list(funding_line_item_list)
     
     # Get the array of fiscal years from the mixin
-    start_year = funding_line_item_list.first.fy_year
+    if funding_line_item_list.empty?
+      start_year = current_fiscal_year_year
+    else
+      start_year = funding_line_item_list.first.fy_year
+    end
     last_year = last_fiscal_year_year
     years = (start_year..last_year).to_a
     
