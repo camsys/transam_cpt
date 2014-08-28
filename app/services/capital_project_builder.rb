@@ -151,7 +151,7 @@ class CapitalProjectBuilder
       if asset.policy_replacement_year < start_year
         asset.scheduled_replacement_year = start_year
       else
-        asset.scheduled_replacement_year = a.policy_replacement_year
+        asset.scheduled_replacement_year = asset.policy_replacement_year
       end
       asset.save
     end
