@@ -136,10 +136,10 @@ class SchedulerController < OrganizationAwareController
     else
       @prev_record_path = scheduler_index_path(:start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
-    if current_index < @total_rows
-      @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
-    else
+    if current_index == (@total_rows - 1)
       @next_record_path = "#"
+    else
+      @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
     @row_pager_remote = true
      
