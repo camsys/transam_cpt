@@ -9,20 +9,23 @@ class FundingSourceSearcher < BaseSearcher
 
   # add any search params to this list
   attr_accessor :funding_source_type_id,
-                :capital_project_type,
-                :capital_project_status_type,
-                :team_ali_code,
-                :asset_type,
-                :asset_subtype,
+                :rural_providers,
+                :urban_providers,
+                :shared_ride_providers,
+                :inter_city_bus_providers,
+                :inter_city_rail_providers,
+                :show_inactive,
                 # Comparator-based (<=>)
-                :fy_year,
-                :fy_year_comparator,
-                :total_cost,
-                :total_cost_comparator,
+                :federal_match_required_comparator,
+                :federal_match_required,
+                :state_match_required_comparator,
+                :state_match_required,
+                :local_match_required_comparator,
+                :local_match_required,
+                # Checkbox-based
+                :state_administered_federal_fund,
                 # Custom Logic
-                :funding_source,
-                :keyword,
-                :included_assets
+                :keyword
 
   # Return the name of the form to display
   def form_view
@@ -30,7 +33,7 @@ class FundingSourceSearcher < BaseSearcher
   end
   # Return the name of the results table to display
   def results_view
-    'fundiong_source_search_results_table'
+    'funding_source_search_results_table'
   end
   
   def cache_variable_name
@@ -72,42 +75,52 @@ class FundingSourceSearcher < BaseSearcher
   # Simple Equality Queries
   #---------------------------------------------------
 
-  def capital_project_type_conditions
-    CapitalProject.where(capital_project_type_id: capital_project_type) unless capital_project_type.blank?
+  def funding_source_type_conditions
+    FundingSource.where(funding_source_type_id: funding_source_type_id) unless funding_source_type_id.blank?
   end
-
-  def capital_project_status_type_conditions
-    CapitalProject.where(capital_project_status_type_id: capital_project_status_type) unless capital_project_status_type.blank?
-  end
-
-  def team_ali_code_conditions
-    CapitalProject.where(team_ali_code_id: team_ali_code) unless team_ali_code.blank?
-  end
-
-
   
   #---------------------------------------------------
   # Comparator Queries
   #---------------------------------------------------
-  def fiscal_year_conditions
-    unless fy_year.blank?
-      case fy_year_comparator
+  
+  def federal_match_required_conditions
+    unless federal_match_required.blank?
+      federal_match_required_as_float = federal_match_required.to_f
+      case federal_match_required_comparator
       when "-1" # Before Year X
-        CapitalProject.where("fy_year < ?", fy_year)
-      when "1"  # After Year X
-        CapitalProject.where("fy_year > ?", fy_year)
+        FundingSource.where("federal_match_required < ?", federal_match_required_as_float) 
+      when "0" # During Year X
+        FundingSource.where("federal_match_required = ?", federal_match_required_as_float) 
+      when "1" # After Year X
+        FundingSource.where("federal_match_required > ?", federal_match_required_as_float) 
       end
     end
   end
 
-  def total_cost_conditions # gonna be tricky...
-    unless total_cost.blank?
-      total_cost_as_float = sanitize_to_float(total_cost)
-      case total_cost_comparator
-      when "-1" # Less than X dollars
-        CapitalProject.joins(:activity_line_items).group("capital_projects.id").having("sum(activity_line_items.anticipated_cost) < ?", total_cost_as_float)
-      when "1"  # More than X dollars
-        CapitalProject.joins(:activity_line_items).group("capital_projects.id").having("sum(activity_line_items.anticipated_cost) > ?", total_cost_as_float)
+  def state_match_required_conditions
+    unless state_match_required.blank?
+      state_match_required_as_float = state_match_required.to_f
+      case state_match_required_comparator
+      when "-1" # Before Year X
+        FundingSource.where("state_match_required < ?", state_match_required_as_float) 
+      when "0" # During Year X
+        FundingSource.where("state_match_required = ?", state_match_required_as_float) 
+      when "1" # After Year X
+        FundingSource.where("state_match_required > ?", state_match_required_as_float) 
+      end
+    end
+  end
+
+  def local_match_required_conditions
+    unless local_match_required.blank?
+      local_match_required_as_float = local_match_required.to_f
+      case local_match_required_comparator
+      when "-1" # Before Year X
+        FundingSource.where("local_match_required < ?", local_match_required_as_float) 
+      when "0" # During Year X
+        FundingSource.where("local_match_required = ?", local_match_required_as_float) 
+      when "1" # After Year X
+        FundingSource.where("local_match_required > ?", local_match_required_as_float) 
       end
     end
   end
@@ -117,6 +130,33 @@ class FundingSourceSearcher < BaseSearcher
   # Simple Checkbox Queries
   #---------------------------------------------------
 
+  def state_administered_federal_fund_conditions
+    FundingSource.where(state_administered_federal_fund: true) unless state_administered_federal_fund.eql? "0"
+  end
+
+  def rural_providers_conditions
+    FundingSource.where(rural_providers: true) unless rural_providers.eql? "0"
+  end
+  
+  def urban_providers_conditions
+    FundingSource.where(urban_providers: true) unless urban_providers.eql? "0"
+  end
+  
+  def shared_ride_providers_conditions
+    FundingSource.where(shared_ride_providers: true) unless shared_ride_providers.eql? "0"
+  end
+  
+  def inter_city_bus_providers_conditions
+    FundingSource.where(inter_city_bus_providers: true) unless inter_city_bus_providers.eql? "0"
+  end
+  
+  def inter_city_rail_providers_conditions
+    FundingSource.where(inter_city_rail_providers: true) unless inter_city_rail_providers.eql? "0"
+  end
+  
+  def show_inactive_conditions
+    FundingSource.unscoped unless show_inactive.eql? "0"
+  end
 
   #---------------------------------------------------
   # Custom Queries # When the logic does not fall into the above categories, place the method here
@@ -124,39 +164,16 @@ class FundingSourceSearcher < BaseSearcher
   #---------------------------------------------------
   def keyword_conditions
     unless keyword.blank?
-      searchable_columns = %w(title description justification project_number) # add any freetext-searchable fields here
+      searchable_columns = %w(name description) # add any freetext-searchable fields here
       keyword.strip!
-      search_str = searchable_columns.map { |x| "#{x} LIKE :keyword"}.to_sentence(:words_connector => " OR ", :last_word_connector => " OR ")
-      CapitalProject.where(search_str, :keyword => "%#{keyword}%")
+      search_str = searchable_columns.map { |x| "#{x} LIKE :keyword"}.to_sentence(:words_connector => " OR ", :two_words_connector => " OR ", :last_word_connector => " OR ")
+      FundingSource.where(search_str, :keyword => "%#{keyword}%")
     end
   end
 
-  def asset_type_conditions
-    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}) unless asset_type.blank?
+  # In this searcher, we could have no queries (no organization query part), which breaks condition_parts.  
+  # Must manually add this to ensure we have at least one query
+  def limit_conditions
+    FundingSource.all
   end
-  
-  def asset_subtype_conditions
-    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}) unless asset_subtype.blank?
-  end
-  
-  # Funding Source type is wrapped up in the structure of funding requests (will have state_funding_source_id or federal_funding_source_id column populated)
-  def funding_source_conditions
-    unless funding_source.blank?
-      case FundingSourceType.find(funding_source).name
-      when "Federal"
-        CapitalProject.joins(:activity_line_items => {:funding_requests => :federal_funding_line_item})
-      when "State"
-        CapitalProject.joins(:activity_line_items => {:funding_requests => :state_funding_line_item})
-      end
-    end
-  end
-
-  def organization_conditions
-    if organization_id.blank?
-      CapitalProject.where(organization_id: get_id_list(user.organizations))
-    else
-      CapitalProject.where(organization_id: organization_id)
-    end
-  end
-  
 end

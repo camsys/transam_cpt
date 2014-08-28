@@ -10,9 +10,9 @@
                 Search
           .col-md-6
             .btn-group.pull-right.panel-action
-              %button.btn.btn-primary.btn-sm#collapse{:data => {:toggle => "collapse", :target => "#project_search_form"}}
+              %button.btn.btn-primary.btn-sm#collapse{:data => {:toggle => "collapse", :target => "#funding_source_search_form"}}
                 %i.fa.fa-fw.fa-minus
-      .panel-body.collapse.in#project_search_form
+      .panel-body.collapse.in#funding_source_search_form
         = simple_form_for(@searcher,
         :as => :searcher,
         :url => searches_path,
@@ -20,52 +20,67 @@
         :html => {:class => 'form-vertical'},
         :remote => true,
         :wrapper => :vertical_form,
-        :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean},
+        :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean},
         :defaults => {:include_blank => "Any...", :required => false} ) do |f|
           = hidden_field_tag :search_type, @search_type
           .row
-            .col-sm-8
+            .col-sm-12
               %fieldset
-                %legend.panel-legend Capital Project
-                .col-sm-6
+                %legend.panel-legend Funding Source
+                .col-sm-4
                   = f.input :keyword, :placeholder => "Enter A Search Term"
-                  = f.input :organization_id, :collection => current_user.organizations, :label_method => 'coded_name',  :include_blank => "Any..." unless current_user.organizations.count < 2
-                  = f.input :total_cost, :wrapper => :vertical_prepend, :label => "Total Cost" do
+                  = f.input :funding_source_type_id, :collection => FundingSourceType.all
+                .col-sm-4
+                  = f.input :federal_match_required, :wrapper => :vertical_prepend, :label => "Federal Match Percentage Required" do
                     .input-group-btn
                       %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                        Less Than
+                        Equal To
                         %span.caret
                       %ul.dropdown-menu{:role => "menu"}
                         %li
-                          %a{:data => {:compare => "-1"}} Less Than
+                          %a{:data => {:compare => "-1"}} Less Than 
                         %li
-                          %a{:data => {:compare => "1"}} Greater Than
-                      = f.input_field :total_cost_comparator, :as => :hidden, :value => '-1'
-                    = f.input_field :total_cost, :class => "form-control"
-                  = f.input :fy_year, :wrapper => :vertical_prepend, :label => "Fiscal Year" do
+                          %a{:data => {:compare => "0"}} Equal To 
+                        %li
+                          %a{:data => {:compare => "1"}} Greater Than 
+                      = f.input_field :federal_match_required_comparator, :as => :hidden, :value => '0'
+                    = f.input_field :federal_match_required, :class => "form-control"
+                  = f.input :state_match_required, :wrapper => :vertical_prepend, :label => "State Match Percentage Required" do
                     .input-group-btn
                       %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                        During
+                        Equal To
                         %span.caret
                       %ul.dropdown-menu{:role => "menu"}
                         %li
-                          %a{:data => {:compare => "-1"}} Before 
+                          %a{:data => {:compare => "-1"}} Less Than 
                         %li
-                          %a{:data => {:compare => "0"}} During 
+                          %a{:data => {:compare => "0"}} Equal To 
                         %li
-                          %a{:data => {:compare => "1"}} After 
-                      = f.input_field :fy_year_comparator, :as => :hidden, :value => '0'
-                    = f.input_field :fy_year, :class => "form-control", :collection => @searcher.fiscal_years
-                .col-sm-6
-                  = f.input :capital_project_status_type, :collection => CapitalProjectStatusType.all, :label => "Capital Project Status"
-                  = f.input :capital_project_type, :collection => CapitalProjectType.all, :label => "Capital Project Type"
-                  = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.all, :label_method => :full_name
-                  = f.input :funding_source, :collection => FundingSourceType.all
-            .col-sm-4
-              %fieldset
-                %legend.panel-legend Included Assets
-                = f.input :asset_type, :collection => AssetType.all, :label => "Type"
-                = f.input :asset_subtype, :collection => AssetSubtype.all, :label => "Subtype"
+                          %a{:data => {:compare => "1"}} Greater Than 
+                      = f.input_field :state_match_required_comparator, :as => :hidden, :value => '0'
+                    = f.input_field :state_match_required, :class => "form-control"
+                  = f.input :local_match_required, :wrapper => :vertical_prepend, :label => "Local Match Percentage Required" do
+                    .input-group-btn
+                      %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                        Equal To
+                        %span.caret
+                      %ul.dropdown-menu{:role => "menu"}
+                        %li
+                          %a{:data => {:compare => "-1"}} Less Than 
+                        %li
+                          %a{:data => {:compare => "0"}} Equal To 
+                        %li
+                          %a{:data => {:compare => "1"}} Greater Than 
+                      = f.input_field :local_match_required_comparator, :as => :hidden, :value => '0'
+                    = f.input_field :local_match_required, :class => "form-control"
+                .col-sm-4
+                  = f.input :state_administered_federal_fund, :as => :boolean, :label => "State Administered Federal Funds Only"
+                  = f.input :rural_providers, :as => :boolean, :label => "Rural Providers Only"
+                  = f.input :urban_providers, :as => :boolean, :label => "Urban Providers Only"
+                  = f.input :shared_ride_providers, :as => :boolean, :label => "Shared Ride Providers Only"
+                  = f.input :inter_city_bus_providers, :as => :boolean, :label => "Intercity Bus Providers Only"
+                  = f.input :inter_city_rail_providers, :as => :boolean, :label => "Intercity Rail Providers Only"
+                  = f.input :show_inactive, :as => :boolean, :label => "Include Inactive Sources"
           .row
             .col-md-12
               = f.button :submit, 'Search', :class=>"btn btn-primary", :id => 'submit_btn'
@@ -81,11 +96,11 @@
   });
 
   // Update the icons in the header based on collapsing the panels
-  $('#project_search_form').on('hide.bs.collapse', function () {
+  $('#funding_source_search_form').on('hide.bs.collapse', function () {
     $('#collapse i').removeClass('fa-minus');
     $('#collapse i').addClass('fa-plus');   
   });
-  $('#project_search_form').on('show.bs.collapse', function () {
+  $('#funding_source_search_form').on('show.bs.collapse', function () {
     $('#collapse i').removeClass('fa-plus');
     $('#collapse i').addClass('fa-minus');   
   });  
