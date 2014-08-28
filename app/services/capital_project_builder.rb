@@ -21,6 +21,8 @@ class CapitalProjectBuilder
   # Instance Methods
   #
   #------------------------------------------------------------------------------
+  
+  # Main entry point for the builder. This invokes the bottom-up builder
   def build(organization, options = {})
         
     Rails.logger.info "#{self.class.name} Started at #{Time.now}."
@@ -42,7 +44,8 @@ class CapitalProjectBuilder
     a = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
     
     # Run the update
-    process_asset(a, @start_year, @last_year, purchase_alis, replacement_project_type, rehabilitation_project_type)      
+    process_asset(a, @start_year, @last_year, purchase_alis, replacement_project_type, rehabilitation_project_type)
+          
   end
 
   #------------------------------------------------------------------------------
@@ -138,6 +141,11 @@ class CapitalProjectBuilder
     # Remove the asset from any existing capital projects
     asset.activity_line_items.each do |ali|
       ali.assets.delete asset
+    end
+    
+    # Can't build projects for assets that have been scheduled for disposition or already disposed
+    if asset.disposition_date or asset.scheduled_disposition_date
+      return
     end
     
     #-----------------------------
