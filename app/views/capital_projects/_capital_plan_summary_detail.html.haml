@@ -9,7 +9,7 @@
   
 .col-md-1
   .panel{:class => "#{panel_type}"}
-    .panel-body{:class => "#{panel_bg}", :style => 'padding: 5px 0 0 0;'}
+    .panel-body.plan-summary{:class => "#{panel_bg}", :style => 'padding: 5px 0 0 0;'}
       %p.text-center <strong>#{format_as_fiscal_year(year)}</strong>
       %p.text-center
         %i.fa.fa-refresh.fa-fw
@@ -17,6 +17,9 @@
       %p.text-center
         %i.fa.fa-wrench.fa-fw
         = format_as_integer(num_rehab)
+      %p.text-center
+        %i.fa.fa-times-circle.fa-fw
+        = format_as_integer(num_remove)
       %p.text-center
         = format_as_currency(cost)
   

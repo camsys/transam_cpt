@@ -4,5 +4,5 @@
   
 .row
   - results[:data].each do |row|
-    = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :cost => row[3]}
+    = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :num_remove => row[3], :cost => row[4]}
     

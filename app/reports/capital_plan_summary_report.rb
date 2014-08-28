@@ -11,14 +11,14 @@ class CapitalPlanSummaryReport < AbstractReport
     
     # Capital Needs by year
     a = []
-    #labels = ['Fiscal Year', 'State', 'Federal', 'Local']
-    labels = ['Year', 'Replace', 'Rehab', 'Cost']
+    labels = ['Year', 'Replace', 'Rehab', 'Remove', 'Cost']
         
     start_year = current_fiscal_year_year + 1
     (start_year..last_fiscal_year_year).each do |year|
       num_replace = 0
       num_rehab = 0
       num_other = 0
+      num_remove = 0
       cost = 0
       # get the capital projects for this analysis year
       capital_projects =  capital_project_list.where('fy_year = ?', year)
@@ -32,7 +32,10 @@ class CapitalPlanSummaryReport < AbstractReport
         end
         cost += cp.total_estimated_cost
       end
-      a << [year, num_replace, num_rehab, cost]
+      unless capital_project_list.empty?
+        num_remove = Asset.where('organization_id = ? AND YEAR(scheduled_disposition_date) = ?', capital_project_list.first.organization.id, year).count
+      end
+      a << [year, num_replace, num_rehab, num_remove, cost]
     end
     
     puts a.inspect
