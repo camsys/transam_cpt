@@ -110,9 +110,9 @@ class FundingLineItem < ActiveRecord::Base
   def cash_flow
         
     a = []
-    balance = amount
+    balance = amount - spent
         
-    (fy_year..last_fiscal_year_year).each do |yr|
+    (fy_year..last_fiscal_year_year).each_with_index do |yr, idx|
       year_committed = 0
       
       list = funding_requests
@@ -122,10 +122,14 @@ class FundingLineItem < ActiveRecord::Base
         end
       end
       
-      balance -= (spent + year_committed)
+      balance -= year_committed
       
       # Add this years summary to the array
-      a << [fiscal_year(yr), amount, spent, year_committed, balance]
+      if idx == 0
+        a << [fiscal_year(yr), amount, spent, year_committed, balance]
+      else
+        a << [fiscal_year(yr), 0, 0, year_committed, balance]
+      end
     end
     a
       
