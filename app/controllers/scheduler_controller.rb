@@ -141,7 +141,8 @@ class SchedulerController < OrganizationAwareController
     else
       @next_record_path = "#"
     end
-            
+    @row_pager_remote = true
+     
   end
   def get_assets(year)
     
