@@ -10,9 +10,9 @@
                 Search
           .col-md-6
             .btn-group.pull-right.panel-action
-              %button.btn.btn-primary.btn-sm#collapse{:data => {:toggle => "collapse", :target => "#funding_source_search_form"}}
+              %button.btn.btn-primary.btn-sm#collapse{:data => {:toggle => "collapse", :target => ".search-panel"}}
                 %i.fa.fa-fw.fa-minus
-      .panel-body.collapse.in#funding_source_search_form
+      .panel-body.collapse.in.search-panel#funding_source_search_form
         = simple_form_for(@searcher,
         :as => :searcher,
         :url => searches_path,
@@ -96,11 +96,11 @@
   });
 
   // Update the icons in the header based on collapsing the panels
-  $('#funding_source_search_form').on('hide.bs.collapse', function () {
+  $('.search-panel').on('hide.bs.collapse', function () {
     $('#collapse i').removeClass('fa-minus');
     $('#collapse i').addClass('fa-plus');   
   });
-  $('#funding_source_search_form').on('show.bs.collapse', function () {
+  $('.search-panel').on('show.bs.collapse', function () {
     $('#collapse i').removeClass('fa-plus');
     $('#collapse i').addClass('fa-minus');   
   });  
