@@ -10,10 +10,10 @@
     = f.association :funding_source, :label => 'Fund', :disabled => true
     = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal Year'
         
-    = f.input :amount, :wrapper => :horizontal_append, :label => 'Amount' do
-      = f.input_field :amount, :class => 'form-control'
+    = f.input :amount, :wrapper=> :horizontal_prepend, :label => "Amount" do
       %span.input-group-addon
-        = "$"
+        %i.fa.fa-usd
+      = f.input_field :amount, :class => "form-control"
             
     .col-md-offset-3.col-md-9
       = f.button :submit, :class => "btn btn-primary"

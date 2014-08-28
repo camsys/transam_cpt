@@ -13,10 +13,10 @@
     = f.input :active, :label => "FPN active", :as => :radio_buttons
     = f.association :funding_line_item_type, :label => 'FPN Type'
     
-    = f.input :amount, :wrapper => :horizontal_append, :label => 'Appropriation amount' do
-      = f.input_field :amount, :class => 'form-control'
+    = f.input :amount, :wrapper=> :horizontal_prepend, :label => "Amount" do
       %span.input-group-addon
-        = "$"
+        %i.fa.fa-usd
+      = f.input_field :amount, :class => "form-control"
         
     = f.input :pcnt_operating_assistance, :wrapper => :horizontal_append, :label => 'Percent operating assistance' do
       = f.input_field :pcnt_operating_assistance, :class => 'form-control'
