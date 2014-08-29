@@ -13,8 +13,9 @@ class CapitalNeedsForecast < AbstractReport
     a = []
     #labels = ['Fiscal Year', 'State', 'Federal', 'Local']
     labels = ['Fiscal Year', 'Estimated', 'Requested', 'Approved']
-        
-    (current_fiscal_year_year..last_fiscal_year_year).each do |year|
+    
+    start_year = current_fiscal_year_year + 1
+    (start_year..last_fiscal_year_year).each do |year|
       report_row = CptReportRow.new(year)
       # get the capital projects for this analysis year
       capital_projects =  capital_project_list.where('fy_year = ?', year)

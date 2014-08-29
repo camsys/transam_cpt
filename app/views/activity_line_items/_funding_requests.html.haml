@@ -16,7 +16,7 @@
               :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
             .row
               .col-xs-9
-                = f.input :federal_funding_line_item_id, :collection => @available_federal_funds, :label => 'Federal Funds', :label_method => 'details'
+                = f.input :federal_funding_line_item_id, :collection => @available_federal_funds, :label => 'Federal Funds'
                 
               .col-xs-3
                 = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
@@ -26,7 +26,7 @@
         
             .row
               .col-xs-9
-                = f.input :state_funding_line_item_id, :collection => @available_state_funds, :label => 'State Funds', :label_method => 'details'
+                = f.input :state_funding_line_item_id, :collection => @available_state_funds, :label => 'State Funds'
                 
               .col-xs-3
                 = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do

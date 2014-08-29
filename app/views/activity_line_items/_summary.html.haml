@@ -14,8 +14,8 @@
 
 %fieldset
   %legend.panel-legend
-  = format_field("State",   format_as_currency(ali.state_funds))
   = format_field("Federal", format_as_currency(ali.federal_funds))
+  = format_field("State",   format_as_currency(ali.state_funds))
   = format_field("Local",   format_as_currency(ali.local_funds))
   = format_field("Total",   format_as_currency(ali.total_funds))
   = format_field("Funding Shortfall", format_as_currency(ali.funding_difference))
