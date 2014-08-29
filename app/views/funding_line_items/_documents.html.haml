@@ -1,7 +1,7 @@
 .row
   .col-md-12{:style => 'height:180px;overflow-y:auto;'}
     - if @funding_line_item.documents.empty?
-      %p There are no documents for this project.
+      %p There are no documents for this appropriation.
     - else
       = render :partial => 'shared/documents', :locals => {:documents => @funding_line_item.documents}
 
