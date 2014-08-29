@@ -42,8 +42,26 @@ class ActivityLineItemsController < OrganizationAwareController
 
     # Load the eligibility service and use it to select funds which this ALI is eligible for
     eligibilityService = EligibilityService.new
-    @available_federal_funds = eligibilityService.evaluate(@activity_line_item, {:federal => true})
-    @available_state_funds   = eligibilityService.evaluate(@activity_line_item, {:state => true})
+    @available_federal_funds = []
+    @available_state_funds   = []
+    eligibilityService.evaluate(@activity_line_item, {:federal => true}).each do |fli|
+      amount = view_context.format_as_currency(fli.available)
+      if fli.project_number.blank?
+        name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
+      else
+        name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
+      end
+      @available_federal_funds << [name, fli.id]
+    end
+    eligibilityService.evaluate(@activity_line_item, {:state => true}).each do |fli|
+      amount = view_context.format_as_currency(fli.available)
+      if fli.project_number.blank?
+        name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
+      else
+        name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
+      end
+      @available_state_funds << [name, fli.id]
+    end
 
   end
 
