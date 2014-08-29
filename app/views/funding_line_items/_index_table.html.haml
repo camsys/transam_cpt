@@ -14,7 +14,7 @@
       %th.right Amount Op.
       %th.right Spent
       %th.right Committed
-      %th.right Available
+      %th.right Balance
       
       %th.center
 
@@ -23,14 +23,14 @@
     - operating = 0
     - spent = 0
     - committed = 0
-    - available = 0
+    - balance = 0
 
     - @funding_line_items.each do |f|
       - total += f.amount
       - operating += f.operating_funds
       - spent += f.spent
       - committed += f.committed
-      - available += f.available
+      - balance += f.balance
 
       %tr.popup-details{:data => {:action_path => funding_line_item_path(f)}}
         %td= f.organization
@@ -46,7 +46,7 @@
         %td.right= format_as_currency(f.operating_funds)
         %td.right= format_as_currency(f.spent)
         %td.right= format_as_currency(f.committed)
-        %td.right= format_as_currency(f.available)
+        %td.right= format_as_currency(f.balance)
                
         %td.center
           %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.project_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
@@ -59,7 +59,7 @@
       %td.right= format_as_currency(operating)
       %td.right= format_as_currency(spent)
       %td.right= format_as_currency(committed)
-      %td.right= format_as_currency(available)
+      %td.right= format_as_currency(balance)
 
 = render 'shared/datatable_javascript'
 

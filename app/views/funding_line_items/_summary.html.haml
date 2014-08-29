@@ -9,7 +9,7 @@
     %legend.panel-legend
     = format_field("Spent", format_as_currency(@funding_line_item.spent))
     = format_field("Committed", format_as_currency(@funding_line_item.committed))
-    = format_field("Available", format_as_currency(@funding_line_item.available))
+    = format_field("Balance", format_as_currency(@funding_line_item.balance))
 
   - if @funding_line_item.federal?
     %fieldset

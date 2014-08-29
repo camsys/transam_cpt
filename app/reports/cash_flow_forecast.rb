@@ -53,7 +53,7 @@ class CashFlowForecast < AbstractReport
         row[1] += fli.amount
         row[2] += fli.spent
         row[3] += fli.committed
-        row[4] += fli.available
+        row[4] += fli.balance
       end
       balance += row[1] - (row[2] + row[3])
       row[4] = balance

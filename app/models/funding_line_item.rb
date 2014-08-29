@@ -110,7 +110,7 @@ class FundingLineItem < ActiveRecord::Base
   def cash_flow
         
     a = []
-    balance = amount - spent
+    cash_balance = amount - spent
         
     (fy_year..last_fiscal_year_year).each_with_index do |yr, idx|
       year_committed = 0
@@ -122,18 +122,19 @@ class FundingLineItem < ActiveRecord::Base
         end
       end
       
-      balance -= year_committed
+      cash_balance -= year_committed
       
       # Add this years summary to the array
       if idx == 0
-        a << [fiscal_year(yr), amount, spent, year_committed, balance]
+        a << [fiscal_year(yr), amount, spent, year_committed, cash_balance]
       else
-        a << [fiscal_year(yr), 0, 0, year_committed, balance]
+        a << [fiscal_year(yr), 0, 0, year_committed, cash_balance]
       end
     end
-    a
-      
-  end  # Returns the set of funding requests for this funding line item
+    a    
+  end  
+  
+  # Returns the set of funding requests for this funding line item
   def funding_requests
     
     if federal?
@@ -158,9 +159,15 @@ class FundingLineItem < ActiveRecord::Base
     val
   end
   
-  # Returns the amount of funds available
+  # Returns the balance of the fund. If the account is overdrawn
+  # the amount will be < 0
+  def balance
+    amount - spent - committed   
+  end
+  
+  # Returns the amount of funds available. This will return 0 if the account is overdrawn
   def available
-    [amount - spent - committed, 0].max
+    [balance, 0].max
   end
   
   # Returns the amount that is not earmarked for operating assistance
@@ -168,6 +175,7 @@ class FundingLineItem < ActiveRecord::Base
     amount - operating_funds
   end
   
+  # Returns the amount of the fund that is earmarked for operating assistance
   def operating_funds
     
     amount * (pcnt_operating_assistance / 100.0)
@@ -184,7 +192,6 @@ class FundingLineItem < ActiveRecord::Base
     end
     
   end
-  
   
   # Override the mixin method and delegate to it
   def fiscal_year(year = nil)
@@ -220,8 +227,7 @@ class FundingLineItem < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.active ||= true
-    self.awarded ||= false
+    
     self.amount ||= 0
     self.spent ||= 0
     self.pcnt_operating_assistance ||= 0

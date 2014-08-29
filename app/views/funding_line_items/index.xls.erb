@@ -49,7 +49,7 @@
           <Cell><Data ss:Type="String">Amount Opertating</Data></Cell>
           <Cell><Data ss:Type="String">Spent</Data></Cell>
           <Cell><Data ss:Type="String">Committed</Data></Cell>
-          <Cell><Data ss:Type="String">Available</Data></Cell>
+          <Cell><Data ss:Type="String">Balance</Data></Cell>
 		</Row>
 		
 		<% @funding_line_items.each do |a| %>
@@ -67,7 +67,7 @@
 		    <Cell><Data ss:Type="Number"><%= a.operating_funds %></Data></Cell>
 		    <Cell><Data ss:Type="Number"><%= a.spent %></Data></Cell>
 		    <Cell><Data ss:Type="Number"><%= a.committed %></Data></Cell>
-		    <Cell><Data ss:Type="Number"><%= a.available %></Data></Cell>		
+		    <Cell><Data ss:Type="Number"><%= a.balance %></Data></Cell>		
 		</Row>
 		<% end %>
 		
