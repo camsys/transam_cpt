@@ -8,7 +8,8 @@
       .col-md-12
         = format_field("Name", @proxy.name)
         = format_field("Project Type", @proxy.capital_project_type)
-        = format_field("Fiscal Year", @proxy.fiscal_year)
+        = format_field("Fiscal Year", format_as_fiscal_year(@proxy.fiscal_year.to_i))
+        = format_field("Scope", @proxy.scope(5))
         = format_field("Scope Context", @proxy.scope(5).context)
         = format_field("Scope Type", @proxy.scope(5).name)
         = format_field("Description", @proxy.description.html_safe)
