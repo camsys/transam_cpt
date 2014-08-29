@@ -167,11 +167,7 @@ class CapitalProject < ActiveRecord::Base
   def total_estimated_cost
     val = 0
     activity_line_items.each do |a|
-      if a.anticipated_cost > 0
-        val += a.anticipated_cost
-      else
-        val += a.total_estimated_value
-      end
+      val += a.cost
     end
     val    
   end

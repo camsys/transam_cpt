@@ -128,6 +128,7 @@ class ActivityLineItem < ActiveRecord::Base
     end
     val
   end
+  
   # Returns the total value of local funds requested
   def local_funds
     val = 0
@@ -136,6 +137,7 @@ class ActivityLineItem < ActiveRecord::Base
     end
     val
   end
+  
   # Returns the total amount of funds requested
   def total_funds
     val = 0
@@ -156,6 +158,14 @@ class ActivityLineItem < ActiveRecord::Base
     anticipated_cost - estimated_cost
   end
 
+  def cost
+    if anticipated_cost > 0
+      anticipated_cost
+    else
+      total_estimated_replacement_cost
+    end    
+  end
+  
   # Returns the total estimated value of the assets in this ALI
   def total_estimated_value
     val = 0
