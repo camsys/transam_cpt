@@ -48,7 +48,7 @@ class FundingLineItemsController < OrganizationAwareController
 
     #puts conditions.inspect
     #puts values.inspect
-    query = FundingLineItem.where(conditions.join(' AND '), *values).order('funding_source_id, fy_year')
+    query = FundingLineItem.where(conditions.join(' AND '), *values).order('fy_year, funding_source_id')
 
     # Check for joined queries
     @funding_source_type_id = params[:funding_source_type_id]
