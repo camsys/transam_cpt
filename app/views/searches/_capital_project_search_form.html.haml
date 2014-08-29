@@ -1,91 +1,44 @@
-.row
-  .col-sm-12
-    .panel.panel-default
-      .panel-heading
-        .row
-          .col-md-6
-            .panel-title
-              %h3.panel-title
-                %i.fa.fa-search.fa-fw
-                Search
-          .col-md-6
-            .btn-group.pull-right.panel-action
-              %button.btn.btn-primary.btn-sm#collapse{:data => {:toggle => "collapse", :target => ".search-panel"}}
-                %i.fa.fa-fw.fa-minus
-      .panel-body.collapse.in.search-panel#project_search_form
-        = simple_form_for(@searcher,
-        :as => :searcher,
-        :url => searches_path,
-        :method => 'post',
-        :html => {:class => 'form-vertical'},
-        :remote => true,
-        :wrapper => :vertical_form,
-        :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean},
-        :defaults => {:include_blank => "Any...", :required => false} ) do |f|
-          = hidden_field_tag :search_type, @search_type
-          .row
-            .col-sm-8
-              %fieldset
-                %legend.panel-legend Capital Project
-                .col-sm-6
-                  = f.input :keyword, :placeholder => "Enter A Search Term"
-                  = f.input :organization_id, :collection => current_user.organizations, :label_method => 'coded_name',  :include_blank => "Any..." unless current_user.organizations.count < 2
-                  = f.input :total_cost, :wrapper => :vertical_prepend, :label => "Total Anticipated Cost" do
-                    .input-group-btn
-                      %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                        Less Than
-                        %span.caret
-                      %ul.dropdown-menu{:role => "menu"}
-                        %li
-                          %a{:data => {:compare => "-1"}} Less Than
-                        %li
-                          %a{:data => {:compare => "1"}} Greater Than
-                      = f.input_field :total_cost_comparator, :as => :hidden, :value => '-1'
-                    = f.input_field :total_cost, :class => "form-control"
-                  = f.input :fy_year, :wrapper => :vertical_prepend, :label => "Fiscal Year" do
-                    .input-group-btn
-                      %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                        During
-                        %span.caret
-                      %ul.dropdown-menu{:role => "menu"}
-                        %li
-                          %a{:data => {:compare => "-1"}} Before 
-                        %li
-                          %a{:data => {:compare => "0"}} During 
-                        %li
-                          %a{:data => {:compare => "1"}} After 
-                      = f.input_field :fy_year_comparator, :as => :hidden, :value => '0'
-                    = f.input_field :fy_year, :class => "form-control", :collection => @searcher.fiscal_years
-                .col-sm-6
-                  = f.input :capital_project_status_type, :collection => CapitalProjectStatusType.all, :label => "Capital Project Status"
-                  = f.input :capital_project_type, :collection => CapitalProjectType.all, :label => "Capital Project Type"
-                  = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.all, :label_method => :full_name
-                  = f.input :funding_source, :collection => FundingSourceType.all
-            .col-sm-4
-              %fieldset
-                %legend.panel-legend Included Assets
-                = f.input :asset_type, :collection => AssetType.all, :label => "Type"
-                = f.input :asset_subtype, :collection => AssetSubtype.all, :label => "Subtype"
-          .row
-            .col-md-12
-              = f.button :submit, 'Search', :class=>"btn btn-primary", :id => 'submit_btn'
-              = button_tag 'Reset', :type => 'reset', :class=> 'btn btn-warning'
-
-:javascript
-  // When selecting from the button-dropdowns, set a hidden field appropriately
-  $(".input-group-btn a").on("click", function() {
-    // Set Hidden Field value and update button text
-    $(this).parents("ul").siblings("input:hidden").val($(this).attr("data-compare"));
-    $(this).parents("ul").prev("button").text($(this).text());
-    $(this).parents("ul").prev("button").append("<span class='caret'></span>");
-  });
-
-  // Update the icons in the header based on collapsing the panels
-  $('.search-panel').on('hide.bs.collapse', function () {
-    $('#collapse i').removeClass('fa-minus');
-    $('#collapse i').addClass('fa-plus');   
-  });
-  $('.search-panel').on('show.bs.collapse', function () {
-    $('#collapse i').removeClass('fa-plus');
-    $('#collapse i').addClass('fa-minus');   
-  });  
+= render :layout => "search_panel" do |f|
+  .row
+    .col-sm-8
+      %fieldset
+        %legend.panel-legend Capital Project
+        .col-sm-6
+          = f.input :keyword, :placeholder => "Enter A Search Term"
+          = f.input :organization_id, :collection => current_user.organizations, :label_method => 'coded_name',  :include_blank => "Any..." unless current_user.organizations.count < 2
+          = f.input :total_cost, :wrapper => :vertical_prepend, :label => "Total Anticipated Cost" do
+            .input-group-btn
+              %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                Less Than
+                %span.caret
+              %ul.dropdown-menu{:role => "menu"}
+                %li
+                  %a{:data => {:compare => "-1"}} Less Than
+                %li
+                  %a{:data => {:compare => "1"}} Greater Than
+              = f.input_field :total_cost_comparator, :as => :hidden, :value => '-1'
+            = f.input_field :total_cost, :class => "form-control"
+          = f.input :fy_year, :wrapper => :vertical_prepend, :label => "Fiscal Year" do
+            .input-group-btn
+              %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                During
+                %span.caret
+              %ul.dropdown-menu{:role => "menu"}
+                %li
+                  %a{:data => {:compare => "-1"}} Before 
+                %li
+                  %a{:data => {:compare => "0"}} During 
+                %li
+                  %a{:data => {:compare => "1"}} After 
+              = f.input_field :fy_year_comparator, :as => :hidden, :value => '0'
+            = f.input_field :fy_year, :class => "form-control", :collection => @searcher.fiscal_years
+        .col-sm-6
+          = f.input :capital_project_status_type, :collection => CapitalProjectStatusType.all, :label => "Capital Project Status"
+          = f.input :capital_project_type, :collection => CapitalProjectType.all, :label => "Capital Project Type"
+          = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.all, :label_method => :full_name
+          = f.input :funding_source, :collection => FundingSourceType.all
+    .col-sm-4
+      %fieldset
+        %legend.panel-legend Included Assets
+        = f.input :asset_type, :collection => AssetType.all, :label => "Type"
+        = f.input :asset_subtype, :collection => AssetSubtype.all, :label => "Subtype"

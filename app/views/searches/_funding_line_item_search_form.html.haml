@@ -1,74 +1,27 @@
-.row
-  .col-sm-12
-    .panel.panel-default
-      .panel-heading
-        .row
-          .col-md-6
-            .panel-title
-              %h3.panel-title
-                %i.fa.fa-search.fa-fw
-                Search
-          .col-md-6
-            .btn-group.pull-right.panel-action
-              %button.btn.btn-primary.btn-sm#collapse{:data => {:toggle => "collapse", :target => ".search-panel"}}
-                %i.fa.fa-fw.fa-minus
-      .panel-body.collapse.in.search-panel#funding_source_search_form
-        = simple_form_for(@searcher,
-        :as => :searcher,
-        :url => searches_path,
-        :method => 'post',
-        :html => {:class => 'form-vertical'},
-        :remote => true,
-        :wrapper => :vertical_form,
-        :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean},
-        :defaults => {:include_blank => "Any...", :required => false} ) do |f|
-          = hidden_field_tag :search_type, @search_type
-          .row
-            .col-sm-12
-              %fieldset
-                %legend.panel-legend Appropriation
-                .col-sm-4
-                  = f.input :organization_id, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name' unless @organization_list.count < 2
-                  = f.input :fy_year, :collection => get_fiscal_years, :label => "Fiscal Year"
-                  = f.input :funding_line_item_type, :collection => FundingLineItemType.all, :label => "Funding Line Item Type"
-                .col-sm-4
-                  = f.input :amount, :wrapper => :vertical_prepend, :label => "Appropriation Amount" do
-                    .input-group-btn
-                      %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                        Equal To
-                        %span.caret
-                      %ul.dropdown-menu{:role => "menu"}
-                        %li
-                          %a{:data => {:compare => "-1"}} Less Than 
-                        %li
-                          %a{:data => {:compare => "0"}} Equal To 
-                        %li
-                          %a{:data => {:compare => "1"}} Greater Than 
-                      = f.input_field :amount_comparator, :as => :hidden, :value => '0'
-                    = f.input_field :amount, :class => "form-control"
-                  = f.input :funding_source_type, :collection => FundingSourceType.all
-                .col-sm-4
-                  = f.input :discretionary_type, :collection => [['Discretionary', 1], ['Non-Discretionary', 0]]
-          .row
-            .col-md-12
-              = f.button :submit, 'Search', :class=>"btn btn-primary", :id => 'submit_btn'
-              = button_tag 'Reset', :type => 'reset', :class=> 'btn btn-warning'
-
-:javascript
-  // When selecting from the button-dropdowns, set a hidden field appropriately
-  $(".input-group-btn a").on("click", function() {
-    // Set Hidden Field value and update button text
-    $(this).parents("ul").siblings("input:hidden").val($(this).attr("data-compare"));
-    $(this).parents("ul").prev("button").text($(this).text());
-    $(this).parents("ul").prev("button").append("<span class='caret'></span>");
-  });
-
-  // Update the icons in the header based on collapsing the panels
-  $('.search-panel').on('hide.bs.collapse', function () {
-    $('#collapse i').removeClass('fa-minus');
-    $('#collapse i').addClass('fa-plus');   
-  });
-  $('.search-panel').on('show.bs.collapse', function () {
-    $('#collapse i').removeClass('fa-plus');
-    $('#collapse i').addClass('fa-minus');   
-  });  
+= render :layout => "search_panel" do |f|
+  .row
+    .col-sm-12
+      %fieldset
+        %legend.panel-legend Appropriation
+        .col-sm-4
+          = f.input :organization_id, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name' unless @organization_list.count < 2
+          = f.input :fy_year, :collection => get_fiscal_years, :label => "Fiscal Year"
+          = f.input :funding_line_item_type, :collection => FundingLineItemType.all, :label => "Funding Line Item Type"
+        .col-sm-4
+          = f.input :amount, :wrapper => :vertical_prepend, :label => "Appropriation Amount" do
+            .input-group-btn
+              %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+                Equal To
+                %span.caret
+              %ul.dropdown-menu{:role => "menu"}
+                %li
+                  %a{:data => {:compare => "-1"}} Less Than 
+                %li
+                  %a{:data => {:compare => "0"}} Equal To 
+                %li
+                  %a{:data => {:compare => "1"}} Greater Than 
+              = f.input_field :amount_comparator, :as => :hidden, :value => '0'
+            = f.input_field :amount, :class => "form-control"
+          = f.input :funding_source_type, :collection => FundingSourceType.all
+        .col-sm-4
+          = f.input :discretionary_type, :collection => [['Discretionary', 1], ['Non-Discretionary', 0]]
