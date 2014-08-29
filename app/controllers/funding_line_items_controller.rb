@@ -134,6 +134,7 @@ class FundingLineItemsController < OrganizationAwareController
     
     add_breadcrumb @funding_line_item.name, funding_line_item_path(@funding_line_item)
     add_breadcrumb "Modify"
+    @fiscal_years = get_fiscal_years
 
   end
 
