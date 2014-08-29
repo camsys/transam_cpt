@@ -80,6 +80,11 @@
                 - if s.funding_line_items.where('organization_id = ?', @organization.id).count > 0
                   %li
                     = link_to s.name, funding_line_items_path(:funding_source_id => s.id)
+        %li.divider
+        %li.text-left
+          = link_to new_search_path(:search_type => SearchesController::FUNDING_LINE_ITEM_SEARCH_TYPE) do
+            %i.fa.fa-search.fa-fw
+            = " Search Appropriations"
     %li.divider
     %li.text-left
       = link_to funding_requests_path do
