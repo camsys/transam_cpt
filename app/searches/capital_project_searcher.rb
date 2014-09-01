@@ -80,11 +80,6 @@ class CapitalProjectSearcher < BaseSearcher
     CapitalProject.where(capital_project_status_type_id: capital_project_status_type) unless capital_project_status_type.blank?
   end
 
-  def team_ali_code_conditions
-    CapitalProject.where(team_ali_code_id: team_ali_code) unless team_ali_code.blank?
-  end
-
-
   
   #---------------------------------------------------
   # Comparator Queries
@@ -134,13 +129,17 @@ class CapitalProjectSearcher < BaseSearcher
   end
 
   def asset_type_conditions
-    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}) unless asset_type.blank?
+    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}).uniq unless asset_type.blank?
   end
   
   def asset_subtype_conditions
-    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}) unless asset_subtype.blank?
+    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}).uniq unless asset_subtype.blank?
   end
   
+  def team_ali_code_conditions
+    CapitalProject.where(team_ali_code_id: TeamAliCode.find(team_ali_code).leaves) unless team_ali_code.blank?
+  end
+
   # Funding Source type is wrapped up in the structure of funding requests (will have state_funding_source_id or federal_funding_source_id column populated)
   def funding_source_conditions
     unless funding_source.blank?

@@ -35,7 +35,7 @@
         .col-sm-6
           = f.input :capital_project_status_type, :collection => CapitalProjectStatusType.all, :label => "Capital Project Status"
           = f.input :capital_project_type, :collection => CapitalProjectType.all, :label => "Capital Project Type"
-          = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.all, :label_method => :full_name
+          = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.top_level_categories, :label_method => :full_name
           = f.input :funding_source, :collection => FundingSourceType.all
     .col-sm-4
       %fieldset
