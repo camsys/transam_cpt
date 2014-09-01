@@ -94,6 +94,8 @@ class CapitalProjectSearcher < BaseSearcher
       case fy_year_comparator
       when "-1" # Before Year X
         CapitalProject.where("fy_year < ?", fy_year)
+      when "0"
+        CapitalProject.where("fy_year = ?", fy_year)
       when "1"  # After Year X
         CapitalProject.where("fy_year > ?", fy_year)
       end
