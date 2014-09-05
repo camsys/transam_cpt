@@ -65,11 +65,11 @@
           <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project %></Data></Cell>
           <Cell><Data ss:Type="String"><%= req.activity_line_item.capital_project.capital_project_status_type %></Data></Cell>
           
-          <Cell><Data ss:Type="String"><%= req.federal_funding_line_item.funding_source %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.federal_funding_line_item.blank? ? "" : req.federal_funding_line_item.funding_source %></Data></Cell>
           <Cell><Data ss:Type="String"><%= req.federal_funding_line_item %></Data></Cell>
           <Cell><Data ss:Type="String"><%= req.federal_amount %></Data></Cell>
 
-          <Cell><Data ss:Type="String"><%= req.state_funding_line_item.funding_source %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= req.state_funding_line_item.blank? ? "" : req.state_funding_line_item.funding_source %></Data></Cell>
           <Cell><Data ss:Type="String"><%= req.state_funding_line_item %></Data></Cell>
           <Cell><Data ss:Type="String"><%= req.state_amount %></Data></Cell>
 
