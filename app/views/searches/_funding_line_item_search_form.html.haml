@@ -11,16 +11,14 @@
           = f.input :amount, :wrapper => :vertical_prepend, :label => "Appropriation Amount" do
             .input-group-btn
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                Equal To
+                Less Than
                 %span.caret
               %ul.dropdown-menu{:role => "menu"}
                 %li
                   %a{:data => {:compare => "-1"}} Less Than 
                 %li
-                  %a{:data => {:compare => "0"}} Equal To 
-                %li
                   %a{:data => {:compare => "1"}} Greater Than 
-              = f.input_field :amount_comparator, :as => :hidden, :value => '0'
+              = f.input_field :amount_comparator, :as => :hidden, :value => '-1'
             = f.input_field :amount, :class => "form-control"
           = f.input :funding_source_type, :collection => FundingSourceType.all
         .col-sm-4
