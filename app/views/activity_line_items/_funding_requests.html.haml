@@ -22,7 +22,7 @@
                 = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
                   %span.input-group-addon
                     %i.fa.fa-usd
-                  = f.input_field :federal_amount, :class => "form-control", :number => true, :min => 0, :max => 10000000
+                  = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
         
             .row
               .col-xs-9
@@ -32,7 +32,7 @@
                 = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
                   %span.input-group-addon
                     %i.fa.fa-usd
-                  = f.input_field :state_amount, :class => "form-control", :number => true, :min => 0, :max => 10000000
+                  = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
             .row
               .col-xs-9
