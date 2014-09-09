@@ -45,7 +45,7 @@ class FundingSource < ActiveRecord::Base
   belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
   
   # Has many funding line items
-  has_many    :funding_line_items, :order => 'fy_year', :dependent => :destroy
+  has_many    :funding_line_items, -> { order(:fy_year) }, :dependent => :destroy
           
   #------------------------------------------------------------------------------
   # Validations
