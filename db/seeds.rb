@@ -45,8 +45,8 @@ reports = [
     :show_in_nav => 1,
     :show_in_dashboard => 1,
     :description => 'Displays a chart showing the funding forecast by fiscal year.',
-    :chart_type => 'area',
-    :chart_options => "{is3D : true, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    :chart_type => 'column',
+    :chart_options => "{is3D : true, isStacked: true, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     },
   {
     :active => 1,
