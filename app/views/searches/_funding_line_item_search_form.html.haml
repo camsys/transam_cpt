@@ -11,8 +11,6 @@
           = f.input :amount, :wrapper => :vertical_prepend, :label => "Appropriation Amount" do
             .input-group-btn
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-                Less Than
-                %span.caret
               %ul.dropdown-menu{:role => "menu"}
                 %li
                   %a{:data => {:compare => "-1"}} Less Than 
