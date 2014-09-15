@@ -122,7 +122,7 @@ class CapitalProjectBuilder
                
       # Find all the matching assets for this organization. This logic returns a strongly typed set of assets
       klass = asset_type.class_name.constantize
-      assets = klass.where('organization_id = ? AND disposition_date IS NULL AND scheduled_disposition_date IS NULL', organization.id)  
+      assets = klass.where('organization_id = ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id)  
 
       # Process each asset in turn...
       assets.each do |a|
@@ -144,7 +144,7 @@ class CapitalProjectBuilder
     end
     
     # Can't build projects for assets that have been scheduled for disposition or already disposed
-    if asset.disposition_date or asset.scheduled_disposition_date
+    if asset.disposition_date or asset.scheduled_disposition_year
       return
     end
     

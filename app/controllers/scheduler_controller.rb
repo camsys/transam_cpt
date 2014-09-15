@@ -80,13 +80,13 @@ class SchedulerController < OrganizationAwareController
       asset.scheduled_rehabilitation_year = nil
       asset.scheduled_replacement_year = nil
       num_years = proxy.fy_year.to_i - current_fiscal_year_year
-      asset.scheduled_disposition_date = Date.today + num_years.years
+      asset.scheduled_disposition_year = current_fiscal_year_year + num_years
       asset.save
       
     elsif proxy.action_id == RESET_ACTION
       asset.scheduled_rehabilitation_year = nil
       asset.scheduled_replacement_year = asset.policy_replacement_year
-      asset.scheduled_disposition_date = nil
+      asset.scheduled_disposition_year = nil
       
       asset.save
   
@@ -151,7 +151,7 @@ class SchedulerController < OrganizationAwareController
     assets = []
     # check to see if there is a filter on the organization
     org = @org_id.blank? ? current_user.organization.id : @org_id
-    query = Asset.where('organization_id = ? AND disposition_date IS NULL AND (scheduled_replacement_year = ? OR scheduled_rehabilitation_year = ? OR YEAR(scheduled_disposition_date) = ?)', org, year, year, year)   
+    query = Asset.where('organization_id = ? AND disposition_date IS NULL AND (scheduled_replacement_year = ? OR scheduled_rehabilitation_year = ? OR scheduled_disposition_year = ?)', org, year, year, year)   
 
     # check to see if there is a filter on the asset subtype
     unless @asset_subtype_id.blank?

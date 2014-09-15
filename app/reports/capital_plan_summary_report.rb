@@ -33,7 +33,7 @@ class CapitalPlanSummaryReport < AbstractReport
         cost += cp.total_estimated_cost
       end
       unless capital_project_list.empty?
-        num_remove = Asset.where('organization_id = ? AND YEAR(scheduled_disposition_date) = ?', capital_project_list.first.organization.id, year).count
+        num_remove = Asset.where('organization_id = ? AND scheduled_disposition_year = ?', capital_project_list.first.organization.id, year).count
       end
       a << [year, num_replace, num_rehab, num_remove, cost]
     end

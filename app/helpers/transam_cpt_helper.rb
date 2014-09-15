@@ -11,7 +11,7 @@ module TransamCptHelper
   # Returns the correct swimlane icon color for an asset
   def get_swimlane_icon(asset, year)
     
-    if asset.scheduled_disposition_date and asset.scheduled_disposition_date.year == year
+    if asset.scheduled_disposition_year and asset.scheduled_disposition_year == year
       'fa-times-circle'      
     elsif asset.scheduled_rehabilitation_year == year
       'fa-wrench'            

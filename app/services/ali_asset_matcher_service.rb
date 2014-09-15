@@ -71,7 +71,7 @@ class AliAssetMatcherService
     conditions << 'disposition_date IS NULL'
                 
     # cant be scheduled for disposition
-    conditions << 'scheduled_disposition_date IS NULL'
+    conditions << 'scheduled_disposition_year IS NULL'
     
     # can't already be associated with the ALI
     unless ali.assets.empty?
