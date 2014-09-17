@@ -1,6 +1,6 @@
 .panel.panel-default
   .panel-body
-    = simple_form_for(SchedulerActionProxy.new({:object_key => @asset.object_key}),
+    = simple_form_for(@proxy,
       :url => action_scheduler_index_path,
       :method => 'post',
       :remote => true,

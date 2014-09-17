@@ -53,6 +53,8 @@ class SchedulerController < OrganizationAwareController
     (@year_1..@year_1 + 3).each do |yr|
       @fiscal_years << [fiscal_year(yr), yr]
     end
+    @proxy = SchedulerActionProxy.new
+    @proxy.set_defaults(@asset)
     
   end
   
