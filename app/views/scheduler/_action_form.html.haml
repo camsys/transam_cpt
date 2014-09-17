@@ -24,7 +24,7 @@
         .col-xs-6      
           = f.input :replace_fuel_type_id, :collection => FuelType.all, :class => 'col-md-6', :prompt => "Leave blank for no change"            
 
-      = f.input :extend_eul_years, :collection => [1,2,3,4,5,6,7,8,9,10], :label => 'Extend useful life', :prompt => "Select..."          
+      = f.input :extend_eul_years, :collection => (0..20), :label => 'Extend useful life', :prompt => "Select..."          
       
                   
       = f.button :submit, "Update", :class => "btn btn-success"
