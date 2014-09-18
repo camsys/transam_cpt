@@ -61,7 +61,7 @@ replace_tables = %w{ capital_project_status_types milestone_types capital_projec
 merge_tables = %w{ roles }
 
 replace_tables.each do |table_name|
-  puts "  Processing #{table_name}"
+  puts "  Loading #{table_name}"
   if is_mysql
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
   else
@@ -76,7 +76,7 @@ replace_tables.each do |table_name|
 end
 
 merge_tables.each do |table_name|
-  puts "  Processing #{table_name}"
+  puts "  Merging #{table_name}"
   data = eval(table_name)
   klass = table_name.classify.constantize
   data.each do |row|
@@ -98,7 +98,7 @@ reports = [
     :roles => 'user,manager',
     :description => 'Displays a chart showing the funding forecast by fiscal year.',
     :chart_type => 'column',
-    :chart_options => "{is3D : false, isStacked: true, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    :chart_options => "{is3D : false, isStacked: false, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     },
   {
     :active => 1,
@@ -117,7 +117,7 @@ reports = [
 ]
 
 table_name = 'reports'
-puts "  Processing #{table_name}"
+puts "  Merging #{table_name}"
 data = eval(table_name)
 data.each do |row|
   x = Report.new(row.except(:belongs_to, :type))
