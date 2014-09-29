@@ -35,7 +35,7 @@ class CapitalProjectBuilder
   end
 
   # Schedules replacement and rehabilitation projects for an individual asset
-  def update_asset_schedule(asset, purchase_alis = true)
+  def update_asset_schedule(asset)
         
     replacement_project_type = CapitalProjectType.find_by_code('R')
     rehabilitation_project_type = CapitalProjectType.find_by_code('I')
@@ -44,7 +44,7 @@ class CapitalProjectBuilder
     a = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
     
     # Run the update
-    process_asset(a, @start_year, @last_year, purchase_alis, replacement_project_type, rehabilitation_project_type)
+    process_asset(a, @start_year, @last_year, replacement_project_type, rehabilitation_project_type)
           
   end
 
@@ -61,8 +61,6 @@ class CapitalProjectBuilder
     
     # Get the options. There must be at least one type of asset to process
     asset_type_ids = options[:asset_type_ids]
-    # determine whether to create purchase or lease ALIs for replacement assets. Default is to purchase
-    purchase_alis = options[:purchase_alis].blank? ? true : options[:purchase_alis]
         
     create_tasks = options[:create_tasks].blank? ? true : options[:create_tasks]
     send_message = options[:send_message].blank? ? true : options[:send_message]
@@ -81,8 +79,8 @@ class CapitalProjectBuilder
     # For each selected asset type...
     #   For each asset that is not disposed or marked for disposition...
     #
-    #     Step 1: Mmake sure that it has a scheduled replacement year.
-    #             Update the schedule replacement year if it does not exist
+    #     Step 1: Make sure that it has a scheduled replacement year and in_seervice_date.
+    #             Update the asset if these are not set
     #     Step 2: if the scheduled replacement year is before the first planning year or after the last
     #             planning year there is nothing to do so skip to Step 5
     #     Step 3: Check to see if a replacement project exists and create it if it does not. Add
@@ -94,8 +92,8 @@ class CapitalProjectBuilder
     #
     #--------------------------------------------------------------------------------------
         
-    # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects for planning years
-    # Year 1, Year 2,..., Year 12
+    # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects 
+    # for planning years Year 1, Year 2,..., Year 12
     start_year = @start_year
     last_year = @last_year
     
@@ -127,7 +125,7 @@ class CapitalProjectBuilder
       # Process each asset in turn...
       assets.each do |a|
         # do the work...
-        process_asset(a, start_year, last_year, purchase_alis, replacement_project_type, rehabilitation_project_type)      
+        process_asset(a, start_year, last_year, replacement_project_type, rehabilitation_project_type)      
       end
 
       # Get the next asset type id
@@ -136,7 +134,7 @@ class CapitalProjectBuilder
   end
   
   # actually process an asset
-  def process_asset(asset, start_year, last_year, purchase_alis, replacement_project_type, rehabilitation_project_type)
+  def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type)
     
     # Remove the asset from any existing capital projects
     asset.activity_line_items.each do |ali|
@@ -151,16 +149,25 @@ class CapitalProjectBuilder
     #-----------------------------
     # Step 1: Data consistency check
     #
-    # Make sure that the asset has a scheduled replacement year. If it is not set
-    # default it to the policy replacement year or the first planning year if the asset
-    # is in backlog
+    # Make sure that the asset has a in service date and a scheduled replacement year. 
+    # If the scheduled replacement year is not set, default it to the policy replacement year 
+    # or the first planning year if the asset is in backlog
+    #
     #-----------------------------
+    changed = false
+    if asset.in_service_date.nil?
+      asset.in_service_date = asset.purchase_date
+      changed = true
+    end
     if asset.scheduled_replacement_year.nil?
       if asset.policy_replacement_year < start_year
         asset.scheduled_replacement_year = start_year
       else
         asset.scheduled_replacement_year = asset.policy_replacement_year
       end
+      changed = true
+    end
+    if changed
       asset.save
     end
     
@@ -179,7 +186,7 @@ class CapitalProjectBuilder
       #-----------------------------      
 
       # get the replacement scope for this asset
-      replace_scope = get_replace_scope(asset, purchase_alis)
+      replace_scope = get_replace_scope(asset)
       # Add the initial replacement. If the project does not exist it is created
       add_to_project(asset, replace_scope, year, replacement_project_type)
 
@@ -188,8 +195,7 @@ class CapitalProjectBuilder
       #
       # See if the replacement can be replaced within the planning time frame
       #-----------------------------                
-      policy = asset.policy
-      max_service_life_years = policy.get_policy_item(asset).max_service_life_years
+      max_service_life_years = asset.get_rule.max_service_life_years
       year += max_service_life_years
       Rails.logger.debug "Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
@@ -269,18 +275,21 @@ class CapitalProjectBuilder
   end
 
   
-  def get_replace_scope(asset, purchase_alis)
+  def get_replace_scope(asset)
     
-    # See if we ahve already cached this scope. If not, get it and cache it
+    # See if we have already cached this scope. If not, get it and cache it
     if @replace_subtype_scope_cache[asset.asset_subtype_id].nil?
-      if asset.type_of? :vehicle
-        ali_code = purchase_alis ? '11.12.XX' : '11.16.XX'
-      elsif asset.type_of? :rail_car
-        ali_code = purchase_alis ? '12.12.XX' : '12.16.XX'
-      elsif asset.type_of? :locomotive
-        ali_code = purchase_alis ? '12.12.XX' : '12.16.XX'
-      elsif asset.type_of? :support_vehicle
-        ali_code = purchase_alis ? '11.42.XX' : '11.46.XX'
+      # Get the replacement ALI code from the policy      
+      ali_code = asset.get_rule.replacement_ali_code
+      # check to see that one was set of default otherwise
+      if ali_code.blank?
+        if asset.type_of? :vehicle
+          ali_code = '11.12.XX'
+        elsif asset.type_of? :rail_car or asset.type_of? :locomotive
+          ali_code = '12.12.XX'
+        elsif asset.type_of? :support_vehicle
+          ali_code = '11.42.XX'
+        end
       end
       @replace_subtype_scope_cache[asset.asset_subtype_id] = TeamAliCode.find_by_code(ali_code)
     end
@@ -289,16 +298,19 @@ class CapitalProjectBuilder
   end
 
   def get_rehab_scope(asset)
-    # See if we ahve already cached this scope. If not, get it and cache it
+    # See if we have already cached this scope. If not, get it and cache it
     if @rehab_subtype_scope_cache[asset.asset_subtype_id].nil?
-      if asset.type_of? :vehicle
-        ali_code = '11.14.XX'
-      elsif asset.type_of? :rail_car
-        ali_code = '12.14.XX'
-      elsif asset.type_of? :locomotive
-        ali_code = '12.14.XX'
-      elsif asset.type_of? :support_vehicle
-        ali_code = '11.44.XX'
+      # Get the rehabilitation ALI code from the policy      
+      ali_code = asset.get_rule.rehabilitation_ali_code
+      # check to see that one was set of default otherwise
+      if ali_code.blank?
+        if asset.type_of? :vehicle
+          ali_code = "11.14.XX"
+        elsif asset.type_of? :rail_car or asset.type_of? :locomotive
+          ali_code = "12.14.XX"
+        elsif asset.type_of? :support_vehicle 
+          ali_code = "11.44.XX"
+        end
       end
       @rehab_subtype_scope_cache[asset.asset_subtype_id] = TeamAliCode.find_by_code(ali_code)
     end

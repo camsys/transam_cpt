@@ -27,11 +27,10 @@ class SchedulerActionProxy < Proxy
   def set_defaults(a)
     unless a.nil?
       asset = Asset.get_typed_asset(a)
-      policy = asset.policy
-      policy_item = policy.get_policy_item(asset)
+      policy_item = asset.get_rule
       self.object_key = asset.object_key
       self.replace_subtype_id = asset.asset_subtype.id
-      self.replace_fuel_type_id = asset.fuel_type.id if asset.type_of? :vehicle or asset.type_of? :support_vehicle
+      self.replace_fuel_type_id = asset.fuel_type.id if asset.type_of? :rolling_stock
       self.extend_eul_years = 2
     end
     self.reason_id = 1 # default to end of EUL
