@@ -195,7 +195,7 @@ class CapitalProjectBuilder
       #
       # See if the replacement can be replaced within the planning time frame
       #-----------------------------                
-      max_service_life_years = asset.get_rule.max_service_life_years
+      max_service_life_years = asset.policy_rule.max_service_life_years
       year += max_service_life_years
       Rails.logger.debug "Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
@@ -280,7 +280,7 @@ class CapitalProjectBuilder
     # See if we have already cached this scope. If not, get it and cache it
     if @replace_subtype_scope_cache[asset.asset_subtype_id].nil?
       # Get the replacement ALI code from the policy      
-      ali_code = asset.get_rule.replacement_ali_code
+      ali_code = asset.policy_rule.replacement_ali_code
       # check to see that one was set of default otherwise
       if ali_code.blank?
         if asset.type_of? :vehicle
@@ -301,7 +301,7 @@ class CapitalProjectBuilder
     # See if we have already cached this scope. If not, get it and cache it
     if @rehab_subtype_scope_cache[asset.asset_subtype_id].nil?
       # Get the rehabilitation ALI code from the policy      
-      ali_code = asset.get_rule.rehabilitation_ali_code
+      ali_code = asset.policy_rule.rehabilitation_ali_code
       # check to see that one was set of default otherwise
       if ali_code.blank?
         if asset.type_of? :vehicle
