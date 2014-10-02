@@ -185,10 +185,10 @@ class CapitalProjectBuilder
       # Step 3: Process initial replacement
       #-----------------------------      
 
-      # get the replacement scope for this asset
-      replace_scope = get_replace_scope(asset)
+      # get the replacement ALI code for this asset
+      replace_ali_code = get_replace_ali_code(asset)
       # Add the initial replacement. If the project does not exist it is created
-      add_to_project(asset, replace_scope, year, replacement_project_type)
+      add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
       #-----------------------------
       # Step 4: Process initial replacement
@@ -201,7 +201,7 @@ class CapitalProjectBuilder
 
       while year < last_year
         # Add a future re-replacement project for the asset
-        add_to_project(asset, replace_scope, year, replacement_project_type)
+        add_to_project(asset, replace_ali_code, year, replacement_project_type)
         year += max_service_life_years
       end 
     end
@@ -211,9 +211,9 @@ class CapitalProjectBuilder
     year = asset.scheduled_rehabilitation_year.nil? ? 9999 : asset.scheduled_rehabilitation_year
     unless year < start_year or year > last_year
       # get the rehab scope for this asset
-      rehab_scope = get_rehab_scope(asset)
+      rehab_ali_code = get_rehab_ali_code(asset)
       # This will create the project if it does not exist
-      add_to_project(asset, rehab_scope, year, rehabilitation_project_type)
+      add_to_project(asset, rehab_ali_code, year, rehabilitation_project_type)
     end
     
   end
@@ -221,8 +221,12 @@ class CapitalProjectBuilder
   # Adds an asset to a SOGR project. If the project does not
   # exist it is created first.
   #
-  def add_to_project(asset, scope, year, project_type)
+  def add_to_project(asset, ali_code, year, project_type)
 
+    # The ALI project scope is the parent of the ali code so if the ALI code is 11.11.01 (replace 40 ft bus)
+    # the scope becomes 11.11.XX (bus replacement project)
+    scope = ali_code.parent
+    
     # Decode the scope so we can set the project up
     if scope.type == "11"
       focus = "Bus"  
@@ -254,9 +258,7 @@ class CapitalProjectBuilder
       project.save
       @project_count += 1
     end
-    # See if there is an existing ALI for this asset
-    team_ali_code = TeamAliCode.find_by_code("#{scope.type_and_category}.#{asset.asset_subtype.ali_code}")
-    ali = ActivityLineItem.where('capital_project_id = ? AND team_ali_code_id = ?', project.id, team_ali_code.id).first
+    ali = ActivityLineItem.where('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id).first
     # if there is an exisiting ALI, see if the asset is in it
     if ali
       unless ali.assets.exists?(asset)
@@ -264,8 +266,8 @@ class CapitalProjectBuilder
       end
     else
       # Create the ALI and add it to the project
-      ali_name = "#{action} #{team_ali_code.name} assets."
-      ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => team_ali_code})
+      ali_name = "#{action} #{ali_code.name} assets."
+      ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code})
       ali.save 
       
       # Now add the asset to it
@@ -274,50 +276,21 @@ class CapitalProjectBuilder
           
   end
 
-  
-  def get_replace_scope(asset)
-    
-    # See if we have already cached this scope. If not, get it and cache it
-    if @replace_subtype_scope_cache[asset.asset_subtype_id].nil?
-      # Get the replacement ALI code from the policy      
-      ali_code = asset.policy_rule.replacement_ali_code
-      # check to see that one was set of default otherwise
-      if ali_code.blank?
-        if asset.type_of? :vehicle
-          ali_code = '11.12.XX'
-        elsif asset.type_of? :rail_car or asset.type_of? :locomotive
-          ali_code = '12.12.XX'
-        elsif asset.type_of? :support_vehicle
-          ali_code = '11.42.XX'
-        end
-      end
-      @replace_subtype_scope_cache[asset.asset_subtype_id] = TeamAliCode.find_by_code(ali_code)
-    end
-    # Return the cached version
-    @replace_subtype_scope_cache[asset.asset_subtype_id]
+  # Returns the asset-specific ALI code for replacement
+  def get_replace_ali_code(asset)
+    ali_code = asset.policy_rule.replacement_ali_code
+    scope = TeamAliCode.find_by_code(ali_code)
+    scope
   end
 
-  def get_rehab_scope(asset)
-    # See if we have already cached this scope. If not, get it and cache it
-    if @rehab_subtype_scope_cache[asset.asset_subtype_id].nil?
-      # Get the rehabilitation ALI code from the policy      
-      ali_code = asset.policy_rule.rehabilitation_ali_code
-      # check to see that one was set of default otherwise
-      if ali_code.blank?
-        if asset.type_of? :vehicle
-          ali_code = "11.14.XX"
-        elsif asset.type_of? :rail_car or asset.type_of? :locomotive
-          ali_code = "12.14.XX"
-        elsif asset.type_of? :support_vehicle 
-          ali_code = "11.44.XX"
-        end
-      end
-      @rehab_subtype_scope_cache[asset.asset_subtype_id] = TeamAliCode.find_by_code(ali_code)
-    end
-    # Return the cached version
-    @rehab_subtype_scope_cache[asset.asset_subtype_id]    
+  # Returns the asset-specific ALI code for rehabilitation
+  def get_rehab_ali_code(asset)
+    ali_code = asset.policy_rule.rehabilitation_ali_code
+    scope = TeamAliCode.find_by_code(ali_code)
+    scope
   end
 
+  # Creates a new capital project
   def create_capital_project(org, fiscal_year, team_category, title, capital_project_type)
 
     puts "org = #{org}, fiscal_year = #{fiscal_year}, team_category = #{team_category}, title = #{title}, org = #{capital_project_type}"

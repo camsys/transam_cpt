@@ -1,9 +1,5 @@
 class CapitalProjectProxy < Proxy
-    
-  #------------------------------------------------------------------------------
-  # Callbacks
-  #------------------------------------------------------------------------------
-   
+       
   # Step 1: Project characteristics
   attr_accessor :name
   attr_accessor :fiscal_year
