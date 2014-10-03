@@ -30,7 +30,7 @@ class CapitalPlanSummaryReport < AbstractReport
             num_rehab += ali.assets.count
           end
         end
-        cost += cp.total_estimated_cost
+        cost += cp.total_cost
       end
       unless capital_project_list.empty?
         num_remove = Asset.where('organization_id = ? AND scheduled_disposition_year = ?', capital_project_list.first.organization.id, year).count

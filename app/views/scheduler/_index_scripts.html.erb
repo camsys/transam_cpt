@@ -3,7 +3,14 @@
   	$(document).ready(function() {
   		
   		transam.make_same_height('.header-part');
-  		
+		
+		$( '<%= "#year_#{@year_1}_list" %>').sortable();
+		$( '<%= "#year_#{@year_1}_list" %>').disableSelection();
+		$( '<%= "#year_#{@year_2}_list" %>').sortable();
+		$( '<%= "#year_#{@year_2}_list" %>').disableSelection();
+		$( '<%= "#year_#{@year_3}_list" %>').sortable();
+		$( '<%= "#year_#{@year_3}_list" %>').disableSelection();
+		
 		$('.popup-details').popover({
 			trigger: 'hover',
 			container: 'body',
@@ -12,7 +19,7 @@
 			html: 'true'    
 		});  
 	});
-                
+                 
 </script>
 
 

@@ -8,10 +8,26 @@ module TransamCptHelper
     end
   end
 
+  # Returns the correct cost for a swimlane/asset/year
+  def get_swimlane_activity_cost(asset, year)
+
+    if asset.scheduled_disposition_year == year
+      # nothing to display
+      return nil
+    elsif asset.scheduled_replacement_year == year 
+      cost = asset.scheduled_replacement_cost.present? ? asset.scheduled_replacement_cost : asset.policy_rule.replacement_cost
+    elsif asset.scheduled_rehabilitation_year == year
+      cost = asset.scheduled_rehabilitation_cost.present? ? asset.scheduled_rehabilitation_cost : asset.policy_rule.rehabilitation_cost
+    else
+      cost = 0
+    end
+    format_as_currency(cost)
+  end
+  
   # Returns the correct swimlane icon color for an asset
   def get_swimlane_icon(asset, year)
     
-    if asset.scheduled_disposition_year and asset.scheduled_disposition_year == year
+    if asset.scheduled_disposition_year == year
       'fa-times-circle'      
     elsif asset.scheduled_rehabilitation_year == year
       'fa-wrench'            

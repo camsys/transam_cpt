@@ -69,27 +69,34 @@ class SchedulerController < OrganizationAwareController
       Rails.logger.debug "Updating asset #{asset.object_key}. New scheduled replacement year = #{proxy.fy_year.to_i}"
       asset.scheduled_replacement_year = proxy.fy_year.to_i
       asset.replacement_reason_type_id = proxy.reason_id.to_i
+      asset.scheduled_replacement_cost = proxy.replace_cost.to_i
+      asset.scheduled_replace_with_new = proxy.replace_with_new.to_i
       asset.save
       #notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description} is scheduled for replacement in #{fiscal_year(proxy.year.to_i)}"
       
     elsif proxy.action_id == REHABILITATE_ACTION
       asset.scheduled_rehabilitation_year = proxy.fy_year.to_i
       asset.scheduled_replacement_year = asset.scheduled_rehabilitation_year + proxy.extend_eul_years.to_i
+      asset.scheduled_rehabilitation_cost = proxy.rehab_cost.to_i
       asset.save
       #notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description} is now scheduled for replacement in #{fiscal_year(proxy.replace_fy_year.to_i)}"
       
     elsif proxy.action_id == REMOVE_FROM_SERVICE_ACTION
       asset.scheduled_rehabilitation_year = nil
       asset.scheduled_replacement_year = nil
-      num_years = proxy.fy_year.to_i - current_fiscal_year_year
-      asset.scheduled_disposition_year = current_fiscal_year_year + num_years
+      asset.scheduled_replacement_cost = nil
+      asset.scheduled_replace_with_new = nil
+      asset.scheduled_rehabilitation_cost = nil
+      asset.scheduled_disposition_year = proxy.fy_year.to_i
       asset.save
       
     elsif proxy.action_id == RESET_ACTION
       asset.scheduled_rehabilitation_year = nil
       asset.scheduled_replacement_year = asset.policy_replacement_year
       asset.scheduled_disposition_year = nil
-      
+      asset.scheduled_replacement_cost = nil
+      asset.scheduled_replace_with_new = nil
+      asset.scheduled_rehabilitation_cost = nil
       asset.save
   
     end

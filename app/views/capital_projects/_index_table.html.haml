@@ -26,7 +26,7 @@
     - total_total = 0
 
     - @projects.each do |p|
-      - total_cost += p.total_estimated_cost
+      - total_cost += p.total_cost
       - total_state += p.state_request
       - total_federal += p.federal_request
       - total_local += p.local_request
@@ -42,7 +42,7 @@
         %td= p.title
         %td.center= p.capital_project_status_type
 
-        %td.right= format_as_currency(p.total_estimated_cost)
+        %td.right= format_as_currency(p.total_cost)
 
         %td.right= format_as_currency(p.state_request)
         %td.right= format_as_currency(p.federal_request)

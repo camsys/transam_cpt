@@ -17,6 +17,10 @@
       
       = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal year', :prompt => "Select..."          
       = f.input :reason_id, :collection => ReplacementReasonType.all, :label => 'Reason for replacing', :prompt => "Select..."          
+      = f.input :replace_with_new, :collection => [['Yes', 1], ['No', 0]], :label => 'Replace with new', :prompt => "Select..."  
+              
+      = f.input :replace_cost        
+      = f.input :rehab_cost        
 
       .row
         .col-xs-6      
@@ -27,25 +31,27 @@
       = f.input :extend_eul_years, :collection => (0..20), :label => 'Extend useful life', :prompt => "Select..."          
       
                   
-      = f.button :submit, "Update", :class => "btn btn-success"
-      = button_tag 'Cancel', :type => 'button', :name => 'cancel', :class=>"btn btn-warning", :id => "#{@asset.object_key}_cancel"
+      = f.button :submit, "Update", :class => "btn btn-success btn-xs"
+      = button_tag 'Cancel', :type => 'button', :name => 'cancel', :class=>"btn btn-warning btn-xs", :id => "#{@asset.object_key}_cancel"
       
 :javascript
   
-  $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
-  $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_extend_eul_years').hide();
+  $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_with_new, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
+  $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_replace_cost, .scheduler_action_proxy_rehab_cost, .scheduler_action_proxy_extend_eul_years').hide();
 
   $('#scheduler_action_proxy_action_id').change(function(){
     var val = $(this).val();
     if (val == 1) {
-      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_fy_year').show();
-      $('.scheduler_action_proxy_extend_eul_years').hide();
+      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_cost, .scheduler_action_proxy_replace_with_new, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_fy_year').show();
+      $('.scheduler_action_proxy_extend_eul_years, .scheduler_action_proxy_rehab_cost').hide();
     } else if (val == 2) {
-      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
-      $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_extend_eul_years').show();
+      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_cost, .scheduler_action_proxy_replace_with_new, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
+      $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_rehab_cost, .scheduler_action_proxy_extend_eul_years').show();
     } else if (val == 3) {
-      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_extend_eul_years').hide();
+      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_cost, .scheduler_action_proxy_rehab_cost, .scheduler_action_proxy_replace_with_new, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_extend_eul_years').hide();
       $('.scheduler_action_proxy_fy_year').show();
+    } else if (val == 4) {
+      $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_fy_year, .scheduler_action_proxy_replace_cost, .scheduler_action_proxy_rehab_cost, .scheduler_action_proxy_replace_with_new, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id, .scheduler_action_proxy_extend_eul_years').hide();
     }
   });
    // Install a click handler for the cancel button

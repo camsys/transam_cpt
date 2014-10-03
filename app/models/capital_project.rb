@@ -158,15 +158,6 @@ class CapitalProject < ActiveRecord::Base
   def total_cost
     val = 0
     activity_line_items.each do |a|
-      val += a.anticipated_cost
-    end
-    val    
-  end
-
-  # Returns the total estimated cost of the project
-  def total_estimated_cost
-    val = 0
-    activity_line_items.each do |a|
       val += a.cost
     end
     val    
@@ -181,13 +172,7 @@ class CapitalProject < ActiveRecord::Base
   def fiscal_year
     super(fy_year)
   end
-  
-  # returns true if the project can be scheduled on year earlier
-  def can_schedule_earlier?
-    # return true if the projects fiscal year is greater than the current fiscal year
-    fy_year > current_fiscal_year_year
-  end
-  
+    
   def to_s
     project_number
   end

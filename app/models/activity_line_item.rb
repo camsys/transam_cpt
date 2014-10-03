@@ -149,53 +149,40 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Returns the amount that is not yet funded
   def funding_difference
-    anticipated_cost - total_funds
+    cost - total_funds
   end
 
   # Returns the cost difference between the anticpated cost by the user and the cost estimated
   # by the system
   def cost_difference
-    anticipated_cost - estimated_cost
+    cost - estimated_cost
   end
 
   def cost
     if anticipated_cost > 0
       anticipated_cost
     else
-      total_estimated_replacement_cost
+      total_asset_cost
     end    
   end
   
-  # Returns the total estimated value of the assets in this ALI
-  def total_estimated_value
+  # Returns the total replacment or rehabilitation costs of the assets in this ALI
+  def total_asset_cost
     val = 0
     assets.each do |a|
-      val += a.estimated_value unless a.estimated_value.nil?
-    end
-    val
-  end
-
-  # Returns the total original purchase cost of the assets in this ALI
-  def total_original_cost
-    val = 0
-    assets.each do |a|
-      val += a.cost unless a.cost.nil?
-    end
-    val
-  end
-
-  # Returns the total estimated replacment cost of the assets in this ALI
-  def total_estimated_replacement_cost
-    val = 0
-    assets.each do |a|
-      val += a.estimated_replacement_cost unless a.estimated_replacement_cost.nil?
+      # determine which cost to use based on the year of the project
+      if a.scheduled_replacement_year == capital_project.fy_year
+        val += a.scheduled_replacement_cost unless a.scheduled_replacement_cost.nil?
+      else
+        val += a.scheduled_rehabilitation_cost unless a.scheduled_rehabilitation_cost.nil?
+      end
     end
     val
   end
 
   # Update the estimated cost of the ALI based on the assets
   def update_estimated_cost
-    self.estimated_cost = total_estimated_replacement_cost
+    self.estimated_cost = total_asset_cost
     save
   end
 
@@ -211,6 +198,7 @@ class ActivityLineItem < ActiveRecord::Base
     self.estimated_cost += asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
     save
   end
+  
   # Callback to update the estimated costs when an asset is removed
   def after_remove_asset_callback(asset)
     self.estimated_cost -= asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?

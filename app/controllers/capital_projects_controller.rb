@@ -35,7 +35,6 @@ class CapitalProjectsController < OrganizationAwareController
       # Run the builder
       options = {}
       options[:asset_type_ids] = @builder_proxy.asset_types
-      options[:purchase_alis] = @builder_proxy.finance_type == '1' ? true : false
       
       #puts options.inspect
       builder = CapitalProjectBuilder.new
