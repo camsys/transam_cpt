@@ -9,7 +9,7 @@
       .col-md-12
         = render 'funding_messages'
 
-      - if @activity_line_item.anticipated_cost > 0 and @activity_line_item.funding_difference > 0
+      - if @activity_line_item.funding_difference > 0
         .col-md-8
           = simple_form_for([@project, @activity_line_item, FundingRequest.new],
               :wrapper => :horizontal_form,
