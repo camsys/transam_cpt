@@ -40,7 +40,7 @@
         %td.center= p.capital_project_type.code
 
         %td= p.title
-        %td.center= p.capital_project_status_type
+        %td.center= p.state.humanize
 
         %td.right= format_as_currency(p.total_cost)
 

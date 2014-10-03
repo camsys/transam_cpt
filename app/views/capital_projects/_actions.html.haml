@@ -8,11 +8,13 @@
         = link_to "#" do
           %i.fa.fa-arrows-v.fa-fw
           = " Change the priority"
-      %li.divider
-      %li
-        = link_to "#" do
-          %i.fa.fa-share.fa-fw
-          = " Submit for review"
+      - if @project.can_submit?  
+        %li.divider
+        %li
+          = link_to "#" do
+            %i.fa.fa-share.fa-fw
+            = " Submit for review"
+
     - if can? :create, @project
       %li.divider
       %li

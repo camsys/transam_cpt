@@ -1,3 +1,5 @@
+require 'state_machine'
+
 module TransamCpt
   class Engine < ::Rails::Engine
     # Add a load path for this specific Engine

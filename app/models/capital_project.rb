@@ -47,9 +47,6 @@ class CapitalProject < ActiveRecord::Base
   # Every capital project belongs to an organization
   belongs_to  :organization
 
-  # Has a single project status
-  belongs_to  :capital_project_status_type
-
   # Every CP has a single TEAM sub catagory code
   belongs_to  :team_ali_code
 
@@ -75,7 +72,7 @@ class CapitalProject < ActiveRecord::Base
   validates :organization_id,                   :presence => true
   validates :team_ali_code_id,                  :presence => true
   validates :capital_project_type_id,           :presence => true
-  validates :capital_project_status_type_id,    :presence => true
+  validates :state,                             :presence => true
   #validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
   validates :description,                       :presence => true
@@ -97,7 +94,6 @@ class CapitalProject < ActiveRecord::Base
     :fy_year,
     :team_ali_code_id,
     :capital_project_type_id,
-    :capital_project_status_type_id, 
     :title,
     :description,
     :justification,
@@ -105,6 +101,91 @@ class CapitalProject < ActiveRecord::Base
     :active,
     :mpms_project_ids => []
   ]
+  
+  #------------------------------------------------------------------------------
+  #
+  # State Machine 
+  #
+  # Used to track the state of a capital project through the BPT approval process
+  #
+  #------------------------------------------------------------------------------  
+  state_machine :state, :initial => :unsubmitted do
+
+    #-------------------------------
+    # List of allowable states
+    #-------------------------------
+    
+    # initial state. All CPs are created in this state
+    state :unsubmitted
+    
+    # state used to signify it has been submitted and is pending approval 
+    state :pending_approval
+
+    # state used to signify that the CP has been conditionally by the program manager.
+    # The project is waiting for statewide approval
+    state :conditionally_approved
+    
+    # state used to signify that the CP has been approved by the program manager
+    state :approved
+
+    # state used to signify that the CP has been returned by the program manager. PM
+    # has asked for additional information/changes etc.
+    state :returned
+
+    # state used to indicate the the CP has been funded and moved into dotGrants/CCA
+    state :funded
+
+    #---------------------------------------------------------------------------
+    # List of allowable events. Events transition a CP from one state to another
+    #---------------------------------------------------------------------------
+            
+    # reset the project to its initial state
+    event :reset do
+      transition all => :unsubmitted
+    end
+
+    # submit a CP for approval. This will place the CP in the program managers
+    # queue. 
+    event :submit do
+      
+      transition [:unsubmitted, :returned] => :pending_approval
+      
+    end
+
+    # A program manager is conditionally approving a project
+    event :conditionally_approve do
+      
+      transition :pending_approval => :conditionally_approved
+      
+    end    
+
+    # A program manager is returning a project for additional information or changes
+    event :return do
+      
+      transition :pending_approval => :returned
+      
+    end    
+
+    # A program manager is approving a project
+    event :approve do
+      
+      transition [:pending_approval, :conditionally_approved] => :approved
+      
+    end    
+
+    # A program manager is funding a project
+    event :fund do
+      
+      transition [:approved] => :funded
+      
+    end     
+    
+    # Callbacks
+    before_transition do |project, transition|
+      Rails.logger.debug "Transitioning #{project}"
+    end       
+  end
+
   
   #------------------------------------------------------------------------------
   #
@@ -116,6 +197,13 @@ class CapitalProject < ActiveRecord::Base
     FORM_PARAMS
   end
   
+  def self.state_names
+    a = []
+    state_machine.states.each do |s|
+      a << s.name.to_s
+    end
+    a
+  end
   #------------------------------------------------------------------------------
   #
   # Instance Methods
@@ -201,10 +289,10 @@ class CapitalProject < ActiveRecord::Base
   def set_defaults
     self.active ||= true
     self.emergency ||= false
-    self.capital_project_status_type_id ||= CapitalProjectStatusType.find_by_name('Unapproved')
+    self.state ||= :unsumbitted
     # Set the fiscal year to the current fiscal year which can be different from
     # the calendar year
     self.fy_year ||= current_fiscal_year_year 
   end    
-      
+            
 end

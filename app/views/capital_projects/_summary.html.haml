@@ -4,10 +4,10 @@
   = format_field("Type", @project.capital_project_type)
   = format_field("Title", @project.title)
   = format_field("Emergency", format_as_boolean(@project.emergency)) unless @project.emergency == false
-  = format_field("Status", @project.capital_project_status_type)
+  = format_field("Status", format_as_label(@project.state.humanize, 'primary'))
   
   %fieldset
-    %legend.panel-legend
+    %legend.panel-legend Funding Summary
     = format_field("Total Cost", format_as_currency(@project.total_cost))
     = format_field("", "&nbsp;")
     = format_field("State", format_as_currency(@project.state_request))

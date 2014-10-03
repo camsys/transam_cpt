@@ -94,13 +94,10 @@ class CapitalProjectsController < OrganizationAwareController
       end
     end
 
-    @capital_project_status_type_id = params[:capital_project_status_type_id]
-    unless @capital_project_status_type_id.blank?
-      @capital_project_status_type_id = @capital_project_status_type_id.to_i
-      if @capital_project_status_type_id > 0
-        conditions << 'capital_project_status_type_id = ?'
-        values << @capital_project_status_type_id
-      end
+    @capital_project_state = params[:capital_project_state]
+    unless @capital_project_state.blank?
+      conditions << 'state = ?'
+      values << @capital_project_state
     end
     
     # Get the capital project status type filter, if one is not found default to 0 

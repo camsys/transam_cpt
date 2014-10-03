@@ -25,7 +25,7 @@ class CptReportRow
     self.estimated_cost += capital_project.total_cost
     cp_total_requested = capital_project.state_request + capital_project.federal_request + capital_project.local_request
     self.total_requested += cp_total_requested
-    self.total_approved += capital_project.capital_project_status_type_id == 4 ? cp_total_requested : 0
+    self.total_approved += capital_project.approved? ? cp_total_requested : 0
     
   end
   
