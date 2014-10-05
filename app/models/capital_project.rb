@@ -289,7 +289,7 @@ class CapitalProject < ActiveRecord::Base
   def set_defaults
     self.active ||= true
     self.emergency ||= false
-    self.state ||= :unsumbitted
+    self.state ||= :unsubmitted
     # Set the fiscal year to the current fiscal year which can be different from
     # the calendar year
     self.fy_year ||= current_fiscal_year_year 
