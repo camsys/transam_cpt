@@ -8,6 +8,10 @@
       %span.badge.pull-right= @project.mpms_projects.count
       = "MPMS Projects "
   %li
+    %a{:href => "#hist", :data =>{:toggle => 'tab'}}
+      %span.badge.pull-right= @project.history.count
+      = "History "
+  %li
     %a{:href => "#docs", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @project.documents.count
       = "Supporting Documents "
@@ -23,6 +27,9 @@
   .tab-pane.fade#mpms
     .tab-content
       = render 'mpms_projects_table'
+  .tab-pane.fade#hist
+    .tab-content
+      = render 'history_table'
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'

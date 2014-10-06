@@ -18,6 +18,11 @@ class CapitalProjectsController < OrganizationAwareController
     # Get the event from the paramters
     event_name = params[:event]
     if @project.fire_events(event_name)
+      event = WorkflowEvent.new
+      event.creator = current_user
+      event.trackable = @project
+      event.event_type = event_name
+      event.save
       notify_user(:notice, "Capital Project #{@project.project_number} is now #{@project.state.humanize}.")
     else
       notify_user(:alert, "Capital Project #{@project.project_number} could not be #{event_name}")

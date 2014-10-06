@@ -60,6 +60,9 @@ class CapitalProject < ActiveRecord::Base
   # Has 0 or more activity line items. These will be removed if the project is removed.
   has_many    :activity_line_items, :dependent => :destroy
 
+  # Has 0 or more workflow events. Using a polymorphioc association.
+  has_many    :workflow_events, :as => :trackable, :dependent => :destroy
+  
   # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
   has_many    :documents,   :as => :documentable, :dependent => :destroy
 
@@ -210,11 +213,13 @@ class CapitalProject < ActiveRecord::Base
   # Instance Methods
   #
   #------------------------------------------------------------------------------
-    
-  # Returns the collection of events that can be fired
-  def events
-    
+  
+  # Simple override of the workflow events. Always use this method as it can be 
+  # filterd to limit viewable events  
+  def history
+    workflow_events
   end
+  
   # Returns true if the project's total cost has been set and 
   # funding requests have been entered that cover the cost
   def can_submit?
@@ -224,7 +229,7 @@ class CapitalProject < ActiveRecord::Base
     if b
       # Now check that the CP has funding
       b = false unless total_cost > 0
-      b = false unless funding_difference <= 0
+      #b = false unless funding_difference <= 0
     end
     b
   end
