@@ -29,6 +29,7 @@ class CapitalProject < ActiveRecord::Base
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
+  
   # Always generate a unique project number when the project is created
   after_create do
     create_project_number
@@ -77,7 +78,7 @@ class CapitalProject < ActiveRecord::Base
   validates :title,                             :presence => true
   validates :description,                       :presence => true
   validates :justification,                     :presence => true
-  validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => Date.today.year}
+  #validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => CapitalProject.new.fiscal_year_epoch_year}
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -182,7 +183,7 @@ class CapitalProject < ActiveRecord::Base
     
     # Callbacks
     before_transition do |project, transition|
-      Rails.logger.debug "Transitioning #{project}"
+      Rails.logger.debug "Transitioning #{project.name} from #{transition.from_name} to #{transition.to_name} using #{transition.event}"
     end       
   end
 
