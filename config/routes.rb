@@ -37,7 +37,6 @@ Rails.application.routes.draw do
     end
     
     member do
-      get 'shift_fiscal_year'
       get 'copy'
     end
         

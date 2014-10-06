@@ -199,55 +199,6 @@ class CapitalProjectsController < OrganizationAwareController
     @fiscal_years = get_fiscal_years
     
   end
-
-  # Move a project forward or backward by the specified number of years.
-  def shift_fiscal_year
-    num_years = params[:num_years].to_i
-    new_project_year = @project.fy_year + num_years
-    
-    # get the last year that a project can be scheduled
-    last_year = last_fiscal_year_year
-    
-    # Check to see if they are attempting to move the project earlier than the current fiscal year
-    if new_project_year < current_fiscal_year_year
-      notify_user(:alert, "Project #{@project.project_number} can't be scheduled earlier than #{current_fiscal_year}.")
-    elsif new_project_year > last_year
-      notify_user(:alert, "Project #{@project.project_number} can't be scheduled later than #{last_year}.")      
-    else
-      # Create a transaction to manage all the updates
-      CapitalProject.transaction do    
-        
-        # Update the fiscal year for the project. This also creates a new project number      
-        original_fiscal_year = @project.fy_year
-        @project.fy_year = new_project_year
-        @project.update_project_number
-        @project.save
-        # Update the ALI assets and set the scheduled replacement date to the date
-        @project.activity_line_items.each do |ali|
-          ali.assets.each do |a|
-            if [1].include? @project.capital_project_type.id
-              # SOGR replacement projects. Check to make sure that these are not replacements of replacments. If they are
-              # the fiscal year for the asset will be different from the fiscal year for the project
-              unless a.scheduled_replacement_year == original_fiscal_year
-                a.scheduled_replacement_year = @project.fy_year 
-                a.scheduled_by_user = true
-                a.save
-              end
-            elsif [2,3].include?  @project.capital_project_type.id
-              # SOGR rehabilitation or rail mid-year rebuild
-              a.scheduled_rehabilitation_year = @project.fy_year
-              a.save
-            end
-          end
-          # close out the transaction
-        end
-      end                
-      notify_user(:notice, "The project was re-scheduled for #{@project.fy_year}. The new project number is #{@project.project_number}.")
-    end
-    
-    # display the previous view
-    redirect_to :back
-  end
   
   def edit
 
