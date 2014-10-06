@@ -73,7 +73,6 @@ class CapitalProjects::BuildController < OrganizationAwareController
     cp.team_ali_code = proxy.scope(5)
     cp.emergency = false
     cp.active = true
-    cp.capital_project_status_type_id = 1
     cp.capital_project_type = CapitalProjectType.find_by_name(proxy.capital_project_type)
 
     if cp.save
