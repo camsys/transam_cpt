@@ -13,6 +13,20 @@ class CapitalProjectsController < OrganizationAwareController
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
     
+  def fire_workflow_event
+    
+    # Get the event from the paramters
+    event_name = params[:event]
+    if @project.fire_events(event_name)
+      notify_user(:notice, "Capital Project #{@project.project_number} is now #{@project.state.humanize}.")
+    else
+      notify_user(:alert, "Capital Project #{@project.project_number} could not be #{event_name}")
+    end
+    
+    redirect_to :back
+
+  end
+  
   def builder
 
     add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   

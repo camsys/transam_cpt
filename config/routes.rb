@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     
     member do
       get 'copy'
+      get 'fire_workflow_event'
     end
         
     resources :comments
