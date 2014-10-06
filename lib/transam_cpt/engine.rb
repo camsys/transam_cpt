@@ -1,4 +1,5 @@
 require 'state_machine'
+require 'wicked'
 
 module TransamCpt
   class Engine < ::Rails::Engine
