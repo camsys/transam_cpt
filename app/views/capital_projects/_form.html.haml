@@ -7,7 +7,7 @@
       = dialog_tag('Project Details', {:icon => 'fa fa-book', :class => "header-part"}) do
         = f.input :fy_year, :collection => @fiscal_years, :label => "Fiscal Year"
         = f.input :title, :placeholder => "Enter a title for this project..."
-        = f.association :team_ali_code, :collection => TeamAliCode.bus_categories, :label_method => 'full_name', :label => 'Scope'
+        = f.association :team_ali_code, :collection => TeamAliCode.all_categories, :label_method => 'full_name', :label => 'Scope'
         = f.association :capital_project_type, :label => 'Project Type'
         = f.input :emergency, :as => :radio_buttons
 
@@ -23,6 +23,6 @@
 
   // Document Ready
   $(document).ready(function(){
-    transam.make_same_height('.header_part');
+    transam.make_same_height('.header-part');
   });
 
