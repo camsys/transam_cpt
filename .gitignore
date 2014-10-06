@@ -21,3 +21,4 @@
 # Ignore any attachments that have been uploaded
 /public/attachments
 
+Gemfile.lock
