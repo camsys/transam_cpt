@@ -142,7 +142,7 @@ class CapitalProject < ActiveRecord::Base
             
     # reset the project to its initial state
     event :reset do
-      transition all => :unsubmitted
+      transition all - :unsubmitted => :unsubmitted
     end
 
     # submit a CP for approval. This will place the CP in the program managers
@@ -211,6 +211,24 @@ class CapitalProject < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
     
+  # Returns the collection of events that can be fired
+  def events
+    
+  end
+  # Returns true if the project's total cost has been set and 
+  # funding requests have been entered that cover the cost
+  def can_submit?
+    # First check the state machine to see if it is Ok to submit based on the 
+    # current state
+    b = super()
+    if b
+      # Now check that the CP has funding
+      b = false unless total_cost > 0
+      b = false unless funding_difference <= 0
+    end
+    b
+  end
+  
   def state_request
     val = 0
     activity_line_items.each do |a|
