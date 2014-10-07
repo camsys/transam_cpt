@@ -214,6 +214,15 @@ class CapitalProject < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
+  # The project can be updated if it has not been approved and/or funded
+  def can_update?
+    if ["funded", "approved"].include? state
+      false
+    else
+      true
+    end
+  end
+  
   # Simple override of the workflow events. Always use this method as it can be 
   # filterd to limit viewable events  
   def history
