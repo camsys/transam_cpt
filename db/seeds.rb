@@ -15,14 +15,7 @@ puts "======= Processing TransAM CPT Lookup Tables  ======="
 #------------------------------------------------------------------------------
 
 # Add any gem-specific roles here
-roles = [ 
-]
-
-capital_project_status_types = [
-  {:active => 1, :name => 'Unprogrammed', :description => 'The Capital Project has no funds or is only partially funded.'},
-  {:active => 1, :name => 'Programmed',   :description => 'The Capital Project has been fully funded by not approved.'},
-  {:active => 1, :name => 'Pending',      :description => 'The Capital Project has been fully funded and has been submitted for approval.'},
-  {:active => 1, :name => 'Approved',     :description => 'The Capital Project has been approved.'}
+roles = [
 ]
 
 capital_project_types = [
@@ -57,7 +50,7 @@ funding_line_item_types = [
 
 
 
-replace_tables = %w{ capital_project_status_types milestone_types capital_project_types funding_source_types funding_line_item_types }
+replace_tables = %w{ milestone_types capital_project_types funding_source_types funding_line_item_types }
 merge_tables = %w{ roles }
 
 replace_tables.each do |table_name|
@@ -124,4 +117,3 @@ data.each do |row|
   x.report_type = ReportType.where(:name => row[:type]).first
   x.save!
 end
-
