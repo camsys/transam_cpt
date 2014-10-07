@@ -5,12 +5,13 @@
     - else
       = render :partial => 'shared/comments', :locals => {:comments => @project.comments}
 
-.row
-  .col-md-12
-    %fieldset
-      %legend Add Comment
-      = form_for [@project, Comment.new], :role => 'form' do |f|
-        .form-group
-          = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :minlength => 10
-        = f.submit :class => 'btn btn-primary'
+- if can? :update, @project
+  .row
+    .col-md-12
+      %fieldset
+        %legend Add Comment
+        = form_for [@project, Comment.new], :role => 'form' do |f|
+          .form-group
+            = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :minlength => 10
+          = f.submit :class => 'btn btn-primary'
   

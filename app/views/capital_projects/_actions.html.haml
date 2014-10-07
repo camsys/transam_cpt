@@ -8,18 +8,44 @@
         = link_to "#" do
           %i.fa.fa-arrows-v.fa-fw
           = " Change the priority"
-      - if @project.can_submit?  
-        %li.divider
-        %li
-          = link_to fire_workflow_event_capital_project_path(@project, :event => :submit) do
-            %i.fa.fa-share.fa-fw
-            = " Submit for review"
-      - if @project.can_reset?  
-        %li.divider
-        %li
-          = link_to fire_workflow_event_capital_project_path(@project, :event => :reset) do
-            %i.fa.fa-reply.fa-fw
-            = " Retract this project"
+    - if @project.can_submit?  
+      %li.divider
+      %li
+        = link_to fire_workflow_event_capital_project_path(@project, :event => :submit) do
+          %i.fa.fa-share.fa-fw
+          = " Submit for review"
+    - if @project.can_reset?
+      %li.divider
+      %li
+        = link_to fire_workflow_event_capital_project_path(@project, :event => :reset) do
+          %i.fa.fa-reply.fa-fw
+          = " Retract this project"
+            
+      - if current_user.has_role? :manager            
+        - if @project.can_return?  
+          %li.divider
+          %li
+            = link_to fire_workflow_event_capital_project_path(@project, :event => :conditionally_approve) do
+              %i.fa.fa-thumbs-down.fa-fw
+              = " Return this project for revisions"
+        - if @project.can_conditionally_approve?  
+          %li.divider
+          %li
+            = link_to fire_workflow_event_capital_project_path(@project, :event => :conditionally_approve) do
+              %i.fa.fa-thumbs-o-up.fa-fw
+              = " Conditionally approve this project"
+        - if @project.can_approve?  
+          %li.divider
+          %li
+            = link_to fire_workflow_event_capital_project_path(@project, :event => :approve) do
+              %i.fa.fa-thumbs-up.fa-fw
+              = " Approve this project for funding"
+        - if @project.can_fund?  
+          %li.divider
+          %li
+            = link_to fire_workflow_event_capital_project_path(@project, :event => :fund) do
+              %i.fa.fa-usd.fa-fw
+              = " Fund this project"
 
     - if can? :create, @project
       %li.divider

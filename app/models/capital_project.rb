@@ -216,7 +216,7 @@ class CapitalProject < ActiveRecord::Base
   
   # The project can be updated if it has not been approved and/or funded
   def can_update?
-    if ["funded", "approved"].include? state
+    if ["conditionally_approved", "funded", "approved"].include? state
       false
     else
       true
