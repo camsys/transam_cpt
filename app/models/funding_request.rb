@@ -8,28 +8,13 @@
 #------------------------------------------------------------------------------
 class FundingRequest < ActiveRecord::Base
     
-  # Include the unique key mixin
-  include UniqueKey
-
-  #------------------------------------------------------------------------------
-  # Overrides
-  #------------------------------------------------------------------------------
-  
-  #require rails to use the object key as the restful parameter. All URLS will be of the form
-  # /funding_request/{object_key}/...
-  def to_param
-    object_key
-  end
+  # Include the object key mixin
+  include TransamObjectKey
   
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
-
-  # Always generate a unique object key before saving to the database
-  before_validation(:on => :create) do
-    generate_unique_key(:object_key)
-  end
             
   #------------------------------------------------------------------------------
   # Associations
@@ -51,10 +36,9 @@ class FundingRequest < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  validates :object_key,                        :presence => :true, :uniqueness => :true
   #validates :federal_funding_line_item_id,      :presence => :true
   #validates :state_funding_line_item_id,        :presence => :true
-  validates :activity_line_item_id,             :presence => :true
+  validates :activity_line_item,                :presence => :true
   validates :federal_amount,                    :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
   validates :state_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
   validates :local_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true

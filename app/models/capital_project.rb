@@ -8,22 +8,16 @@
 #------------------------------------------------------------------------------
 class CapitalProject < ActiveRecord::Base
     
-  # Include the unique key mixin
-  include UniqueKey
+  # Include the object key mixin
+  include TransamObjectKey
+  
   # Include the fiscal year mixin
   include FiscalYear
   # Include the ali code mixin
   include AssetAliLookup
-
-  #------------------------------------------------------------------------------
-  # Overrides
-  #------------------------------------------------------------------------------
   
-  #require rails to use the asset key as the restful parameter. All URLS will be of the form
-  # /capital_project/{object_key}/...
-  def to_param
-    object_key
-  end
+  # Include the Workflow module
+  include TransamWorkflow
   
   #------------------------------------------------------------------------------
   # Callbacks
@@ -33,10 +27,6 @@ class CapitalProject < ActiveRecord::Base
   # Always generate a unique project number when the project is created
   after_create do
     create_project_number
-  end
-  # Always generate a unique object key before saving to the database
-  before_validation(:on => :create) do
-    generate_unique_key(:object_key)
   end
       
   # Clean up any HABTM associations before the asset is destroyed
@@ -59,9 +49,6 @@ class CapitalProject < ActiveRecord::Base
     
   # Has 0 or more activity line items. These will be removed if the project is removed.
   has_many    :activity_line_items, :dependent => :destroy
-
-  # Has 0 or more workflow events. Using a polymorphioc association.
-  has_many    :workflow_events, :as => :accountable, :dependent => :destroy
   
   # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
   has_many    :documents,   :as => :documentable, :dependent => :destroy
@@ -72,10 +59,9 @@ class CapitalProject < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  validates :object_key,                        :presence => true, :uniqueness => true
-  validates :organization_id,                   :presence => true
-  validates :team_ali_code_id,                  :presence => true
-  validates :capital_project_type_id,           :presence => true
+  validates :organization,                      :presence => true
+  validates :team_ali_code,                     :presence => true
+  validates :capital_project_type,              :presence => true
   validates :state,                             :presence => true
   #validates :project_number,                    :presence => true, :uniqueness => true
   validates :title,                             :presence => true
@@ -92,7 +78,6 @@ class CapitalProject < ActiveRecord::Base
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
-    :object_key,
     #:project_number, 
     :organization_id,
     :fy_year,
@@ -190,7 +175,6 @@ class CapitalProject < ActiveRecord::Base
     end       
   end
 
-  
   #------------------------------------------------------------------------------
   #
   # Class Methods
@@ -201,37 +185,12 @@ class CapitalProject < ActiveRecord::Base
     FORM_PARAMS
   end
   
-  # Return the list of allowable event names for this class
-  def self.event_names
-    a = []
-    state_machine.events.each do |e|
-      a << e.name.to_s
-    end
-    a    
-  end
-  # Returns the list of allowable states for this class
-  def self.state_names
-    a = []
-    state_machine.states.each do |s|
-      a << s.name.to_s
-    end
-    a
-  end
   #------------------------------------------------------------------------------
   #
   # Instance Methods
   #
   #------------------------------------------------------------------------------
-  
-  # Get the allowable events for this state as strings
-  def allowable_events
-    a = []
-    self.state_events.each do |evt|
-      a << evt.to_s
-    end
-    a
-  end
-  
+    
   # The project can be updated if it has not been approved and/or funded
   def can_update?
     if ["conditionally_approved", "funded", "approved"].include? state
@@ -240,13 +199,7 @@ class CapitalProject < ActiveRecord::Base
       true
     end
   end
-  
-  # Simple override of the workflow events. Always use this method as it can be 
-  # filterd to limit viewable events  
-  def history
-    workflow_events
-  end
-  
+    
   # Returns true if the project's total cost has been set and 
   # funding requests have been entered that cover the cost
   def can_submit?

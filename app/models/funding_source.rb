@@ -7,32 +7,18 @@
 #
 #------------------------------------------------------------------------------
 class FundingSource < ActiveRecord::Base
+
+  # Include the object key mixin
+  include TransamObjectKey
     
-  # Include the unique key mixin
-  include UniqueKey
   # Include the fiscal year mixin
   include FiscalYear
 
-  #------------------------------------------------------------------------------
-  # Overrides
-  #------------------------------------------------------------------------------
-  
-  #require rails to use the object key as the restful parameter. All URLS will be of the form
-  # /funding_source/{object_key}/...
-  def to_param
-    object_key
-  end
-  
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
 
-  # Always generate a unique object key before saving to the database
-  before_validation(:on => :create) do
-    generate_unique_key(:object_key)
-  end
-              
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -50,10 +36,9 @@ class FundingSource < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  validates :object_key,                        :presence => true, :uniqueness => true
   validates :name,                              :presence => true
   validates :description,                       :presence => true
-  validates :funding_source_type_id,            :presence => true
+  validates :funding_source_type,               :presence => true
 
   validates :created_by_id,                     :presence => :true
   validates :updated_by_id,                     :presence => :true

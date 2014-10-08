@@ -10,28 +10,13 @@
 #------------------------------------------------------------------------------
 class ActivityLineItem < ActiveRecord::Base
 
-  # Include the unique key mixin
-  include UniqueKey
-
-  #------------------------------------------------------------------------------
-  # Overrides
-  #------------------------------------------------------------------------------
-
-  #require rails to use the asset key as the restful parameter. All URLS will be of the form
-  # /activity_line_item/{object_key}/...
-  def to_param
-    object_key
-  end
+  # Include the object key mixin
+  include TransamObjectKey
 
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize :set_defaults
-
-  # Always generate a unique object key before saving to the database
-  before_validation(:on => :create) do
-    generate_unique_key(:object_key)
-  end
 
   # Clean up any HABTM associations before the ali is destroyed
   before_destroy { assets.clear }
@@ -64,11 +49,10 @@ class ActivityLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  validates :object_key,                        :presence => true, :uniqueness => true
-  validates :capital_project_id,                :presence => true
-  validates :name,                              :presence => true
-  validates :anticipated_cost,                  :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
-  validates :team_ali_code_id,                  :presence => true
+  validates :capital_project,   :presence => true
+  validates :name,              :presence => true
+  validates :anticipated_cost,  :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :team_ali_code,     :presence => true
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -79,7 +63,6 @@ class ActivityLineItem < ActiveRecord::Base
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
-    :object_key,
     :capital_project_id,
     :name,
     :team_ali_code_id,

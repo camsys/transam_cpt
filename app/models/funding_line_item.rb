@@ -9,31 +9,17 @@
 #------------------------------------------------------------------------------
 class FundingLineItem < ActiveRecord::Base
         
-  # Include the unique key mixin
-  include UniqueKey
+  # Include the object key mixin
+  include TransamObjectKey
+        
   # Include the fiscal year mixin
   include FiscalYear
-
-  #------------------------------------------------------------------------------
-  # Overrides
-  #------------------------------------------------------------------------------
-  
-  #require rails to use the asset key as the restful parameter. All URLS will be of the form
-  # /FundingLineItem/{object_key}/...
-  def to_param
-    object_key
-  end
   
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
 
-  # Always generate a unique object key before saving to the database
-  before_validation(:on => :create) do
-    generate_unique_key(:object_key)
-  end
-            
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -59,14 +45,13 @@ class FundingLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  validates :object_key,                        :presence => true, :uniqueness => true
-  validates :organization_id,                   :presence => true
-  validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1990}
-  validates :funding_source_id,                 :presence => true
-  validates :funding_line_item_type_id,         :presence => true
+  validates :organization,                    :presence => true
+  validates :fy_year,                         :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1990}
+  validates :funding_source,                  :presence => true
+  validates :funding_line_item_type,          :presence => true
   #validates :amount,                            :presence => true, :numericality => {:only_integer => :true, :greater_than => 0}
-  validates :spent,                             :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
-  validates :pcnt_operating_assistance,         :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
+  validates :spent,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :pcnt_operating_assistance,       :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
 
 
   #------------------------------------------------------------------------------
@@ -77,7 +62,6 @@ class FundingLineItem < ActiveRecord::Base
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
-    :object_key,
     :organization_id,
     :fy_year,
     :funding_source_id,
