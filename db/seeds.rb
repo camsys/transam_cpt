@@ -91,7 +91,7 @@ reports = [
     :roles => 'user,manager',
     :description => 'Displays a chart showing the funding forecast by fiscal year.',
     :chart_type => 'column',
-    :chart_options => "{is3D : false, isStacked: false, fontSize: 10, colors:['red','blue','green'], hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    :chart_options => "{is3D : false, isStacked: false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     },
   {
     :active => 1,

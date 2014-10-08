@@ -22,7 +22,7 @@
 					<% if idx == 0 %>
 						'<%= row[idx] %>' 
 					<% else %>
-						,{v: <%= row[idx].to_i %>, f: '<%= format_as_currency(row[1]) %>'} 
+						,{v: <%= row[idx].to_i %>, f: '<%= format_as_currency(row[idx]) %>'} 
 					<% end %>
 				<% end %>
 			]);

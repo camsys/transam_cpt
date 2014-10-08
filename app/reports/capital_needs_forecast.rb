@@ -10,19 +10,26 @@ class CapitalNeedsForecast < AbstractReport
   def get_data_from_result_list(capital_project_list)
     
     # Capital Needs by year
+    state_names = CapitalProject.state_names
     a = []
-    #labels = ['Fiscal Year', 'State', 'Federal', 'Local']
-    labels = ['Fiscal Year', 'Estimated', 'Requested', 'Approved']
-    
-    start_year = current_fiscal_year_year + 1
-    (start_year..last_fiscal_year_year).each do |year|
-      report_row = CptReportRow.new(year)
-      # get the capital projects for this analysis year
-      capital_projects =  capital_project_list.where('fy_year = ?', year)
-      capital_projects.find_each do |cp|
-        report_row.add(cp)
+    labels = ['Fiscal Year']
+    state_names.each do |name|
+      labels << name.humanize
+    end
+        
+    (current_planning_year_year..last_fiscal_year_year).each do |year|
+      row = []
+      row << fiscal_year(year)      
+      state_names.each do |state|
+        total = 0
+        # get the capital projects for this analysis year and state
+        capital_projects =  capital_project_list.where('fy_year = ? AND state = ?', year, state)
+        capital_projects.find_each do |cp|
+          total += cp.total_cost
+        end
+        row << total
       end
-      a << [fiscal_year(year), report_row.estimated_cost, report_row.total_requested, report_row.total_approved]
+      a << row
     end
     
     return {:labels => labels, :data => a}      
