@@ -3,13 +3,13 @@
 # WorkflowEvent
 #
 # A WorkflowEvent that has been associated with another class such as a Capital Project etc. This is a 
-# polymorphic class that can store work flowe events against any class that includes a
-# trackable association
+# polymorphic class that can store work flow events against any class that includes an
+# accountable association
 #
 # To use this class as an association with another class include the following line into
 # the model
 #
-# has_many    :workflow_events,  :as => :trackable
+# has_many    :workflow_events,  :as => :accountable, :dependent => :destroy
 #
 #------------------------------------------------------------------------------
 class WorkflowEvent < ActiveRecord::Base
@@ -36,12 +36,12 @@ class WorkflowEvent < ActiveRecord::Base
   end
             
   # Associations
-  belongs_to :trackable,  :polymorphic => true
+  belongs_to :accountable,  :polymorphic => true
 
   belongs_to :creator,    :class_name => 'User', :foreign_key => :created_by_id 
        
   # default scope
-  default_scope { order(:created_at) }
+  default_scope { order('created_at DESC') }
        
   validates :object_key,          :presence => true
   validates :event_type,          :presence => true
@@ -51,8 +51,8 @@ class WorkflowEvent < ActiveRecord::Base
   FORM_PARAMS = [
     :object_key,
     :event_type,
-    :trackable_id,
-    :trackable_type,
+    :accountable_id,
+    :accountable_type,
     :created_by_id
   ]
   

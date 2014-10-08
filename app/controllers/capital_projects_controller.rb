@@ -15,17 +15,21 @@ class CapitalProjectsController < OrganizationAwareController
     
   def fire_workflow_event
     
-    # Get the event from the paramters
-    event_name = params[:event]
-    if @project.fire_events(event_name)
-      event = WorkflowEvent.new
-      event.creator = current_user
-      event.trackable = @project
-      event.event_type = event_name
-      event.save
-      notify_user(:notice, "Capital Project #{@project.project_number} is now #{@project.state.humanize}.")
+    # Check that this is a valid event name for the state machines
+    if @project.class.event_names.include? params[:event]
+      event_name = params[:event]
+      if @project.fire_state_event(event_name)
+        event = WorkflowEvent.new
+        event.creator = current_user
+        event.accountable = @project
+        event.event_type = event_name
+        event.save
+        notify_user(:notice, "Capital Project #{@project.project_number} is now #{@project.state.humanize}.")
+      else
+        notify_user(:alert, "Could not #{event_name.humanize} capital project #{@project.project_number}")
+      end
     else
-      notify_user(:alert, "Capital Project #{@project.project_number} could not be #{event_name}")
+      notify_user(:alert, "#{params[:event_name]} is not a valid event for a #{@project.class.name}")
     end
     
     redirect_to :back

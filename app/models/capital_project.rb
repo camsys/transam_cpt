@@ -61,7 +61,7 @@ class CapitalProject < ActiveRecord::Base
   has_many    :activity_line_items, :dependent => :destroy
 
   # Has 0 or more workflow events. Using a polymorphioc association.
-  has_many    :workflow_events, :as => :trackable, :dependent => :destroy
+  has_many    :workflow_events, :as => :accountable, :dependent => :destroy
   
   # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
   has_many    :documents,   :as => :documentable, :dependent => :destroy
@@ -143,9 +143,9 @@ class CapitalProject < ActiveRecord::Base
     # List of allowable events. Events transition a CP from one state to another
     #---------------------------------------------------------------------------
             
-    # reset the project to its initial state
-    event :reset do
-      transition all - :unsubmitted => :unsubmitted
+    # Retract the project from consideration
+    event :retract do
+      transition [:returned, :pending_approval, :conditionally_approved]=> :unsubmitted
     end
 
     # submit a CP for approval. This will place the CP in the program managers
@@ -166,7 +166,7 @@ class CapitalProject < ActiveRecord::Base
     # A program manager is returning a project for additional information or changes
     event :return do
       
-      transition :pending_approval => :returned
+      transition [:pending_approval, :conditionally_approved] => :returned
       
     end    
 
@@ -201,6 +201,15 @@ class CapitalProject < ActiveRecord::Base
     FORM_PARAMS
   end
   
+  # Return the list of allowable event names for this class
+  def self.event_names
+    a = []
+    state_machine.events.each do |e|
+      a << e.name.to_s
+    end
+    a    
+  end
+  # Returns the list of allowable states for this class
   def self.state_names
     a = []
     state_machine.states.each do |s|
@@ -213,6 +222,15 @@ class CapitalProject < ActiveRecord::Base
   # Instance Methods
   #
   #------------------------------------------------------------------------------
+  
+  # Get the allowable events for this state as strings
+  def allowable_events
+    a = []
+    self.state_events.each do |evt|
+      a << evt.to_s
+    end
+    a
+  end
   
   # The project can be updated if it has not been approved and/or funded
   def can_update?

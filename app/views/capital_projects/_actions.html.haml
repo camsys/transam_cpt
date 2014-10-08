@@ -14,10 +14,10 @@
         = link_to fire_workflow_event_capital_project_path(@project, :event => :submit) do
           %i.fa.fa-share.fa-fw
           = " Submit for review"
-    - if @project.can_reset?
+    - if @project.can_retract?
       %li.divider
       %li
-        = link_to fire_workflow_event_capital_project_path(@project, :event => :reset) do
+        = link_to fire_workflow_event_capital_project_path(@project, :event => :retract) do
           %i.fa.fa-reply.fa-fw
           = " Retract this project"
             
