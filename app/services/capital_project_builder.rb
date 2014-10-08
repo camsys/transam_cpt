@@ -136,6 +136,8 @@ class CapitalProjectBuilder
   # actually process an asset
   def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type)
     
+    Rails.logger.debug "Processing asset #{asset.object_key}, start_year = #{start_year}, last_year = #{last_year}"
+    
     # Remove the asset from any existing capital projects
     asset.activity_line_items.each do |ali|
       ali.assets.delete asset
@@ -143,6 +145,7 @@ class CapitalProjectBuilder
     
     # Can't build projects for assets that have been scheduled for disposition or already disposed
     if asset.disposition_date or asset.scheduled_disposition_year
+      Rails.logger.info "Asset #{asset.object_key} has been scheduled for disposition. Nothing to do."
       return
     end
     
@@ -167,6 +170,20 @@ class CapitalProjectBuilder
       end
       changed = true
     end
+    
+    # Default to replacing with new assets unless otherwise indicated
+    if asset.scheduled_replace_with_new.blank?
+      asset.scheduled_replace_with_new = true
+      changed = true
+    end
+    
+    # See if the asset has any scheduled replacement or rehabilitation costs, if not
+    # use the estimated costs
+    if asset.scheduled_replacement_cost.blank?
+      asset.scheduled_replacement_cost = asset.estimated_replacement_cost
+      changed = true      
+    end
+
     if changed
       asset.save
     end
@@ -293,7 +310,7 @@ class CapitalProjectBuilder
   # Creates a new capital project
   def create_capital_project(org, fiscal_year, team_category, title, capital_project_type)
 
-    puts "org = #{org}, fiscal_year = #{fiscal_year}, team_category = #{team_category}, title = #{title}, org = #{capital_project_type}"
+    puts "org = #{org}, fiscal_year = #{fiscal_year}, team_category = #{team_category}, title = #{title}, type = #{capital_project_type}"
     project = CapitalProject.new
     project.organization = org
     project.active = true
