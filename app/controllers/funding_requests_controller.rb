@@ -50,12 +50,11 @@ class FundingRequestsController < OrganizationAwareController
       values << @capital_project_type_id
     end
 
-    # See if we got a capital project status type
-    @capital_project_status_type_id = params[:capital_project_status_type_id]
-    unless @capital_project_status_type_id.blank?
-      @capital_project_status_type_id = @capital_project_status_type_id.to_i
-      conditions << 'capital_project_status_type_id = ?'
-      values << @capital_project_status_type_id
+    # See if we got a capital project state
+    @capital_project_state = params[:capital_project_state]
+    unless @capital_project_state.blank?
+      conditions << 'state = ?'
+      values << @capital_project_state
     end
 
     # Get the funding source filter if there is one
@@ -151,7 +150,6 @@ class FundingRequestsController < OrganizationAwareController
         end
         if @funding_request.activity_line_item.capital_project.funding_difference == 0
           capital_project = @funding_request.activity_line_item.capital_project
-          capital_project.capital_project_status_type = CapitalProjectStatusType.find_by_name('Programmed')
           capital_project.save
           notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")          
         end
@@ -200,7 +198,6 @@ class FundingRequestsController < OrganizationAwareController
     # Check to see if the capital project status needs to change after removing
     # the funding request
     if capital_project.funding_difference != 0
-      capital_project.capital_project_status_type = CapitalProjectStatusType.find_by_name('Unprogrammed')
       capital_project.save
     end
     

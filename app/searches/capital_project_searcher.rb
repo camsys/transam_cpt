@@ -10,7 +10,7 @@ class CapitalProjectSearcher < BaseSearcher
   # add any search params to this list
   attr_accessor :organization_id,
                 :capital_project_type,
-                :capital_project_status_type,
+                :capital_project_state,
                 :team_ali_code,
                 :asset_type,
                 :asset_subtype,
@@ -57,8 +57,8 @@ class CapitalProjectSearcher < BaseSearcher
     CapitalProject.where(capital_project_type_id: capital_project_type) unless capital_project_type.blank?
   end
 
-  def capital_project_status_type_conditions
-    CapitalProject.where(capital_project_status_type_id: capital_project_status_type) unless capital_project_status_type.blank?
+  def capital_project_state_conditions
+    CapitalProject.where(state: capital_project_state) unless capital_project_state.blank?
   end
 
   

@@ -18,12 +18,12 @@
         = " Capital Needs Lists"
       %ul.dropdown-menu
         %li
-          = link_to "All Capital Projects", capital_projects_path(:capital_project_status_type_id => 0)
+          = link_to "All Capital Projects", capital_projects_path(:capital_project_state => '')
         %li.divider
         %li
-          = link_to "Candidate Projects", capital_projects_path(:capital_project_status_type_id => 1)
+          = link_to "Candidate Projects", capital_projects_path(:capital_project_state => 'unsubmitted')
         %li
-          = link_to "Programmed Projects", capital_projects_path(:capital_project_status_type_id => 2)
+          = link_to "Programmed Projects", capital_projects_path(:capital_project_state => 'approved')
 
     %li.divider
     %li.text-left

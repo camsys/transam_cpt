@@ -298,7 +298,6 @@ class CapitalProjectBuilder
     project.organization = org
     project.active = true
     project.emergency = false
-    project.capital_project_status_type_id = 1
     project.fy_year = fiscal_year
     project.team_ali_code = team_category
     project.capital_project_type = capital_project_type
