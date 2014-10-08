@@ -30,7 +30,7 @@
             = f.input_field :fy_year, :class => "form-control", :collection => @searcher.fiscal_years
         .col-sm-6
         
-          = f.input :capital_project_state, :collection => CapitalProject.state_names.collect{|a| [a.humanize, a], :label => "Capital Project Status"
+          = f.input :capital_project_state, :collection => CapitalProject.state_names.collect{|a| [a.humanize, a]}, :label => "Capital Project Status"
           = f.input :capital_project_type, :collection => CapitalProjectType.all, :label => "Capital Project Type"
           = f.input :team_ali_code, label: "Team ALI Code", :collection => TeamAliCode.top_level_categories, :label_method => :full_name
           = f.input :funding_source, :collection => FundingSourceType.all
