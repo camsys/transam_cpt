@@ -8,7 +8,7 @@
   end
   
 .col-md-1
-  .panel{:class => "#{panel_type}"}
+  .panel{:class => "#{panel_type}", :data => {:action_path => capital_projects_path(:fiscal_year => year)}}
     .panel-body.plan-summary{:class => "#{panel_bg}", :style => 'padding: 5px 0 0 0;'}
       %p.text-center <strong>#{format_as_fiscal_year(year)}</strong>
       %p.text-center
