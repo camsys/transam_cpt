@@ -159,7 +159,7 @@ class SchedulerController < OrganizationAwareController
     # renderers
     assets = []
     # check to see if there is a filter on the organization
-    org = @org_id.blank? ? current_user.organization.id : @org_id
+    org = @org_id.blank? ? @organization.id : @org_id
     query = Asset.where('organization_id = ? AND disposition_date IS NULL AND (scheduled_replacement_year = ? OR scheduled_rehabilitation_year = ? OR scheduled_disposition_year = ?)', org, year, year, year)   
 
     # check to see if there is a filter on the asset subtype
