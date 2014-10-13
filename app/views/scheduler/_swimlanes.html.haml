@@ -1,0 +1,9 @@
+.row
+  .col-md-4
+    = render :partial => 'swimlane', :locals => {:year => @year_1, :alis => @year_1_alis}  
+  .col-md-4
+    = render :partial => 'swimlane', :locals => {:year => @year_2, :alis => @year_2_alis}  
+  .col-md-4
+    = render :partial => 'swimlane', :locals => {:year => @year_3, :alis => @year_3_alis}  
+
+= render 'index_scripts'

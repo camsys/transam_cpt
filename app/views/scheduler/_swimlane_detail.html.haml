@@ -1,0 +1,8 @@
+.panel.panel-primary
+  .panel-heading
+    %span.pull-right
+      = "#{ali.team_ali_code}"
+    = "#{ali}".upcase
+  .panel-body
+    - ali.assets.each do |asset|
+      = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}

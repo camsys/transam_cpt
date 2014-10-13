@@ -1,0 +1,58 @@
+.well.well-sm
+  .row
+    .col-md-3
+      %h3{:style => 'margin-top: -2.5px;'}
+        %span.label.label-default
+          = "#{asset.asset_tag}"
+    .col-md-7
+      %p.text-primary.text-left
+        - if asset.type_of? :vehicle
+          = "#{asset.vehicle_usage_codes.first}: #{asset.asset_subtype}".upcase
+        - else
+          = "#{asset.asset_subtype}".upcase
+    .col-md-2
+      %i.pull-right.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{asset.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => asset}}"}}
+      %i.pull-left.fa.text-primary.popup-details{:class => "#{get_swimlane_icon(asset, year)}"}
+  .row
+    .col-md-3
+      %h4.bg-default.text-left
+        = get_swimlane_activity_cost(asset, year)
+        
+    .col-md-7
+      %p.text-primary{:style => 'margin-bottom: 0px;'}
+        = "#{asset.manufacture_year} #{asset.description}"
+      %p.text-primary{:style => 'margin-bottom: 0px;'}
+        - if asset.type_of? :vehicle or asset.type_of? :support_vehicle
+          = "Condition: <strong>#{format_as_decimal(asset.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(asset.reported_mileage)}</strong>".html_safe
+        - else
+          = "Condition: #{format_as_decimal(asset.reported_condition_rating, 2)}"          
+    .col-md-2
+      %button.pull-right.btn.btn-default.btn-xs{:id => "#{asset.object_key}_#{year}_edit"}
+        %i.fa.fa-edit
+        
+  .row{:id => "#{asset.object_key}_#{year}_form_panel"}
+
+:javascript
+  
+  // Update the icons in the header based on collapsing the panels
+  $('##{asset.object_key}_#{year}_body').on('hide.bs.collapse', function () {
+    $('##{asset.object_key}_#{year}_edit').hide();
+    $('##{asset.object_key}_#{year}_form_panel').html("");
+  });
+  $('##{asset.object_key}_#{year}_body').on('show.bs.collapse', function () {
+    $('##{asset.object_key}_#{year}_edit').show();
+    $('##{asset.object_key}_#{year}_form_panel').html("");
+  });  
+  
+  // Install a click handler for the edit button
+  $('##{asset.object_key}_#{year}_edit').click(function() {
+    var var_key = '#{asset.object_key}';
+    var var_year = '#{year}';
+    var var_org_filter = '#{@org_id}';
+    var var_asset_filter = '#{@asset_subtype_id}';
+    var url = '/scheduler/loader.js?year=' + var_year + '&id=' + var_key + '&org_id=' + var_org_filter + '&asset_subtype_id=' + var_asset_filter;
+    transam.ajax_render_action(url, 'get');       
+    $('##{asset.object_key}_#{year}_form_panel').html("");
+  });
+    
+  

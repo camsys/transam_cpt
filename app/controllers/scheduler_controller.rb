@@ -38,6 +38,10 @@ class SchedulerController < OrganizationAwareController
     @year_1_assets = get_assets(@year_1)        
     @year_2_assets = get_assets(@year_2)        
     @year_3_assets = get_assets(@year_3)        
+
+    @year_1_alis = get_alis(@year_1)        
+    @year_2_alis = get_alis(@year_2)        
+    @year_3_alis = get_alis(@year_3)        
    
   end
   
@@ -153,6 +157,17 @@ class SchedulerController < OrganizationAwareController
     @row_pager_remote = true
      
   end
+  
+  def get_alis(year)
+    
+    # check to see if there is a filter on the organization
+    org = @org_id.blank? ? @organization.id : @org_id
+    projects = CapitalProject.where('organization_id = ? AND fy_year = ?', org, year)
+    
+    alis = ActivityLineItem.where(:capital_project_id => projects)
+    alis
+  end
+  
   def get_assets(year)
     
     # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
