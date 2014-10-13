@@ -22,10 +22,10 @@
                 = "Capital Needs Chart"
           .tab-content{:style => 'min-height: 0;'}
             .tab-pane.fade#chart
-              .col-md-12
+              .row
               .chart{:id => "chart_#{@report.id}"}
             .tab-pane.fade#summary
-              .col-md-12
+              .row
                 = render 'capital_plan_summary'
             
           .col-md-12                

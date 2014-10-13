@@ -2,7 +2,6 @@
   rep = CapitalPlanSummaryReport.new
   results = rep.get_data(@organization_list, {})
   
-.row
-  - results[:data].each do |row|
-    = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :num_remove => row[3], :cost => row[4]}
+- results[:data].each do |row|
+  = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :num_remove => row[3], :cost => row[4]}
     
