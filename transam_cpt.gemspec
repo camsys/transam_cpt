@@ -19,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", ">= 4.0.9"
   s.add_dependency "wicked"
   s.add_dependency 'state_machine'
+  s.add_dependency 'transam_transit'
   
 end
