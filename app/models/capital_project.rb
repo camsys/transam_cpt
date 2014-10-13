@@ -107,8 +107,15 @@ class CapitalProject < ActiveRecord::Base
     # initial state. All CPs are created in this state
     state :unsubmitted
     
-    # state used to signify it has been submitted and is pending approval 
-    state :pending_approval
+    # state used to signify it has been submitted and is pending review 
+    state :pending_review
+
+    # state used to signify it has been reviewed and accepted
+    state :accepted
+
+    # state used to signify that the CP has been returned by the program manager. PM
+    # has asked for additional information/changes etc.
+    state :returned
 
     # state used to signify that the CP has been conditionally by the program manager.
     # The project is waiting for statewide approval
@@ -116,10 +123,6 @@ class CapitalProject < ActiveRecord::Base
     
     # state used to signify that the CP has been approved by the program manager
     state :approved
-
-    # state used to signify that the CP has been returned by the program manager. PM
-    # has asked for additional information/changes etc.
-    state :returned
 
     # state used to indicate the the CP has been funded and moved into dotGrants/CCA
     state :funded
@@ -130,35 +133,42 @@ class CapitalProject < ActiveRecord::Base
             
     # Retract the project from consideration
     event :retract do
-      transition [:returned, :pending_approval, :conditionally_approved]=> :unsubmitted
+      transition [:returned, :pending_review, :accepted, :conditionally_approved] => :unsubmitted
     end
 
     # submit a CP for approval. This will place the CP in the program managers
     # queue. 
     event :submit do
       
-      transition [:unsubmitted, :returned] => :pending_approval
+      transition [:unsubmitted, :returned] => :pending_review
       
     end
+
+    # A program manager is accepting a project
+    event :accept do
+      
+      transition :pending_review => :accepted
+      
+    end    
 
     # A program manager is conditionally approving a project
     event :conditionally_approve do
       
-      transition :pending_approval => :conditionally_approved
+      transition :accepted => :conditionally_approved
       
     end    
 
     # A program manager is returning a project for additional information or changes
     event :return do
       
-      transition [:pending_approval, :conditionally_approved] => :returned
+      transition [:pending_review, :accepted, :conditionally_approved] => :returned
       
     end    
 
     # A program manager is approving a project
     event :approve do
       
-      transition [:pending_approval, :conditionally_approved] => :approved
+      transition [:accepted, :conditionally_approved] => :approved
       
     end    
 

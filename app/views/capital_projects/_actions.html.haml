@@ -28,6 +28,12 @@
             = link_to fire_workflow_event_capital_project_path(@project, :event => :conditionally_approve) do
               %i.fa.fa-thumbs-down.fa-fw
               = " Return this project for revisions"
+        - if @project.can_accept?  
+          %li.divider
+          %li
+            = link_to fire_workflow_event_capital_project_path(@project, :event => :accept) do
+              %i.fa.fa-thumbs-up.fa-fw
+              = " Accept this project"
         - if @project.can_conditionally_approve?  
           %li.divider
           %li
@@ -38,7 +44,7 @@
           %li.divider
           %li
             = link_to fire_workflow_event_capital_project_path(@project, :event => :approve) do
-              %i.fa.fa-thumbs-up.fa-fw
+              %i.fa.fa-circle-arrow-right.fa-fw
               = " Approve this project for funding"
         - if @project.can_fund?  
           %li.divider
