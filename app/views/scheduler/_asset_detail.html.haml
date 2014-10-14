@@ -4,21 +4,20 @@
       %h3{:style => 'margin-top: -2.5px;'}
         %span.label.label-default
           = "#{asset.asset_tag}"
-    .col-md-7
+    .col-md-8
       %p.text-primary.text-left
         - if asset.type_of? :vehicle
           = "#{asset.vehicle_usage_codes.first}: #{asset.asset_subtype}".upcase
         - else
           = "#{asset.asset_subtype}".upcase
-    .col-md-2
+    .col-md-1
       %i.pull-right.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{asset.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => asset}}"}}
-      %i.pull-left.fa.text-primary.popup-details{:class => "#{get_swimlane_icon(asset, year)}"}
   .row
     .col-md-3
       %h4.bg-default.text-left
         = get_swimlane_activity_cost(asset, year)
         
-    .col-md-7
+    .col-md-8
       %p.text-primary{:style => 'margin-bottom: 0px;'}
         = "#{asset.manufacture_year} #{asset.description}"
       %p.text-primary{:style => 'margin-bottom: 0px;'}
@@ -26,23 +25,13 @@
           = "Condition: <strong>#{format_as_decimal(asset.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(asset.reported_mileage)}</strong>".html_safe
         - else
           = "Condition: #{format_as_decimal(asset.reported_condition_rating, 2)}"          
-    .col-md-2
+    .col-md-1
       %button.pull-right.btn.btn-default.btn-xs{:id => "#{asset.object_key}_#{year}_edit"}
         %i.fa.fa-edit
         
   .row{:id => "#{asset.object_key}_#{year}_form_panel"}
 
 :javascript
-  
-  // Update the icons in the header based on collapsing the panels
-  $('##{asset.object_key}_#{year}_body').on('hide.bs.collapse', function () {
-    $('##{asset.object_key}_#{year}_edit').hide();
-    $('##{asset.object_key}_#{year}_form_panel').html("");
-  });
-  $('##{asset.object_key}_#{year}_body').on('show.bs.collapse', function () {
-    $('##{asset.object_key}_#{year}_edit').show();
-    $('##{asset.object_key}_#{year}_form_panel').html("");
-  });  
   
   // Install a click handler for the edit button
   $('##{asset.object_key}_#{year}_edit').click(function() {

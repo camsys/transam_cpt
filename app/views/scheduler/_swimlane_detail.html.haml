@@ -1,8 +1,22 @@
 .panel.panel-primary
-  .panel-heading
+  .panel-heading{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     %span.pull-right
-      = "#{ali.team_ali_code}"
-    = "#{ali}".upcase
-  .panel-body
-    - ali.assets.each do |asset|
-      = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}
+      = format_as_currency(ali.cost)
+    = "#{ali.team_ali_code} #{ali}".upcase
+  .panel-body.collapse.in{:id => "#{ali.object_key}_ali_body"}
+    - if ali.assets.empty?
+      %p There are no assets associated with this ALI
+    - else
+      - ali.assets.each do |asset|
+        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}
+  - if can? :update, ali
+    .panel-footer{:style => 'padding: 5px;'}
+      %form.form-horizontal{:role => 'form'}
+        .col-sm-4
+          %input{:type =>"text", :class => "form-control", :placeholder => 'New cost...'}
+
+      - if can? :delete, ali
+        = link_to "#", :title => "Remove this ALI?", :class => 'btn btn-xs btn-warning pull-right', :style => 'margin-top: 5px;margin-right: 5px;' do
+          %i.fa.fa-times-circle
+          = " Remove"
+      .clearfix  

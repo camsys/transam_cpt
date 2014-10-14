@@ -4,6 +4,6 @@
     %h3.panel-title
       %i.fa.fa-calendar
       = format_as_fiscal_year(year)
-  .panel-body{:id => "year_#{year}_list"}
+  .panel-body{:id => "year_#{year}_swimlane"}
     - alis.each do |a|
       = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year}

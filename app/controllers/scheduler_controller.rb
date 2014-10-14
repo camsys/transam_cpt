@@ -32,13 +32,8 @@ class SchedulerController < OrganizationAwareController
   # Returns the list of assets that are scheduled for replacement/rehabilitation in the given
   # fiscal years.
   def index
-    
-    # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
-    # renderers
-    @year_1_assets = get_assets(@year_1)        
-    @year_2_assets = get_assets(@year_2)        
-    @year_3_assets = get_assets(@year_3)        
 
+    # Get the ALIs for each year    
     @year_1_alis = get_alis(@year_1)        
     @year_2_alis = get_alis(@year_2)        
     @year_3_alis = get_alis(@year_3)        
@@ -109,11 +104,10 @@ class SchedulerController < OrganizationAwareController
     builder = CapitalProjectBuilder.new
     builder.update_asset_schedule(asset)
 
-    # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
-    # renderers
-    @year_1_assets = get_assets(@year_1)        
-    @year_2_assets = get_assets(@year_2)        
-    @year_3_assets = get_assets(@year_3)        
+    # Get the ALIs for each year    
+    @year_1_alis = get_alis(@year_1)        
+    @year_2_alis = get_alis(@year_2)        
+    @year_3_alis = get_alis(@year_3)        
     
   end
   
@@ -124,8 +118,6 @@ class SchedulerController < OrganizationAwareController
 
     @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
     
-    @asset_subtype_id = params[:asset_subtype_id].blank? ? nil : params[:asset_subtype_id].to_i
-
     # This is the first year that the user can plan for
     first_year = current_fiscal_year_year + 1
     # This is the last year of a 3 year plan
@@ -168,28 +160,6 @@ class SchedulerController < OrganizationAwareController
     alis
   end
   
-  def get_assets(year)
-    
-    # This could be a heterogenous list of assets so make sure that we get a collection of typed assets for the
-    # renderers
-    assets = []
-    # check to see if there is a filter on the organization
-    org = @org_id.blank? ? @organization.id : @org_id
-    query = Asset.where('organization_id = ? AND disposition_date IS NULL AND (scheduled_replacement_year = ? OR scheduled_rehabilitation_year = ? OR scheduled_disposition_year = ?)', org, year, year, year)   
-
-    # check to see if there is a filter on the asset subtype
-    unless @asset_subtype_id.blank?
-      query = query.where('asset_subtype_id = ?', @asset_subtype_id)
-    end
-    
-    query.each do |a|
-      assets << Asset.get_typed_asset(a)
-    end
-    
-    assets
-
-  end
-      
   private
   
 end
