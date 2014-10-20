@@ -192,10 +192,25 @@ class ActivityLineItemsController < OrganizationAwareController
   # DELETE /activity_line_items/1.json
   def destroy
     @activity_line_item.destroy
-    notify_user(:notice, "The ALI was successfully removed from project #{@project.project_number}.")
+    msg = "The ALI was successfully removed from project #{@project.project_number}."
+    project_ali_count = @project.activity_line_items.count
+    year = @project.fy_year
     respond_to do |format|
-      format.html { redirect_to capital_project_path(@project) }
-      format.json { head :no_content }
+      format.js {
+        notify_user(:notice, msg)        
+      }
+      format.html {
+        notify_user(:notice, msg)                
+        redirect_to capital_project_path(@project)
+      }
+      format.json {
+        render json: {
+          object_key: @activity_line_item.object_key,
+          new_ali_count: project_ali_count,
+          year: year,
+          message: {title: 'Notice', text: msg}
+        }
+      }
     end
   end
 

@@ -1,4 +1,4 @@
-.panel.panel-primary
+.panel.panel-primary{id: "#{ali.object_key}_ali_panel"}
   .panel-heading{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     %span.pull-right
       = format_as_currency(ali.cost)
@@ -16,7 +16,11 @@
           %input{:type =>"text", :class => "form-control", :placeholder => 'New cost...'}
 
       - if can? :delete, ali
-        = link_to "#", :title => "Remove this ALI?", :class => 'btn btn-xs btn-warning pull-right', :style => 'margin-top: 5px;margin-right: 5px;' do
+        = link_to capital_project_activity_line_item_path(ali.capital_project, ali, format: :json),
+          method: 'DELETE', remote: true, title: "Remove this activity line item.",
+          data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
+          action: 'remove_ali'},
+          :class => 'btn btn-xs btn-warning pull-right', :style => 'margin-top: 5px;margin-right: 5px;' do
           %i.fa.fa-times-circle
           = " Remove"
       .clearfix  
