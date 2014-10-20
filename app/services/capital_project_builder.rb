@@ -162,8 +162,10 @@ class CapitalProjectBuilder
       asset.in_service_date = asset.purchase_date
       changed = true
     end
+    
     if asset.scheduled_replacement_year.nil?
       if asset.policy_replacement_year < start_year
+        # Take care of backlogged assets
         asset.scheduled_replacement_year = start_year
       else
         asset.scheduled_replacement_year = asset.policy_replacement_year
