@@ -10,3 +10,6 @@ env:
 script:
 - bundle exec rake app:prepare_rspec
 - bundle exec $TEST_SUITE
+before_install:
+- openssl aes-256-cbc -K $encrypted_fb9618522ce6_key -iv $encrypted_fb9618522ce6_iv
+  -in schema.rb.enc -out spec/dummy/db/schema.rb -d
