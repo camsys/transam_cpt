@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+- 2.1.1
+branches:
+  only:
+  - master
+env:
+- TEST_SUITE=rspec
+- TEST_SUITE=cucumber
+script:
+- bundle exec rake app:prepare_rspec
+- bundle exec $TEST_SUITE
