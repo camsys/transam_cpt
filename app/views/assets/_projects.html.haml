@@ -1,0 +1,12 @@
+:ruby
+  capital_projects = []
+  @asset.activity_line_items.each do |ali|
+    capital_projects << ali.capital_project
+  end
+      
+.row
+  .col-md-12
+    - if @asset.activity_line_items.empty?
+      %p This asset is not associated with any capital projects
+    - else
+      = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => capital_projects}
