@@ -51,6 +51,7 @@ Rails.application.routes.draw do
       
       member do
         get 'edit_cost'
+        post 'set_cost'
         get 'edit_milestones'
         get 'add_asset'
         delete 'remove_asset'

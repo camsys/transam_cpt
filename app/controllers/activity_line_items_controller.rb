@@ -8,7 +8,8 @@ class ActivityLineItemsController < OrganizationAwareController
 
   before_action :get_capital_project
   before_filter :check_for_cancel,        :only => [:create, :update]
-  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset, :edit_cost, :edit_milestones]
+  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
+                                                    :edit_cost, :edit_milestones, :set_cost]
   before_filter :reformat_date_fields,    :only => [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
@@ -31,10 +32,10 @@ class ActivityLineItemsController < OrganizationAwareController
     # Get the list of candidate assets that could be added to the ALI
     matcher = AliAssetMatcherService.new
     @assets = matcher.match(@activity_line_item, {})
-    
+
     # Set up the cache list for the ALI
     cache_list(@project.activity_line_items, INDEX_KEY_LIST_VAR)
-    
+
     # get the @prev_record_path and @next_record_path view vars
     get_next_and_prev_object_keys(@activity_line_item, INDEX_KEY_LIST_VAR)
     @prev_record_path = @prev_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @prev_record_key)
@@ -125,7 +126,7 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Update Milestones"
-    
+
     # Check to see if any milestones have been added, if not we create them
     if @activity_line_item.milestones.empty?
       today = Date.today
@@ -134,7 +135,7 @@ class ActivityLineItemsController < OrganizationAwareController
         milestone_types = MilestoneType.vehicle_delivery_milestones
       else
         milestone_types = MilestoneType.other_project_milestones
-      end 
+      end
       milestone_types.all.each do |mt|
         @activity_line_item.milestones.create(:milestone_type_id => mt.id, :milestone_date => today)
       end
@@ -197,15 +198,17 @@ class ActivityLineItemsController < OrganizationAwareController
     year = @project.fy_year
     respond_to do |format|
       format.js {
-        notify_user(:notice, msg)        
+        notify_user(:notice, msg)
       }
       format.html {
-        notify_user(:notice, msg)                
+        notify_user(:notice, msg)
         redirect_to capital_project_path(@project)
       }
       format.json {
         render json: {
+          action: 'destroy_ali',
           object_key: @activity_line_item.object_key,
+          status: 'OK',
           new_ali_count: project_ali_count,
           year: year,
           message: {title: 'Notice', text: msg}
@@ -214,14 +217,44 @@ class ActivityLineItemsController < OrganizationAwareController
     end
   end
 
+  def set_cost
+    @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
+    if @activity_line_item.save
+      respond_to do |format|
+        format.json {
+          render json: {
+            action: 'set_cost',
+            object_key: @activity_line_item.object_key,
+            status: 'OK',
+            formatted_cost: view_context.format_as_currency(@activity_line_item.anticipated_cost),
+            message: {title: 'Notice', text: "Activity line item anticipated cost updated."}
+          }
+        }
+      end
+    else
+      Rails.logger.info @activity_line_item.errors.ai
+      respond_to do |format|
+        format.json {
+          render json: {
+            action: 'set_cost',
+            object_key: @activity_line_item.object_key,
+            status: 'FAILED',
+            # TODO error message?
+            message: {title: 'Error', text: "Activity line item anticipated cost not updated: #{@activity_line_item.errors.full_messages.join('; ')}.", type: 'error'}
+          }
+        }
+      end
+    end
+  end
+
   private
 
   def reformat_date_fields
-  
+
     unless params[:activity_line_item][:milestones_attributes].blank?
       #puts 'Before reformat'
       #puts params[:activity_line_item][:milestones_attributes].inspect
-      
+
       params[:activity_line_item][:milestones_attributes].each do |milestone_hash|
         #puts milestone_hash.inspect
         date_str = milestone_hash[1]['milestone_date']
@@ -234,7 +267,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
     end
   end
-  
+
   # Use callbacks to share common setup or constraints between actions.
   def set_activity_line_item
     @activity_line_item = ActivityLineItem.find_by_object_key(params[:id])
