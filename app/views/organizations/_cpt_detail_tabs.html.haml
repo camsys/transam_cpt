@@ -1,0 +1,7 @@
+%li
+  %a{:href => "#capital", :data =>{:toggle => 'tab'}}
+    = "Capital Needs"
+%li
+  %a{:href => "#projects", :data =>{:toggle => 'tab'}}
+    %span.badge.pull-right= @org.capital_projects.count
+    = "Capital Projects"
