@@ -29,3 +29,4 @@ Gemfile.lock
 /spec/dummy/tmp/*
 /spec/log/*
 /spec/tmp/*
+.DS_Store
