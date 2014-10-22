@@ -1,4 +1,5 @@
-.panel.panel-primary{id: "#{ali.object_key}_ali_panel"}
+.panel.panel-primary.swimlane-draggable{id: "#{ali.object_key}_ali_panel",
+  data: {object_type: 'ali', object_key: ali.object_key, fy: year}}
   .panel-heading{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)

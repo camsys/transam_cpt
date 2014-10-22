@@ -63,6 +63,12 @@ class SchedulerController < OrganizationAwareController
     proxy = SchedulerActionProxy.new(params[:scheduler_action_proxy])
     
     asset = Asset.find_by_object_key(proxy.object_key)
+
+    # TODO This is just a placeholder for now to prevent this blowing up when I hand it an ALI.
+    if asset.nil?
+      render json: {}
+      return
+    end
   
     if proxy.action_id == REPLACE_ACTION
       Rails.logger.debug "Updating asset #{asset.object_key}. New scheduled replacement year = #{proxy.fy_year.to_i}"
