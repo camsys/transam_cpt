@@ -1,7 +1,11 @@
 #encoding: utf-8
 
+#encoding: utf-8
+TransamTransit::Engine.load_seed
+
 # determine if we are using postgres or mysql
 is_mysql = (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'mysql2')
+is_sqlite =  (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'sqlite3')
 sys_user_id = 1
 
 puts "======= Processing TransAM CPT Lookup Tables  ======="
@@ -57,6 +61,8 @@ replace_tables.each do |table_name|
   puts "  Loading #{table_name}"
   if is_mysql
     ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table_name};")
+  elsif is_sqlite
+    ActiveRecord::Base.connection.execute("DELETE FROM #{table_name};")
   else
     ActiveRecord::Base.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY;")
   end
