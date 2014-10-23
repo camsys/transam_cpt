@@ -13,3 +13,11 @@
         = render 'capital_projects/capital_plan_summary'
     #swimlanes
       = render 'swimlanes'
+
+#processing-modal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h4.modal-title Processing...
+      .modal-body
+        = render partial: 'shared/running_process', locals: {message: "Updating SOGR projects. This process might take a while.", style: ''}

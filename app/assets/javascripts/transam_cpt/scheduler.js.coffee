@@ -36,6 +36,13 @@ $ ->
         $fg.addClass('has-error')
       $('#' + data.object_key + '_ali_panel .ali_cost').html(data.formatted_cost)
 
+  setupSwimlaneDragging()
+# end on document load
+
+# Support methods for swimlane component drag and drop
+
+
+setupSwimlaneDragging = () ->
   # Set up swimlane components drag & drop
 
   # $('.swimlane-container').sortable()
@@ -52,7 +59,7 @@ $ ->
     # activeClass: 'swimlane-droppable-active',
     # hoverClass: 'swimlane-droppable-hover',
     tolerance: 'pointer',
-    drop: (e, ui) ->
+    drop: (e, ui) ->  
       handleSwimlaneDrop(e, ui)
     activate: (e, ui) ->
       # console.log "ACTIVATE"
@@ -69,32 +76,29 @@ $ ->
     deactivate: ->
       $('.swimlane-heading').removeClass('swimlane-droppable-active')
       $('.swimlane-heading').removeClass('swimlane-droppable-hover')
-
   )
-# end on document load
-
-# Support methods for swimlane component drag and drop
 
 handleSwimlaneDrop = (e, ui) ->
-  # console.log "dropped!"
-  # console.log e
-  # console.log ui
   $target = $(e.target)
   fiscal_year = $target.data('fy')
-  # console.log fiscal_year
   $draggable = $(ui.draggable[0])
   object_type = $draggable.data('object-type')
   object_key = $draggable.data('object-key')
   moveObjectToFy(object_type, object_key, fiscal_year)
 
-moveObjectToFy = (object_type, key, year) ->
+moveObjectToFy = (object_type, key, year) ->  
+  url = if object_type=='asset' then '/scheduler/scheduler_action' else '/scheduler/scheduler_ali_action'
   $.ajax(
-    url: '/scheduler/action'
+    url: url
     method: 'POST'
     data: {scheduler_action_proxy: {action_id: 'move_'+object_type+'_to_fiscal_year', object_key: key, fy_year: year}}
+    beforeSend: () ->
+      $('#processing-modal').modal('show')
+    complete: () ->
+      $('#processing-modal').modal('hide')
     success: (data) ->
-      # console.log data
-      location.reload()
+      eval(data)
+      setupSwimlaneDragging()
     error: (data) ->
       # console.log "error"
       # console.log data
