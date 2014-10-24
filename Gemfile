@@ -1,5 +1,11 @@
 source "https://rubygems.org"
 
+# This comment is meaningful to rvm, please do not remove.
+#ruby-gemset=transam
+
+# lock to a specific version of Ruby
+ruby '2.1.1'
+
 # Declare your gem's dependencies in transam_cpt.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
 # development dependencies will be added by default to the :development group.
@@ -12,5 +18,5 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
-gem 'transam_core', :github => 'camsys/transam_core'
-gem 'transam_transit', :github => 'camsys/transam_transit'
+gem 'transam_core', :github => 'camsys/transam_core', branch: 'master'
+gem 'transam_transit', :github => 'camsys/transam_transit', branch: 'master'
