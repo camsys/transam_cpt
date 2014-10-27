@@ -4,3 +4,12 @@
 .swimlane-droppable-hover {
   border: 2px dashed #000099 !important;
 }
+
+.swimlane-container .ali-heading {
+  .button_to, .btn-group {
+    display: inline-block;
+  }
+  .panel-toggle {
+    cursor: pointer;
+  }
+}

@@ -4,26 +4,14 @@
   		
   		transam.make_same_height('.header-part');
 		
-  //   $( '<%= "#year_#{@year_1}_swimlane" %>').sortable({
-  //       connectWith: '.swimlane-container'
-  //     });    
-		// $( '<%= "#year_#{@year_1}_swimlane" %>').disableSelection();
-		// $( '<%= "#year_#{@year_2}_swimlane" %>').sortable({
-  //       connectWith: '.swimlane-container'
-  //     });
-		// $( '<%= "#year_#{@year_2}_swimlane" %>').disableSelection();
-		// $( '<%= "#year_#{@year_3}_swimlane" %>').sortable({
-  //       connectWith: '.swimlane-container'
-  //     });
-		// $( '<%= "#year_#{@year_3}_swimlane" %>').disableSelection();
-		
 		$('.popup-details').popover({
 			trigger: 'hover',
 			container: 'body',
 			placement: 'left',
 			animation: 'true',
 			html: 'true'    
-		});  
+		});
+    setupSwimlaneDragging();  
 	});
                  
 </script>

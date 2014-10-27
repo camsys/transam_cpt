@@ -1,6 +1,7 @@
 class SchedulerController < OrganizationAwareController
 
-  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_action, :scheduler_ali_action]
+  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_action, :scheduler_ali_action,
+    :edit_asset_in_modal]
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Scheduler", :scheduler_index_path
@@ -57,6 +58,32 @@ class SchedulerController < OrganizationAwareController
 
   end
 
+  # Render the partial for the asset edit modal.
+  def edit_asset_in_modal
+    # TODO refactor with code in #loader, above.
+    # #loader can possibly go away
+    @asset = Asset.find_by_object_key(params[:id])
+    @current_year = params[:year].to_i
+
+    @actions = ACTIONS
+
+    @fiscal_years = []
+    (@year_1..@year_1 + 3).each do |yr|
+      @fiscal_years << [fiscal_year(yr), yr]
+    end
+    @proxy = SchedulerActionProxy.new
+    @proxy.set_defaults(@asset)
+
+    render partial: 'edit_asset_in_modal'
+  end
+
+  # Render the partial for the update cost modal.
+  def update_cost_modal
+    @capital_project = CapitalProject.where(object_key: params[:capital_project]).first
+    @ali = ActivityLineItem.where(object_key: params[:ali]).first
+    render partial: 'update_cost_modal'
+  end
+
   # Process a scheduler action. These are generally ajaxed
   def scheduler_action
 
@@ -64,7 +91,7 @@ class SchedulerController < OrganizationAwareController
 
     asset = Asset.find_by_object_key(proxy.object_key)
 
-    # TODO This is just a placeholder for now to prevent this blowing up when I hand it an ALI.
+    # TODO DWH This is just a placeholder for now to prevent this blowing up when I hand it an ALI.  Will be completed.
     if asset.nil?
       render json: {}
       return
