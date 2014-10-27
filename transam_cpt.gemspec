@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "wicked"
   s.add_dependency 'state_machine'
   s.add_dependency 'transam_transit'
+  s.add_dependency 'transam_spatial'
 
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "factory_girl_rails"
