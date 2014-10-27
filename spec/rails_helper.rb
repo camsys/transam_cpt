@@ -19,4 +19,14 @@ ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
+  DatabaseCleaner.strategy = :truncation, {:only => %w[assets asset_events organizations]}
+  config.before(:suite) do
+    begin
+      puts "config.before :suite"
+      DatabaseCleaner.start
+      #FactoryGirl.lint
+    ensure
+      DatabaseCleaner.clean
+    end
+  end
 end
