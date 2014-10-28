@@ -3,4 +3,7 @@ Rails.configuration.to_prepare do
   TransitAsset.class_eval do
     include TransamCpt::TransamPlannable
   end
+  TransitAgency.class_eval do
+    include TransamCpt::TransamPlanningOrganization
+  end
 end
