@@ -1,3 +1,8 @@
+.row
+  .chart{:id => "chart_#{@report.id}"}
+
+.row
+  .col
 %table.table
   %thead
     %tr
@@ -6,15 +11,20 @@
           %th.left= cell
         - else
           %th.center= cell
-
+      %th
+        
   %tbody      
     - @budgets.each do |row|
-      %tr
-        - row.each_with_index do |cell, idx|
-          - if idx == 0
-            %td.left= cell
-          - else
-            %td.right= format_as_currency(cell)
+      = form_tag set_budgets_path do
+        %tr
+          - row.each_with_index do |obj, idx|
+            - if idx == 0
+              = hidden_field_tag 'funding_source_id', obj.object_key
+              %td.left= obj
+            - else
+              %td.right
+                = number_field_tag 'amount', obj, :class=> 'form-control', :style => 'text-align:right;'
+          %td= submit_tag "Update", :class => 'btn btn-xs btn-success'
   %tfoot
     %tr
       - @totals.each_with_index do |cell, idx|
@@ -22,3 +32,5 @@
           %th.left= cell
         - else
           %th.right= format_as_currency(cell)
+
+= render 'index_scripts'

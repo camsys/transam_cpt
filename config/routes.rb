@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
     
   # Budget Forcast
-  resources :budgets,   :only => [:index]
+  resources :budgets,   :only => [:index] do
+    collection do
+      post  'set'
+    end
+  end
     
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do

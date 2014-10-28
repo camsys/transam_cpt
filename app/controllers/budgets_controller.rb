@@ -40,5 +40,15 @@ class BudgetsController < OrganizationAwareController
       end
     end
     
+    # generate the budget rollup report
+    @report = Report.find_by_class_name('BudgetRollup')
+    report_instance = @report.class_name.constantize.new
+    @data = report_instance.get_data(@organization, {})
+         
   end    
+  
+  def update_budget
+    
+  end
+  
 end
