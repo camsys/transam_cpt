@@ -1,30 +1,33 @@
 .panel.panel-primary.swimlane-draggable{id: "#{ali.object_key}_ali_panel",
   data: {object_type: 'ali', object_key: ali.object_key, fy: year}}
-  .panel-heading{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
+  .panel-heading.ali-heading
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)
+    %i.fa.fa-lg.fa-caret-right.fa-rotate-90.panel-toggle{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     = "#{ali.team_ali_code} #{ali}".upcase
+
+    - if can? :update, ali
+      .btn-group
+        %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+          %i.fa.fa-edit
+          %span.caret
+        %ul.dropdown-menu{:role => "menu"}
+          %li
+            = link_to '#', data: {toggle: 'modal', target: '#ali-update-cost-modal', capital_project: ali.capital_project.object_key, ali: ali.object_key}  do
+              %i.fa.fa-dollar
+              Update anticipated cost
+          - if can? :delete, ali
+            %li
+              = link_to capital_project_activity_line_item_path(ali.capital_project, ali, format: :json),
+                method: 'DELETE', remote: true, title: "Remove this activity line item.",
+                data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
+                action: 'remove_ali', attach: '#confirmation-modal'} do
+                %i.fa.fa-times-circle
+                Remove
+
   .panel-body.collapse.in{:id => "#{ali.object_key}_ali_body"}
     - if ali.assets.empty?
       %p There are no assets associated with this ALI
     - else
       - ali.assets.each do |asset|
         = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}
-  - if can? :update, ali
-    .panel-footer{:style => 'padding: 5px;'}
-      / %form.form-horizontal{:role => 'form'}
-      /   .col-sm-4
-      /     %input{:type =>"text", :class => "form-control", :placeholder => 'New cost...'}
-      .col-sm-4
-        = simple_form_for :activity_line_item, url: set_cost_capital_project_activity_line_item_path(ali.capital_project, ali, format: :json), remote: true do |f|
-          = f.input :anticipated_cost, placeholder: 'New cost...', label: false
-
-      - if can? :delete, ali
-        = link_to capital_project_activity_line_item_path(ali.capital_project, ali, format: :json),
-          method: 'DELETE', remote: true, title: "Remove this activity line item.",
-          data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
-          action: 'remove_ali'},
-          :class => 'btn btn-xs btn-warning pull-right', :style => 'margin-top: 5px;margin-right: 5px;' do
-          %i.fa.fa-times-circle
-          = " Remove"
-      .clearfix  

@@ -9,6 +9,8 @@ Rails.application.routes.draw do
       post  'scheduler_action'
       post  'scheduler_ali_action'
       get   'loader'
+      post  'edit_asset_in_modal'
+      post  'update_cost_modal'
     end
   end
   

@@ -1,12 +1,22 @@
 $ ->
 
-  # Set up handlers for swimlane AJAX methods
+  # Set up handlers for swimlane AJAX methods.
 
+  # This handles the destroy ALI and update cost responses, as well as
+  # dispatching for the asset edit dialog.
   $('#schedule_view').on 'ajax:success', (event, xhr, options, data) ->
-    # I don't understand why the data isn't already parsed to JSON
+
+    # check for the asset edit dialog first
+    t = $(event.target)
+    if t.is('form') && t.attr('action')=='/scheduler/scheduler_action'
+      handleSchedulerAction(event, xhr, options, data)
+      return
+
+    # (I don't understand why the data isn't already parsed to JSON)
     data = data.responseJSON
 
     if data.action=='destroy_ali'
+      # close the modal, show popup message, update the ALI count in the header
       $('#confirm_dialog_modal').modal('hide')
       window.transam.show_popup_message(
         data.message.title,
@@ -26,6 +36,8 @@ $ ->
       $('#year_' + data.year + '_swimlane_badge').html(data.new_ali_count)
 
     else if data.action=='set_cost'
+      # close the modal, show popup message. Handle error.
+      $('#ali-update-cost-modal').modal('hide')
       window.transam.show_popup_message(
         data.message.title,
         data.message.text,
@@ -36,16 +48,49 @@ $ ->
         $fg.addClass('has-error')
       $('#' + data.object_key + '_ali_panel .ali_cost').html(data.formatted_cost)
 
+  # Other handlers:
+
+  # rotate caret icon on ALI header when it is shown/collapsed
+  $('.swimlane-draggable .panel-body').on 'show.bs.collapse', (e) ->
+    toggle_ali(e, 'show')
+  $('.swimlane-draggable .panel-body').on 'hide.bs.collapse', (e) ->
+    toggle_ali(e, 'hide')
+
+  # load the contents for the asset-editing modal when it is shown
+  $('#asset-edit-modal').on 'show.bs.modal', (e) ->
+    $('#asset-edit-modal').load(
+      '/scheduler/edit_asset_in_modal',
+      {'id': $(e.relatedTarget).data('id'), 'year': $(e.relatedTarget).data('year')}
+    )
+    
+  # load the contents for the update cost modal when it is shown
+  $('#ali-update-cost-modal').on 'show.bs.modal', (e) ->
+    $('#ali-update-cost-modal').load(
+      '/scheduler/update_cost_modal',
+      {'capital_project': $(e.relatedTarget).data('capital-project'), 'ali': $(e.relatedTarget).data('ali')}
+    )
+
   setupSwimlaneDragging()
+
+#######################
 # end on document load
+#######################
 
 # Support methods for swimlane component drag and drop
 
+# rotate the caret when ALI is collapsed/shown
+toggle_ali = (e, state) ->
+  s = "[data-target='#" + e.target.id + "']"
+  t = $('.ali-heading').find(s)
+  if state=='hide'
+    t.removeClass('fa-rotate-90')
+  else
+    t.addClass('fa-rotate-90')
 
-setupSwimlaneDragging = () ->
-  # Set up swimlane components drag & drop
 
-  # $('.swimlane-container').sortable()
+# Set up swimlane components drag & drop
+# Note we make this a global function so that index_scripts.html.erb can refer to it as well.
+window.setupSwimlaneDragging = () ->
   $('.swimlane-container').disableSelection()
   $('.swimlane-draggable').draggable({
     cursor: "move",
@@ -56,19 +101,15 @@ setupSwimlaneDragging = () ->
   })
   $('.swimlane-heading').droppable(
     accept: '.swimlane-draggable',
-    # activeClass: 'swimlane-droppable-active',
-    # hoverClass: 'swimlane-droppable-hover',
     tolerance: 'pointer',
     drop: (e, ui) ->  
       handleSwimlaneDrop(e, ui)
     activate: (e, ui) ->
-      # console.log "ACTIVATE"
       droppable_fiscal_year = $(e.target).data('fy')
       draggable_fiscal_year = $(ui.draggable).data('fy')
       if droppable_fiscal_year != draggable_fiscal_year
         $(e.target).addClass('swimlane-droppable-active')
     over: (e, ui) ->
-      # console.log "OVER"
       droppable_fiscal_year = $(e.target).data('fy')
       draggable_fiscal_year = $(ui.draggable).data('fy')
       if droppable_fiscal_year != draggable_fiscal_year
@@ -78,6 +119,7 @@ setupSwimlaneDragging = () ->
       $('.swimlane-heading').removeClass('swimlane-droppable-hover')
   )
 
+# When an item is dropped on a swimlane header, dispatch action
 handleSwimlaneDrop = (e, ui) ->
   $target = $(e.target)
   fiscal_year = $target.data('fy')
@@ -86,6 +128,7 @@ handleSwimlaneDrop = (e, ui) ->
   object_key = $draggable.data('object-key')
   moveObjectToFy(object_type, object_key, fiscal_year)
 
+# Move either an ALI or asset to another year.
 moveObjectToFy = (object_type, key, year) ->  
   url = if object_type=='asset' then '/scheduler/scheduler_action' else '/scheduler/scheduler_ali_action'
   $.ajax(
@@ -104,3 +147,8 @@ moveObjectToFy = (object_type, key, year) ->
       # console.log data
   )
 
+# We just need this so we can close the modal. Otherwise this is like rails UJS data-remote=true
+handleSchedulerAction = (event, xhr, options, data) ->
+  $('#asset-edit-modal').modal('hide')
+  eval(xhr)
+  
