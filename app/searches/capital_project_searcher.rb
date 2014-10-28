@@ -5,7 +5,7 @@ class CapitalProjectSearcher < BaseSearcher
 
   # Include the fiscal year mixin
   include FiscalYear
-  include NumericSanitizers
+  include TransamNumericSanitizers
 
   # add any search params to this list
   attr_accessor :organization_id,

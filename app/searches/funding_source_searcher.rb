@@ -5,7 +5,7 @@ class FundingSourceSearcher < BaseSearcher
 
   # Include the fiscal year mixin
   include FiscalYear
-  include NumericSanitizers
+  include TransamNumericSanitizers
 
   # add any search params to this list
   attr_accessor :funding_source_type_id,
