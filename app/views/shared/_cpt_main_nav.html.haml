@@ -1,11 +1,17 @@
 %li.nav-item.dropdown{:class => get_nav_link_class(['capital_projects', 'build', 'activity_line_items', 'scheduler'])}
-  = link_to capital_projects_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
+  = link_to "#", :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
     %i.fa.fa-road.fa-2x
     %br
     Planning
     %b.caret
   %ul.dropdown-menu
 
+    %li
+      = link_to budgets_path do
+        %i.fa.fa-line-chart.fa-fw
+        = " Budget Forecast"
+
+    %li.divider
     %li
       = link_to scheduler_index_path do
         %i.fa.fa-refresh.fa-fw
@@ -41,62 +47,3 @@
         = link_to builder_capital_projects_path do
           %i.fa.fa-cogs.fa-fw
           = " Build/Update SOGR Projects"
-
-%li.nav-item.dropdown{:class => get_nav_link_class(['funding_sources', 'funding_requests', 'funding_line_items'])}
-  = link_to funding_sources_path, :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
-    %i.fa.fa-bank.fa-2x
-    %br
-    = " Funding"
-    %b.caret
-  %ul.dropdown-menu
-    - if current_user.has_role? :manager
-      %li.text-left.dropdown-submenu
-        = link_to funding_sources_path do
-          %i.fa.fa-bank.fa-fw
-          = " Funding Sources"
-        %ul.dropdown-menu
-          - FundingSourceType.all.each do |x|
-            %li.text-left.dropdown-submenu
-              = link_to x.name, funding_sources_path(:funding_source_type_id => x.id)
-              %ul.dropdown-menu
-                - FundingSource.where('funding_source_type_id = ?', x.id).each do |s|
-                  %li
-                    = link_to s.name, funding_source_path(s)
-          %li.divider
-          %li.text-left
-            = link_to new_search_path(:search_type => SearchesController::FUNDING_SOURCE_SEARCH_TYPE) do
-              %i.fa.fa-search.fa-fw
-              = " Search Funding Sources"
-      %li.divider
-
-    %li.text-left.dropdown-submenu
-      = link_to funding_line_items_path do
-        %i.fa.fa-gavel.fa-fw
-        = " Appropriations"
-      %ul.dropdown-menu
-        %li
-          = link_to funding_line_items_path(:funding_source_type_id => 1, :discretionary_type_id => 0) do
-            %i.fa.fa-gavel.fa-fw
-            = " Federal Non-Discretionary"
-        %li
-          = link_to funding_line_items_path(:funding_source_type_id => 2, :discretionary_type_id => 0) do
-            %i.fa.fa-gavel.fa-fw
-            = " State Non-Discretionary"
-        %li.divider
-        %li
-          = link_to funding_line_items_path(:funding_source_type_id => 1) do
-            %i.fa.fa-gavel.fa-fw
-            = " All Federal"
-          = link_to funding_line_items_path(:funding_source_type_id => 2) do
-            %i.fa.fa-gavel.fa-fw
-            = " All State"
-        %li.divider
-        %li.text-left
-          = link_to new_search_path(:search_type => SearchesController::FUNDING_LINE_ITEM_SEARCH_TYPE) do
-            %i.fa.fa-search.fa-fw
-            = " Search Appropriations"
-    %li.divider
-    %li.text-left
-      = link_to funding_requests_path do
-        %i.fa.fa-usd.fa-fw
-        = " Funding Requests"
