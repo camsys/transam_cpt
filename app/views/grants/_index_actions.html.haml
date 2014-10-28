@@ -4,11 +4,11 @@
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
     %li
-      = link_to funding_line_items_path(:org_id => @org_filter, :funding_source_id => @funding_source_id, :fiscal_year => @fiscal_year, :funding_source_type_id => @funding_source_type_id, :discretionary_type_id => @discretionary_type_id, :format => 'xls') do
+      = link_to grants_path(:org_id => @org_filter, :funding_source_id => @funding_source_id, :fiscal_year => @fiscal_year, :funding_source_type_id => @funding_source_type_id, :discretionary_type_id => @discretionary_type_id, :format => 'xls') do
         %i.fa.fa-fw.fa-file-excel-o
         = " Export list to Excel"
 
-= form_tag funding_line_items_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+= form_tag grants_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   - if @organization_list.count > 1
     .form-group
       = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any organization...")

@@ -1,11 +1,10 @@
 .row
-  = simple_form_for(@funding_line_item,
+  = simple_form_for(@grant,
     :html => {:class => 'form-horizontal' },
     :wrapper => :horizontal_form,
     :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
 
     = f.input :funding_source_id, :as => :hidden
-    = f.input :funding_line_item_type_id, :as => :hidden
     
     = f.association :funding_source, :label => 'Fund', :disabled => true
     = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal Year'
