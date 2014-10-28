@@ -1,19 +1,8 @@
 Rails.application.routes.draw do
-  
-  resources :organizations, :controller => 'cpt_organizations' do
-  end
-  
-  resources :funding_sources do
-    collection do
-        get 'details'      
-    end
-  end
-  
-  resources :funding_line_items do
-    resources :comments
-    resources :documents
-  end
-  
+    
+  # Budget Forcast
+  resources :budgets,   :only => [:index]
+    
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
     collection do

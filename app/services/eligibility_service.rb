@@ -14,6 +14,52 @@
 #------------------------------------------------------------------------------
 class EligibilityService
     
+  def evaluate_organization_funding_sources(org)
+
+    organization = Organization.get_typed_organization(org)
+    if organization.nil?
+      Rails.logger.info "Organization cannot be null."
+      return a
+    end
+
+    Rails.logger.info "Evaluating funding sources for org #{org.short_name}."
+
+    # Start to set up the query.
+    conditions  = []
+    values      = []
+                
+    # If federal check for state administered federal funds
+    conditions << 'state_administered_federal_fund = ?'
+    values << 1            
+    # Check for rural compatibility
+    if organization.service_type_rural?
+      conditions << 'rural_providers = ?'
+      values << 1      
+    end
+    # Check for urban compatibility
+    if organization.service_type_urban?
+      conditions << 'urban_providers = ?'
+      values << 1      
+    end
+    # Check for shared ride
+    if organization.service_type_shared_ride?
+      conditions << 'shared_ride_providers = ?'
+      values << 1      
+    end
+    # Check for ICB
+    if organization.service_type_intercity_bus?
+      conditions << 'inter_city_bus_providers = ?'
+      values << 1      
+    end
+    # Check for ICW
+    if organization.service_type_intercity_rail?
+      conditions << 'inter_city_rail_providers = ?'
+      values << 1      
+    end
+    
+    FundingSource.where(conditions.join(' OR '), *values)
+    
+  end  
   #------------------------------------------------------------------------------
   #
   # Evaluate
@@ -51,7 +97,7 @@ class EligibilityService
     state = options[:state].blank? ? false : options[:state]
     Rails.logger.debug "Options: federal #{federal}, state #{state}."
     
-     # Start to set up the query. Start by fetching a list of matching funds
+    # Start to set up the query. Start by fetching a list of matching funds
     conditions  = []
     values      = []
     

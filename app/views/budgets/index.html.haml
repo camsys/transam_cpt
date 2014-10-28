@@ -1,0 +1,24 @@
+%table.table
+  %thead
+    %tr
+      - @columns.each_with_index do |cell, idx|
+        - if idx == 0
+          %th.left= cell
+        - else
+          %th.center= cell
+
+  %tbody      
+    - @budgets.each do |row|
+      %tr
+        - row.each_with_index do |cell, idx|
+          - if idx == 0
+            %td.left= cell
+          - else
+            %td.right= format_as_currency(cell)
+  %tfoot
+    %tr
+      - @totals.each_with_index do |cell, idx|
+        - if idx == 0
+          %th.left= cell
+        - else
+          %th.right= format_as_currency(cell)
