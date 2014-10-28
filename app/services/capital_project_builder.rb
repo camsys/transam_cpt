@@ -49,7 +49,7 @@ class CapitalProjectBuilder
   end
 
   # Update an activity line item and all of its assets to a new planning year
-  def self.move_ali_to_planning_year(activity_line_item_id, fy_year)
+  def move_ali_to_planning_year(activity_line_item_id, fy_year)
   end
 
   #------------------------------------------------------------------------------

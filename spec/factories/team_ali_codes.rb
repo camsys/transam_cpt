@@ -1,7 +1,8 @@
 FactoryGirl.define do
 
   factory :team_ali_code do
-  	name 'team ali code 1'
+    name 'Team ALI code 1'
+    code '11.12.XX'
   end
 
 end
