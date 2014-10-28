@@ -1,0 +1,6 @@
+- if can? :update, BudgetAmount
+  %li
+    = link_to budgets_path(@org) do
+      %i.fa.fa-usd.fa-fw
+      = " Update the budget"
+      
