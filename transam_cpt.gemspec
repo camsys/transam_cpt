@@ -28,6 +28,13 @@ Gem::Specification.new do |s|
   s.add_development_dependency "database_cleaner"  
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "cucumber-rails"
+  s.add_development_dependency 'thor'
+  s.add_development_dependency 'guard'
+  s.add_development_dependency 'guard-bundler'
+  s.add_development_dependency 'guard-cucumber'
+  s.add_development_dependency 'guard-rails'
+  s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'growl'
+  s.add_development_dependency 'awesome_print'
   
 end
