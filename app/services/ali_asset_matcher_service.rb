@@ -51,11 +51,6 @@ class AliAssetMatcherService
       Rails.logger.info "ALI is not associated with an organization."
       return a
     end
-
-    unless organization.type_of? :grantee
-      Rails.logger.info "ALI must be owned by a Grantee."
-      return a      
-    end    
     
     Rails.logger.info "Evaluating assets for ALI #{ali}."
     
