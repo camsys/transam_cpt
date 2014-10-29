@@ -1,15 +1,15 @@
 .row
   .col-md-12{:style => 'height:180px;overflow-y:auto;'}
-    - if @funding_line_item.documents.empty?
-      %p There are no documents for this appropriation.
+    - if @grant.documents.empty?
+      %p There are no documents for this grant.
     - else
-      = render :partial => 'shared/documents', :locals => {:documents => @funding_line_item.documents}
+      = render :partial => 'shared/documents', :locals => {:documents => @grant.documents}
 
 .row
   .col-md-12
     %fieldset
       %legend Add Document
-      = simple_form_for([@funding_line_item, Document.new],
+      = simple_form_for([@grant, Document.new],
           :html => {:multipart => true, :class => 'form-vertical' },
           :wrapper => :vertical_form,
           :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|

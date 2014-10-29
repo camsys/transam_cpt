@@ -97,7 +97,7 @@ class GrantsController < OrganizationAwareController
     
     add_breadcrumb @grant.funding_source.funding_source_type, funding_sources_path(:funding_source_type_id => @grant.funding_source.funding_source_type)
     add_breadcrumb @grant.funding_source, funding_source_path(@grant.funding_source)
-    add_breadcrumb @grant.name, funding_line_item_path(@grant)
+    add_breadcrumb @grant.name, grant_path(@grant)
     
     # get the @prev_record_path and @next_record_path view vars
     get_next_and_prev_object_keys(@grant, INDEX_KEY_LIST_VAR)

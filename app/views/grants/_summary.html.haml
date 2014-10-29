@@ -1,18 +1,5 @@
 .panel-body    
   = format_field("Fund", @grant.funding_source)
   = format_field("Fiscal Year", @grant.fiscal_year)
-  = format_field("Active", format_as_boolean(@grant.active))
-  = format_field("Appropriation Amount", format_as_currency(@grant.amount))
+  = format_field(" Amount", format_as_currency(@grant.amount))
     
-  %fieldset
-    %legend.panel-legend
-    = format_field("Spent", format_as_currency(@grant.spent))
-    = format_field("Committed", format_as_currency(@grant.committed))
-    = format_field("Balance", format_as_currency(@grant.balance))
-
-  - if @grant.federal?
-    %fieldset
-      %legend.panel-legend
-      = format_field("Operating Assistance", format_as_currency(@grant.operating_funds))
-      = format_field("Committed", format_as_currency(@grant.committed))
-      = format_field("Remaining", format_as_currency(@grant.available))
