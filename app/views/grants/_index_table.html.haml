@@ -4,62 +4,34 @@
       %th.left Agency
       %th.left Fund
       %th.center FY
-      %th.left Project Number
-      %th.center Awarded
-      %th.center Active
+      %th.left Grant Number
 
-      %th.center Type
       %th.right Amount
-      %th.right Pcnt Op.
-      %th.right Amount Op.
-      %th.right Spent
-      %th.right Committed
-      %th.right Balance
       
       %th.center
 
   %tbody
     - total = 0
-    - operating = 0
-    - spent = 0
-    - committed = 0
-    - balance = 0
 
     - @grants.each do |f|
       - total += f.amount
-      - operating += f.operating_funds
-      - spent += f.spent
-      - committed += f.committed
-      - balance += f.balance
 
-      %tr.popup-details{:data => {:action_path => funding_line_item_path(f)}}
+      %tr.popup-details{:data => {:action_path => grant_path(f)}}
         %td= f.organization
         %td= f.funding_source
-        %td.center= f.fiscal_year
+        %td.center= format_as_fiscal_year(f.fy_year)
         %td.left= f.name
-        %td.center= format_as_boolean(f.awarded)
-        %td.center= format_as_boolean(f.active)
         
-        %td.center= f.funding_line_item_type.code
         %td.right= format_as_currency(f.amount)
-        %td.right= format_as_percentage(f.pcnt_operating_assistance)
-        %td.right= format_as_currency(f.operating_funds)
-        %td.right= format_as_currency(f.spent)
-        %td.right= format_as_currency(f.committed)
-        %td.right= format_as_currency(f.balance)
                
         %td.center
-          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.project_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
+          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{f.grant_number}: Funding Requests", :content => "#{raw render :partial => 'funding_requests/popup_table', :locals => {:funding_line_item => f, :popup => false}}"}}
 
   %tfoot
     %tr
-      %td{:colspan => 7}
+      %td{:colspan => 4}
       %td.right= format_as_currency(total)
       %td.right
-      %td.right= format_as_currency(operating)
-      %td.right= format_as_currency(spent)
-      %td.right= format_as_currency(committed)
-      %td.right= format_as_currency(balance)
 
 = render 'shared/datatable_javascript'
 
