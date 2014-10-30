@@ -56,7 +56,7 @@ module TransamCpt
     #------------------------------------------------------------------------------
   
     # Returns an array of amounts for the selected funding source over the planning
-    # period
+    # period. If there is no budget set the array contains a 0
     def budget(funding_source)
       
       if funding_source.nil?
