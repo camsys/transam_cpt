@@ -1,35 +1,38 @@
-.well.well-sm.swimlane-draggable{data: {object_type: 'asset', object_key: asset.object_key, fy: year}}
+:ruby
+  ast = Asset.get_typed_asset(asset)
+  
+.well.well-sm.swimlane-draggable{data: {:object_type => 'asset', :object_key => ast.object_key, :fy => year}}
   .row
     .col-md-3
       %h3{:style => 'margin-top: -2.5px;'}
         %span.label.label-default
-          = "#{asset.asset_tag}"
+          = "#{ast.asset_tag}"
     .col-md-8
       %p.text-primary.text-left
-        - if asset.type_of? :vehicle
-          = "#{asset.vehicle_usage_codes.first}: #{asset.asset_subtype}".upcase
+        - if ast.type_of? :vehicle
+          = "#{ast.vehicle_usage_codes.first}: #{ast.asset_subtype}".upcase
         - else
-          = "#{asset.asset_subtype}".upcase
+          = "#{ast.asset_subtype}".upcase
     .col-md-1
-      %i.pull-right.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{asset.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => asset}}"}}
+      %i.pull-right.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{ast.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => ast}}"}}
   .row
     .col-md-3
       %h4.bg-default.text-left
-        = get_swimlane_activity_cost(asset, year)
+        = get_swimlane_activity_cost(ast, year)
         
     .col-md-8
       %p.text-primary{:style => 'margin-bottom: 0px;'}
-        = "#{asset.manufacture_year} #{asset.description}"
+        = "#{ast.manufacture_year} #{ast.description}"
       %p.text-primary{:style => 'margin-bottom: 0px;'}
-        - if asset.type_of? :vehicle or asset.type_of? :support_vehicle
-          = "Condition: <strong>#{format_as_decimal(asset.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(asset.reported_mileage)}</strong>".html_safe
+        - if ast.type_of? :vehicle or ast.type_of? :support_vehicle
+          = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(ast.reported_mileage)}</strong>".html_safe
         - else
-          = "Condition: #{format_as_decimal(asset.reported_condition_rating, 2)}"          
+          = "Condition: #{format_as_decimal(ast.reported_condition_rating, 2)}"          
     .col-md-1
-      %button.pull-right.btn.btn-default.btn-xs{:id => "#{asset.object_key}_#{year}_edit", data: {toggle: 'modal', target: '#asset-edit-modal', id: asset.object_key, year: year}}
+      %button.pull-right.btn.btn-default.btn-xs{:id => "#{ast.object_key}_#{year}_edit", data: {toggle: 'modal', target: '#asset-edit-modal', id: ast.object_key, year: year}}
         %i.fa.fa-edit
         
-  .row{:id => "#{asset.object_key}_#{year}_form_panel"}
+  .row{:id => "#{ast.object_key}_#{year}_form_panel"}
 
 :javascript
   
