@@ -9,27 +9,30 @@ class BudgetRollup < AbstractReport
   
   def get_data(organization, params)
         
-    # Generate the column labels for the plan years
+    # Generate the column labels for the funding sources
     labels = ['Source']
-    (current_planning_year_year..last_fiscal_year_year).each do |year|    
-      labels << fiscal_year(year)
-    end
-    
+
     # Create an elibility service to evaluate the funding sources available
     # for this organization
+    budgets = []
     service = EligibilityService.new
     funding_sources = service.evaluate_organization_funding_sources(organization)
-    
+    funding_sources.each do |fund|
+      labels << fund.name
+      budgets << organization.budget(fund)
+    end
+
     # Start the data
-    a = []
-    funding_sources.each do |source|
+    a = []    
+    (current_planning_year_year..last_fiscal_year_year).each_with_index do |year, idx|    
       row = []
-      row << source
-      row <<  organization.budget(source)
-      a << row.flatten
-    end 
-       
-    #puts labels.inspect
+      row << fiscal_year(year)
+      budgets.each do |budget|
+        row << budget[idx]
+      end
+      a << row
+    end
+        #puts labels.inspect
     #puts a.inspect
                 
     return {:labels => labels, :data => a}      
