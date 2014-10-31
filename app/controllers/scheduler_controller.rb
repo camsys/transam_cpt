@@ -91,12 +91,6 @@ class SchedulerController < OrganizationAwareController
 
     asset = Asset.find_by_object_key(proxy.object_key)
 
-    # TODO DWH This is just a placeholder for now to prevent this blowing up when I hand it an ALI.  Will be completed.
-    if asset.nil?
-      render json: {}
-      return
-    end
-
     case proxy.action_id
     when REPLACE_ACTION
     when 'move_asset_to_fiscal_year'
@@ -149,7 +143,7 @@ class SchedulerController < OrganizationAwareController
   def scheduler_ali_action
     p = params[:scheduler_action_proxy]
 
-    CapitalProjectBuilder.move_ali_to_planning_year(p[:object_key], p[:fy_year])
+    CapitalProjectBuilder.new.move_ali_to_planning_year(p[:object_key], p[:fy_year])
 
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1)
