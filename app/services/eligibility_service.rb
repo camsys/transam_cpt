@@ -29,8 +29,8 @@ class EligibilityService
     values      = []
                 
     # If federal check for state administered federal funds
-    conditions << 'state_administered_federal_fund = ?'
-    values << 1            
+    #conditions << 'funding_source_type_id = ?'
+    #values << 1            
     # Check for rural compatibility
     if organization.service_type_rural?
       conditions << 'rural_providers = ?'
@@ -57,7 +57,7 @@ class EligibilityService
       values << 1      
     end
     
-    FundingSource.where(conditions.join(' OR '), *values)
+    FundingSource.where('funding_source_type_id = 1').where(conditions.join(' OR '), *values)
     
   end  
   #------------------------------------------------------------------------------
