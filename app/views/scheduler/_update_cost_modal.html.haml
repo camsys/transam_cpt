@@ -3,7 +3,7 @@
     = simple_form_for :activity_line_item, url: set_cost_capital_project_activity_line_item_path(@capital_project, @ali, format: :json), remote: true do |f|
       .modal-header
         %a.close{href: "#", 'data-dismiss' => 'modal'} &times;
-        %h4.modal-title Update anticipated cost
+        %h4.modal-title Update ALI cost
       #modal-body.modal-body
         = f.input :anticipated_cost, placeholder: 'New cost...', label: false
       .modal-footer

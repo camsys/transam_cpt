@@ -3,27 +3,27 @@
   .panel-heading.ali-heading
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)
+      - if can? :update, ali
+        .btn-group
+          %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+            %i.fa.fa-edit
+            %span.caret
+          %ul.dropdown-menu{:role => "menu"}
+            %li
+              = link_to '#', data: {toggle: 'modal', target: '#ali-update-cost-modal', capital_project: ali.capital_project.object_key, ali: ali.object_key}  do
+                %i.fa.fa-dollar
+                Update ALI cost
+            - if can? :delete, ali
+              %li
+                = link_to capital_project_activity_line_item_path(ali.capital_project, ali, format: :json),
+                  method: 'DELETE', remote: true, title: "Remove this activity line item.",
+                  data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
+                  action: 'remove_ali', attach: '#confirmation-modal'} do
+                  %i.fa.fa-times-circle
+                  Remove
     %i.fa.fa-lg.fa-caret-right.fa-rotate-90.panel-toggle{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     = "#{ali.team_ali_code} #{ali}".upcase
 
-    - if can? :update, ali
-      .btn-group
-        %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-          %i.fa.fa-edit
-          %span.caret
-        %ul.dropdown-menu{:role => "menu"}
-          %li
-            = link_to '#', data: {toggle: 'modal', target: '#ali-update-cost-modal', capital_project: ali.capital_project.object_key, ali: ali.object_key}  do
-              %i.fa.fa-dollar
-              Update anticipated cost
-          - if can? :delete, ali
-            %li
-              = link_to capital_project_activity_line_item_path(ali.capital_project, ali, format: :json),
-                method: 'DELETE', remote: true, title: "Remove this activity line item.",
-                data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
-                action: 'remove_ali', attach: '#confirmation-modal'} do
-                %i.fa.fa-times-circle
-                Remove
 
   .panel-body.collapse.in{:id => "#{ali.object_key}_ali_body"}
     - if ali.assets.empty?

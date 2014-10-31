@@ -93,7 +93,6 @@ class SchedulerController < OrganizationAwareController
 
     case proxy.action_id
     when REPLACE_ACTION
-    when 'move_asset_to_fiscal_year'
       Rails.logger.debug "Updating asset #{asset.object_key}. New scheduled replacement year = #{proxy.fy_year.to_i}"
       asset.scheduled_replacement_year = proxy.fy_year.to_i if proxy.fy_year
       asset.replacement_reason_type_id = proxy.reason_id.to_i if proxy.reason_id
