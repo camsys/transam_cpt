@@ -29,8 +29,8 @@ class BudgetRollup < AbstractReport
       a << row.flatten
     end 
        
-    puts labels.inspect
-    puts a.inspect
+    #puts labels.inspect
+    #puts a.inspect
                 
     return {:labels => labels, :data => a}      
     

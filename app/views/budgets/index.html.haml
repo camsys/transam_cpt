@@ -1,31 +1,6 @@
-.row
-  .col-md-12
-    .chart{:id => "chart_#{@report.id}"}
+#budgets
+  = render 'budgets'
 
-.row
-  .col-md-12
-    = form_tag set_budgets_path do
-      %table.table
-        %thead
-          %tr
-            - @columns.each_with_index do |cell, idx|
-              - if idx == 0
-                %th.left= cell
-              - else
-                %th.center= cell
-            %th
-              
-        %tbody      
-          - @budgets.each do |row|
-            %tr
-              = render :partial => 'index_budget_form', :locals => {:budget => row}
-    
-        %tfoot
-          %tr
-            - @totals.each_with_index do |cell, idx|
-              - if idx == 0
-                %th.left= cell
-              - else
-                %th.right= format_as_currency(cell)
+#budget-edit-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
 
 = render 'index_scripts'

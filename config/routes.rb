@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :budgets,   :only => [:index] do
     collection do
       post  'set'
+      post  'alter'
     end
   end
     

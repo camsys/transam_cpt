@@ -47,8 +47,36 @@ class BudgetsController < OrganizationAwareController
          
   end    
   
-  def update_budget
+  # Called when the user wants to update a budget for a funding source
+  def alter
     
+    @funding_source = FundingSource.find_by_object_key(params[:id])
+    @budget = []
+    @organization.budget(@funding_source).each do |amount|
+      @budget << amount / 1000
+    end
+
+    render partial: 'budget_modal_form'
+    
+  end
+  
+  def set
+
+    @funding_source = FundingSource.find_by_object_key(params[:funding_source])
+    # process through the budget amounts
+    (current_planning_year_year..last_fiscal_year_year).each do |year|
+      new_amount = params[year.to_s].to_i * 1000
+      # update the budget
+      budget_amount = BudgetAmount.find_by(:organization => @organization, :funding_source => @funding_source, :fy_year => year)
+      if budget_amount.nil?
+        budget_amount = BudgetAmount.new({:organization => @organization, :funding_source => @funding_source, :fy_year => year})
+      end
+      budget_amount.amount = new_amount
+      budget_amount.save
+    end
+    
+    redirect_to budgets_url, :format => 'js'
+          
   end
   
 end

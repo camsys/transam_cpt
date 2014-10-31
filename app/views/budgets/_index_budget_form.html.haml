@@ -1,9 +1,0 @@
-- budget.each_with_index do |obj, idx|
-  - if idx == 0
-    = hidden_field_tag 'funding_source_id', obj.object_key
-    %td.left= obj
-  - else
-    %td.right
-      = number_field_tag 'amount', obj, :class=> 'form-control', :style => 'text-align:right;'
-
-%td= submit_tag "Update", :class => 'btn btn-xs btn-success'

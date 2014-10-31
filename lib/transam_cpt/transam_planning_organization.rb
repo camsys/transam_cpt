@@ -55,6 +55,12 @@ module TransamCpt
     #
     #------------------------------------------------------------------------------
   
+    # Returns a list of funds this org is eligible for
+    def eligible_funding_sources
+      service = EligibilityService.new
+      service.evaluate_organization_funding_sources(self)
+    end
+    
     # Returns an array of amounts for the selected funding source over the planning
     # period. If there is no budget set the array contains a 0
     def budget(funding_source)
@@ -63,11 +69,13 @@ module TransamCpt
         return []
       end
       
+      budgets = budget_amounts.where('funding_source_id = ? AND fy_year >= ?', funding_source.id, current_planning_year_year).order(:fy_year)
+      
       a = []
       (current_planning_year_year..last_fiscal_year_year).each do |year|
-        budget = budget_amounts.where(:funding_source => funding_source, :fy_year => year).first
+        budget = budgets.where(:fy_year => year).first
         if budget
-          a << budget
+          a << budget.amount
         else
           a << 0
         end
