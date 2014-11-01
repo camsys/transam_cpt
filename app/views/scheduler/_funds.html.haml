@@ -1,0 +1,6 @@
+.panel.panel-default
+  .panel-heading
+    %h3.panel-title Funds
+  .panel-body
+    - @organization.eligible_funding_sources.each do |fs|
+      = render :partial => 'fund_detail', :locals => {:fund => fs}
