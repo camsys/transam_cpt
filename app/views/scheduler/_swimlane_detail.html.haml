@@ -3,8 +3,9 @@
   .panel-heading.ali-heading
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)
+      %span.badge= ali.assets.count
       - if can? :update, ali
-        .btn-group
+        .btn-group{:style => 'margin-left: 5px;'}
           %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
             %i.fa.fa-edit
             %span.caret
@@ -19,9 +20,9 @@
                   method: 'DELETE', remote: true, title: "Remove this activity line item.",
                   data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
                   action: 'remove_ali', attach: '#confirmation-modal'} do
-                  %i.fa.fa-times-circle
-                  Remove
-    %i.fa.fa-lg.fa-caret-right.fa-rotate-90.panel-toggle{:data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
+                  %i.fa.fa-trash-o
+                  Remove ALI
+    %i.fa.fa-lg.fa-caret-right.fa-rotate-90.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     = "#{ali.team_ali_code} #{ali}".upcase
 
 
