@@ -1,19 +1,13 @@
-.panel.panel-default.header-part
-  .panel-heading
-    .row
-      .col-md-3
-        %h3.panel-title
-          %i.fa.fa-list
-          Planning
-      .col-md-9
-        = render 'index_actions'
-  .panel-body    
-    #plan_summary
-      .row
-        = render 'capital_projects/capital_plan_summary'
+= render 'capital_projects/capital_plan_summary'
+
+.row
+  .col-md-10
     #swimlanes
       = render 'swimlanes'
-
+  .col-md-2
+    #budgets
+      = render 'funds'
+      
 #confirmation-modal
 #ali-update-cost-modal.modal.fade
 #asset-edit-modal.modal.fade
