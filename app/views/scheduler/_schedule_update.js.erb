@@ -1,4 +1,4 @@
-$('#plan_summary').html("<%= escape_javascript(render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}) %>");
+$('#plan-summary').html("<%= escape_javascript(render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}) %>");
 $('#swimlanes').html("<%= escape_javascript(render 'swimlanes') %>");
 $('#budgets').html("<%= escape_javascript(render 'funds') %>");
 $('#confirm_dialog_modal').modal('hide');
