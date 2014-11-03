@@ -50,10 +50,9 @@ class CapitalProjectBuilder
 
   # Update an activity line item and all of its assets to a new planning year
   # Note what process_asset actually does is create a new ALI
-  def move_ali_to_planning_year(ali_object_key, fy_year)
-    ali = ActivityLineItem.where(object_key: ali_object_key).first
+  def move_ali_to_planning_year(ali, fy_year)
     unless ali
-      Rails.logger.warning "ALI not found for object_key #{ali_object_key}"
+      Rails.logger.error "Nil ALI"
       return nil
     end
 

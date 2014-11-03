@@ -81,7 +81,7 @@ RSpec.describe CapitalProjectBuilder do
     cp = CapitalProject.where(organization: organization).order(:fy_year)[1]
     ali = cp.activity_line_items.first
 
-    result = @cpb.move_ali_to_planning_year(ali.object_key, cp.fy_year + 1)
+    result = @cpb.move_ali_to_planning_year(ali, cp.fy_year + 1)
 
     cps = organization.capital_projects.order(:fy_year)
     expect(cps.count).to eq(4)

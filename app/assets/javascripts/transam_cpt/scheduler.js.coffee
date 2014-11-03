@@ -92,11 +92,16 @@ handleSwimlaneDrop = (e, ui) ->
 
 # Move either an ALI or asset to another year.
 moveObjectToFy = (object_type, key, year) ->  
-  url = if object_type=='asset' then '/scheduler/scheduler_action' else '/scheduler/scheduler_ali_action'
+  if object_type == 'asset'
+    url = '/scheduler/scheduler_action'
+    post_data = {scheduler_action_proxy: {action_id: 'move_'+object_type+'_to_fiscal_year', object_key: key, fy_year: year}}
+  else
+    url = '/scheduler/scheduler_ali_action'
+    post_data = {invoke: 'move_'+object_type+'_to_fiscal_year', ali: key, scheduler_action_proxy: {object_key: key, fy_year: year}}
   $.ajax(
     url: url
     method: 'POST'
-    data: {scheduler_action_proxy: {action_id: 'move_'+object_type+'_to_fiscal_year', object_key: key, fy_year: year}}
+    data: post_data
     beforeSend: () ->
       $('#processing-modal').modal('show')
     complete: () ->

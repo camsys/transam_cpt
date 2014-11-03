@@ -162,7 +162,7 @@ class SchedulerController < OrganizationAwareController
     action = params[:invoke]
     
     case action
-    when ALI_MOVE_YEAR_ACTION
+    when ALI_MOVE_YEAR_ACTION, 'move_ali_to_fiscal_year'
       p = params[:scheduler_action_proxy]  
       new_fy_year = p[:fy_year]
       CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
