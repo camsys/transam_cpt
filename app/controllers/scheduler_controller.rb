@@ -74,7 +74,7 @@ class SchedulerController < OrganizationAwareController
     @actions = ACTIONS
 
     @fiscal_years = []
-    (current_planning_year_year..last_fiscal_year).each do |yr|
+    (current_planning_year_year..last_fiscal_year_year).each do |yr|
       @fiscal_years << [fiscal_year(yr), yr]
     end
     @proxy = SchedulerActionProxy.new
@@ -166,20 +166,20 @@ class SchedulerController < OrganizationAwareController
       p = params[:scheduler_action_proxy]  
       new_fy_year = p[:fy_year]
       CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
-      msg = "The ALI was successfully moved to #{}."
+      @msg = "The ALI was successfully moved to #{new_fy_year}."
       
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
       if @activity_line_item.save
-        msg = "The ALI was successfully updated."
+        @msg = "The ALI was successfully updated."
       else
-        msg = "An error occurred while updating the ALI."
+        @msg = "An error occurred while updating the ALI."
       end
       
     when ALI_REMOVE_ACTION
       @project = @activity_line_item.capital_project
       @activity_line_item.destroy
-      msg = "The ALI was successfully removed from project #{@project.project_number}."
+      @msg = "The ALI was successfully removed from project #{@project.project_number}."
 
     when ALI_ADD_FUND_ACTION
       budget_amount = BudgetAmount.find(params[:source])
@@ -187,18 +187,14 @@ class SchedulerController < OrganizationAwareController
     
       # Add a funding plan to this ALI
       @activity_line_item.funding_plans.create({:budget_amount => budget_amount, :amount => amount})
-      msg = "The ALI was successfully updated."
+      @msg = "The ALI was successfully updated."
 
     when ALI_REMOVE_FUND_ACTION
       fp = FundingPlan.find_by_object_key(params[:funding_plan])
       @activity_line_item.funding_plans.delete fp
-      msg = "The ALI was successfully updated."
+      @msg = "The ALI was successfully updated."
     end
 
-    unless msg.blank?
-      notify_user :notice, msg
-    end
-    
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1)
     @year_2_alis = get_alis(@year_2)
