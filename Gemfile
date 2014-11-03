@@ -22,11 +22,3 @@ gem 'transam_core', :github => 'camsys/transam_core', branch: 'master'
 gem 'transam_transit', :github => 'camsys/transam_transit', branch: 'master'
 gem 'transam_spatial', :github => 'camsys/transam_spatial', branch: 'master'
 
-if ENV['TRANSAM_EXTRA_DEV_GEMS']
-  gem 'thor'
-  gem 'guard'
-  gem 'guard-bundler'
-  gem 'guard-cucumber'
-  gem 'guard-rails'
-  gem 'guard-rspec'
-end

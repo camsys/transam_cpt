@@ -1,4 +1,3 @@
-require 'state_machine'
 require 'wicked'
 require 'transam_transit'
 
