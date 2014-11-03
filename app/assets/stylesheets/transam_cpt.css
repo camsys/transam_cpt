@@ -11,3 +11,22 @@
  *= require_self
  *= require_tree .
  */
+
+.affix {
+	top: 120px; 
+	width: 16.6666667%;
+}
+.affix-top {
+}
+.affix-bottom {	
+}
+
+/* For the Funding Bars */
+.progress.fund {
+	height: 24px;
+}
+.fund > .progress-bar {
+	line-height: 24px;
+}
+
+

@@ -1,4 +1,4 @@
-.panel.panel-default.swimlane
+.panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
   .panel-heading.swimlane-heading{data: {fy: year}}
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
     %h3.panel-title

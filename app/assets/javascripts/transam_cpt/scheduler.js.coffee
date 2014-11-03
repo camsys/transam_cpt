@@ -2,51 +2,6 @@ $ ->
 
   # Set up handlers for swimlane AJAX methods.
 
-  # This handles the destroy ALI and update cost responses, as well as
-  # dispatching for the asset edit dialog.
-  $('#schedule_view').on 'ajax:success', (event, xhr, options, data) ->
-
-    # check for the asset edit dialog first
-    t = $(event.target)
-    if t.is('form') && t.attr('action')=='/scheduler/scheduler_action'
-      handleSchedulerAction(event, xhr, options, data)
-      return
-
-    # (I don't understand why the data isn't already parsed to JSON)
-    data = data.responseJSON
-
-    if data.action=='destroy_ali'
-      # close the modal, show popup message, update the ALI count in the header
-      $('#confirm_dialog_modal').modal('hide')
-      window.transam.show_popup_message(
-        data.message.title,
-        data.message.text,
-        )
-      $.scrollTo(
-        '#' + data.object_key + '_ali_panel',
-        {
-          offset: {top: -200}
-        }
-        )
-      $('#' + data.object_key + '_ali_panel').slideUp(
-        {
-          duration: 'slow'
-        }
-        )
-      $('#year_' + data.year + '_swimlane_badge').html(data.new_ali_count)
-
-    else if data.action=='set_cost'
-      # close the modal, show popup message. Handle error.
-      $('#ali-update-cost-modal').modal('hide')
-      window.transam.show_popup_message(
-        data.message.title,
-        data.message.text,
-        data.message.type
-        )
-      if data.status=='FAILED'
-        $fg = $(event.target).find('.form-group').first()
-        $fg.addClass('has-error')
-      $('#' + data.object_key + '_ali_panel .ali_cost').html(data.formatted_cost)
 
   # Other handlers:
 
@@ -67,6 +22,13 @@ $ ->
   $('#ali-update-cost-modal').on 'show.bs.modal', (e) ->
     $('#ali-update-cost-modal').load(
       '/scheduler/update_cost_modal',
+      {'capital_project': $(e.relatedTarget).data('capital-project'), 'ali': $(e.relatedTarget).data('ali')}
+    )
+
+  # load the contents for the fundiong plan modal when it is shown
+  $('#ali-add-funding-plan-modal').on 'show.bs.modal', (e) ->
+    $('#ali-add-funding-plan-modal').load(
+      '/scheduler/add_funding_plan_modal',
       {'capital_project': $(e.relatedTarget).data('capital-project'), 'ali': $(e.relatedTarget).data('ali')}
     )
 
@@ -146,9 +108,3 @@ moveObjectToFy = (object_type, key, year) ->
       # console.log "error"
       # console.log data
   )
-
-# We just need this so we can close the modal. Otherwise this is like rails UJS data-remote=true
-handleSchedulerAction = (event, xhr, options, data) ->
-  $('#asset-edit-modal').modal('hide')
-  eval(xhr)
-  

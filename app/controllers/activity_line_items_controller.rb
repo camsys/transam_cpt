@@ -204,46 +204,6 @@ class ActivityLineItemsController < OrganizationAwareController
         notify_user(:notice, msg)
         redirect_to capital_project_path(@project)
       }
-      format.json {
-        render json: {
-          action: 'destroy_ali',
-          object_key: @activity_line_item.object_key,
-          status: 'OK',
-          new_ali_count: project_ali_count,
-          year: year,
-          message: {title: 'Notice', text: msg}
-        }
-      }
-    end
-  end
-
-  def set_cost
-    @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
-    if @activity_line_item.save
-      respond_to do |format|
-        format.json {
-          render json: {
-            action: 'set_cost',
-            object_key: @activity_line_item.object_key,
-            status: 'OK',
-            formatted_cost: view_context.format_as_currency(@activity_line_item.anticipated_cost),
-            message: {title: 'Notice', text: "Activity line item anticipated cost updated."}
-          }
-        }
-      end
-    else
-      Rails.logger.info @activity_line_item.errors.ai
-      respond_to do |format|
-        format.json {
-          render json: {
-            action: 'set_cost',
-            object_key: @activity_line_item.object_key,
-            status: 'FAILED',
-            # TODO error message?
-            message: {title: 'Error', text: "Activity line item anticipated cost not updated: #{@activity_line_item.errors.full_messages.join('; ')}.", type: 'error'}
-          }
-        }
-      end
     end
   end
 

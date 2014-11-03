@@ -40,8 +40,12 @@ class ActivityLineItem < ActiveRecord::Base
   # Use a nested form to set the milestones
   accepts_nested_attributes_for :milestones, :allow_destroy => true
 
+  # Has 0 or more funding plans -- these are for planning ALIs only, when an ALI is 
+  # programmed these will be removed and replaced by more funding requests
+  has_many    :funding_plans,     :dependent => :destroy
+
   # Has 0 or more funding requests, These will be removed if the project is removed.
-  has_many    :funding_requests, :dependent => :destroy
+  has_many    :funding_requests,  :dependent => :destroy
 
   # Has 0 or more comments. Using a polynmorphic association
   has_many    :comments,  :as => :commentable
@@ -94,6 +98,13 @@ class ActivityLineItem < ActiveRecord::Base
     name
   end
 
+  # Returns the total amount planned for this ali
+  def total_planned
+    val = 0
+    funding_plans.each {|x| val += x.amount}
+    val
+  end
+  
   # Returns the total value of federal funds requested
   def federal_funds
     val = 0

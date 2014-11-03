@@ -1,63 +1,51 @@
 #------------------------------------------------------------------------------
 #
-# BudgetAmount
+# FundingPlan
 #
-# Represents the amount in $ allocated to an agency in a fiscal year by 
-# funding source type
+# Associates an Activity Line Item with a funding source and amount. This is used
+# to indicate how the transit agency plans to fund an ALI (and thus a CP).
 #
 #------------------------------------------------------------------------------
-class BudgetAmount < ActiveRecord::Base
+class FundingPlan < ActiveRecord::Base
     
   # Include the object key mixin
   include TransamObjectKey
-  
-  # Include the fiscal year mixin
-  include FiscalYear
   
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
-
+            
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
 
-  # Every budget record belongs to a transit agency
-  belongs_to  :organization 
+  # Each funding plan is associated with a single activity line item
+  belongs_to  :activity_line_item
 
-  # Every budget record belongs to a funding source
-  belongs_to  :funding_source 
+  # Each funding plan is associated with a single budget amount ($ from a source in a FY)
+  belongs_to  :budget_amount
 
-  # Every budget amount has 0 or more funding plans. These will be removed if the 
-  # budget amount is deleted 
-  has_many    :funding_plans, :dependent => :destroy
-        
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  validates :object_key,                        :presence => :true, :uniqueness => :true
-  validates :organization,                      :presence => :true
-  validates :funding_source,                    :presence => :true
-  validates :fy_year,                           :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => Date.today.year}
-  validates :amount,                            :presence => :true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :activity_line_item,  :presence => :true
+  validates :budget_amount,       :presence => :true
+  validates :amount,              :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
 
   #------------------------------------------------------------------------------
   # Scopes
   #------------------------------------------------------------------------------
-  
-  # default scope
-  default_scope { order(:fy_year)  }
 
+  #------------------------------------------------------------------------------
+  # Constants
+  #------------------------------------------------------------------------------
+  
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
-    :id,
-    :object_key,
-    :organization_id,
-    :funding_source_id, 
-    :fy_year,
-    :amount,
-    :estimated
+    :activity_line_item_id, 
+    :budget_amount_id, 
+    :amount
   ]
   
   #------------------------------------------------------------------------------
@@ -65,29 +53,7 @@ class BudgetAmount < ActiveRecord::Base
   # Class Methods
   #
   #------------------------------------------------------------------------------
-  
-  def name
-    funding_source.nil? ? "" : funding_source
-  end
-  
-  def to_s
-    name
-  end
-  
-  # Calculate the amount of the budget that has been spent (in the plan)
-  def spent
-    val = 0
-    funding_plans.each do |bp|
-      val += bp.amount
-    end
-    val
-  end  
-  
-  # Calculate the amount of the budget remaining
-  def available
-    amount - spent
-  end
-  
+    
   def self.allowable_params
     FORM_PARAMS
   end
@@ -98,9 +64,12 @@ class BudgetAmount < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
   
-  # Override the mixin method and delegate to it
-  def fiscal_year
-    super(fy_year)
+  def to_s
+    name
+  end   
+     
+  def name
+    "#{budget_amount.funding_source.name} $#{amount}" unless budget_amount.nil?
   end
   
   #------------------------------------------------------------------------------
@@ -112,7 +81,6 @@ class BudgetAmount < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.estimated ||= true
     self.amount ||= 0
   end    
       

@@ -1,4 +1,15 @@
-%h4= fund.name
-.progress
-  .progress-bar.progress-bar-success{:role => 'progressbar', :style => 'width: 40%', :aria_valuemin => "0", :area_valuemax => "100", :area_valuenow => '40'}
-    25%
+:ruby
+  budget_amount = @organization.budget_amounts.find_by(:funding_source => fund, :fy_year => year)
+  total = budget_amount.nil? ? 0 : budget_amount.amount
+  spent = budget_amount.nil? ? 0 : budget_amount.spent
+  available = total - spent
+  pcnt_available = total > 0 ? (available / total.to_f) * 100 : 0
+  pcnt_spent = 100.0 - pcnt_available
+
+- if total > 0  
+  %h4= fund.name
+  .progress.fund
+    .progress-bar.progress-bar-success{:role => 'progressbar', :style => "width: #{pcnt_available}%", :aria_valuemin => "0", :area_valuemax => "#{total}", :area_valuenow => "#{available}"}
+      = format_as_currency(available)
+    .progress-bar.progress-bar-danger{:role => 'progressbar', :style => "width: #{pcnt_spent}%", :aria_valuemin => "0", :area_valuemax => "#{total}", :area_valuenow => "#{spent}"}
+      = format_as_currency(spent)

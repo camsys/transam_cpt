@@ -13,9 +13,11 @@ Rails.application.routes.draw do
     collection do
       post  'scheduler_action'
       post  'scheduler_ali_action'
+      get   'scheduler_ali_action'
       get   'loader'
       post  'edit_asset_in_modal'
       post  'update_cost_modal'
+      post  'add_funding_plan_modal'
     end
   end
   

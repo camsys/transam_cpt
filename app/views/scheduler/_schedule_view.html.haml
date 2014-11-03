@@ -1,4 +1,4 @@
-= render 'capital_projects/capital_plan_summary'
+= render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}
 
 .row
   .col-md-10
@@ -11,6 +11,7 @@
 #confirmation-modal
 #ali-update-cost-modal.modal.fade
 #asset-edit-modal.modal.fade
+#ali-add-funding-plan-modal.modal.fade
 
 #processing-modal.modal.fade
   .modal-dialog

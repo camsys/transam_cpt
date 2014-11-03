@@ -14,21 +14,49 @@
               = link_to '#', data: {toggle: 'modal', target: '#ali-update-cost-modal', capital_project: ali.capital_project.object_key, ali: ali.object_key}  do
                 %i.fa.fa-dollar
                 Update ALI cost
+            - if year == @active_year
+              %li
+                = link_to '#', :data => {:toggle => 'modal', :target => '#ali-add-funding-plan-modal', :capital_project => ali.capital_project.object_key, :ali => ali.object_key}  do
+                  %i.fa.fa-dollar
+                  Assign Funds
+            %li.divider
             - if can? :delete, ali
               %li
-                = link_to capital_project_activity_line_item_path(ali.capital_project, ali, format: :json),
-                  method: 'DELETE', remote: true, title: "Remove this activity line item.",
-                  data: {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone.",
-                  action: 'remove_ali', attach: '#confirmation-modal'} do
+                = link_to scheduler_ali_action_scheduler_index_path(:ali => ali.object_key, :invoke => SchedulerController::ALI_REMOVE_ACTION),
+                  :remote => true, :title => "Remove this activity line item.",
+                  :data => {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone."} do
                   %i.fa.fa-trash-o
                   Remove ALI
-    %i.fa.fa-lg.fa-caret-right.fa-rotate-90.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
+    %i.fa.fa-lg.fa-caret-right.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
     = "#{ali.team_ali_code} #{ali}".upcase
 
 
-  .panel-body.collapse.in{:id => "#{ali.object_key}_ali_body"}
+  .panel-body.collapse{:id => "#{ali.object_key}_ali_body"}
     - if ali.assets.empty?
       %p There are no assets associated with this ALI
     - else
       - ali.assets.each do |asset|
         = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}
+
+  .panel-footer
+    %table.table.table-condensed
+      %tbody
+        - ali.funding_plans.each do |fp|
+          %tr        
+            %td.left= fp.budget_amount.funding_source
+            %td.right= format_as_currency(fp.amount)
+            %td.right
+              = link_to scheduler_ali_action_scheduler_index_path(:ali => ali.object_key, :funding_plan => fp.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), 
+                :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
+                :class => 'btn btn-xs btn-warning'  do
+                %i.fa.fa-trash-o
+      %tfoot
+        %tr
+          %td.left Total Funding
+          %td.right= format_as_currency(ali.total_planned)
+          %td
+        %tr
+          %td.left Required
+          %td.right= format_as_currency(ali.cost - ali.total_planned)
+          %td            
+            
