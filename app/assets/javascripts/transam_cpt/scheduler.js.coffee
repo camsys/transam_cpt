@@ -5,6 +5,28 @@ $ ->
 
   # Other handlers:
 
+
+  setupModalHandlers()
+  setupSwimlaneDragging()
+
+#######################
+# end on document load
+#######################
+
+# Support methods for swimlane component drag and drop
+
+# rotate the caret when ALI is collapsed/shown
+toggle_ali = (e, state) ->
+  s = "[data-target='#" + e.target.id + "']"
+  t = $('.ali-heading').find(s)
+  if state=='hide'
+    t.removeClass('fa-rotate-90')
+  else
+    t.addClass('fa-rotate-90')
+
+
+window.setupModalHandlers = () ->
+  console.log "setupModalHandlers"
   # rotate caret icon on ALI header when it is shown/collapsed
   $('.swimlane-draggable .panel-body').on 'show.bs.collapse', (e) ->
     toggle_ali(e, 'show')
@@ -31,23 +53,6 @@ $ ->
       '/scheduler/add_funding_plan_modal',
       {'capital_project': $(e.relatedTarget).data('capital-project'), 'ali': $(e.relatedTarget).data('ali')}
     )
-
-  setupSwimlaneDragging()
-
-#######################
-# end on document load
-#######################
-
-# Support methods for swimlane component drag and drop
-
-# rotate the caret when ALI is collapsed/shown
-toggle_ali = (e, state) ->
-  s = "[data-target='#" + e.target.id + "']"
-  t = $('.ali-heading').find(s)
-  if state=='hide'
-    t.removeClass('fa-rotate-90')
-  else
-    t.addClass('fa-rotate-90')
 
 
 # Set up swimlane components drag & drop
