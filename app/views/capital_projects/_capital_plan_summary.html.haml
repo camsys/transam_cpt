@@ -1,7 +1,7 @@
 :ruby
   rep = CapitalPlanSummaryReport.new
   results = rep.get_data(@organization_list, {})
-  if highlight_years.nil?
+  if ! defined? highlight_years
     highlight_years = []
   end
 
