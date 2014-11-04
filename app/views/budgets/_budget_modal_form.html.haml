@@ -22,11 +22,11 @@
         
       .modal-footer
         %button.btn.btn-warning.btn-xs{"aria-hidden" => "true", "data-dismiss" => "modal"} Cancel
-        = button_tag "Update", :class => "btn btn-success btn-xs", :id => 'modal_submit_btn'
+        = button_tag "Update", :class => "btn btn-success btn-xs", :id => 'modal-submit-btn'
         
 :javascript
     // hide the form after submit
-    $('#modal_submit_btn').on('click', function(e) {
+    $('#modal-submit-btn').on('click', function(e) {
       $('#budget-edit-modal').modal('hide');
     });
   
