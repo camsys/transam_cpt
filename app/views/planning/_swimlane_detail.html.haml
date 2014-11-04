@@ -1,0 +1,73 @@
+.panel.panel-primary.swimlane-draggable{:id => "#{ali.object_key}_ali_panel", :data => {:object_type => 'ali', :object_key => ali.object_key, :fy => year}}
+  .panel-heading.ali-heading
+    %span.pull-right.ali_cost
+      = format_as_currency(ali.cost)
+      %span.badge= ali.assets.count
+      - if can? :update, ali
+        .btn-group{:style => 'margin-left: 5px;'}
+          %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+            %i.fa.fa-edit
+            %span.caret
+          %ul.dropdown-menu{:role => "menu"}
+            %li
+              = link_to '#', :data => {:toggle => 'modal', :target => '#update-cost-modal', :ali => ali.object_key, :current_year => @current_year}  do
+                %i.fa.fa-dollar
+                Update ALI cost
+            %li
+              = link_to '#', :data => {:toggle => 'modal', :target => '#add-funds-modal', :ali => ali.object_key, :current_year => @current_year}  do
+                %i.fa.fa-dollar
+                Assign Funds
+            %li.divider
+            - if @next_year > 0
+              %li
+                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @next_year, :current_year => @current_year),
+                  :remote => true, :method => 'post', :title => "Move to next fiscal year." do
+                  %i.fa.fa-arrow-right
+                  Move ALI to Next FY
+            - if @prev_year > 0
+              %li
+                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @prev_year, :current_year => @current_year),
+                  :remote => true, :method => 'post', :title => "Move to previous fiscal year." do
+                  %i.fa.fa-arrow-left
+                  Move ALI to Previous FY
+            %li.divider
+            - if can? :delete, ali
+              %li
+                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_REMOVE_ACTION, :current_year => @current_year),
+                  :remote => true, :method => 'post', :title => "Remove this activity line item.",
+                  :data => {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone."} do
+                  %i.fa.fa-trash-o
+                  Remove ALI
+    %i.fa.fa-lg.fa-caret-right.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
+    = "#{ali.team_ali_code} #{ali}".upcase
+
+
+  .panel-body.collapse{:id => "#{ali.object_key}_ali_body"}
+    - if ali.assets.empty?
+      %p There are no assets associated with this ALI
+    - else
+      - ali.assets.each do |asset|
+        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}
+
+  .panel-footer
+    %table.table.table-condensed
+      %tbody
+        - ali.funding_plans.each do |fp|
+          %tr        
+            %td.left= fp.budget_amount.funding_source
+            %td.right= format_as_currency(fp.amount)
+            %td.right
+              = link_to ali_action_planning_index_path(:current_year => @current_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => PlanningController::ALI_REMOVE_FUND_ACTION), 
+                :remote => :true, :method => 'post', :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
+                :class => 'btn btn-xs btn-warning'  do
+                %i.fa.fa-trash-o
+      %tfoot
+        %tr
+          %td.left Total Funding
+          %td.right= format_as_currency(ali.total_planned)
+          %td
+        %tr
+          %td.left Required
+          %td.right= format_as_currency(ali.cost - ali.total_planned)
+          %td            
+            

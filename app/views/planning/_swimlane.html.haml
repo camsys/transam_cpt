@@ -1,0 +1,19 @@
+.panel.swimlane.panel-default
+  .panel-heading.swimlane-heading
+    - if @next_year > 0
+      = link_to @next_year_path, :class => 'btn btn-primary pull-right', :style => 'margin-top: -6px; margin-right: -3px;', :remote => true do
+        = "#{format_as_fiscal_year(@next_year)} "
+        %i.fa.fa-chevron-circle-right.fa-lg
+
+    - if @prev_year > 0
+      = link_to @prev_year_path, :class => 'btn btn-primary pull-left', :style => 'margin-top: -6px; margin-left: -3px;', :remote => true  do
+        %i.fa.fa-chevron-circle-left.fa-lg
+        = " #{format_as_fiscal_year(@prev_year)}"
+    
+    %h3.panel-title.text-center
+      = format_as_fiscal_year(@current_year)
+
+
+  .panel-body.swimlane-container
+    - @alis.each do |a|
+      = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => @current_year}

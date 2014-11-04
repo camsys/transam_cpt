@@ -1,0 +1,9 @@
+- if @next_year > 0
+  = link_to @next_year_path, :class => 'btn btn-primary pull-right', :remote => true do
+    = "#{format_as_fiscal_year(@next_year)} "
+    %i.fa.fa-chevron-circle-right.fa-lg
+
+- if @prev_year > 0
+  = link_to @prev_year_path, :class => 'btn btn-primary pull-left', :remote => true  do
+    %i.fa.fa-chevron-circle-left.fa-lg
+    = " #{format_as_fiscal_year(@prev_year)}"

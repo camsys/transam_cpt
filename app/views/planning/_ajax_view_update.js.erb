@@ -1,0 +1,9 @@
+$('#plan_view').html("<%= escape_javascript(render 'plan_view') %>");
+transam.install_quick_link_handlers();
+$('.popup-details').popover({
+	trigger: 'hover',
+	container: 'body',
+	placement: 'left',
+	animation: 'true',
+	html: 'true'    
+});

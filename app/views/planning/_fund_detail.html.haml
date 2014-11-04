@@ -1,0 +1,7 @@
+:ruby
+  report = BudgetBurndown.new
+  @data = report.get_data(@organization, {:funding_source => fund})
+
+.col-md-12
+  .chart{:id => "chart_#{fund.object_key}", :style => 'height: 150px;'}   
+ 

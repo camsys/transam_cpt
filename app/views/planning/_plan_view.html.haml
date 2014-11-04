@@ -1,0 +1,12 @@
+#plan-summary
+  = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@current_year]}
+
+.row
+  .col-md-6
+    #swimlane
+      = render 'swimlane'
+  .col-md-6
+    .row
+      .col-md-12
+        #budgets
+          = render 'funds'

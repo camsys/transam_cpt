@@ -1,0 +1,42 @@
+:ruby
+  ast = Asset.get_typed_asset(asset)
+  
+.well.well-sm.swimlane-draggable{data: {:object_type => 'asset', :object_key => ast.object_key, :fy => year}}
+  .row
+    .col-md-3
+      %h3{:style => 'margin-top: -2.5px;'}
+        %span.label.label-default
+          = "#{ast.asset_tag}"
+    .col-md-8
+      %p.text-primary.text-left
+        - if ast.type_of? :vehicle
+          = "#{ast.vehicle_usage_codes.first}: #{ast.asset_subtype}".upcase
+        - else
+          = "#{ast.asset_subtype}".upcase
+    .col-md-1
+      %i.pull-right.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{ast.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => ast}}"}}
+  .row
+    .col-md-3
+      %h4.bg-default.text-left
+        = get_swimlane_activity_cost(ast, year)
+        
+    .col-md-8
+      %p.text-primary{:style => 'margin-bottom: 0px;'}
+        = "#{ast.manufacture_year} #{ast.description}"
+      %p.text-primary{:style => 'margin-bottom: 0px;'}
+        - if ast.type_of? :vehicle or ast.type_of? :support_vehicle
+          = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(ast.reported_mileage)}</strong>".html_safe
+        - else
+          = "Condition: #{format_as_decimal(ast.reported_condition_rating, 2)}"          
+    .col-md-1
+      %button.pull-right.btn.btn-default.btn-xs{:data => {:toggle => 'modal', :target => '#edit-asset-modal', :id => ast.object_key, :current_year => @current_year}}
+        %i.fa.fa-edit
+        
+  .row{:id => "#asset_form_panel"}
+
+:javascript  
+    // hide the form after submit
+    $('#modal-submit-btn').on('click', function(e) {
+      $('#edit-asset-modal').modal('hide');
+    });
+  

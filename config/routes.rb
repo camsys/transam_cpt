@@ -7,11 +7,25 @@ Rails.application.routes.draw do
       post  'alter'
     end
   end
+
+  # Asset replacement/rehabilitation
+  resources :planning, :only => [:index] do
+    collection do
+      get  'load_chart'
+      post  'asset_action'
+      post  'ali_action'
+      post  'add_funds'
+      post  'update_cost'
+      post  'edit_asset'
+      post  'move_ali'
+    end
+  end
     
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
     collection do
       post  'scheduler_action'
+      get   'scheduler_swimlane_action'
       post  'scheduler_ali_action'
       get   'scheduler_ali_action'
       get   'loader'
