@@ -1,5 +1,5 @@
 :ruby
-  budget_amount = @organization.budget_amounts.find_by(:funding_source => fund, :fy_year => year)
+  budget_amount = @organization.budget_amounts.where('funding_source_id = ? AND fy_year = ? AND amount > 0', fund.id, year).first
   total = budget_amount.nil? ? 0 : budget_amount.amount
   spent = budget_amount.nil? ? 0 : budget_amount.spent
   available = total - spent
@@ -7,7 +7,7 @@
   pcnt_spent = 100.0 - pcnt_available
 
 - if total > 0  
-  %h4= fund.name
+  %h4= "#{fund.name}: #{format_as_currency(total)}"
   .progress.fund
     .progress-bar.progress-bar-success{:role => 'progressbar', :style => "width: #{pcnt_available}%", :aria_valuemin => "0", :area_valuemax => "#{total}", :area_valuenow => "#{available}"}
       = format_as_currency(available)

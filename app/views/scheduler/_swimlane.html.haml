@@ -1,5 +1,5 @@
 .panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
-  .panel-heading.swimlane-heading{data: {fy: year}}
+  .panel-heading.swimlane-heading{:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(:year => year, :invoke => SchedulerController::SWIMLANE_SET_ACTIVE_ACTION)}}
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
     %h3.panel-title
       %i.fa.fa-calendar

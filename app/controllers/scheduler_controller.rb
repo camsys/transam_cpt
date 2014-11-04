@@ -1,6 +1,6 @@
 class SchedulerController < OrganizationAwareController
 
-  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_action, :scheduler_ali_action, :edit_asset_in_modal]
+  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_action, :scheduler_ali_action, :scheduler_swimlane_action, :edit_asset_in_modal]
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Scheduler", :scheduler_index_path
@@ -14,6 +14,16 @@ class SchedulerController < OrganizationAwareController
   REMOVE_FROM_SERVICE_ACTION  = '3'
   RESET_ACTION                = '4'
 
+  # Controller actions that can be invoked from the view to manuipulate ALIs
+  ALI_MOVE_YEAR_ACTION    = '1'  
+  ALI_UPDATE_COST_ACTION  = '2'  
+  ALI_REMOVE_ACTION       = '3'
+  ALI_ADD_FUND_ACTION     = '4'
+  ALI_REMOVE_FUND_ACTION  = '5' 
+
+  # Controller actions that can be invoked from the view to manuipulate swimlanes
+  SWIMLANE_SET_ACTIVE_ACTION  = '1'  
+
   ACTIONS = [
     ["Replace", REPLACE_ACTION],
     ["Rehabilitate", REHABILITATE_ACTION],
@@ -21,12 +31,6 @@ class SchedulerController < OrganizationAwareController
     ["Reset to policy", RESET_ACTION]
   ]
 
-  # Controller actions that can be invoked from the view to manuipulate ALIs
-  ALI_MOVE_YEAR_ACTION    = '1'  
-  ALI_UPDATE_COST_ACTION  = '2'  
-  ALI_REMOVE_ACTION       = '3'
-  ALI_ADD_FUND_ACTION     = '4'
-  ALI_REMOVE_FUND_ACTION  = '5' 
    
   YES = '1'
   NO = '0'
@@ -52,6 +56,7 @@ class SchedulerController < OrganizationAwareController
 
     @asset = Asset.find_by_object_key(params[:id])
     @current_year = params[:year].to_i
+    @active_year = params[:active_year]
 
     @actions = ACTIONS
 
@@ -70,6 +75,7 @@ class SchedulerController < OrganizationAwareController
     # #loader can possibly go away
     @asset = Asset.find_by_object_key(params[:id])
     @current_year = params[:year].to_i
+    @active_year = @current_year
 
     @actions = ACTIONS
 
@@ -87,15 +93,18 @@ class SchedulerController < OrganizationAwareController
   def update_cost_modal
     @capital_project = CapitalProject.where(object_key: params[:capital_project]).first
     @ali = ActivityLineItem.where(object_key: params[:ali]).first
-    render partial: 'update_cost_modal'
+    @active_year = @ali.capital_project.fy_year
+
+    render :partial => 'update_cost_modal'
   end
 
   # Render the partial for adding a funding plan to the ALI
   def add_funding_plan_modal
     
     @ali = ActivityLineItem.find_by_object_key(params[:ali])
-    @budget_amounts = BudgetAmount.where('organization_id = ? AND fy_year =?', @organization.id, @ali.capital_project.fy_year)
-    
+    @budget_amounts = @organization.budget_amounts.where('fy_year = ? AND amount > 0', @ali.capital_project.fy_year)
+    @active_year = @ali.capital_project.fy_year
+        
     render :partial => 'add_funding_plan_modal_form'
   end
 
@@ -202,6 +211,25 @@ class SchedulerController < OrganizationAwareController
 
   end
   
+  # General purpose action for mamipulating ALIs in the plan. This action
+  # must be called as JS
+  def scheduler_swimlane_action
+   
+    year = params[:year]  
+    action = params[:invoke]
+
+    case action
+    when SWIMLANE_SET_ACTIVE_ACTION
+      @active_year = year.to_i
+    end
+
+    # Get the ALIs for each year
+    @year_1_alis = get_alis(@year_1)
+    @year_2_alis = get_alis(@year_2)
+    @year_3_alis = get_alis(@year_3)
+    
+  end
+    
   protected
 
   # Sets the view variables that control the filters. called before each action is invoked
@@ -209,6 +237,10 @@ class SchedulerController < OrganizationAwareController
 
     @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
 
+    unless params[:active_year].blank?  
+      @active_year = params[:active_year].to_i
+    end
+        
     # This is the first year that the user can plan for
     first_year = current_fiscal_year_year + 1
     # This is the last year of a 3 year plan
@@ -222,8 +254,15 @@ class SchedulerController < OrganizationAwareController
     @year_2 = @start_year + 1
     @year_3 = @start_year + 2
 
-    @active_year = @start_year
-    
+    # Set up the active year class var
+    if @active_year.nil?
+      @active_year = @year_1
+    elsif @active_year < @start_year
+      @active_year = @year_1
+    elsif @active_year > @year_3            
+      @active_year = @year_3
+    end    
+            
     # Add ability to page year by year
     @total_rows = years.size
     # get the index of the start year in the array
@@ -232,12 +271,12 @@ class SchedulerController < OrganizationAwareController
     if current_index == 0
       @prev_record_path = "#"
     else
-      @prev_record_path = scheduler_index_path(:start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @prev_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
     if current_index == (@total_rows - 1)
       @next_record_path = "#"
     else
-      @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @next_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
     @row_pager_remote = true
 

@@ -34,7 +34,11 @@
         
   .row{:id => "#{ast.object_key}_#{year}_form_panel"}
 
-:javascript
+:javascript  
+    // hide the form after submit
+    $('#modal-submit-btn').on('click', function(e) {
+      $('#ali-add-funding-plan-modal').modal('hide');
+    });
   
   // // Install a click handler for the edit button
   // $('##{asset.object_key}_#{year}_edit').click(function() {

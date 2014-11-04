@@ -37,21 +37,33 @@ window.setupModalHandlers = () ->
   $('#asset-edit-modal').on 'show.bs.modal', (e) ->
     $('#asset-edit-modal').load(
       '/scheduler/edit_asset_in_modal',
-      {'id': $(e.relatedTarget).data('id'), 'year': $(e.relatedTarget).data('year')}
+      {
+        'id': $(e.relatedTarget).data('id'), 
+        'year': $(e.relatedTarget).data('year'), 
+        'active_year': $(e.relatedTarget).data('active-year')
+      }
     )
     
   # load the contents for the update cost modal when it is shown
   $('#ali-update-cost-modal').on 'show.bs.modal', (e) ->
     $('#ali-update-cost-modal').load(
       '/scheduler/update_cost_modal',
-      {'capital_project': $(e.relatedTarget).data('capital-project'), 'ali': $(e.relatedTarget).data('ali')}
+      {
+        'capital_project': $(e.relatedTarget).data('capital-project'), 
+        'ali': $(e.relatedTarget).data('ali'), 
+        'active_year': $(e.relatedTarget).data('active-year')
+      }
     )
 
-  # load the contents for the fundiong plan modal when it is shown
+  # load the contents for the funding plan modal when it is shown
   $('#ali-add-funding-plan-modal').on 'show.bs.modal', (e) ->
     $('#ali-add-funding-plan-modal').load(
       '/scheduler/add_funding_plan_modal',
-      {'capital_project': $(e.relatedTarget).data('capital-project'), 'ali': $(e.relatedTarget).data('ali')}
+      {
+        'capital_project': $(e.relatedTarget).data('capital-project'), 
+        'ali': $(e.relatedTarget).data('ali'), 
+        'active_year': $(e.relatedTarget).data('active-year')
+      }
     )
 
 

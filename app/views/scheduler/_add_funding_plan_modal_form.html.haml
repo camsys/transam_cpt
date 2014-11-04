@@ -1,6 +1,8 @@
 .modal-dialog
   .modal-content
     = form_tag scheduler_ali_action_scheduler_index_path(:ali => @ali, :invoke => SchedulerController::ALI_ADD_FUND_ACTION), :class => 'form-horizontal', :remote => true, :role => 'form' do
+
+      = hidden_field_tag :active_year, @active_year
       
       .modal-header
         %a.close{href: "#", 'data-dismiss' => 'modal'} &times;

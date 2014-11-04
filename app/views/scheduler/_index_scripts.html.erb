@@ -3,6 +3,8 @@
   	$(document).ready(function() {
   		
   		transam.make_same_height('.header-part');
+		// install click handlers for navigable objects
+		transam.install_quick_link_handlers();
 		
 		$('.popup-details').popover({
 			trigger: 'hover',
@@ -11,7 +13,8 @@
 			animation: 'true',
 			html: 'true'    
 		});
-    setupSwimlaneDragging();  
+		
+    	setupSwimlaneDragging();  
 	});
                  
 </script>

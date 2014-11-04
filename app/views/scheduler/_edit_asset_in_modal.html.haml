@@ -14,6 +14,7 @@
 
         = hidden_field_tag :asset_subtype_id, @asset_subtype_id
         = hidden_field_tag :org_id, @org_id
+        = hidden_field_tag :active_year, @active_year
         
         = f.input :object_key, :as => :hidden       
          
@@ -36,10 +37,14 @@
                                 
       .modal-footer
         %button.btn.btn-warning.btn-xs{"aria-hidden" => "true", "data-dismiss" => "modal"} Cancel
-        = f.button :submit, "Update", :class => "btn btn-success btn-xs"
+        = button_tag "Update", :class => "btn btn-success btn-xs", :id => 'modal-submit-btn'
         
 :javascript
-  
+    // hide the form after submit
+    $('#modal-submit-btn').on('click', function(e) {
+      $('#asset-edit-modal').modal('hide');
+    });
+          
   $('.scheduler_action_proxy_reason_id, .scheduler_action_proxy_replace_with_new, .scheduler_action_proxy_replace_subtype_id, .scheduler_action_proxy_replace_fuel_type_id').hide();
   $('.scheduler_action_proxy_fy_year, .scheduler_action_proxy_replace_cost, .scheduler_action_proxy_rehab_cost, .scheduler_action_proxy_extend_eul_years').hide();
 

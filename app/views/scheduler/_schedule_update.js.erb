@@ -1,6 +1,12 @@
 $('#plan-summary').html("<%= escape_javascript(render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}) %>");
 $('#swimlanes').html("<%= escape_javascript(render 'swimlanes') %>");
 $('#budgets').html("<%= escape_javascript(render 'funds') %>");
-$('#confirm_dialog_modal').modal('hide');
-$('#asset-edit-modal').modal('hide');
+$('#budgets-panel').removeClass('affix affix-top affix-bottom').addClass('affix-top');
+$('#budgets-panel').affix({
+	offset: {
+		top: 200,
+		bottom: 200
+	}
+});
+
 <%= notify_user_javascript(:notice, @msg) %>
