@@ -1,8 +1,7 @@
 .row
-  - @organization.eligible_funding_sources.each do |fs|
-    .col-md-4      
-      = render :partial => 'fund_detail', :locals => {:fund => fs}
-    
+  .col-md-12      
+    .chart{:id => "chart_#{@report.id}"} 
+       
 .row
   .col-md-12
     %table.table
