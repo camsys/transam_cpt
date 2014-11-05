@@ -10,30 +10,30 @@
             %span.caret
           %ul.dropdown-menu{:role => "menu"}
             %li
-              = link_to '#', :data => {:toggle => 'modal', :target => '#update-cost-modal', :ali => ali.object_key, :current_year => @current_year}  do
+              = link_to '#', :data => {:toggle => 'modal', :target => '#update-cost-modal', :ali => ali.object_key, :fiscal_year => @fiscal_year}  do
                 %i.fa.fa-dollar
                 Update ALI cost
             %li
-              = link_to '#', :data => {:toggle => 'modal', :target => '#add-funds-modal', :ali => ali.object_key, :current_year => @current_year}  do
+              = link_to '#', :data => {:toggle => 'modal', :target => '#add-funds-modal', :ali => ali.object_key, :fiscal_year => @fiscal_year}  do
                 %i.fa.fa-dollar
                 Assign Funds
             %li.divider
             - if @next_year > 0
               %li
-                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @next_year, :current_year => @current_year),
+                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @next_year, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Move to next fiscal year." do
                   %i.fa.fa-arrow-right
                   Move ALI to Next FY
             - if @prev_year > 0
               %li
-                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @prev_year, :current_year => @current_year),
+                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @prev_year, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Move to previous fiscal year." do
                   %i.fa.fa-arrow-left
                   Move ALI to Previous FY
             %li.divider
             - if can? :delete, ali
               %li
-                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_REMOVE_ACTION, :current_year => @current_year),
+                = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_REMOVE_ACTION, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Remove this activity line item.",
                   :data => {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone."} do
                   %i.fa.fa-trash-o
@@ -57,7 +57,7 @@
             %td.left= fp.budget_amount.funding_source
             %td.right= format_as_currency(fp.amount)
             %td.right
-              = link_to ali_action_planning_index_path(:current_year => @current_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => PlanningController::ALI_REMOVE_FUND_ACTION), 
+              = link_to ali_action_planning_index_path(:fiscal_year => @fiscal_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => PlanningController::ALI_REMOVE_FUND_ACTION), 
                 :remote => :true, :method => 'post', :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
                 :class => 'btn btn-xs btn-warning'  do
                 %i.fa.fa-trash-o

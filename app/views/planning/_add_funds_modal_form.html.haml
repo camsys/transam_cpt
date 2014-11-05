@@ -2,7 +2,7 @@
   .modal-content
     = form_tag ali_action_planning_index_path(:ali => @ali, :invoke => PlanningController::ALI_ADD_FUND_ACTION), :class => 'form-horizontal', :remote => true, :role => 'form' do
 
-      = hidden_field_tag :current_year, @current_year
+      = hidden_field_tag :fiscal_year, @fiscal_year
 
       .modal-header
         %a.close{href: "#", 'data-dismiss' => 'modal'} &times;
@@ -23,12 +23,16 @@
               = number_field_tag :amount, :min => 0, :class => 'form-control', :style => 'text-align:right;'
 
       .modal-footer
-        %button.btn.btn-warning.btn-xs{"aria-hidden" => "true", "data-dismiss" => "modal"} Cancel
+        %button.btn.btn-warning.btn-xs{"aria-hidden" => "true", "data-dismiss" => "modal", :id => 'cancel-btn'} Cancel
         = button_tag "Update", :class => "btn btn-success btn-xs", :id => 'modal-submit-btn'
         
 :javascript
     // hide the form after submit
     $('#modal-submit-btn').on('click', function(e) {
+      $('#add-funds-modal').modal('hide');
+    });
+    // hide the form after cancel
+    $('#cancel-btn').on('click', function(e) {
       $('#add-funds-modal').modal('hide');
     });
   

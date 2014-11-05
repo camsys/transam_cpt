@@ -29,7 +29,7 @@
         - else
           = "Condition: #{format_as_decimal(ast.reported_condition_rating, 2)}"          
     .col-md-1
-      %button.pull-right.btn.btn-default.btn-xs{:data => {:toggle => 'modal', :target => '#edit-asset-modal', :id => ast.object_key, :current_year => @current_year}}
+      %button.pull-right.btn.btn-default.btn-xs{:data => {:toggle => 'modal', :target => '#edit-asset-modal', :id => ast.object_key, :fiscal_year => @fiscal_year}}
         %i.fa.fa-edit
         
   .row{:id => "#asset_form_panel"}

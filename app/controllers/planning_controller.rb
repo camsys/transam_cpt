@@ -41,7 +41,7 @@ class PlanningController < OrganizationAwareController
   def index
 
     # Get the ALIs for each year
-    @alis = get_alis(@current_year)
+    @alis = get_alis(@fiscal_year)
 
   end
 
@@ -145,7 +145,7 @@ class PlanningController < OrganizationAwareController
     end
 
     # Get the ALIs for each year
-    @alis = get_alis(@current_year)
+    @alis = get_alis(@fiscal_year)
 
   end
 
@@ -190,7 +190,7 @@ class PlanningController < OrganizationAwareController
     end
 
     # Get the ALIs for each year
-    @alis = get_alis(@current_year)
+    @alis = get_alis(@fiscal_year)
 
   end
       
@@ -209,23 +209,23 @@ class PlanningController < OrganizationAwareController
     years = (first_year..last_year).to_a
 
     # Set the view up. Start year is the first year in the view
-    @current_year = params[:current_year].blank? ? first_year : params[:current_year].to_i
+    @fiscal_year = params[:fiscal_year].blank? ? first_year : params[:fiscal_year].to_i
 
     # Set up the ability to page through planning years
-    if @current_year == first_year
+    if @fiscal_year == first_year
       @prev_year = 0
       @prev_year_path = "#"
     else
-      @prev_year = @current_year - 1
-      @prev_year_path = planning_index_path(:current_year => @prev_year, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)      
+      @prev_year = @fiscal_year - 1
+      @prev_year_path = planning_index_path(:fiscal_year => @prev_year)      
     end
 
-    if @current_year == last_year
+    if @fiscal_year == last_year
       @next_year = 0
       @next_year_path = "#"
     else
-      @next_year = @current_year + 1
-      @next_year_path = planning_index_path(:current_year => @next_year, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)      
+      @next_year = @fiscal_year + 1
+      @next_year_path = planning_index_path(:fiscal_year => @next_year)      
     end
     
   end

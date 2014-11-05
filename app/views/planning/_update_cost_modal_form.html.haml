@@ -3,7 +3,7 @@
     = simple_form_for :activity_line_item, 
       :url => ali_action_planning_index_path(:ali => @ali, :invoke => PlanningController::ALI_UPDATE_COST_ACTION), :remote => true do |f|
 
-      = hidden_field_tag :current_year, @current_year
+      = hidden_field_tag :fiscal_year, @fiscal_year
 
       .modal-header
         %a.close{href: "#", 'data-dismiss' => 'modal'} &times;
@@ -12,11 +12,15 @@
         = f.input :anticipated_cost, placeholder: 'New cost...', label: false
         
       .modal-footer
-        %button.btn.btn-warning.btn-xs{"aria-hidden" => "true", "data-dismiss" => "modal"} Cancel
-        = button_tag "Update", :class => "btn btn-success btn-xs", :id => 'modal_submit_btn'
+        %button.btn.btn-warning.btn-xs{"aria-hidden" => "true", "data-dismiss" => "modal", :id => 'cancel-btn'} Cancel
+        = button_tag "Update", :class => "btn btn-success btn-xs", :id => 'modal-submit-btn'
 
 :javascript
     // hide the form after submit
-    $('#modal_submit_btn').on('click', function(e) {
+    $('#modal-submit-btn').on('click', function(e) {
+      $('#update-cost-modal').modal('hide');
+    });
+    // hide the form after cancel
+    $('#cancel-btn').on('click', function(e) {
       $('#update-cost-modal').modal('hide');
     });
