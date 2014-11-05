@@ -3,11 +3,6 @@ function <%= "chart_func_#{@funding_source.object_key}" %>() {
   var div_id = '<%= "chart_#{@funding_source.object_key}" %>';
   var chart_type = 'combo';
   var chart_options = {
-  	title: '<%= @funding_source.name %>',
-  	titleTextStyle: {
-  		fontSize: 14,
-  		bold: true
-  	},
   	colors: ['#4DDBB8', '#A6EDDC', '#00A37A'],
   	fontSize: 10,
   	vAxis: {

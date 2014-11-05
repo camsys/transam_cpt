@@ -202,17 +202,17 @@ class PlanningController < OrganizationAwareController
     @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
         
     # This is the first year that the user can plan for
-    first_year = current_planning_year_year
+    @first_year = current_planning_year_year
     # This is the last year  the user can plan for
-    last_year = last_fiscal_year_year
+    @last_year = last_fiscal_year_year
     # This is an array of years that the user can plan for
-    years = (first_year..last_year).to_a
+    years = (@first_year..@last_year).to_a
 
     # Set the view up. Start year is the first year in the view
-    @fiscal_year = params[:fiscal_year].blank? ? first_year : params[:fiscal_year].to_i
+    @fiscal_year = params[:fiscal_year].blank? ? @first_year : params[:fiscal_year].to_i
 
     # Set up the ability to page through planning years
-    if @fiscal_year == first_year
+    if @fiscal_year == @first_year
       @prev_year = 0
       @prev_year_path = "#"
     else
@@ -220,7 +220,7 @@ class PlanningController < OrganizationAwareController
       @prev_year_path = planning_index_path(:fiscal_year => @prev_year)      
     end
 
-    if @fiscal_year == last_year
+    if @fiscal_year == @last_year
       @next_year = 0
       @next_year_path = "#"
     else
