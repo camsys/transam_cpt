@@ -4,5 +4,10 @@
       = render 'plan_view'
       
 #add-funds-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
+  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Add Funds...'}
+
 #update-cost-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
+  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Update ALI cost'}
+
 #edit-asset-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
+  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Edit Asset'}

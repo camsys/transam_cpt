@@ -34,7 +34,7 @@ window.setupModalHandlers = () ->
     toggle_ali(e, 'hide')
 
   # load the contents for the asset-editing modal when it is shown
-  $('#asset-edit-modal').on 'show.bs.modal', (e) ->
+  $('#asset-edit-modal').on 'shown.bs.modal', (e) ->
     $('#asset-edit-modal').load(
       '/scheduler/edit_asset_in_modal',
       {
@@ -45,7 +45,7 @@ window.setupModalHandlers = () ->
     )
     
   # load the contents for the update cost modal when it is shown
-  $('#ali-update-cost-modal').on 'show.bs.modal', (e) ->
+  $('#ali-update-cost-modal').on 'shown.bs.modal', (e) ->
     $('#ali-update-cost-modal').load(
       '/scheduler/update_cost_modal',
       {
@@ -56,7 +56,7 @@ window.setupModalHandlers = () ->
     )
 
   # load the contents for the funding plan modal when it is shown
-  $('#ali-add-funding-plan-modal').on 'show.bs.modal', (e) ->
+  $('#ali-add-funding-plan-modal').on 'shown.bs.modal', (e) ->
     $('#ali-add-funding-plan-modal').load(
       '/scheduler/add_funding_plan_modal',
       {
