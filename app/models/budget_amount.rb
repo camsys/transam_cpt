@@ -84,9 +84,9 @@ class BudgetAmount < ActiveRecord::Base
   end  
   
   # Calculate the amount of the budget remaining
-  def available
-    amount - spent
-  end
+  #def available
+  #  amount - spent
+  #end
   
   def self.allowable_params
     FORM_PARAMS

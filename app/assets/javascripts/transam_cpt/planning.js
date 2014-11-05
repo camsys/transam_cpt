@@ -6,7 +6,7 @@ $('#add-funds-modal').on('show.bs.modal', function(e) {
 		'/planning/add_funds', 
 		{
   			'ali': $(e.relatedTarget).data('ali'),
-  			'current_year': $(e.relatedTarget).data('current-year')
+  			'fiscal_year': $(e.relatedTarget).data('fiscal-year')
 		} 
 	);
 });
@@ -17,7 +17,7 @@ $('#update-cost-modal').on('show.bs.modal', function(e) {
     '/planning/update_cost', 
     {
       'ali': $(e.relatedTarget).data('ali'),
-      'current_year': $(e.relatedTarget).data('current-year')
+      'fiscal_year': $(e.relatedTarget).data('fiscal-year')
     } 
   );
 });
@@ -28,7 +28,7 @@ $('#edit-asset-modal').on('show.bs.modal', function(e) {
     '/planning/edit_asset', 
     {
       'id': $(e.relatedTarget).data('id'),
-      'current_year': $(e.relatedTarget).data('current-year')
+      'fiscal_year': $(e.relatedTarget).data('fiscal-year')
     } 
   );
 });

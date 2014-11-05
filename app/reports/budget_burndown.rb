@@ -25,7 +25,7 @@ class BudgetBurndown < AbstractReport
       budget = BudgetAmount.find_by(:organization => organization, :funding_source => funding_source, :fy_year => year)      
       if budget
         amount = budget.amount
-        cumulative_total += budget.amount
+        cumulative_total += amount
         cumulative_spent += budget.spent
       end
       row << cumulative_total
