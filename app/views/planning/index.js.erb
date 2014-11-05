@@ -1,2 +1,2 @@
-$('#plan-summary').html("<%= escape_javascript(render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@current_year]}) %>");
+$('#plan-summary').html("<%= escape_javascript(render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@fiscal_year], :action_path => '/planning'}) %>");
 $('#swimlane').html("<%= escape_javascript(render 'swimlane') %>");
