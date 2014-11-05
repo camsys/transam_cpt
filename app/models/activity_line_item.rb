@@ -98,11 +98,15 @@ class ActivityLineItem < ActiveRecord::Base
     name
   end
 
-  # Returns the total amount planned for this ali
+  # Returns the total amount of funding planned for this ali
   def total_planned
     val = 0
     funding_plans.each {|x| val += x.amount}
     val
+  end
+  
+  def funds_required
+    cost - total_planned
   end
   
   # Returns the total value of federal funds requested

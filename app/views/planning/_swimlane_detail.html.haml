@@ -1,4 +1,11 @@
-.panel.panel-primary.swimlane-draggable{:id => "#{ali.object_key}_ali_panel", :data => {:object_type => 'ali', :object_key => ali.object_key, :fy => year}}
+:ruby
+  if ali.funds_required > 0
+    ali_class = 'panel-primary'
+  else
+    ali_class = 'panel-funded'
+  end
+  
+.panel.swimlane-draggable{:class => ali_class, :id => "#{ali.object_key}_ali_panel", :data => {:object_type => 'ali', :object_key => ali.object_key, :fy => year}}
   .panel-heading.ali-heading
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)
@@ -68,6 +75,6 @@
           %td
         %tr
           %td.left Required
-          %td.right= format_as_currency(ali.cost - ali.total_planned)
+          %td.right= format_as_currency(ali.funds_required)
           %td            
             
