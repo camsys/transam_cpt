@@ -224,7 +224,7 @@ class CapitalProject < ActiveRecord::Base
     b
   end
   
-  def state_request
+  def state_funds
     val = 0
     activity_line_items.each do |a|
       val += a.state_funds
@@ -232,7 +232,7 @@ class CapitalProject < ActiveRecord::Base
     val
   end
   
-  def federal_request
+  def federal_funds
     val = 0
     activity_line_items.each do |a|
       val += a.federal_funds
@@ -240,7 +240,7 @@ class CapitalProject < ActiveRecord::Base
     val
   end
   
-  def local_request
+  def local_funds
     val = 0
     activity_line_items.each do |a|
       val += a.local_funds
@@ -248,7 +248,7 @@ class CapitalProject < ActiveRecord::Base
     val
   end
   
-  def total_request
+  def total_funds
     val = 0
     activity_line_items.each do |a|
       val += a.total_funds
@@ -267,7 +267,7 @@ class CapitalProject < ActiveRecord::Base
   
   # Returns the amount that is not yet funded
   def funding_difference
-    total_cost - total_request
+    total_cost - total_funds
   end
   
   # Override the mixin method and delegate to it

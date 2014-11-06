@@ -6,25 +6,18 @@
       %table.table.table-hover
         %thead
           %tr
-            %th.center{:colspan => 4}
-            %th.center{:colspan => 6} Requests
-            %th.center{:colspan => 2} Totals
-
-          %tr
             %th Name
             %th.left Sub Category
             %th.right Count
             %th.right Cost
+            %th.right Requested
 
-            %th.right State
-            %th.right %
             %th.right Federal
+            %th.right %
+            %th.right State
             %th.right %
             %th.right Local
             %th.right %
-
-            %th.right Requested
-            %th.right Required
 
         %tbody
           - project.activity_line_items.each do |ali|
@@ -34,37 +27,34 @@
               %td.left= ali.team_ali_code
               %td.right= format_as_integer(ali.assets.count)
               %td.right= format_as_currency(ali.cost)
-
-
-              %td.right= format_as_currency(ali.state_funds)
-              %td.right= format_as_percentage(ali.state_funds / ali.anticipated_cost * 100.0) unless ali.state_funds == 0
+              %td.right= format_as_currency(ali.total_funds)
 
               %td.right= format_as_currency(ali.federal_funds)
-              %td.right= format_as_percentage(ali.federal_funds / ali.anticipated_cost * 100.0) unless ali.federal_funds == 0
+              %td.right= format_as_percentage(ali.federal_funds / ali.cost * 100.0) unless ali.federal_funds == 0
+
+              %td.right= format_as_currency(ali.state_funds)
+              %td.right= format_as_percentage(ali.state_funds / ali.cost * 100.0) unless ali.state_funds == 0
 
               %td.right= format_as_currency(ali.local_funds)
-              %td.right= format_as_percentage(ali.local_funds / ali.anticipated_cost * 100.0) unless ali.local_funds == 0
-
-              %td.right= format_as_currency(ali.total_funds)
-              %td.right= format_as_currency(ali.funding_difference)
+              %td.right= format_as_percentage(ali.local_funds / ali.cost * 100.0) unless ali.local_funds == 0
 
               - if popup
                 %td.center
                   %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "Assets", :content => "#{raw render :partial => 'activity_line_items/assets_datatable', :locals => {:ali => ali, :popup => false}}"}}
-                  %i.fa.fa-usd.text-info.popup-details{:data => {:title => "Funding Requests", :content => "#{raw render :partial => 'activity_line_items/funding_requests_table', :locals => {:ali => ali, :popup => false}}"}}
+                  %i.fa.fa-usd.text-info.popup-details{:data => {:title => "Funding", :content => "#{raw render :partial => 'activity_line_items/funding_plans_table', :locals => {:ali => ali, :popup => false}}"}}
 
         %tfoot
           %tr
             %td{:colspan => 3}
             %td.right= format_as_currency(project.total_cost)
-            %td.right= format_as_currency(project.state_request)
+            %td.right= format_as_currency(project.total_funds)
+
+            %td.right= format_as_currency(project.federal_funds)
             %td
-            %td.right= format_as_currency(project.federal_request)
+            %td.right= format_as_currency(project.state_funds)
             %td
-            %td.right= format_as_currency(project.local_request)
+            %td.right= format_as_currency(project.local_funds)
             %td
-            %td.right= format_as_currency(project.total_request)
-            %td.right= format_as_currency(project.funding_difference)
 
 :javascript
   $('.popup-details').popover({

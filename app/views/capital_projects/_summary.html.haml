@@ -10,10 +10,10 @@
     %legend.panel-legend Funding Summary
     = format_field("Total Cost", format_as_currency(@project.total_cost))
     = format_field("", "&nbsp;")
-    = format_field("State", format_as_currency(@project.state_request))
-    = format_field("Federal", format_as_currency(@project.federal_request))
-    = format_field("Local", format_as_currency(@project.local_request))
-    = format_field("Total", format_as_currency(@project.total_request))
+    = format_field("State", format_as_currency(@project.state_funds))
+    = format_field("Federal", format_as_currency(@project.federal_funds))
+    = format_field("Local", format_as_currency(@project.local_funds))
+    = format_field("Total", format_as_currency(@project.total_funds))
     = format_field("Funds Required", format_as_currency(@project.funding_difference))
 
   %fieldset

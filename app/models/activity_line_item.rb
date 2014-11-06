@@ -99,21 +99,21 @@ class ActivityLineItem < ActiveRecord::Base
   end
 
   # Returns the total amount of funding planned for this ali
-  def total_planned
+  def total_funds
     val = 0
     funding_plans.each {|x| val += x.amount}
     val
   end
   
   def funds_required
-    cost - total_planned
+    cost - total_funds
   end
   
   # Returns the total value of federal funds requested
   def federal_funds
     val = 0
-    funding_requests.each do |a|
-      val += a.federal_amount
+    funding_plans.each do |fp|
+      val += fp.federal_amount
     end
     val
   end
@@ -121,8 +121,8 @@ class ActivityLineItem < ActiveRecord::Base
   # Returns the total value of state funds requested
   def state_funds
     val = 0
-    funding_requests.each do |a|
-      val += a.state_amount
+    funding_plans.each do |fp|
+      val += fp.state_amount
     end
     val
   end
@@ -130,26 +130,12 @@ class ActivityLineItem < ActiveRecord::Base
   # Returns the total value of local funds requested
   def local_funds
     val = 0
-    funding_requests.each do |a|
-      val += a.local_amount
+    funding_plans.each do |fp|
+      val += fp.local_amount
     end
     val
   end
   
-  # Returns the total amount of funds requested
-  def total_funds
-    val = 0
-    funding_requests.each do |a|
-      val += a.total_amount
-    end
-    val
-  end
-
-  # Returns the amount that is not yet funded
-  def funding_difference
-    cost - total_funds
-  end
-
   # Returns the cost difference between the anticpated cost by the user and the cost estimated
   # by the system
   def cost_difference

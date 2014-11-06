@@ -72,6 +72,40 @@ class FundingPlan < ActiveRecord::Base
     "#{budget_amount.funding_source.name} $#{amount}" unless budget_amount.nil?
   end
   
+  def federal_percentage
+    federal_amount / amount
+  end
+  
+  def federal_amount
+    if budget_amount.nil?
+      0
+    else
+      amount - (state_amount + local_amount)
+    end
+  end
+  
+  def state_percentage
+    state_amount / amount
+  end
+  def state_amount
+    if budget_amount.nil?
+      0
+    else
+      amount * (budget_amount.funding_source.state_match_required.nil? ? 0 : budget_amount.funding_source.state_match_required / 100)
+    end    
+  end
+
+  def local_percentage
+    local_amount / amount
+  end
+
+  def local_amount
+    if budget_amount.nil?
+      0
+    else
+      amount * (budget_amount.funding_source.local_match_required.nil? ? 0 : budget_amount.funding_source.local_match_required / 100)
+    end    
+  end
   #------------------------------------------------------------------------------
   #
   # Protected Methods

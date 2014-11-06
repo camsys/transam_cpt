@@ -1,6 +1,6 @@
 .row
   .col-md-12{:style => 'height:160px;overflow-y:auto;'}
-    = render :partial => 'funding_requests_table', :locals => {:ali => @activity_line_item, :popup => true}
+    = render :partial => 'funding_plans_table', :locals => {:ali => @activity_line_item, :popup => true}
 
 .row
   .col-md-12
@@ -9,7 +9,7 @@
       .col-md-12
         = render 'funding_messages'
 
-      - if @activity_line_item.funding_difference > 0
+      - if @activity_line_item.funds_required > 0
         .col-md-8
           = simple_form_for([@project, @activity_line_item, FundingRequest.new],
               :wrapper => :horizontal_form,
