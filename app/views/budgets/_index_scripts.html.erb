@@ -33,7 +33,7 @@
 
 
   	// load the contents for the budget-editing modal when it is shown
-  	$('#budget-edit-modal').on('show.bs.modal', function(e) {
+  	$('#budget-edit-modal').on('shown.bs.modal', function(e) {
     	$('#budget-edit-modal').load(
     		'/budgets/alter', 
     		{'id': $(e.relatedTarget).data('id')}
