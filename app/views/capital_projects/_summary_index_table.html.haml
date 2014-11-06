@@ -8,8 +8,8 @@
       %th.left Title				
       %th.center Status
 
-      %th.right State
       %th.right Federal       
+      %th.right State
       %th.right Local
       %th.right Total
       
@@ -22,10 +22,10 @@
     - total_total = 0.0
     
     - projects.each do |p|
-      - total_state += p.state_request
-      - total_federal += p.federal_request
-      - total_local += p.local_request
-      - total_total += p.total_request
+      - total_state += p.state_funds
+      - total_federal += p.federal_funds
+      - total_local += p.local_funds
+      - total_total += p.total_funds
       
       %tr.popup-details{:data => {:action_path => capital_project_path(p)}}
         %td= p.fiscal_year
@@ -36,10 +36,10 @@
         %td= p.title
         %td= p.state
         
-        %td.right= format_as_currency(p.state_request)
-        %td.right= format_as_currency(p.federal_request)
-        %td.right= format_as_currency(p.local_request)
-        %td.right= format_as_currency(p.total_request)
+        %td.right= format_as_currency(p.federal_funds)
+        %td.right= format_as_currency(p.state_funds)
+        %td.right= format_as_currency(p.local_funds)
+        %td.right= format_as_currency(p.total_funds)
 
         %td.center
           %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
@@ -47,8 +47,8 @@
   %tfoot
     %tr
       %td{:colspan => 7}            
-        %td.right= format_as_currency(total_state)
         %td.right= format_as_currency(total_federal)
+        %td.right= format_as_currency(total_state)
         %td.right= format_as_currency(total_local)
         %td.right= format_as_currency(total_total)
 
