@@ -12,13 +12,13 @@
       errorElement: 'span',
       errorClass: 'help-block',
       errorPlacement: function(error, element) {
-          if(element.parent('.input-group').length) {
+          if(element.parents('.input-group').length) {
               error.insertAfter(element.parent());
           } else {
               error.insertAfter(element);
           }
       }
-  }); 
+  });
 
 
   // Use validation plugin to validate the forms before submittal
@@ -27,8 +27,8 @@
       $(form).submit();
     }
   });
-  
-  
+
+
   $(document).ready(function() {
 
     transam.make_same_height('.header-part');

@@ -14,25 +14,25 @@
       errorElement: 'span',
       errorClass: 'help-block',
       errorPlacement: function(error, element) {
-          if(element.parent('.input-group').length) {
+          if(element.parents('.input-group').length) {
               error.insertAfter(element.parent());
           } else {
               error.insertAfter(element);
           }
       }
-  }); 
-  
+  });
+
   // Use validation plugin to validate the forms before submittal
   $('#new_comment').validate({
     submitHandler: function(form) {
       $(form).submit();
     }
   });
-  
+
   $(document).ready(function() {
 
     transam.make_same_height('.header-part');
-	
+
     // Manage the tabs
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
       // save the latest tab
@@ -42,9 +42,9 @@
         draw_chart();
       }
     });
-      
+
   });
-  
+
   $(function() {
     var last_tab = transam.get_ui_key_value('funding_line_item_tab');
     if (last_tab) {
@@ -52,7 +52,5 @@
     } else {
       // Default to the first tab if no tab is stored
       $('a[data-toggle="tab"]:first').tab('show');
-    }   
-  }); 
-
-  
+    }
+  });
