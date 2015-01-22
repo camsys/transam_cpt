@@ -94,8 +94,16 @@ class FundingPlan < ActiveRecord::Base
   def local_share
     amount * (funding_source.local_match_required / 100.0)
   end
-
-
+  def federal_percentage
+    100.0 * (federal_share / amount) if amount.to_i > 0
+  end
+  def state_percentage
+    100.0 * (state_share / amount) if amount.to_i > 0
+  end
+  def local_percentage
+    100.0 * (local_share / amount) if amount.to_i > 0
+  end
+  
   #------------------------------------------------------------------------------
   #
   # Protected Methods

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-    
+
   # Budget Forcast
   resources :budgets,   :only => [:index] do
     collection do
@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       post  'move_ali'
     end
   end
-    
+
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
     collection do
@@ -34,34 +34,34 @@ Rails.application.routes.draw do
       post  'add_funding_plan_modal'
     end
   end
-  
+
   # Funding Requests -- index only
   resources :funding_requests, :only => [:index]
 
   # Capital Project Controllers
   resources :capital_projects do
-    
+
     # Build controller for CP wizard
-    resources :build, controller: 'capital_projects/build'    
-    
+    resources :build, controller: 'capital_projects/build'
+
     collection do
       get   'builder'
       post  'runner'
     end
-    
+
     member do
       get 'copy'
       get 'fire_workflow_event'
     end
-        
+
     resources :comments
     resources :documents
-    
+
     resources :activity_line_items do
-      
-      resources :funding_requests
-      resources :comments      
-      
+
+      resources :funding_plans, :only => [:create, :destroy]
+      resources :comments
+
       member do
         get 'edit_cost'
         post 'set_cost'
@@ -70,7 +70,7 @@ Rails.application.routes.draw do
         delete 'remove_asset'
       end
     end
-    
+
   end
-    
+
 end

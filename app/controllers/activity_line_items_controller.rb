@@ -41,9 +41,11 @@ class ActivityLineItemsController < OrganizationAwareController
     @next_record_path = @next_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @next_record_key)
 
     # Load the eligibility service and use it to select funds which this ALI is eligible for
-    eligibilityService = EligibilityService.new
-    @available_federal_funds = []
-    @available_state_funds   = []
+    eligibility_service = EligibilityService.new
+    @funding_sources = eligibility_service.evaluate_organization_funding_sources(@organization)
+
+    #@available_federal_funds = []
+    #@available_state_funds   = []
     # eligibilityService.evaluate(@activity_line_item, {:federal => true}).each do |fli|
     #   amount = view_context.format_as_currency(fli.available)
     #   if fli.project_number.blank?

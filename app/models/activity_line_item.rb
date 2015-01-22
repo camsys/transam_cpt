@@ -129,6 +129,15 @@ class ActivityLineItem < ActiveRecord::Base
     funding_plans.each {|x| val += x.local_share}
     val
   end
+  def federal_percentage
+    100.0 * (federal_funds / total_funds) if total_funds.to_i > 0
+  end
+  def state_percentage
+    100.0 * (state_funds / total_funds) if total_funds.to_i > 0
+  end
+  def local_percentage
+    100.0 * (local_funds / total_funds) if total_funds.to_i > 0
+  end
 
   # Returns the cost difference between the anticpated cost by the user and the cost estimated
   # by the system
