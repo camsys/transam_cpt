@@ -1,7 +1,8 @@
 %table.table.table-hover#datatable
   %thead
     %tr
-      %th.left Agency
+      - if @organization_list.count > 1
+        %th.left Agency
       %th.center FY
       %th.left Project
       %th.center Scope
@@ -33,7 +34,8 @@
       - total_total += p.total_funds
 
       %tr.popup-details{:data => {:action_path => capital_project_path(p)}}
-        %td= p.organization
+        - if @organization_list.count > 1
+          %td= p.organization
         %td.center= p.fiscal_year
         %td= p.project_number
         %td.center= p.team_ali_code.scope
@@ -54,12 +56,16 @@
 
   %tfoot
     %tr
-      %td{:colspan => 7}
-        %td.right= format_as_currency(total_cost)
-        %td.right= format_as_currency(total_state)
-        %td.right= format_as_currency(total_federal)
-        %td.right= format_as_currency(total_local)
-        %td.right= format_as_currency(total_total)
+      - if @organization_list.count > 1
+        %td{:colspan => 7}
+      - else
+        %td{:colspan => 6}
+
+      %td.right= format_as_currency(total_cost)
+      %td.right= format_as_currency(total_state)
+      %td.right= format_as_currency(total_federal)
+      %td.right= format_as_currency(total_local)
+      %td.right= format_as_currency(total_total)
 
 = render 'shared/datatable_javascript'
 
