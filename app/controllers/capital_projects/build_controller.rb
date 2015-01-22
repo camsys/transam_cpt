@@ -7,7 +7,7 @@ class CapitalProjects::BuildController < OrganizationAwareController
   include FiscalYear
 
   # Session Variables
-  SESSION_PROXY_VAR        = "capital_project_builder_cache_var"
+  CACHE_PROXY_VAR        = "capital_project_builder_cache_var"
 
   # Set the breadcrumbs
   add_breadcrumb "Home", :root_path
@@ -16,33 +16,35 @@ class CapitalProjects::BuildController < OrganizationAwareController
   steps :step1, :step2, :step3, :step4, :step5
 
   def show
+    Rails.logger.debug "in show : step = #{step}"
 
     add_breadcrumb "New"
-    
+
     @fiscal_years = get_fiscal_years
-    @proxy = session[SESSION_PROXY_VAR]
-    if @proxy.nil?
+    @proxy = get_cached_objects(get_cache_key(current_user, CACHE_PROXY_VAR))
+    if @proxy.blank?
       @proxy = CapitalProjectProxy.new
-      session[SESSION_PROXY_VAR] = @proxy
+      cache_objects(get_cache_key(current_user, CACHE_PROXY_VAR), @proxy)
     end
     #puts "Show: " + session[SESSION_PROXY_VAR].inspect
     #puts "Step = " + step.to_s
-    
+
     # if this is the last step then save the object
     if step == 'wicked_finish'
       save_new_project(@proxy)
     end
-    
+
     render_wizard
   end
 
 
   def update
-    @proxy = session[SESSION_PROXY_VAR]
+    Rails.logger.debug "in update : step = #{step}"
+
+    @proxy = get_cached_objects(get_cache_key(current_user, CACHE_PROXY_VAR))
     @proxy.assign_attributes(params[:capital_project_proxy])
-    session[SESSION_PROXY_VAR] = @proxy
-    puts "Update: " + session[SESSION_PROXY_VAR].inspect
-    
+    cache_objects(get_cache_key(current_user, CACHE_PROXY_VAR), @proxy)
+
     render_wizard @proxy
   end
 
@@ -50,19 +52,19 @@ class CapitalProjects::BuildController < OrganizationAwareController
   def new
     @proxy = CapitalProjectProxy.new
     # save the proxy in the session
-    session[SESSION_PROXY_VAR] = @proxy
+    cache_objects(get_cache_key(current_user, CACHE_PROXY_VAR), @proxy)
     redirect_to wizard_path(steps.first)
   end
-  
-  def finish_wizard_path    
+
+  def finish_wizard_path
     capital_project_path(session[:new_project_object_key])
-  end  
-  
-  protected 
-  
+  end
+
+  protected
+
   def save_new_project(proxy)
 
-    puts "Saving proxy: #{proxy.inspect}"    
+    puts "Saving proxy: #{proxy.inspect}"
     # Create a new capital project from the proxy and redirect to it
     cp = CapitalProject.new
     cp.title = proxy.name
@@ -85,7 +87,7 @@ class CapitalProjects::BuildController < OrganizationAwareController
       msg = "A problem occurred while saving your capital project."
       notify_user(:alert, msg)
     end
-    
+
   end
-  
+
 end
