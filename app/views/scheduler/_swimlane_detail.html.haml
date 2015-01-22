@@ -42,11 +42,11 @@
     %table.table.table-condensed
       %tbody
         - ali.funding_plans.each do |fp|
-          %tr        
-            %td.left= fp.budget_amount.funding_source
+          %tr
+            %td.left= fp.funding_source
             %td.right= format_as_currency(fp.amount)
             %td.right
-              = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), 
+              = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
                 :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
                 :class => 'btn btn-xs btn-warning'  do
                 %i.fa.fa-trash-o
@@ -58,5 +58,4 @@
         %tr
           %td.left Required
           %td.right= format_as_currency(ali.funds_required)
-          %td            
-            
+          %td

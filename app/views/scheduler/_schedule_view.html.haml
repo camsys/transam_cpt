@@ -1,32 +1,11 @@
-:ruby
-  @report = Report.find_by_class_name('BudgetRollup')
-  report_instance = @report.class_name.constantize.new
-  @data = report_instance.get_data(@organization, {})
-  
 .row
-  %ul.nav.nav-tabs
-    %li
-      %a{:href => "#plan", :data =>{:toggle => 'tab'}}
-        = "Plan Summary"
-    %li
-      %a{:href => "#fund", :data =>{:toggle => 'tab'}}
-        = "Funding"
-
-.tab-content{:style => 'min-height: 0;'}
-  .tab-pane.fade#plan
-    = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}
-  .tab-pane.fade#fund
-    .col-md-12
-      .chart{:id => "chart_#{@report.id}"}
+  = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}
 
 .row
-  .col-md-10
+  .col-md-12
     #swimlanes
       = render 'swimlanes'
-  .col-md-2
-    #budgets
-      = render 'funds'
-      
+
 #confirmation-modal
 
 #ali-update-cost-modal.modal.fade
@@ -45,5 +24,3 @@
         %h4.modal-title Processing...
       .modal-body
         = render partial: 'shared/running_process', locals: {message: "Updating SOGR projects. This process might take a while.", style: ''}
-
-= render 'chart_scripts'

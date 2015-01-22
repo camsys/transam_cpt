@@ -10,3 +10,5 @@ DROP TABLE IF EXISTS milestone_types
 Go
 DROP TABLE IF EXISTS milestones
 Go
+DROP TABLE IF EXISTS funding_plans
+Go

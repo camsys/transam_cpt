@@ -4,10 +4,6 @@
       %span.badge.pull-right= @project.activity_line_items.count
       = "Activity Line Items "
   %li
-    %a{:href => "#mpms", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @project.mpms_projects.count
-      = "MPMS Projects "
-  %li
     %a{:href => "#hist", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @project.history.count
       = "History "
@@ -24,9 +20,6 @@
   .tab-pane.fade#alis
     .tab-content
       = render 'activity_line_items'
-  .tab-pane.fade#mpms
-    .tab-content
-      = render 'mpms_projects_table'
   .tab-pane.fade#hist
     .tab-content
       = render 'history_table'

@@ -4,38 +4,38 @@
   %table.table.table-hover
     %thead
       %tr
-        %th.center{:colspan => "3"} Asset	
-        %th.center{:colspan => "3"} Condition 
-        %th.center{:colspan => "3"} Replacement 
+        %th.center{:colspan => "3"} Asset
+        %th.center{:colspan => "3"} Condition
+        %th.center{:colspan => "3"} Replacement
       %tr
         %th.center Tag
         %th.center Description
         %th.center Fuel
-  
+
         %th.center Age
         %th.center Mileage
         %th.center Rating
-  
+
         %th.center Orig.
-        %th.center Curr Val.
+        %th.center Book Val.
         %th.center Est. Cost
         %th.center Sch. Cost
         - if popup
           %th
-            
+
     %tbody
       - ali.assets.each do |a|
         %tr
           %td.left= a.asset_tag
           %td.left= a.description
-          %td.left= FuelType.find(a.fuel_type_id)
-  
+          %td.left= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
+
           %td.right= a.age
           %td.right= format_as_integer(a.reported_mileage)
           %td.center= a.reported_condition_type
-  
+
           %td.right= format_as_currency(a.cost)
-          %td.right= format_as_currency(a.estimated_value)
+          %td.right= format_as_currency(a.book_value)
           %td.right= format_as_currency(a.estimated_replacement_cost)
           %td.right= format_as_currency(a.scheduled_replacement_cost)
           - if popup
@@ -44,4 +44,3 @@
               - if delete
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger
-              

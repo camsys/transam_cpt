@@ -38,19 +38,19 @@ window.setupModalHandlers = () ->
     $('#asset-edit-modal').load(
       '/scheduler/edit_asset_in_modal',
       {
-        'id': $(e.relatedTarget).data('id'), 
-        'year': $(e.relatedTarget).data('year'), 
+        'id': $(e.relatedTarget).data('id'),
+        'year': $(e.relatedTarget).data('year'),
         'active_year': $(e.relatedTarget).data('active-year')
       }
     )
-    
+
   # load the contents for the update cost modal when it is shown
   $('#ali-update-cost-modal').on 'shown.bs.modal', (e) ->
     $('#ali-update-cost-modal').load(
       '/scheduler/update_cost_modal',
       {
-        'capital_project': $(e.relatedTarget).data('capital-project'), 
-        'ali': $(e.relatedTarget).data('ali'), 
+        'capital_project': $(e.relatedTarget).data('capital-project'),
+        'ali': $(e.relatedTarget).data('ali'),
         'active_year': $(e.relatedTarget).data('active-year')
       }
     )
@@ -60,8 +60,8 @@ window.setupModalHandlers = () ->
     $('#ali-add-funding-plan-modal').load(
       '/scheduler/add_funding_plan_modal',
       {
-        'capital_project': $(e.relatedTarget).data('capital-project'), 
-        'ali': $(e.relatedTarget).data('ali'), 
+        'capital_project': $(e.relatedTarget).data('capital-project'),
+        'ali': $(e.relatedTarget).data('ali'),
         'active_year': $(e.relatedTarget).data('active-year')
       }
     )
@@ -81,7 +81,7 @@ window.setupSwimlaneDragging = () ->
   $('.swimlane-heading').droppable(
     accept: '.swimlane-draggable',
     tolerance: 'pointer',
-    drop: (e, ui) ->  
+    drop: (e, ui) ->
       handleSwimlaneDrop(e, ui)
     activate: (e, ui) ->
       droppable_fiscal_year = $(e.target).data('fy')
@@ -108,7 +108,7 @@ handleSwimlaneDrop = (e, ui) ->
   moveObjectToFy(object_type, object_key, fiscal_year)
 
 # Move either an ALI or asset to another year.
-moveObjectToFy = (object_type, key, year) ->  
+moveObjectToFy = (object_type, key, year) ->
   if object_type == 'asset'
     url = '/scheduler/scheduler_action'
     post_data = {scheduler_action_proxy: {action_id: 'move_'+object_type+'_to_fiscal_year', object_key: key, fy_year: year}}

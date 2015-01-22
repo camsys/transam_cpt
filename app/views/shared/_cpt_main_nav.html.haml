@@ -1,45 +1,21 @@
 %li.nav-item.dropdown{:class => get_nav_link_class(['capital_projects', 'build', 'activity_line_items', 'scheduler'])}
   = link_to "#", :class => "dropdown-toggle", :data => {"toggle" => "dropdown"} do
-    %i.fa.fa-road.fa-2x
+    %i.fa.fa-cubes.fa-2x
     %br
-    Planning
+    Projects
     %b.caret
   %ul.dropdown-menu
-
-    %li
-      = link_to budgets_path do
-        %i.fa.fa-line-chart.fa-fw
-        = " Budget Forecast"
+    %li.text-left
+      = link_to capital_projects_path do
+        %i.fa.fa-list-ul.fa-fw
+        = " Capital Projects"
 
     %li.divider
-    %li
-      = link_to planning_index_path do
-        %i.fa.fa-refresh.fa-fw
-        = " Asset Planning"
     %li
       = link_to scheduler_index_path do
         %i.fa.fa-refresh.fa-fw
-        = " Asset Planning (old)"
+        = " Project Scheduler"
 
-    %li.divider
-    %li.text-left.dropdown-submenu
-      = link_to capital_projects_path do
-        %i.fa.fa-list-ul.fa-fw
-        = " Capital Needs Lists"
-      %ul.dropdown-menu
-        %li
-          = link_to "All Capital Projects", capital_projects_path(:capital_project_state => '')
-        %li.divider
-        %li
-          = link_to "Candidate Projects", capital_projects_path(:capital_project_state => 'unsubmitted')
-        %li
-          = link_to "Programmed Projects", capital_projects_path(:capital_project_state => 'approved')
-
-    %li.divider
-    %li.text-left
-      = link_to new_search_path(:search_type => SearchesController::CAPITAL_PLAN_SEARCH_TYPE) do
-        %i.fa.fa-search.fa-fw
-        = " Search Capital Projects"
     - if can? :create, CapitalProject
       %li.divider
       %li.text-left

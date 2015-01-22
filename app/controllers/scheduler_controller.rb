@@ -15,14 +15,14 @@ class SchedulerController < OrganizationAwareController
   RESET_ACTION                = '4'
 
   # Controller actions that can be invoked from the view to manuipulate ALIs
-  ALI_MOVE_YEAR_ACTION    = '1'  
-  ALI_UPDATE_COST_ACTION  = '2'  
+  ALI_MOVE_YEAR_ACTION    = '1'
+  ALI_UPDATE_COST_ACTION  = '2'
   ALI_REMOVE_ACTION       = '3'
   ALI_ADD_FUND_ACTION     = '4'
-  ALI_REMOVE_FUND_ACTION  = '5' 
+  ALI_REMOVE_FUND_ACTION  = '5'
 
   # Controller actions that can be invoked from the view to manuipulate swimlanes
-  SWIMLANE_SET_ACTIVE_ACTION  = '1'  
+  SWIMLANE_SET_ACTIVE_ACTION  = '1'
 
   ACTIONS = [
     ["Replace", REPLACE_ACTION],
@@ -31,7 +31,7 @@ class SchedulerController < OrganizationAwareController
     ["Reset to policy", RESET_ACTION]
   ]
 
-   
+
   YES = '1'
   NO = '0'
 
@@ -100,11 +100,12 @@ class SchedulerController < OrganizationAwareController
 
   # Render the partial for adding a funding plan to the ALI
   def add_funding_plan_modal
-    
+
     @ali = ActivityLineItem.find_by_object_key(params[:ali])
-    @budget_amounts = @organization.budget_amounts.where('fy_year = ? AND amount > 0', @ali.capital_project.fy_year)
+    service = EligibilityService.new
+    @funding_sources = service.evaluate_organization_funding_sources @organization
     @active_year = @ali.capital_project.fy_year
-        
+
     render :partial => 'add_funding_plan_modal_form'
   end
 
@@ -166,17 +167,17 @@ class SchedulerController < OrganizationAwareController
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
   def scheduler_ali_action
-   
-    @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])    
+
+    @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])
     action = params[:invoke]
-    
+
     case action
     when ALI_MOVE_YEAR_ACTION, 'move_ali_to_fiscal_year'
-      p = params[:scheduler_action_proxy]  
+      p = params[:scheduler_action_proxy]
       new_fy_year = p[:fy_year]
       CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
       @msg = "The ALI was successfully moved to #{new_fy_year}."
-      
+
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
       if @activity_line_item.save
@@ -184,18 +185,18 @@ class SchedulerController < OrganizationAwareController
       else
         @msg = "An error occurred while updating the ALI."
       end
-      
+
     when ALI_REMOVE_ACTION
       @project = @activity_line_item.capital_project
       @activity_line_item.destroy
       @msg = "The ALI was successfully removed from project #{@project.project_number}."
 
     when ALI_ADD_FUND_ACTION
-      budget_amount = BudgetAmount.find(params[:source])
+      funding_source = FundingSource.find(params[:source])
       amount = params[:amount].to_i
-    
+
       # Add a funding plan to this ALI
-      @activity_line_item.funding_plans.create({:budget_amount => budget_amount, :amount => amount})
+      @activity_line_item.funding_plans.create({:funding_source => funding_source, :amount => amount})
       @msg = "The ALI was successfully updated."
 
     when ALI_REMOVE_FUND_ACTION
@@ -210,12 +211,12 @@ class SchedulerController < OrganizationAwareController
     @year_3_alis = get_alis(@year_3)
 
   end
-  
+
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
   def scheduler_swimlane_action
-   
-    year = params[:year]  
+
+    year = params[:year]
     action = params[:invoke]
 
     case action
@@ -227,9 +228,9 @@ class SchedulerController < OrganizationAwareController
     @year_1_alis = get_alis(@year_1)
     @year_2_alis = get_alis(@year_2)
     @year_3_alis = get_alis(@year_3)
-    
+
   end
-    
+
   protected
 
   # Sets the view variables that control the filters. called before each action is invoked
@@ -237,10 +238,10 @@ class SchedulerController < OrganizationAwareController
 
     @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
 
-    unless params[:active_year].blank?  
+    unless params[:active_year].blank?
       @active_year = params[:active_year].to_i
     end
-        
+
     # This is the first year that the user can plan for
     first_year = current_fiscal_year_year + 1
     # This is the last year of a 3 year plan
@@ -259,10 +260,10 @@ class SchedulerController < OrganizationAwareController
       @active_year = @year_1
     elsif @active_year < @start_year
       @active_year = @year_1
-    elsif @active_year > @year_3            
+    elsif @active_year > @year_3
       @active_year = @year_3
-    end    
-            
+    end
+
     # Add ability to page year by year
     @total_rows = years.size
     # get the index of the start year in the array

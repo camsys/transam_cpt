@@ -41,7 +41,6 @@
               - if popup
                 %td.center
                   %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "Assets", :content => "#{raw render :partial => 'activity_line_items/assets_datatable', :locals => {:ali => ali, :popup => false}}"}}
-                  %i.fa.fa-usd.text-info.popup-details{:data => {:title => "Funding", :content => "#{raw render :partial => 'activity_line_items/funding_plans_table', :locals => {:ali => ali, :popup => false}}"}}
 
         %tfoot
           %tr
@@ -64,4 +63,3 @@
     animation: 'true',
     html: 'true'
   });
-

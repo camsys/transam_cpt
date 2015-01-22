@@ -7,7 +7,6 @@ class ActivityLineItemsController < OrganizationAwareController
   add_breadcrumb "Capital Projects", :capital_projects_path
 
   before_action :get_capital_project
-  before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
                                                     :edit_cost, :edit_milestones, :set_cost]
   before_filter :reformat_date_fields,    :only => [:create, :update]
@@ -45,24 +44,24 @@ class ActivityLineItemsController < OrganizationAwareController
     eligibilityService = EligibilityService.new
     @available_federal_funds = []
     @available_state_funds   = []
-    eligibilityService.evaluate(@activity_line_item, {:federal => true}).each do |fli|
-      amount = view_context.format_as_currency(fli.available)
-      if fli.project_number.blank?
-        name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
-      else
-        name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
-      end
-      @available_federal_funds << [name, fli.id]
-    end
-    eligibilityService.evaluate(@activity_line_item, {:state => true}).each do |fli|
-      amount = view_context.format_as_currency(fli.available)
-      if fli.project_number.blank?
-        name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
-      else
-        name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
-      end
-      @available_state_funds << [name, fli.id]
-    end
+    # eligibilityService.evaluate(@activity_line_item, {:federal => true}).each do |fli|
+    #   amount = view_context.format_as_currency(fli.available)
+    #   if fli.project_number.blank?
+    #     name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
+    #   else
+    #     name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
+    #   end
+    #   @available_federal_funds << [name, fli.id]
+    # end
+    # eligibilityService.evaluate(@activity_line_item, {:state => true}).each do |fli|
+    #   amount = view_context.format_as_currency(fli.available)
+    #   if fli.project_number.blank?
+    #     name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
+    #   else
+    #     name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
+    #   end
+    #   @available_state_funds << [name, fli.id]
+    # end
 
   end
 
@@ -239,18 +238,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:activity_line_item).permit(activity_line_item_allowable_params)
-  end
-
-  def check_for_cancel
-    unless params[:cancel].blank?
-      # get the ali, if one was being edited
-      if params[:id]
-        redirect_to(capital_project_activity_line_item_path(@project, params[:id]))
-      else
-        redirect_to(capital_project_url(@project))
-      end
-    end
+    params.require(:activity_line_item).permit(ActivityLineItem.allowable_params)
   end
 
 end

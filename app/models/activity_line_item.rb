@@ -40,9 +40,9 @@ class ActivityLineItem < ActiveRecord::Base
   # Use a nested form to set the milestones
   accepts_nested_attributes_for :milestones, :allow_destroy => true
 
-  # Has 0 or more funding plans -- these are for planning ALIs only, when an ALI is
-  # programmed these will be removed and replaced by more funding requests
-  #has_many    :funding_plans,     :dependent => :destroy
+  # Has 0 or more funding plans -- A funding plan identifies the sources and amounts
+  # of funds that will be used to fund the ALI
+  has_many    :funding_plans,     :dependent => :destroy
 
   # Has 0 or more funding requests, These will be removed if the project is removed.
   #has_many    :funding_requests,  :dependent => :destroy
@@ -96,6 +96,38 @@ class ActivityLineItem < ActiveRecord::Base
 
   def to_s
     name
+  end
+
+  # Returns the total amount of funding planned for this ali
+  def total_funds
+    val = 0
+    funding_plans.each {|x| val += x.amount}
+    val
+  end
+
+  def funds_required
+    cost - total_funds
+  end
+
+  # Returns the total value of federal funds requested
+  def federal_funds
+    val = 0
+    funding_plans.each {|x| val += x.federal_share}
+    val
+  end
+
+  # Returns the total value of state funds requested
+  def state_funds
+    val = 0
+    funding_plans.each {|x| val += x.state_share}
+    val
+  end
+
+  # Returns the total value of local funds requested
+  def local_funds
+    val = 0
+    funding_plans.each {|x| val += x.local_share}
+    val
   end
 
   # Returns the cost difference between the anticpated cost by the user and the cost estimated

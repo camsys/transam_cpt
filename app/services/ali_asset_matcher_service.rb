@@ -4,23 +4,23 @@
 #
 # Matches an Activity Line Item to assets that could be added to the ALI
 #
-# The service returns an array of Asset that are suitable for adding to an 
+# The service returns an array of Asset that are suitable for adding to an
 # the given project
 #
 #------------------------------------------------------------------------------
 class AliAssetMatcherService
-    
+
   # Include the ali code mixin
   include AssetAliLookup
-    
+
   #------------------------------------------------------------------------------
   #
   # Match
   #
-  # Single entry point. User passes in a an activity line item. The system get 
-  # the rest of what it needs from the ALI and its relationships  
+  # Single entry point. User passes in a an activity line item. The system get
+  # the rest of what it needs from the ALI and its relationships
   #
-  #------------------------------------------------------------------------------  
+  #------------------------------------------------------------------------------
   def match(ali, options = {})
 
     a = []
@@ -29,17 +29,7 @@ class AliAssetMatcherService
       return a
     end
 
-    # Make sure that the ALI is either a replacement or rehabilitation ALI
-    # for road or rail rolling stock assets
-    unless ['11', '12'].include? ali.team_ali_code.type
-      Rails.logger.info "ALI type is not bus or rail."
-      return a
-    end
-    unless ['12', '14', '15', '16', '17'].include? ali.team_ali_code.category
-      Rails.logger.info "ALI category is not an SOGR code."
-      return a
-    end
-    
+    # Get set up
     capital_project = ali.capital_project
     if capital_project.nil?
       Rails.logger.info "ALI is not associated with a capital project."
@@ -51,36 +41,48 @@ class AliAssetMatcherService
       Rails.logger.info "ALI is not associated with an organization."
       return a
     end
-    
+
     Rails.logger.info "Evaluating assets for ALI #{ali}."
-    
+
+    # The Policy Item class contain the ALI codes for replacement and rehabilitation
+    # project codes. We need to simple query the policy items and return the list
+    # or matching asset subtypes, find those assets which match the replacement or
+    # rehabilitation criteria for this ALI and remove any that are already in an
+    # ALI
+
+    # Find matching Policy Items
+    if ali.team_ali_code.replacement_code?
+      rules = PolicyItem.where(:replacement_ali_code => ali.team_ali_code.code)
+    elsif ali.team_ali_code.rehabilitation_code?
+      rules = PolicyItem.where(:rehabilitation_ali_code => ali.team_ali_code.code)
+    else
+      rules = []
+    end
+
      # Start to set up the asset query.
     conditions  = []
     values      = []
 
     # must belong to the org that owns the capital project
     conditions << 'organization_id = ?'
-    values << capital_project.organization.id      
+    values << capital_project.organization.id
 
     # cant already be disposed
     conditions << 'disposition_date IS NULL'
-                
+
     # cant be scheduled for disposition
     conditions << 'scheduled_disposition_year IS NULL'
-    
+
     # can't already be associated with the ALI
     unless ali.assets.empty?
       conditions << 'id NOT IN (?)'
       values << ali.asset_ids
     end
-        
+
+    # Get the matching asset subtypes from the rules we matched
     asset_subtype_ids = []
-    # use the mixin to get the correct subtype from the ALI code
-    asset_subtypes = asset_subtypes_from_ali_code(ali.team_ali_code.code)
-    asset_subtypes.each do |type|
-      # add it to our list
-      asset_subtype_ids << type.id
-    end
+    rules.each {|x| asset_subtype_ids << x.asset_subtype_id}
+
     # If there are no matching codes there is nothing else to do
     if asset_subtype_ids.empty?
       Rails.logger.info "There are no matching asset subtypes for code #{ali.team_ali_code.code}."
@@ -89,25 +91,25 @@ class AliAssetMatcherService
     # add to our query
     conditions << 'asset_subtype_id IN (?)'
     values << asset_subtype_ids.uniq
-  
-    # Check for replacement/rebuild/rehab years    
-    if ['12', '16'].include? ali.team_ali_code.category
+
+    # Check for replacement/rebuild/rehab years
+    if ali.team_ali_code.replacement_code?
       conditions << 'scheduled_replacement_year = ?'
       values << capital_project.fy_year
-    elsif ['14', '15', '17'].include? ali.team_ali_code.category
+    elsif ali.team_ali_code.rehabilitation_code?
       conditions << 'scheduled_rehabilitation_year = ?'
       values << capital_project.fy_year
-    end    
-    
+    end
+
     Rails.logger.debug conditions.inspect
     Rails.logger.debug values.inspect
-    
+
     a = Asset.where(conditions.join(' AND '), *values).order(:asset_type_id, :asset_subtype_id)
 
     Rails.logger.debug "Found #{a.size} mathcing assets."
 
     # return this list
-    a    
+    a
   end
 
   #------------------------------------------------------------------------------
@@ -116,12 +118,12 @@ class AliAssetMatcherService
   #
   #------------------------------------------------------------------------------
   protected
-  
+
   #------------------------------------------------------------------------------
   #
   # Private Methods
   #
   #------------------------------------------------------------------------------
   private
-  
+
 end

@@ -1,20 +1,20 @@
 class CapitalProjectsController < OrganizationAwareController
-   
+
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
-  
+
   # Include the fiscal year mixin
   include FiscalYear
-    
+
   #before_filter :authorize_admin
   before_filter :check_for_cancel,  :only =>    [:create, :update, :runner]
   before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder]
-  
+
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
-    
+
   def fire_workflow_event
-    
+
     # Check that this is a valid event name for the state machines
     if @project.class.event_names.include? params[:event]
       event_name = params[:event]
@@ -31,38 +31,38 @@ class CapitalProjectsController < OrganizationAwareController
     else
       notify_user(:alert, "#{params[:event_name]} is not a valid event for a #{@project.class.name}")
     end
-    
+
     redirect_to :back
 
   end
-  
+
   def builder
 
-    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
-    
+    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path
+
     @builder_proxy = BuilderProxy.new
     @message = "Creating SOGR projects. This process might take a while."
-    
+
   end
-  
+
   def runner
 
-    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path   
+    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path
 
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
-      # Sleep for a couple of seconds so that the screen can display the waiting 
+      # Sleep for a couple of seconds so that the screen can display the waiting
       # message and the user can read it.
       sleep 2
-      
+
       # Run the builder
       options = {}
       options[:asset_type_ids] = @builder_proxy.asset_types
-      
+
       #puts options.inspect
       builder = CapitalProjectBuilder.new
       num_created = builder.build(@organization, options)
-  
+
       # Let the user know the results
       if num_created > 0
         msg = "Capital Project Builder completed. #{num_created} projects were added to your capital needs list."
@@ -73,28 +73,28 @@ class CapitalProjectsController < OrganizationAwareController
         notify_user(:notice, "No projects were created.")
       end
       redirect_to capital_projects_url
-      return      
+      return
     else
       respond_to do |format|
         format.html { render :action => "builder" }
       end
     end
-    
+
   end
-  
+
   def index
 
     @fiscal_years = get_fiscal_years
-   
+
      # Start to set up the query
     conditions  = []
     values      = []
-        
-    # Check to see if we got an organization to sub select on. 
+
+    # Check to see if we got an organization to sub select on.
     @org_filter = params[:org_id]
     conditions << 'organization_id IN (?)'
     if @org_filter.blank?
-      values << @organization_list      
+      values << @organization_list
     else
       @org_filter = @org_filter.to_i
       values << [@org_filter]
@@ -122,18 +122,18 @@ class CapitalProjectsController < OrganizationAwareController
       conditions << 'state = ?'
       values << @capital_project_state
     end
-    
-    # Get the capital project status type filter, if one is not found default to 0 
+
+    # Get the capital project status type filter, if one is not found default to 0
     @capital_project_type_id = params[:capital_project_type_id]
     if @capital_project_type_id.blank?
       @capital_project_type_id = 0
     else
       @capital_project_type_id = @capital_project_type_id.to_i
     end
-    
+
     # Filter by funding source and/or asset type. This takes more work and each uses a custom query to pre-select
     # capital projects that meet this partial match
-    
+
     # Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
     @funding_source_id = params[:funding_source_id]
     unless @funding_source_id.blank?
@@ -162,7 +162,7 @@ class CapitalProjectsController < OrganizationAwareController
         # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
         asset_ids = Asset.where('asset_subtype_id = ? AND organization_id IN (?)', @asset_subtype_id, values[0]).pluck(:id)
         unless asset_ids.empty?
-          # now get CPs by subselecting on CP <- ALI <- ALI-Assets        
+          # now get CPs by subselecting on CP <- ALI <- ALI-Assets
           query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
           cps = CapitalProject.connection.execute(query, :skip_logging)
           cps.each do |cp|
@@ -173,23 +173,23 @@ class CapitalProjectsController < OrganizationAwareController
         values << capital_project_ids.uniq  # make sure there are no duplicates
       end
     end
-            
+
     #puts conditions.inspect
     #puts values.inspect
-    
+
     # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter
     @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
-    
+
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
       cache_list(@projects, INDEX_KEY_LIST_VAR)
-        
+
       # generate the chart data
       @report = Report.find_by_class_name('CapitalNeedsForecast')
       report_instance = @report.class_name.constantize.new
-      @data = report_instance.get_data_from_result_list(@projects)      
+      @data = report_instance.get_data_from_result_list(@projects)
     end
-    
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @projects }
@@ -199,7 +199,7 @@ class CapitalProjectsController < OrganizationAwareController
 
   def show
 
-    add_breadcrumb @project.project_number, capital_project_path(@project)    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
 
     # get the @prev_record_path and @next_record_path view vars
     get_next_and_prev_object_keys(@project, INDEX_KEY_LIST_VAR)
@@ -212,43 +212,43 @@ class CapitalProjectsController < OrganizationAwareController
     end
   end
 
-  
+
   def new
 
-    add_breadcrumb "New", new_capital_project_path    
-    
+    add_breadcrumb "New", new_capital_project_path
+
     @project = CapitalProject.new
-    
+
     @fiscal_years = get_fiscal_years
-    
+
   end
-  
+
   def edit
 
-    add_breadcrumb @project.project_number, capital_project_path(@project)    
-    add_breadcrumb "Modify", edit_capital_project_path(@project)    
-    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb "Modify", edit_capital_project_path(@project)
+
     @fiscal_years = get_fiscal_years
-    
+
   end
-  
+
   def copy
-    
+
     new_project = @project.dup
     new_project.save
     @project.activity_line_items.each do |ali|
       new_ali = ali.dup
       new_project.activity_line_items << new_ali
     end
-    
+
     notify_user(:notice, "Capital Project #{@project.project_number} was successfully copied to #{new_project.project_number}.")
     redirect_to capital_project_url(new_project)
 
   end
-  
+
   def create
 
-    add_breadcrumb "New", new_capital_project_path    
+    add_breadcrumb "New", new_capital_project_path
 
     @project = CapitalProject.new(form_params)
     @project.organization = @organization
@@ -268,8 +268,8 @@ class CapitalProjectsController < OrganizationAwareController
 
   def update
 
-    add_breadcrumb @project.project_number, capital_project_path(@project)    
-    add_breadcrumb "Modify", edit_capital_project_path(@project)    
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb "Modify", edit_capital_project_path(@project)
     @fiscal_years = get_fiscal_years
 
     respond_to do |format|
@@ -295,15 +295,15 @@ class CapitalProjectsController < OrganizationAwareController
       format.json { head :no_content }
     end
   end
-  
+
   protected
-    
-      
+
+
   private
-  
+
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:capital_project).permit(capital_project_allowable_params)
+    params.require(:capital_project).permit(CapitalProject.allowable_params)
   end
 
   def get_project
@@ -316,9 +316,9 @@ class CapitalProjectsController < OrganizationAwareController
       redirect_to(capital_projects_url)
       return
     end
-    
+
   end
-  
+
   def check_for_cancel
     unless params[:cancel].blank?
       # get the policy, if one was being edited

@@ -1,25 +1,23 @@
-.panel-body    
-  = format_field("Fiscal Year", @project.fiscal_year)
-  = format_field("Scope", @project.team_ali_code)
-  = format_field("Type", @project.capital_project_type)
-  = format_field("Title", @project.title)
-  = format_field("Emergency", format_as_boolean(@project.emergency)) unless @project.emergency == false
-  = format_field("Status", format_as_label(@project.state.humanize, 'primary'))
-  
-  %fieldset
-    %legend.panel-legend Funding Summary
-    = format_field("Total Cost", format_as_currency(@project.total_cost))
-    = format_field("", "&nbsp;")
-    = format_field("State", format_as_currency(@project.state_funds))
-    = format_field("Federal", format_as_currency(@project.federal_funds))
-    = format_field("Local", format_as_currency(@project.local_funds))
-    = format_field("Total", format_as_currency(@project.total_funds))
-    = format_field("Funds Required", format_as_currency(@project.funding_difference))
+= format_field("Fiscal Year", @project.fiscal_year)
+= format_field("Scope", @project.team_ali_code)
+= format_field("Type", @project.capital_project_type)
+= format_field("Title", @project.title)
+= format_field("Emergency", format_as_boolean(@project.emergency)) unless @project.emergency == false
+= format_field("Status", format_as_label(@project.state.humanize, 'primary'))
 
-  %fieldset
-    %legend.panel-legend
-    %p= @project.description
+%fieldset
+  = format_field("Total Cost", format_as_currency(@project.total_cost))
+  = format_field("", "&nbsp;")
+  = format_field("State", format_as_currency(@project.state_funds))
+  = format_field("Federal", format_as_currency(@project.federal_funds))
+  = format_field("Local", format_as_currency(@project.local_funds))
+  = format_field("Total", format_as_currency(@project.total_funds))
+  = format_field("Funds Required", format_as_currency(@project.funding_difference))
 
-  %fieldset
-    %legend.panel-legend
-    %p= @project.justification
+%fieldset
+  %legend.panel-legend
+  %p= @project.description
+
+%fieldset
+  %legend.panel-legend
+  %p= @project.justification

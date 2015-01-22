@@ -28,16 +28,17 @@ module AssetAliLookup
     else
       is_other = true
     end
-    
+
     # No asset subtypes if it is not a bus or rail code
     if is_other
       return []
     end
-    
+
     # See if we are working with rolling stock or facilities
     if category[0] == '1'
       # its rolling stock (Vehicle/RailCar/Locomotive)
-      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [Vehicle.new.asset_type_id, RailCar.new.asset_type_id, Locomotive.new.asset_type_id], sub_category)
+      #return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [Vehicle.new.asset_type_id, RailCar.new.asset_type_id, Locomotive.new.asset_type_id], sub_category)
+      return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [Vehicle.new.asset_type_id], sub_category)
     elsif category[0] == '3'
       # station/stops/terminals (Transit Facilty)
       return AssetSubtype.where('asset_type_id IN (?) AND ali_code = ?', [TransitFacility.new.asset_type_id], sub_category)
@@ -48,6 +49,6 @@ module AssetAliLookup
       # not handled
       return []
     end
-    
+
   end
 end

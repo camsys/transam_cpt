@@ -29,7 +29,7 @@ module TransamPlanningOrganization
     has_many    :capital_projects,  -> { order(:fy_year) }, :foreign_key => :organization_id,  :dependent => :destroy
 
     # Each Transit Agency has forcast budget amounts for each fiscal year. The budget amounts will be removed if the org is removed
-    has_many    :budget_amounts,  :foreign_key => :organization_id,  :dependent => :destroy
+    #has_many    :budget_amounts,  :foreign_key => :organization_id,  :dependent => :destroy
 
     # ----------------------------------------------------
     # Validations
