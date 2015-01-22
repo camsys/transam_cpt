@@ -38,7 +38,18 @@ milestone_types = [
   {:active => 1, :name => 'Contract Completed',     :is_vehicle_delivery => 0, :description => 'Contract Completed'}
 ]
 
-replace_tables = %w{ milestone_types capital_project_types }
+# Funding Line Item Types
+funding_line_item_types = [
+  {:active => 1, :name => 'Earmark',        :code => "EM",  :description => 'Funds are earmarked.'},
+  {:active => 1, :name => 'Flex Funds',     :code => "FF",  :description => 'Funds are flex funds.'},
+  {:active => 1, :name => 'Formula',        :code => "FR",  :description => 'Funds are formular funds.'},
+  {:active => 1, :name => 'Discretionary',  :code => "DS",  :description => 'Funds are discretionary.'},
+  {:active => 1, :name => 'Other',          :code => "OT",  :description => 'Other.'}
+]
+
+
+
+replace_tables = %w{ milestone_types capital_project_types funding_line_item_types }
 merge_tables = %w{ roles }
 
 replace_tables.each do |table_name|
