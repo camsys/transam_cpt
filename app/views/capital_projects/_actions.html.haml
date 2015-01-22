@@ -1,6 +1,6 @@
 .btn-group.pull-right.panel-action
   %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-    I want to  
+    I want to
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
     - if can? :update, @project
@@ -8,50 +8,13 @@
         = link_to "#" do
           %i.fa.fa-arrows-v.fa-fw
           = " Change the priority"
-    - if @project.can_submit?  
-      %li.divider
+
+    %li.divider
+    - @project.allowable_events.each do |evt|
       %li
-        = link_to fire_workflow_event_capital_project_path(@project, :event => :submit) do
-          %i.fa.fa-share.fa-fw
-          = " Submit for review"
-    - if @project.can_retract?
-      %li.divider
-      %li
-        = link_to fire_workflow_event_capital_project_path(@project, :event => :retract) do
-          %i.fa.fa-reply.fa-fw
-          = " Retract this project"
-            
-      - if current_user.has_role? :manager            
-        - if @project.can_return?  
-          %li.divider
-          %li
-            = link_to fire_workflow_event_capital_project_path(@project, :event => :conditionally_approve) do
-              %i.fa.fa-thumbs-down.fa-fw
-              = " Return this project for revisions"
-        - if @project.can_accept?  
-          %li.divider
-          %li
-            = link_to fire_workflow_event_capital_project_path(@project, :event => :accept) do
-              %i.fa.fa-thumbs-up.fa-fw
-              = " Accept this project"
-        - if @project.can_conditionally_approve?  
-          %li.divider
-          %li
-            = link_to fire_workflow_event_capital_project_path(@project, :event => :conditionally_approve) do
-              %i.fa.fa-thumbs-o-up.fa-fw
-              = " Conditionally approve this project"
-        - if @project.can_approve?  
-          %li.divider
-          %li
-            = link_to fire_workflow_event_capital_project_path(@project, :event => :approve) do
-              %i.fa.fa-circle-arrow-right.fa-fw
-              = " Approve this project for funding"
-        - if @project.can_fund?  
-          %li.divider
-          %li
-            = link_to fire_workflow_event_capital_project_path(@project, :event => :fund) do
-              %i.fa.fa-usd.fa-fw
-              = " Fund this project"
+        = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
+          %i.fa.fa-fw{:class => get_event_icon(evt)}
+          = "#{evt} this project"
 
     - if can? :create, @project
       %li.divider
@@ -65,7 +28,7 @@
         = link_to edit_capital_project_path(@project) do
           %i.fa.fa-edit.fa-fw
           = " Modify this project"
-          
+
     - if can? :delete, @project
       %li.divider
       %li
