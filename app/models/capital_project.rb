@@ -91,6 +91,14 @@ class CapitalProject < ActiveRecord::Base
     :emergency,
     :active
   ]
+  # List of fields which can be searched using a simple text-based search
+  SEARCHABLE_FIELDS = [
+    :object_key,
+    :project_number,
+    :title,
+    :description,
+    :justification
+  ]
 
   #------------------------------------------------------------------------------
   #
@@ -238,6 +246,11 @@ class CapitalProject < ActiveRecord::Base
   def update_project_number
     create_project_number
   end
+
+  def searchable_fields
+    SEARCHABLE_FIELDS
+  end
+  
   #------------------------------------------------------------------------------
   #
   # Protected Methods

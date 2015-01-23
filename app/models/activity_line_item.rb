@@ -75,7 +75,13 @@ class ActivityLineItem < ActiveRecord::Base
     :active,
     :asset_ids => [],
     :milestones_attributes => [Milestone.allowable_params]
+  ]
 
+  # List of fields which can be searched using a simple text-based search
+  SEARCHABLE_FIELDS = [
+    :object_key,
+    :name,
+    :team_ali_code
   ]
 
   #------------------------------------------------------------------------------
@@ -171,6 +177,10 @@ class ActivityLineItem < ActiveRecord::Base
   def update_estimated_cost
     self.estimated_cost = total_asset_cost
     save
+  end
+
+  def searchable_fields
+    SEARCHABLE_FIELDS
   end
 
   #------------------------------------------------------------------------------
