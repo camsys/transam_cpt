@@ -13,6 +13,7 @@ FactoryGirl.define do
     policy_replacement_year { 1.year.from_now.year }
     scheduled_rehabilitation_year { 1.year.from_now.year }
     manufacture_year { 14.years.ago }
+    fta_funding_type_id 1
     created_by_id 1
   end
 
