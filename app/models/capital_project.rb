@@ -45,9 +45,6 @@ class CapitalProject < ActiveRecord::Base
   # Every CP has a single type
   belongs_to  :capital_project_type
 
-  # Has many MPMS projects. These will be removed if the project is removed
-  has_and_belongs_to_many    :mpms_projects
-
   # Has 0 or more activity line items. These will be removed if the project is removed.
   has_many    :activity_line_items, :dependent => :destroy
 
@@ -250,7 +247,7 @@ class CapitalProject < ActiveRecord::Base
   def searchable_fields
     SEARCHABLE_FIELDS
   end
-  
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
