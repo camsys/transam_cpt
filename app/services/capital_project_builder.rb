@@ -25,6 +25,21 @@ class CapitalProjectBuilder
   #
   #------------------------------------------------------------------------------
 
+  # Returns the set of asset types for an organization that are eligible for
+  # SOGR building
+  def eligible_asset_types(org)
+    # Select the asset types that they are allowed to build. This is narrowed down to only
+    # asset types they own and those which are fta vehicles
+    asset_types = []
+    org.asset_type_counts.each do |type, count|
+      asset_type = AssetType.find(type)
+      if ['Vehicle', 'SupportVehicle', 'RailCar', 'Locomotive'].include? asset_type.class_name
+        asset_types << asset_type
+      end
+    end
+    asset_types
+  end
+
   # Main entry point for the builder. This invokes the bottom-up builder
   def build(organization, options = {})
 
@@ -99,6 +114,10 @@ class CapitalProjectBuilder
 
     Rails.logger.info "  Options: create_tasks = '#{create_tasks}', send_message = '#{send_message}'"
 
+    # Cache the list of eligible asset types for this organization
+    org_asset_types = eligible_asset_types(organization)
+    Rails.logger.debug "  Eligible asset types = org_asset_types.inspect"
+
     #--------------------------------------------------------------------------------------
     # Basic Algorithm:
     #
@@ -139,9 +158,9 @@ class CapitalProjectBuilder
         next
       end
 
-      # Filter out anything but rolling stock for now
-      unless [1,2,3,7].include? asset_type.id
-        Rails.logger.info "Can't process asset type where id = #{asset_type_id}. System only works for Vehicles, Rail Cars, Locomotives, and Support Vehicles"
+      # Filter out anything that is not eleigible for building
+      unless org_asset_types.include? asset_type
+        Rails.logger.info "Can't process asset type #{asset_type}."
         next
       end
 

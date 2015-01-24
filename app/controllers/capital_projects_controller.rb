@@ -40,6 +40,10 @@ class CapitalProjectsController < OrganizationAwareController
 
     add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path
 
+    # Select the asset types that they are allowed to build. This is narrowed down to only
+    # asset types they own and those which are fta vehicles
+    builder = CapitalProjectBuilder.new
+    @asset_types = builder.eligible_asset_types(@organization)
     @builder_proxy = BuilderProxy.new
     @message = "Creating SOGR projects. This process might take a while."
 
