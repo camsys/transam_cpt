@@ -30,9 +30,6 @@ class CapitalProject < ActiveRecord::Base
     create_project_number
   end
 
-  # Clean up any HABTM associations before the asset is destroyed
-  before_destroy { mpms_projects.clear }
-
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
