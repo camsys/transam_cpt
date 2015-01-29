@@ -13,5 +13,5 @@ script:
 before_script:
 - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
 before_install:
-- openssl aes-256-cbc -K $encrypted_b617358ced91_key -iv $encrypted_b617358ced91_iv
-  -in spec/dummy/db/schema.rb.enc -out spec/dummy/db/schema.rb -d
+- openssl aes-256-cbc -K $encrypted_197ddf04b7cf_key -iv $encrypted_197ddf04b7cf_iv
+  -in schema.rb.enc -out schema.rb -d
