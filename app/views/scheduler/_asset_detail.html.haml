@@ -1,6 +1,6 @@
 :ruby
   ast = Asset.get_typed_asset(asset)
-  
+
 .well.well-sm.swimlane-draggable{data: {:object_type => 'asset', :object_key => ast.object_key, :fy => year}}
   .row
     .col-md-3
@@ -19,7 +19,7 @@
     .col-md-3
       %h4.bg-default.text-left
         = get_swimlane_activity_cost(ast, year)
-        
+
     .col-md-8
       %p.text-primary{:style => 'margin-bottom: 0px;'}
         = "#{ast.manufacture_year} #{ast.description}"
@@ -27,19 +27,19 @@
         - if ast.type_of? :vehicle or ast.type_of? :support_vehicle
           = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(ast.reported_mileage)}</strong>".html_safe
         - else
-          = "Condition: #{format_as_decimal(ast.reported_condition_rating, 2)}"          
+          = "Condition: #{format_as_decimal(ast.reported_condition_rating, 2)}"
     .col-md-1
-      %button.pull-right.btn.btn-default.btn-xs{:id => "#{ast.object_key}_#{year}_edit", data: {toggle: 'modal', target: '#asset-edit-modal', id: ast.object_key, year: year}}
+      %button.pull-right.btn.btn-default.btn-xs{:id => "#{ast.object_key}_#{year}_edit", data: {toggle: 'modal', target: '#edit-asset-modal', id: ast.object_key, year: year}}
         %i.fa.fa-edit
-        
+
   .row{:id => "#{ast.object_key}_#{year}_form_panel"}
 
-:javascript  
+:javascript
     // hide the form after submit
     $('#modal-submit-btn').on('click', function(e) {
       $('#ali-add-funding-plan-modal').modal('hide');
     });
-  
+
   // // Install a click handler for the edit button
   // $('##{asset.object_key}_#{year}_edit').click(function() {
   //   var var_key = '#{asset.object_key}';
@@ -47,8 +47,6 @@
   //   var var_org_filter = '#{@org_id}';
   //   var var_asset_filter = '#{@asset_subtype_id}';
   //   var url = '/scheduler/loader.js?year=' + var_year + '&id=' + var_key + '&org_id=' + var_org_filter + '&asset_subtype_id=' + var_asset_filter;
-  //   transam.ajax_render_action(url, 'get');       
+  //   transam.ajax_render_action(url, 'get');
   //   $('##{asset.object_key}_#{year}_form_panel').html("");
   // });
-    
-  

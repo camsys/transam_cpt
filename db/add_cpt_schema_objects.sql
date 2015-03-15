@@ -113,3 +113,33 @@ CREATE INDEX funding_plans_idx1 ON funding_plans(object_key)
 GO
 CREATE INDEX funding_plans_idx2 ON funding_plans(activity_line_item_id, funding_source_id)
 GO
+INSERT INTO capital_project_types(active, name, code, description) 
+    VALUES(1, 'Replacement', 'R', 'Replacement Project')
+GO
+INSERT INTO capital_project_types(active, name, code, description) 
+    VALUES(1, 'Expansion', 'E', 'Expansion Project')
+GO
+INSERT INTO capital_project_types(active, name, code, description) 
+    VALUES(1, 'Improvement', 'I', 'Improvement Project')
+GO
+INSERT INTO capital_project_types(active, name, code, description) 
+    VALUES(1, 'Demonstration', 'D', 'Demonstration Project')
+GO
+INSERT INTO milestone_types(active, name, is_vehicle_delivery, description) 
+    VALUES(1, 'Out for Bid', 0, 'Out for Bid')
+GO
+INSERT INTO milestone_types(active, name, is_vehicle_delivery, description) 
+    VALUES(1, 'Contract Awarded', 0, 'Contract Awarded')
+GO
+INSERT INTO milestone_types(active, name, is_vehicle_delivery, description) 
+    VALUES(1, 'Notice to Proceed', 0, 'Notice to Proceed')
+GO
+INSERT INTO milestone_types(active, name, is_vehicle_delivery, description) 
+    VALUES(1, 'First Vehicle Delivered', 1, 'First Vehicle Delivered')
+GO
+INSERT INTO milestone_types(active, name, is_vehicle_delivery, description) 
+    VALUES(1, 'All Vehicles Delivered', 1, 'All Vehicles Delivered')
+GO
+INSERT INTO milestone_types(active, name, is_vehicle_delivery, description) 
+    VALUES(1, 'Contract Completed', 0, 'Contract Completed')
+GO

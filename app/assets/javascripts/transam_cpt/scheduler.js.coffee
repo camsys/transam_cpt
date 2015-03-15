@@ -34,8 +34,8 @@ window.setupModalHandlers = () ->
     toggle_ali(e, 'hide')
 
   # load the contents for the asset-editing modal when it is shown
-  $('#asset-edit-modal').on 'shown.bs.modal', (e) ->
-    $('#asset-edit-modal').load(
+  $('#edit-asset-modal').on 'shown.bs.modal', (e) ->
+    $('#edit-asset-modal').load(
       '/scheduler/edit_asset_in_modal',
       {
         'id': $(e.relatedTarget).data('id'),
