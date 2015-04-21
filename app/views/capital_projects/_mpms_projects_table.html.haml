@@ -3,7 +3,7 @@
     - if @project.mpms_projects.empty?
       %p There are no MPMS projects associated with this project.
       - if can? :update, @project
-        = link_to "Add a MPMS Project Number", "#", :class => "btn btn-primary"  
+        = link_to "Add a MPMS Project Number", "#", :class => "btn btn-primary"
     -else
       %table.table.table-hover#datatable{:width => "100%"}
         %thead
@@ -16,5 +16,3 @@
               %td= m.name
               %td= m.description
       
-      
-      = render 'shared/datatable_javascript'
