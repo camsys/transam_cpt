@@ -14,9 +14,6 @@ class CapitalProject < ActiveRecord::Base
   # Include the fiscal year mixin
   include FiscalYear
 
-  # Include the ali code mixin
-  include AssetAliLookup
-
   # Include the Workflow module
   include TransamWorkflow
 

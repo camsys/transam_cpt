@@ -10,8 +10,6 @@ class CapitalProjectBuilder
 
   # Include the fiscal year mixin
   include FiscalYear
-  # Include the ali code mixin
-  include AssetAliLookup
 
   # Instance vars
   attr_accessor :project_count, :replacement_project_type, :rehabilitation_project_type
