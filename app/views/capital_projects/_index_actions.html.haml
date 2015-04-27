@@ -1,6 +1,7 @@
 .btn-group.pull-right.panel-action
   %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-    I want to  
+    %i.fa.fa-cog
+    = " Actions"
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
     %li
@@ -29,6 +30,5 @@
     $('#fiscal_year, #capital_project_state, #capital_project_type_id, #org_id, #funding_source_id, #asset_subtype_id').change(function() {
       $('#filter_form').submit();
     });
-    
+
   });
-  
