@@ -88,7 +88,10 @@ class CapitalProject < ActiveRecord::Base
     :project_number,
     :title,
     :description,
-    :justification
+    :justification,
+    :capital_project_type,
+    :fy_year,
+    :team_ali_code
   ]
 
   #------------------------------------------------------------------------------

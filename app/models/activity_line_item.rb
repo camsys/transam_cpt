@@ -173,6 +173,12 @@ class ActivityLineItem < ActiveRecord::Base
     val
   end
 
+  # Return the organization of the owning object so instances can be index using
+  # the keyword indexer
+  def organization
+    capital_project.organization
+  end
+
   # Update the estimated cost of the ALI based on the assets
   def update_estimated_cost
     self.estimated_cost = total_asset_cost

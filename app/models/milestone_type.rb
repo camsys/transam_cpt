@@ -1,7 +1,7 @@
 class MilestoneType < ActiveRecord::Base
-          
-  # default scope
-  default_scope { where(:active => true) }
+
+  # Active scope -- always use this scope in forms
+  scope :active, -> { where(active: true) }
 
   #milestone types associated with vehicle delivery
   scope :vehicle_delivery_milestones, -> { where(:active => true) }
@@ -12,5 +12,5 @@ class MilestoneType < ActiveRecord::Base
   def to_s
     name
   end
-        
+
 end
