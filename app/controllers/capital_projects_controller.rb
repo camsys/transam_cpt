@@ -239,9 +239,11 @@ class CapitalProjectsController < OrganizationAwareController
   def copy
 
     new_project = @project.dup
+    new_project.object_key = nil
     new_project.save
     @project.activity_line_items.each do |ali|
       new_ali = ali.dup
+      new_ali.object_key = nil
       new_project.activity_line_items << new_ali
     end
 

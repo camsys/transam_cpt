@@ -20,7 +20,7 @@
                   %i.fa.fa-dollar
                   Assign Funds
             %li.divider
-            - if can? :delete, ali
+            - if can? :destroy, ali
               %li
                 = link_to scheduler_ali_action_scheduler_index_path(:ali => ali.object_key, :invoke => SchedulerController::ALI_REMOVE_ACTION, :active_year => @active_year),
                   :remote => true, :title => "Remove this activity line item.",

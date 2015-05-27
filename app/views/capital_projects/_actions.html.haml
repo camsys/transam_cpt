@@ -30,7 +30,7 @@
           %i.fa.fa-edit.fa-fw
           = " Modify this project"
 
-    - if can? :delete, @project
+    - if can? :destroy, @project
       %li.divider
       %li
         = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do

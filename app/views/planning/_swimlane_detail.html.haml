@@ -4,7 +4,7 @@
   else
     ali_class = 'panel-funded'
   end
-  
+
 .panel.swimlane-draggable{:class => ali_class, :id => "#{ali.object_key}_ali_panel", :data => {:object_type => 'ali', :object_key => ali.object_key, :fy => year}}
   .panel-heading.ali-heading
     %span.pull-right.ali_cost
@@ -38,7 +38,7 @@
                   %i.fa.fa-arrow-left
                   Move ALI to Previous FY
             %li.divider
-            - if can? :delete, ali
+            - if can? :destroy, ali
               %li
                 = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_REMOVE_ACTION, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Remove this activity line item.",
@@ -60,11 +60,11 @@
     %table.table.table-condensed
       %tbody
         - ali.funding_plans.each do |fp|
-          %tr        
+          %tr
             %td.left= fp.budget_amount.funding_source
             %td.right= format_as_currency(fp.amount)
             %td.right
-              = link_to ali_action_planning_index_path(:fiscal_year => @fiscal_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => PlanningController::ALI_REMOVE_FUND_ACTION), 
+              = link_to ali_action_planning_index_path(:fiscal_year => @fiscal_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => PlanningController::ALI_REMOVE_FUND_ACTION),
                 :remote => :true, :method => 'post', :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
                 :class => 'btn btn-xs btn-warning'  do
                 %i.fa.fa-trash-o
@@ -76,5 +76,4 @@
         %tr
           %td.left Required
           %td.right= format_as_currency(ali.funds_required)
-          %td            
-            
+          %td
