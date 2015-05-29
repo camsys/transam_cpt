@@ -5,7 +5,6 @@
     = i_f.input :object_key, :as => :hidden
     = i_f.input :milestone_type_id, :as => :hidden
   %td.col-md-2
-    = i_f.input :milestone_date, :label => false, :as => :string, :input_html => {:data => {'behavior' => 'datepicker'}, :value => i_f.object.milestone_date.strftime("%m-%d-%Y")}
+    = i_f.input :milestone_date, :label => false, :as => :string, :input_html => {:data => {'behavior' => 'datepicker'}, :value => format_as_date(i_f.object.milestone_date)}
   %td.col-md-8
     = i_f.input :comments, :input_html => { :rows => 3 }, :placeholder => "Enter any additional comments...", :label => false
-  
