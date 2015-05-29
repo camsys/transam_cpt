@@ -216,7 +216,7 @@ class ActivityLineItemsController < OrganizationAwareController
       params[:activity_line_item][:milestones_attributes].each do |milestone_hash|
         #puts milestone_hash.inspect
         date_str = milestone_hash[1]['milestone_date']
-        form_date = Date.strptime(date_str, '%m-%d-%Y')
+        form_date = Date.strptime(date_str, '%m/%d/%Y')
         milestone_hash[1]['milestone_date'] = form_date.strftime('%Y-%m-%d')
       end
 
