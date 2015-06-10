@@ -11,9 +11,9 @@
               Activity Line Item
           .col-md-6
             = render 'actions'
-      .panel-body    
-        = render :partial => 'summary', :locals => {:ali => @activity_line_item} 
-        
+      .panel-body
+        = render :partial => 'summary', :locals => {:ali => @activity_line_item}
+
   .col-md-8
     .panel.panel-default.header-part
       .panel-heading
@@ -22,7 +22,7 @@
             %h3.panel-title
               %i.fa.fa-folder-open
               Milestones
-                
+
       .panel-body
         = render 'milestones_form'
 
@@ -32,7 +32,6 @@
   $(document).ready(function(){
     $('[data-behavior~=datepicker]').datepicker({
       format: "mm/dd/yyyy"
-    });
+    }).attr( 'readOnly' , 'true' );
     transam.make_same_height('.header-part');
   });
-
