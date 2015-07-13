@@ -11,7 +11,7 @@
   :export_types => "['csv', 'txt', 'excel']",
   :show_export => 'true',
   :show_columns => 'true',
-  :show_footer => "#{expenditures.count > 0}",
+  :show_footer => true,
   :show_toggle => 'true'}}
   %thead
     %tr
@@ -47,7 +47,7 @@
       - total_local += p.local_funds
       - total_total += p.total_funds
 
-      %tr{:id => e.object_key, :class => 'action-path'}
+      %tr{:id => p.object_key, :class => 'action-path'}
         - if @organization_list.count > 1
           %td= p.organization
         %td.center= p.fiscal_year
@@ -82,3 +82,15 @@
       %td.right= format_as_currency(total_total)
 
 = render :partial => 'shared/table_scripts', :locals => {:table_id => table_dom_id, :path_pattern => capital_project_path("xxx")}
+
+:javascript
+
+  $('#' + table_dom_id).on('post-body.bs.table', function () {
+    $('.popup-details').popover({
+      trigger: 'hover',
+      container: 'body',
+      placement: 'left',
+      animation: 'true',
+      html: 'true'
+    });
+  });
