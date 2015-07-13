@@ -51,12 +51,12 @@ RSpec.describe CapitalProjectBuilder do
     expect(cps.count).to eq(0)
 
     project_count = @cpb.build(organization, asset_type_ids: [asset.asset_type])
-    expect(project_count).to eql(2)
-    #expect(project_count).to eql(4)
+    # expect(project_count).to eql(2)
+    expect(project_count).to eql(4)
 
     cps = organization.capital_projects.order(:fy_year)
-    expect(cps.count).to eq(2)
-    #expect(cps.count).to eq(4)
+    # expect(cps.count).to eq(2)
+    expect(cps.count).to eq(4)
 
     expect(cps[0].fy_year).to eq(1.year.from_now.year)
     expect(cps[1].fy_year).to eq(2.years.from_now.year)
@@ -87,8 +87,8 @@ RSpec.describe CapitalProjectBuilder do
     result = @cpb.move_ali_to_planning_year(ali, cp.fy_year + 1)
 
     cps = organization.capital_projects.order(:fy_year)
-    expect(cps.count).to eq(2)
-    #expect(cps.count).to eq(4)
+    # expect(cps.count).to eq(2)
+    expect(cps.count).to eq(4)
     expect(cps[0].fy_year).to eq(1.year.from_now.year)
     expect(cps[1].fy_year).to eq((2+1).years.from_now.year)
     # expect(cps[2].fy_year).to eq(11.years.from_now.year)
