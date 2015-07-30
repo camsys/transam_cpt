@@ -304,7 +304,7 @@ class CapitalProjectBuilder
     if target_year
       asset.scheduled_replacement_year = target_year
       changed = true
-    elsif asset.scheduled_replacement_year.nil?
+    elsif asset.scheduled_replacement_year.nil? || asset.scheduled_replacement_year < start_year
       if asset.policy_replacement_year < start_year
         # Take care of backlogged assets
         asset.scheduled_replacement_year = start_year
