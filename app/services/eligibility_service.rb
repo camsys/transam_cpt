@@ -20,6 +20,9 @@ class EligibilityService
     if organization.nil?
       Rails.logger.info "Organization cannot be null."
       return []
+    elsif ! organization.kind_of?(TransitOperator)
+      Rails.logger.info "Organization must be a transit operator."
+      return []
     end
 
     Rails.logger.info "Evaluating funding sources for org #{org.short_name}."
