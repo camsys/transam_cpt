@@ -206,13 +206,24 @@ class CapitalProjectBuilder
     #-----------------------------
     asset_data_consistency_check(asset, target_year, start_year)
 
-    #-----------------------------
-    # Step 2: Filter replacements that are outside of the planning time frame
-    #
-    # Make sure that the asset has a scheduled replacement year. If it is not set
-    # default it to the policy replacement year or the first planning year if the asset
-    # is in backlog
-    #-----------------------------
+    #---------------------------------
+    # Step 2: Process initial rehabilitation (this happens here only if the initial rehab happens before the initial replacement)
+    #---------------------------------
+
+    # get the rehab ALI code for this asset if the asset does rehabs
+    unless asset.policy_rule.rehabilitation_year.nil?
+      rehab_ali_code = get_rehab_ali_code(asset)
+    end
+
+    unless asset.scheduled_rehabilitation_year.nil?
+      if asset.scheduled_rehabilitation_year < asset.scheduled_replacement_year and 
+        asset.scheduled_rehabilitation_year >= start_year and
+        asset.scheduled_rehabilitation_year <= last_year
+        # This will create the project if it does not exist
+        projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
+      end
+    end
+
     year = asset.scheduled_replacement_year
     unless year < start_year or year > last_year
 
@@ -226,29 +237,38 @@ class CapitalProjectBuilder
       projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
       #-----------------------------
-      # Step 4: Process initial replacement
+      # Step 4: Process following replacements and rehabs
       #
-      # See if the replacement can be replaced within the planning time frame
+      # See if the replacement and following rehab can be replaced within the planning time frame
       #-----------------------------
       max_service_life_years = asset.policy_rule.max_service_life_years
+
+      # Only add this rehab if the asset does rehabs
+      unless asset.policy_rule.rehabilitation_year.nil?
+        rehab_year_gap = asset.policy_rule.rehabilitation_year
+
+        # Add the first rehab to follow a scheduled replacement
+        if (year + rehab_year_gap) <= last_year
+          projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
+        end
+      end
+
       year += max_service_life_years
       Rails.logger.debug "Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
       while year < last_year
         # Add a future re-replacement project for the asset
         projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
+
+        # Only add this future rehab if the asset does rehabs
+        unless asset.policy_rule.rehabilitation_year.nil?
+          if (year + rehab_year_gap) <= last_year
+            projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
+          end
+        end
+
         year += max_service_life_years
       end
-    end
-    #-----------------------------
-    # Step 5: Process rehabilitation projects
-    #-----------------------------
-    year = asset.scheduled_rehabilitation_year.nil? ? 9999 : asset.scheduled_rehabilitation_year
-    unless year < start_year or year > last_year
-      # get the rehab scope for this asset
-      rehab_ali_code = get_rehab_ali_code(asset)
-      # This will create the project if it does not exist
-      projects_and_alis << add_to_project(asset, rehab_ali_code, year, rehabilitation_project_type)
     end
 
     projects_and_alis
@@ -304,7 +324,7 @@ class CapitalProjectBuilder
     if target_year
       asset.scheduled_replacement_year = target_year
       changed = true
-    elsif asset.scheduled_replacement_year.nil? || asset.scheduled_replacement_year < start_year
+    elsif asset.scheduled_replacement_year.nil? or asset.scheduled_replacement_year < start_year
       if asset.policy_replacement_year < start_year
         # Take care of backlogged assets
         asset.scheduled_replacement_year = start_year
@@ -312,6 +332,14 @@ class CapitalProjectBuilder
         asset.scheduled_replacement_year = asset.policy_replacement_year
       end
       changed = true
+    end
+
+    unless asset.policy_rehabilitation_year.nil?
+      if asset.policy_rehabilitation_year <= start_year && asset.scheduled_replacement_year > start_year
+        asset.scheduled_rehabilitation_year = start_year
+      else
+        asset.scheduled_rehabilitation_year = asset.policy_rehabilitation_year
+      end
     end
 
     # Default to replacing with new assets unless otherwise indicated
