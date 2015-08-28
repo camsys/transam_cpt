@@ -65,8 +65,8 @@ class CapitalProject < ActiveRecord::Base
   # Scopes
   #------------------------------------------------------------------------------
 
-  # default scope
-  default_scope { where(:active => true) }
+  # Allow selection of active instances
+  scope :active, -> { where(:active => true) }
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
