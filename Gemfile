@@ -21,4 +21,4 @@ gemspec
 gem 'transam_core', :github => 'camsys/transam_core', branch: 'master'
 gem 'transam_transit', :github => 'camsys/transam_transit', branch: 'master'
 gem 'transam_spatial', :github => 'camsys/transam_spatial', branch: 'master'
-
+gem 'mysql2', '~> 0.3.20' # lock gem for dummy app
