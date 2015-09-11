@@ -343,7 +343,7 @@ class CapitalProjectBuilder
 
     # Check to see if teh policy requriesd replacing with new or used assets
     if asset.scheduled_replace_with_new.blank?
-      asset.scheduled_replace_with_new = asset.policy_analyzer.replace_with_new
+      asset.scheduled_replace_with_new = asset.policy_analyzer.get_replace_with_new
     end
 
     # See if the asset has any scheduled replacement or rehabilitation costs, if not
