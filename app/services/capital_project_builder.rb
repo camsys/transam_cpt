@@ -211,12 +211,12 @@ class CapitalProjectBuilder
     #---------------------------------
 
     # get the rehab ALI code for this asset if the asset does rehabs
-    unless asset.policy_rule.rehabilitation_year.nil?
+    unless asset.policy_analyzer.get_rehabilitation_month.blank?
       rehab_ali_code = get_rehab_ali_code(asset)
     end
 
-    unless asset.scheduled_rehabilitation_year.nil?
-      if asset.scheduled_rehabilitation_year < asset.scheduled_replacement_year and 
+    unless asset.scheduled_rehabilitation_year.blank?
+      if asset.scheduled_rehabilitation_year < asset.scheduled_replacement_year and
         asset.scheduled_rehabilitation_year >= start_year and
         asset.scheduled_rehabilitation_year <= last_year
         # This will create the project if it does not exist
@@ -241,11 +241,11 @@ class CapitalProjectBuilder
       #
       # See if the replacement and following rehab can be replaced within the planning time frame
       #-----------------------------
-      max_service_life_years = asset.policy_rule.max_service_life_years
+      min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
 
       # Only add this rehab if the asset does rehabs
-      unless asset.policy_rule.rehabilitation_year.nil?
-        rehab_year_gap = asset.policy_rule.rehabilitation_year
+      unless asset.policy_analyzer.get_rehabilitation_month.blank?
+        rehab_year_gap = asset.policy_analyzer.get_rehabilitation_month / 12
 
         # Add the first rehab to follow a scheduled replacement
         if (year + rehab_year_gap) <= last_year
@@ -254,20 +254,20 @@ class CapitalProjectBuilder
       end
 
       year += max_service_life_years
-      Rails.logger.debug "Max Service Life = #{max_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
+      Rails.logger.debug "Max Service Life = #{min_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
       while year < last_year
         # Add a future re-replacement project for the asset
         projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
         # Only add this future rehab if the asset does rehabs
-        unless asset.policy_rule.rehabilitation_year.nil?
+        unless asset.policy_analyzer.get_rehabilitation_month.blank?
           if (year + rehab_year_gap) <= last_year
             projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
           end
         end
 
-        year += max_service_life_years
+        year += min_service_life_years
       end
     end
 
@@ -431,15 +431,15 @@ class CapitalProjectBuilder
 
   # Returns the asset-specific ALI code for replacement
   def get_replace_ali_code(asset)
-    ali_code = asset.policy_rule.replacement_ali_code
-    scope = TeamAliCode.find_by_code(ali_code)
+    ali_code = asset.policy_analyzer.get_purchase_replacement_code
+    scope = TeamAliCode.find_by(:code => ali_code)
     scope
   end
 
   # Returns the asset-specific ALI code for rehabilitation
   def get_rehab_ali_code(asset)
-    ali_code = asset.policy_rule.rehabilitation_ali_code
-    scope = TeamAliCode.find_by_code(ali_code)
+    ali_code = asset.policy_analyzer.get_rehabilitation_code
+    scope = TeamAliCode.find_by(:code => ali_code)
     scope
   end
 
