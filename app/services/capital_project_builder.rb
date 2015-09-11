@@ -196,7 +196,7 @@ class CapitalProjectBuilder
     end
 
     # Can't build projects for assets that have been scheduled for disposition or already disposed
-    if asset.disposition_date or asset.scheduled_disposition_year
+    if asset.disposed? or asset.scheduled_for_disposition?
       Rails.logger.info "Asset #{asset.object_key} has been scheduled for disposition. Nothing to do."
       return
     end
@@ -206,54 +206,56 @@ class CapitalProjectBuilder
     #-----------------------------
     asset_data_consistency_check(asset, target_year, start_year)
 
-    #---------------------------------
-    # Step 2: Process initial rehabilitation (this happens here only if the initial rehab happens before the initial replacement)
-    #---------------------------------
+    #---------------------------------------------------------------------------
+    # Step 2: Process initial rehabilitation (this happens here only if
+    # the initial rehab happens before the initial replacement)
+    #---------------------------------------------------------------------------
 
     # get the rehab ALI code for this asset if the asset does rehabs
-    unless asset.policy_analyzer.get_rehabilitation_month.blank?
-      rehab_ali_code = get_rehab_ali_code(asset)
-    end
-
-    unless asset.scheduled_rehabilitation_year.blank?
-      if asset.scheduled_rehabilitation_year < asset.scheduled_replacement_year and
-        asset.scheduled_rehabilitation_year >= start_year and
-        asset.scheduled_rehabilitation_year <= last_year
-        # This will create the project if it does not exist
-        projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
-      end
-    end
+    # rehab_year_gap = asset.policy_analyzer.get_rehabilitation_service_month.to_i
+    # unless rehab_year_gap == 0
+    #   rehab_ali_code = get_rehab_ali_code(asset)
+    # end
+    #
+    # unless asset.scheduled_rehabilitation_year.blank?
+    #   if asset.scheduled_rehabilitation_year < asset.scheduled_replacement_year and
+    #     asset.scheduled_rehabilitation_year >= start_year and
+    #     asset.scheduled_rehabilitation_year <= last_year
+    #     # This will create the project if it does not exist
+    #     projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
+    #   end
+    # end
 
     year = asset.scheduled_replacement_year
     unless year < start_year or year > last_year
 
-      #-----------------------------
+      #-------------------------------------------------------------------------
       # Step 3: Process initial replacement
-      #-----------------------------
+      #-------------------------------------------------------------------------
 
       # get the replacement ALI code for this asset
       replace_ali_code = get_replace_ali_code(asset)
       # Add the initial replacement. If the project does not exist it is created
       projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
-      #-----------------------------
+      #-------------------------------------------------------------------------
       # Step 4: Process following replacements and rehabs
       #
       # See if the replacement and following rehab can be replaced within the planning time frame
-      #-----------------------------
+      #-------------------------------------------------------------------------
       min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
 
       # Only add this rehab if the asset does rehabs
-      unless asset.policy_analyzer.get_rehabilitation_month.blank?
-        rehab_year_gap = asset.policy_analyzer.get_rehabilitation_month / 12
+      # unless asset.policy_analyzer.get_rehabilitation_month.blank?
+      #   rehab_year_gap = asset.policy_analyzer.get_rehabilitation_month / 12
+      #
+      #   # Add the first rehab to follow a scheduled replacement
+      #   if (year + rehab_year_gap) <= last_year
+      #     projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
+      #   end
+      # end
 
-        # Add the first rehab to follow a scheduled replacement
-        if (year + rehab_year_gap) <= last_year
-          projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
-        end
-      end
-
-      year += max_service_life_years
+      year += min_service_life_years
       Rails.logger.debug "Max Service Life = #{min_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
       while year < last_year
@@ -261,11 +263,11 @@ class CapitalProjectBuilder
         projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
         # Only add this future rehab if the asset does rehabs
-        unless asset.policy_analyzer.get_rehabilitation_month.blank?
-          if (year + rehab_year_gap) <= last_year
-            projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
-          end
-        end
+        # unless asset.policy_analyzer.get_rehabilitation_month.blank?
+        #   if (year + rehab_year_gap) <= last_year
+        #     projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
+        #   end
+        # end
 
         year += min_service_life_years
       end
@@ -306,24 +308,22 @@ class CapitalProjectBuilder
 
 
 
-  #-----------------------------
+  #-----------------------------------------------------------------------------
   # Data consistency check
   #
   # Make sure that the asset has a in service date and a scheduled replacement year.
   # If the scheduled replacement year is not set, default it to the policy replacement year
   # or the first planning year if the asset is in backlog
   #
-  #-----------------------------
+  #-----------------------------------------------------------------------------
   def asset_data_consistency_check(asset, target_year, start_year)
-    changed = false
+
     if asset.in_service_date.nil?
       asset.in_service_date = asset.purchase_date
-      changed = true
     end
 
     if target_year
       asset.scheduled_replacement_year = target_year
-      changed = true
     elsif asset.scheduled_replacement_year.nil? or asset.scheduled_replacement_year < start_year
       if asset.policy_replacement_year < start_year
         # Take care of backlogged assets
@@ -331,21 +331,19 @@ class CapitalProjectBuilder
       else
         asset.scheduled_replacement_year = asset.policy_replacement_year
       end
-      changed = true
     end
 
-    unless asset.policy_rehabilitation_year.nil?
-      if asset.policy_rehabilitation_year <= start_year && asset.scheduled_replacement_year > start_year
-        asset.scheduled_rehabilitation_year = start_year
-      else
-        asset.scheduled_rehabilitation_year = asset.policy_rehabilitation_year
-      end
-    end
+    # unless asset.policy_rehabilitation_year.nil?
+    #   if asset.policy_rehabilitation_year <= start_year && asset.scheduled_replacement_year > start_year
+    #     asset.scheduled_rehabilitation_year = start_year
+    #   else
+    #     asset.scheduled_rehabilitation_year = asset.policy_rehabilitation_year
+    #   end
+    # end
 
-    # Default to replacing with new assets unless otherwise indicated
+    # Check to see if teh policy requriesd replacing with new or used assets
     if asset.scheduled_replace_with_new.blank?
-      asset.scheduled_replace_with_new = true
-      changed = true
+      asset.scheduled_replace_with_new = asset.policy_analyzer.replace_with_new
     end
 
     # See if the asset has any scheduled replacement or rehabilitation costs, if not
@@ -353,12 +351,12 @@ class CapitalProjectBuilder
     if asset.scheduled_replacement_cost.blank?
       Rails.logger.debug "asset scheduled_replacement_cost is blank, setting to est: #{asset.estimated_replacement_cost}"
       asset.scheduled_replacement_cost = asset.estimated_replacement_cost
-      changed = true
     end
 
-    if changed
-      asset.save
+    if asset.changed?
+      asset.save(:validate => false)
     end
+
   end
 
   # Adds an asset to a SOGR project. If the project does not
@@ -431,7 +429,11 @@ class CapitalProjectBuilder
 
   # Returns the asset-specific ALI code for replacement
   def get_replace_ali_code(asset)
-    ali_code = asset.policy_analyzer.get_purchase_replacement_code
+    if asset.policy_analyzer.get_replace_with_leased
+      ali_code = asset.policy_analyzer.get_lease_replacement_code
+    else
+      ali_code = asset.policy_analyzer.get_purchase_replacement_code
+    end
     scope = TeamAliCode.find_by(:code => ali_code)
     scope
   end
