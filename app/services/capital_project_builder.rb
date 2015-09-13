@@ -12,10 +12,11 @@ class CapitalProjectBuilder
   include FiscalYear
 
   # Instance vars
-  attr_accessor :project_count, :replacement_project_type, :rehabilitation_project_type
-
-  def initialize
-  end
+  attr_reader :project_count
+  attr_reader :replacement_project_type
+  attr_reader :rehabilitation_project_type
+  attr_reader :start_year
+  attr_reader :last_year
 
   #------------------------------------------------------------------------------
   #
@@ -93,6 +94,25 @@ class CapitalProjectBuilder
     projects_and_alis
   end
 
+  # Set resonable defaults for the builder
+  def initialize
+    # These are hashes for caching scopes so we don't have to look them up all the time
+    @replace_subtype_scope_cache = {}
+    @rehab_subtype_scope_cache = {}
+
+    # Keep track of how many projects were created
+    @project_count = 0
+
+    # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects for planning years
+    # Year 1, Year 2,..., Year 12
+    @start_year = current_planning_year_year
+    @last_year = last_fiscal_year_year
+
+    @replacement_project_type = CapitalProjectType.find_by_code('R')
+    @rehabilitation_project_type = CapitalProjectType.find_by_code('I')
+
+  end
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
@@ -106,6 +126,10 @@ class CapitalProjectBuilder
 
     # Get the options. There must be at least one type of asset to process
     asset_type_ids = options[:asset_type_ids]
+    if asset_type_ids.blank?
+      asset_type_ids = []
+      eligible_asset_types(organization).each{|x| asset_type_ids << x.id}
+    end
 
     create_tasks = options[:create_tasks].blank? ? true : options[:create_tasks]
     send_message = options[:send_message].blank? ? true : options[:send_message]
@@ -177,7 +201,11 @@ class CapitalProjectBuilder
 
   end
 
-  # actually process an asset
+  #-----------------------------------------------------------------------------
+  # Process a single asset adding it to replacement and rehabilitation projects as
+  # needed. Projects are created if they fon't already exists otherwise the
+  # asset is added to existing projects
+  #-----------------------------------------------------------------------------
   def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type, target_year=nil, current_ali=nil)
 
     Rails.logger.info "Processing asset #{asset.object_key}, start_year = #{start_year}, last_year = #{last_year}, #{replacement_project_type}, #{rehabilitation_project_type}, target_year=#{target_year}"
@@ -201,60 +229,50 @@ class CapitalProjectBuilder
       return
     end
 
-    #-----------------------------
+    #---------------------------------------------------------------------------
     # Step 1: Data consistency check
-    #-----------------------------
-    asset_data_consistency_check(asset, target_year, start_year)
+    #---------------------------------------------------------------------------
+    asset_data_consistency_check(asset, start_year)
 
     #---------------------------------------------------------------------------
     # Step 2: Process initial rehabilitation (this happens here only if
     # the initial rehab happens before the initial replacement)
     #---------------------------------------------------------------------------
 
-    # get the rehab ALI code for this asset if the asset does rehabs
-    # rehab_year_gap = asset.policy_analyzer.get_rehabilitation_service_month.to_i
-    # unless rehab_year_gap == 0
-    #   rehab_ali_code = get_rehab_ali_code(asset)
-    # end
-    #
-    # unless asset.scheduled_rehabilitation_year.blank?
-    #   if asset.scheduled_rehabilitation_year < asset.scheduled_replacement_year and
-    #     asset.scheduled_rehabilitation_year >= start_year and
-    #     asset.scheduled_rehabilitation_year <= last_year
-    #     # This will create the project if it does not exist
-    #     projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
-    #   end
-    # end
+    # Ge the replacment and rehab ALI codes for this asset
+    replace_ali_code = get_replace_ali_code(asset)
+    rehab_ali_code = get_rehab_ali_code(asset)
+
+    # See if the policy requires scheduling rehabilitations. If so we get the
+    rehab_month = asset.policy_analyzer.get_rehabilitation_service_month.to_i
+    process_rehabs = (rehab_month > 0) ? true : false
+
+    # If the asset has already been scheduled for a rehab, add this to the plan
+    if asset.scheduled_rehabilitation_year.present?
+      projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
+    end
 
     year = asset.scheduled_replacement_year
+    min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
+
     unless year < start_year or year > last_year
 
       #-------------------------------------------------------------------------
-      # Step 3: Process initial replacement
+      # Step 3: Process initial replacement and rehab
       #-------------------------------------------------------------------------
-
-      # get the replacement ALI code for this asset
-      replace_ali_code = get_replace_ali_code(asset)
       # Add the initial replacement. If the project does not exist it is created
       projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
-      #-------------------------------------------------------------------------
-      # Step 4: Process following replacements and rehabs
-      #
-      # See if the replacement and following rehab can be replaced within the planning time frame
-      #-------------------------------------------------------------------------
-      min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
+      if process_rehabs
+        rehab_year = year + (rehab_month / 12)
+        if rehab_year <= last_year
+          projects_and_alis << add_to_project(asset, rehab_ali_code, rehab_year, rehabilitation_project_type)
+        end
+      end
 
-      # Only add this rehab if the asset does rehabs
-      # unless asset.policy_analyzer.get_rehabilitation_month.blank?
-      #   rehab_year_gap = asset.policy_analyzer.get_rehabilitation_month / 12
-      #
-      #   # Add the first rehab to follow a scheduled replacement
-      #   if (year + rehab_year_gap) <= last_year
-      #     projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
-      #   end
-      # end
-
+      #-------------------------------------------------------------------------
+      # Step 4: Process replacements
+      #-------------------------------------------------------------------------
       year += min_service_life_years
       Rails.logger.debug "Max Service Life = #{min_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
@@ -262,12 +280,12 @@ class CapitalProjectBuilder
         # Add a future re-replacement project for the asset
         projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
 
-        # Only add this future rehab if the asset does rehabs
-        # unless asset.policy_analyzer.get_rehabilitation_month.blank?
-        #   if (year + rehab_year_gap) <= last_year
-        #     projects_and_alis << add_to_project(asset, rehab_ali_code, year + rehab_year_gap, rehabilitation_project_type)
-        #   end
-        # end
+        if process_rehabs
+          rehab_year = year + (rehab_month / 12)
+          if rehab_year <= last_year
+            projects_and_alis << add_to_project(asset, rehab_ali_code, rehab_year, rehabilitation_project_type)
+          end
+        end
 
         year += min_service_life_years
       end
@@ -276,38 +294,6 @@ class CapitalProjectBuilder
     projects_and_alis
   end
 
-  # move an asset
-  def move_asset(asset, target_year, current_ali)
-
-    Rails.logger.info "Moving asset #{asset.object_key}, target_year=#{target_year}, current_ali=#{current_ali.object_key}"
-
-    projects_and_alis = []
-
-    # Can't build projects for assets that have been scheduled for disposition or already disposed
-    if asset.disposition_date or asset.scheduled_disposition_year
-      msg =  "Asset #{asset.object_key} has been scheduled for disposition. Not processing it."
-      Rails.logger.warning msg
-      raise msg
-    end
-
-    current_project = current_ali.capital_project
-    ali_code = current_ali.team_ali_code
-
-    # Remove the asset from the specified ALI
-    Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{current_ali.object_key}"
-    current_ali.assets.delete asset
-
-    #-----------------------------
-    # Step 1: Data consistency check
-    #-----------------------------
-    # TODO Not sure if this is needed, if we're moving it this will already have been done
-    asset_data_consistency_check(asset, target_year, @start_year)
-
-    add_to_project(asset, ali_code, target_year, current_project.capital_project_type)
-  end
-
-
-
   #-----------------------------------------------------------------------------
   # Data consistency check
   #
@@ -315,33 +301,40 @@ class CapitalProjectBuilder
   # If the scheduled replacement year is not set, default it to the policy replacement year
   # or the first planning year if the asset is in backlog
   #
+  # start year is the first planning year
+  #
   #-----------------------------------------------------------------------------
-  def asset_data_consistency_check(asset, target_year, start_year)
+  def asset_data_consistency_check(asset, start_year)
 
     if asset.in_service_date.nil?
       asset.in_service_date = asset.purchase_date
     end
 
-    if target_year
-      asset.scheduled_replacement_year = target_year
-    elsif asset.scheduled_replacement_year.nil? or asset.scheduled_replacement_year < start_year
-      if asset.policy_replacement_year < start_year
-        # Take care of backlogged assets
-        asset.scheduled_replacement_year = start_year
-      else
-        asset.scheduled_replacement_year = asset.policy_replacement_year
+    # Set the schedule replacement year to the policy year if it is not already
+    # set
+    if asset.scheduled_replacement_year.nil?
+      asset.scheduled_replacement_year = asset.policy_replacement_year
+    end
+    # Take care of backlogged assets. Any asset in backlog will be scheduled for
+    # replacement in the first planning year
+    if asset.policy_replacement_year < start_year
+      asset.scheduled_replacement_year = start_year
+    end
+
+    # Check to see if the asset has a scheduled rehabilitation year and if so
+    # make sure it is rational ie. must be before the replacement year
+    if asset.scheduled_rehabilitation_year.present?
+      # is it scheduled in the replacement year
+      if asset.scheduled_rehabilitation_year == asset.scheduled_replacement_year
+        # Clear the rehab year and let the system recalculate it as needed
+        asset.scheduled_rehabilitation_year = nil
+      elsif asset.scheduled_rehabilitation_year < start_year
+        # it is scheduled before the start year so it is in backlog
+        asset.scheduled_rehabilitation_year = start_year
       end
     end
 
-    # unless asset.policy_rehabilitation_year.nil?
-    #   if asset.policy_rehabilitation_year <= start_year && asset.scheduled_replacement_year > start_year
-    #     asset.scheduled_rehabilitation_year = start_year
-    #   else
-    #     asset.scheduled_rehabilitation_year = asset.policy_rehabilitation_year
-    #   end
-    # end
-
-    # Check to see if teh policy requriesd replacing with new or used assets
+    # Check to see if the policy requries replacing with new or used assets
     if asset.scheduled_replace_with_new.blank?
       asset.scheduled_replace_with_new = asset.policy_analyzer.get_replace_with_new
     end
@@ -359,9 +352,10 @@ class CapitalProjectBuilder
 
   end
 
+  #-----------------------------------------------------------------------------
   # Adds an asset to a SOGR project. If the project does not
   # exist it is created first,
-  #
+  #-----------------------------------------------------------------------------
   def add_to_project(asset, ali_code, year, project_type)
 
     Rails.logger.debug "add_to_project: asset=#{asset.object_key} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
@@ -397,7 +391,6 @@ class CapitalProjectBuilder
       # create this project
       project_title = "#{focus} #{request} project"
       project = create_capital_project(asset.organization, year, scope, project_title, project_type)
-      project.save!
       @project_count += 1
       Rails.logger.debug "Created new project #{project.object_key}"
     else
@@ -427,71 +420,50 @@ class CapitalProjectBuilder
     [project, ali]
   end
 
-  # Returns the asset-specific ALI code for replacement
-  def get_replace_ali_code(asset)
-    if asset.policy_analyzer.get_replace_with_leased
-      ali_code = asset.policy_analyzer.get_lease_replacement_code
-    else
-      ali_code = asset.policy_analyzer.get_purchase_replacement_code
-    end
-    scope = TeamAliCode.find_by(:code => ali_code)
-    scope
-  end
-
-  # Returns the asset-specific ALI code for rehabilitation
-  def get_rehab_ali_code(asset)
-    ali_code = asset.policy_analyzer.get_rehabilitation_code
-    scope = TeamAliCode.find_by(:code => ali_code)
-    scope
-  end
-
+  #-----------------------------------------------------------------------------
   # Creates a new capital project
-  def create_capital_project(org, fiscal_year, team_category, title, capital_project_type)
+  #-----------------------------------------------------------------------------
+  def create_capital_project(org, fiscal_year, ali_code, title, capital_project_type)
 
     project = CapitalProject.new
     project.organization = org
     project.active = true
     project.emergency = false
     project.fy_year = fiscal_year
-    project.team_ali_code = team_category
+    project.team_ali_code = ali_code
     project.capital_project_type = capital_project_type
     project.title = title
     project.description = "Automatically generated by TransAM. Please provide a detailed description of this capital project."
     project.justification = "To be completed. Please provide a detailed justification for this capital project."
-    #project.save
-
-    # return it
+    project.save
     project
   end
+
+  #-----------------------------------------------------------------------------
+  # Returns the asset-specific ALI code for replacement
+  #-----------------------------------------------------------------------------
+  def get_replace_ali_code(asset)
+    if asset.policy_analyzer.get_replace_with_leased
+      ali_code = asset.policy_analyzer.get_lease_replacement_code
+    else
+      ali_code = asset.policy_analyzer.get_purchase_replacement_code
+    end
+    TeamAliCode.find_by(:code => ali_code)
+  end
+
+  #-----------------------------------------------------------------------------
+  # Returns the asset-specific ALI code for rehabilitation
+  #-----------------------------------------------------------------------------
+  def get_rehab_ali_code(asset)
+    ali_code = asset.policy_analyzer.get_rehabilitation_code
+    TeamAliCode.find_by(:code => ali_code)
+  end
+
   #------------------------------------------------------------------------------
   #
   # Private Methods
   #
   #------------------------------------------------------------------------------
   private
-
-  # Set resonable defaults for the builder
-  def initialize
-    # These are hashes for caching scopes so we don't have to look them up all the time
-    @replace_subtype_scope_cache = {}
-    @rehab_subtype_scope_cache = {}
-
-    # Keep track of how many projects were created
-    @project_count = 0
-
-    # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects for planning years
-    # Year 1, Year 2,..., Year 12
-    @start_year = current_planning_year_year
-    @last_year = last_fiscal_year_year
-
-    @replacement_project_type = CapitalProjectType.find_by_code('R')
-    @rehabilitation_project_type = CapitalProjectType.find_by_code('I')
-
-    # These were in code but not used.
-    # # Cache some commonly used objects
-    # sys_user = User.find_by_first_name('system')
-    # high_priority = PriorityType.find_by_name('High')
-
-  end
 
 end
