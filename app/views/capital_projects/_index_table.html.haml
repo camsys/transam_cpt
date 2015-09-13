@@ -80,12 +80,13 @@
       %td.right= format_as_currency(total_federal)
       %td.right= format_as_currency(total_local)
       %td.right= format_as_currency(total_total)
+      %td.center
 
 = render :partial => 'shared/table_scripts', :locals => {:table_id => table_dom_id, :path_pattern => capital_project_path("xxx")}
 
 :javascript
 
-  $('#' + table_dom_id).on('post-body.bs.table', function () {
+  $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
     $('.popup-details').popover({
       trigger: 'hover',
       container: 'body',
