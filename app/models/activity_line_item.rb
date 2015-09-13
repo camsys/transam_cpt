@@ -12,6 +12,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Include the object key mixin
   include TransamObjectKey
+  include FiscalYear
 
   #------------------------------------------------------------------------------
   # Callbacks
@@ -162,15 +163,21 @@ class ActivityLineItem < ActiveRecord::Base
   # Returns the total replacment or rehabilitation costs of the assets in this ALI
   def total_asset_cost
     val = 0
+    first_date = start_of_fiscal_year(capital_project.fy_year)
     assets.each do |a|
-      # determine which cost to use based on the year of the project
-      if a.scheduled_replacement_year == capital_project.fy_year
-        val += a.scheduled_replacement_cost unless a.scheduled_replacement_cost.nil?
+      # Check to see if this is rehab or replacement ALI
+      if rehabilitation_ali?
+        val += a.scheduled_rehabilitation_cost.present? ? a.scheduled_rehabilitation_cost : a.policy_analyzer.get_rehabilitation_cost
       else
-        val += a.scheduled_rehabilitation_cost unless a.scheduled_rehabilitation_cost.nil?
+        val += a.scheduled_replacement_cost.present? ? a.scheduled_replacement_cost : a.calculate_estimated_replacement_cost(capital_project.fy_year)
       end
     end
     val
+  end
+
+  # Returns true if this is a rehabilitation ALI
+  def rehabilitation_ali?
+    team_ali_code.rehabilitation_code?
   end
 
   # Return the organization of the owning object so instances can be index using
