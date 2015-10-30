@@ -36,22 +36,38 @@ class CapitalProjectsController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
+  # Displays the SOGR analyzer form. When the form is commited the runner method
+  # performs the analysis and generates the capital projects
+  #-----------------------------------------------------------------------------
   def builder
 
-    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path
+    add_breadcrumb "SOGR Capital Project Analyzer"
 
     # Select the asset types that they are allowed to build. This is narrowed down to only
     # asset types they own and those which are fta vehicles
     builder = CapitalProjectBuilder.new
     @asset_types = builder.eligible_asset_types(@organization)
+    @fiscal_years = get_fiscal_years
     @builder_proxy = BuilderProxy.new
-    @message = "Creating SOGR projects. This process might take a while."
+
+    if @organization.has_sogr_projects?
+      @builder_proxy.start_fy = current_planning_year_year + 3
+    else
+      @builder_proxy.start_fy = current_planning_year_year
+    end
+
+    @message = "Creating SOGR capital projects. This process might take a while."
 
   end
-
+  #-----------------------------------------------------------------------------
+  # Processes the SOGR builder form and runs the SOGR builder service to generate
+  # capital projects based on the user selections
+  #-----------------------------------------------------------------------------
   def runner
 
-    add_breadcrumb "Capital Needs SOGR Builder", builder_capital_projects_path
+    add_breadcrumb "SOGR Capital Project Analyzer", builder_capital_projects_path
+    add_breadcrumb "Running..."
 
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
@@ -62,6 +78,7 @@ class CapitalProjectsController < OrganizationAwareController
       # Run the builder
       options = {}
       options[:asset_type_ids] = @builder_proxy.asset_types
+      options[:start_fy] = @builder_proxy.start_fy
 
       #puts options.inspect
       builder = CapitalProjectBuilder.new
@@ -69,12 +86,12 @@ class CapitalProjectsController < OrganizationAwareController
 
       # Let the user know the results
       if num_created > 0
-        msg = "Capital Project Builder completed. #{num_created} projects were added to your capital needs list."
+        msg = "SOGR Capital Project Analyzer completed. #{num_created} SOGR capital projects were added to your capital needs list."
         notify_user(:notice, msg)
         # Add a row into the activity table
         ActivityLog.create({:organization_id => @organization.id, :user_id => current_user.id, :item_type => "CapitalProjectBuilder", :activity => msg, :activity_time => Time.now})
       else
-        notify_user(:notice, "No projects were created.")
+        notify_user(:notice, "No capital projects were created.")
       end
       redirect_to capital_projects_url
       return

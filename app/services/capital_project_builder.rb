@@ -114,9 +114,7 @@ class CapitalProjectBuilder
   end
 
   #-----------------------------------------------------------------------------
-  #
   # Protected Methods
-  #
   #-----------------------------------------------------------------------------
   protected
 
@@ -129,6 +127,10 @@ class CapitalProjectBuilder
     if asset_type_ids.blank?
       asset_type_ids = []
       eligible_asset_types(organization).each{|x| asset_type_ids << x.id}
+    end
+    # User must set the start fy year as well otherwise we use the first planning year
+    if options[:start_fy].to_i > 0
+      @start_year = options[:start_fy].to_i
     end
 
     create_tasks = options[:create_tasks].blank? ? true : options[:create_tasks]

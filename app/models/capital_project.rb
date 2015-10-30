@@ -67,6 +67,7 @@ class CapitalProject < ActiveRecord::Base
 
   # Allow selection of active instances
   scope :active, -> { where(:active => true) }
+  scope :sogr,   -> { where(:sogr => true)}
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [

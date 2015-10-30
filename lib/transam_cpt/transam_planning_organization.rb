@@ -54,6 +54,10 @@ module TransamPlanningOrganization
   #
   #------------------------------------------------------------------------------
 
+  def has_sogr_projects?
+    (capital_projects.sogr.count > 0)
+  end
+  
   # Returns a list of funds this org is eligible for
   def eligible_funding_sources
     service = EligibilityService.new

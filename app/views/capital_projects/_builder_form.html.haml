@@ -1,11 +1,21 @@
 = simple_form_for(@builder_proxy,
-  :html => {:class => 'form-vertical' },
+  :html => {:class => 'form-vertical'},
   :url => runner_capital_projects_path,
-  :method => 'post',
-  :wrapper => :horizontal_form,
-  :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
+  :wrapper => :vertical_form,
+  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+  :radio_buttons => :vertical_radio_and_checkboxes,
+  :file => :vertical_file_input,
+  :boolean => :vertical_boolean}) do |f|
 
-  = f.input :asset_types,   :collection => @asset_types, :multiple => true, :as => :check_boxes
-  = f.input :finance_type,  :collection => [['Purchase', 1], ['Lease', 2]], :as => :radio_buttons, :label => 'Purchase or Lease'
-  .col-sm-9.col-sm-offset-3
-    = f.submit "Run...", :class => "btn btn-primary", :id => "submit_button"
+  .row
+    .col-md-6
+      = f.input :asset_types,   :collection => @asset_types, :multiple => true, :as => :check_boxes
+    .col-md-6
+      = f.input :start_fy,      :collection => @fiscal_years, :include_blank => false, :label => "Starting Fiscal Year"
+
+  - if @organization.capital_projects.sogr.count > 0
+    .row
+      .col-md-12
+        = render 'builder_warning'
+
+  = f.submit "Run analyzer...", :class => "btn btn-primary", :id => "submit_button"
