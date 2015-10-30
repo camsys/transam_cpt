@@ -1,11 +1,11 @@
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #
 # CapitalProjectBuilder
 #
 # Analyzes an organizations's assets and generates a set of capital projects
 # for the organization.
 #
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 class CapitalProjectBuilder
 
   # Include the fiscal year mixin
@@ -18,11 +18,11 @@ class CapitalProjectBuilder
   attr_reader :start_year
   attr_reader :last_year
 
-  #------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   #
   # Instance Methods
   #
-  #------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
 
   # Returns the set of asset types for an organization that are eligible for
   # SOGR building
@@ -113,11 +113,11 @@ class CapitalProjectBuilder
 
   end
 
-  #------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   #
   # Protected Methods
   #
-  #------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   protected
 
   def build_bottom_up(organization, options)
@@ -140,7 +140,7 @@ class CapitalProjectBuilder
     org_asset_types = eligible_asset_types(organization)
     Rails.logger.debug "  Eligible asset types = org_asset_types.inspect"
 
-    #--------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     # Basic Algorithm:
     #
     # For each selected asset type...
@@ -157,7 +157,7 @@ class CapitalProjectBuilder
     #     Step 5: Check to see if the asset has a rehabilitation year set. If so create a rehabilitation
     #             project if one does not exist or add to it if it does exist.
     #
-    #--------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
 
     # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects
     # for planning years Year 1, Year 2,..., Year 12
@@ -239,19 +239,28 @@ class CapitalProjectBuilder
     # the initial rehab happens before the initial replacement)
     #---------------------------------------------------------------------------
 
-    # Ge the replacment and rehab ALI codes for this asset
-    replace_ali_code = get_replace_ali_code(asset)
-    rehab_ali_code = get_rehab_ali_code(asset)
+    # Get the policy analyzer for this asset
+    policy_analyzer = asset.policy_analyzer
 
-    # See if the policy requires scheduling rehabilitations. If so we get the
+    # Get the replacment and rehab ALI codes for this asset. If the policy rule
+    # specifies leased we need the lease
+    if policy_analyzer.get_replace_with_leased
+      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_lease_replacement_code)
+    else
+      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_purchase_replacement_code)
+    end
+    rehab_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_rehab_ali_code)
+
+    # See if the policy requires scheduling rehabilitations.
     rehab_month = asset.policy_analyzer.get_rehabilitation_service_month.to_i
-    process_rehabs = (rehab_month > 0) ? true : false
+    process_rehabs = (rehab_month.to_i > 0)
 
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
       projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
     end
 
+    # Initial replacement
     year = asset.scheduled_replacement_year
     min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
 
@@ -310,11 +319,17 @@ class CapitalProjectBuilder
       asset.in_service_date = asset.purchase_date
     end
 
+    # Ensure that the asset has a valid policy replacement year
+    if asset.policy_replacement_year.blank?
+      asset.policy_replacement_year = asset.calculate_replacement_year
+    end
+
     # Set the schedule replacement year to the policy year if it is not already
     # set
     if asset.scheduled_replacement_year.nil?
       asset.scheduled_replacement_year = asset.policy_replacement_year
     end
+
     # Take care of backlogged assets. Any asset in backlog will be scheduled for
     # replacement in the first planning year
     if asset.policy_replacement_year < start_year
@@ -372,15 +387,25 @@ class CapitalProjectBuilder
       focus = "Unknown"
     end
 
-    if scope.category[1] == "2"
+    if scope.category[0] == "4"
+      focus = "#{focus} support vehicles"
+    end
+
+    if ["2"].include? scope.category[1]
       request = "replacement"
       action = "Purchase"
-    elsif scope.category[1] == "6"
+    elsif ["6"].include? scope.category[1]
       request = "replacement"
       action = "Lease"
-    elsif scope.category[1] == "4"
+    elsif ["4"].include? scope.category[1]
       request = "rehabilitation"
       action = "Rehabilitate"
+    elsif ["5"].include? scope.category[1]
+      request = "mid-life rebuild"
+      action = "Rebuild"
+    elsif ["7"].include? scope.category[1]
+      request = "vehicle overhaul"
+      action = "Overhaul"
     else
       request = "unknown"
     end
@@ -428,6 +453,8 @@ class CapitalProjectBuilder
     project = CapitalProject.new
     project.organization = org
     project.active = true
+    project.sogr = true
+    project.multi_year = false
     project.emergency = false
     project.fy_year = fiscal_year
     project.team_ali_code = ali_code
@@ -440,30 +467,10 @@ class CapitalProjectBuilder
   end
 
   #-----------------------------------------------------------------------------
-  # Returns the asset-specific ALI code for replacement
-  #-----------------------------------------------------------------------------
-  def get_replace_ali_code(asset)
-    if asset.policy_analyzer.get_replace_with_leased
-      ali_code = asset.policy_analyzer.get_lease_replacement_code
-    else
-      ali_code = asset.policy_analyzer.get_purchase_replacement_code
-    end
-    TeamAliCode.find_by(:code => ali_code)
-  end
-
-  #-----------------------------------------------------------------------------
-  # Returns the asset-specific ALI code for rehabilitation
-  #-----------------------------------------------------------------------------
-  def get_rehab_ali_code(asset)
-    ali_code = asset.policy_analyzer.get_rehabilitation_code
-    TeamAliCode.find_by(:code => ali_code)
-  end
-
-  #------------------------------------------------------------------------------
   #
   # Private Methods
   #
-  #------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   private
 
 end

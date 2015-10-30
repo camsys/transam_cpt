@@ -189,7 +189,7 @@ class CapitalProjectsController < OrganizationAwareController
       cache_list(@projects, INDEX_KEY_LIST_VAR)
 
       # generate the chart data
-      @report = Report.find_by_class_name('CapitalNeedsForecast')
+      @report = Report.find_by_class_name('UnconstrainedCapitalNeedsForecast')
       report_instance = @report.class_name.constantize.new
       @data = report_instance.get_data_from_result_list(@projects)
     end

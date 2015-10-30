@@ -20,10 +20,11 @@
       %th.center FY
       %th.left Project
       %th.center Scope
+      %th.center SOGR
 
       %th.center Type
       %th.left Title
-      %th.center Status
+      -#%th.center Status
       %th.right Cost
 
       %th.right State
@@ -52,11 +53,12 @@
           %td= p.organization
         %td.center= p.fiscal_year
         %td= p.project_number
-        %td.center= p.team_ali_code.scope
+        %td.center= p.team_ali_code
+        %td.center= format_as_checkbox(p.sogr?)
         %td.center= p.capital_project_type.code
 
         %td= p.title
-        %td.center= p.state.humanize
+        -#%td.center= p.state.humanize
 
         %td.right= format_as_currency(p.total_cost)
 

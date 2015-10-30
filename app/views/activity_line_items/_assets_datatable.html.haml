@@ -16,6 +16,7 @@
         %th.center Mileage
         %th.center Rating
 
+        %th.center Policy FY
         %th.center Orig.
         %th.center Book Val.
         %th.center Est. Cost
@@ -28,12 +29,13 @@
         %tr
           %td.left= a.asset_tag
           %td.left= a.description
-          %td.left= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
+          %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
 
-          %td.right= a.age
+          %td.center= a.age
           %td.right= format_as_integer(a.reported_mileage)
           %td.center= a.reported_condition_type
 
+          %td.center= format_as_fiscal_year(a.policy_replacement_year)
           %td.right= format_as_currency(a.cost)
           %td.right= format_as_currency(a.book_value)
           %td.right= format_as_currency(a.estimated_replacement_cost)

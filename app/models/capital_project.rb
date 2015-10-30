@@ -174,6 +174,17 @@ class CapitalProject < ActiveRecord::Base
     end
   end
 
+  # Returns true if the project is an SOGR project that was created by the SOGR
+  # builder
+  def sogr?
+    (sogr)
+  end
+  # Returns true if the project is an multi-year project. These can only be created
+  # for facility projects
+  def multi_year?
+    (multi_year)
+  end
+
   # Returns true if the project's total cost has been set and
   # funding requests have been entered that cover the cost
   def can_submit?
@@ -260,13 +271,15 @@ class CapitalProject < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.active ||= true
-    self.emergency ||= false
-    self.state ||= :unsubmitted
+    self.active     ||= true
+    self.sogr       ||= false
+    self.multi_year ||= false
+    self.emergency  ||= false
+    self.state      ||= :unsubmitted
     self.project_number ||= 'TEMP'
     # Set the fiscal year to the current fiscal year which can be different from
     # the calendar year
-    self.fy_year ||= current_fiscal_year_year
+    self.fy_year    ||= current_fiscal_year_year
   end
 
 end

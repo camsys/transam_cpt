@@ -15,12 +15,12 @@
       = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any organization...")
   .form-group
     = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
-  .form-group
-    = select_tag(:capital_project_state, options_for_select(CapitalProject.state_names.collect{|a| [a.humanize, a]}, :selected => @capital_project_state), :class => "form-control", :prompt => "Any status...")
+  -# .form-group
+  -#   = select_tag(:capital_project_state, options_for_select(CapitalProject.state_names.collect{|a| [a.humanize, a]}, :selected => @capital_project_state), :class => "form-control", :prompt => "Any status...")
   .form-group
     = select_tag(:capital_project_type_id, options_for_select(CapitalProjectType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_type_id), :class => "form-control", :prompt => "Any project type...")
-  .form-group
-    = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")
+  -# .form-group
+  -#   = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")
   .form-group
     = select_tag(:asset_subtype_id, option_groups_from_collection_for_select(AssetType.all, :asset_subtypes, :name, :id, :name, :selected => @asset_subtype_id), :class => "form-control", :prompt => "Any asset type...")
 
