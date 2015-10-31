@@ -1,4 +1,6 @@
+- Rails.logger.debug "Loading _cpt_detail_tabs"
+
 %li
   %a{:href => "#cpro", :data =>{:toggle => 'tab'}}
-    %span.badge.pull-right= @asset.activity_line_items.count
+    %span.badge.pull-right= @asset.capital_projects.count
     = "Capital Projects"

@@ -43,7 +43,7 @@ class AliAssetMatcherService
     # a list of assets that match the subtypes
     policy = organization.get_policy
     if ali.team_ali_code.replacement_code?
-      rules = policy.policy_asset_subtype_rules.where([:purchase_replacement_code, :lease_replacement_code] => ali.team_ali_code.code)
+      rules = policy.policy_asset_subtype_rules.where('purchase_replacement_code = ? OR lease_replacement_code = ?', ali.team_ali_code.code, ali.team_ali_code.code)
     elsif ali.team_ali_code.rehabilitation_code?
       rules = policy.policy_asset_subtype_rules.where(:rehabilitation_code => ali.team_ali_code.code)
     else

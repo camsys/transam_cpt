@@ -1,43 +1,49 @@
 %table.table.table-hover#capital_projects_datatable
   %thead
     %tr
-      %th.left FY
+      %th.center FY
       %th.left Project
-      %th.left Scope
-      %th.left Type
-      %th.left Title				
-      %th.center Status
+      %th.center Scope
+      %th.center SOGR
 
-      %th.right Federal       
+      %th.center Type
+      %th.left Title
+      -#%th.center Status
+      %th.right Cost
+
       %th.right State
+      %th.right Federal
       %th.right Local
       %th.right Total
-      
+
       %th.center
-      				
+
   %tbody
     - total_state = 0.0
     - total_federal = 0.0
     - total_local = 0.0
     - total_total = 0.0
-    
+
     - projects.each do |p|
       - total_state += p.state_funds
       - total_federal += p.federal_funds
       - total_local += p.local_funds
       - total_total += p.total_funds
-      
+
       %tr.popup-details{:data => {:action_path => capital_project_path(p)}}
-        %td= p.fiscal_year
+        %td.center= p.fiscal_year
         %td= p.project_number
-        %td= p.team_ali_code
+        %td.center= p.team_ali_code
+        %td.center= format_as_checkbox(p.sogr?)
         %td.center= p.capital_project_type.code
-            
+
         %td= p.title
-        %td= p.state
-        
-        %td.right= format_as_currency(p.federal_funds)
+        -#%td.center= p.state.humanize
+
+        %td.right= format_as_currency(p.total_cost)
+
         %td.right= format_as_currency(p.state_funds)
+        %td.right= format_as_currency(p.federal_funds)
         %td.right= format_as_currency(p.local_funds)
         %td.right= format_as_currency(p.total_funds)
 
@@ -46,7 +52,7 @@
 
   %tfoot
     %tr
-      %td{:colspan => 7}            
+      %td{:colspan => 7}
         %td.right= format_as_currency(total_federal)
         %td.right= format_as_currency(total_state)
         %td.right= format_as_currency(total_local)
@@ -58,5 +64,5 @@
     container: 'body',
     placement: 'left',
     animation: 'true',
-    html: 'true'    
-  });  
+    html: 'true'
+  });

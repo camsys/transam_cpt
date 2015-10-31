@@ -1,29 +1,30 @@
-.row
-  = simple_form_for(@project,
+= simple_form_for(@project,
   :html => {:class => 'form-vertical'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
-    :radio_buttons => :vertical_radio_and_checkboxes,
-    :file => :vertical_file_input,
-    :boolean => :vertical_boolean}) do |f|
-    .col-md-6.col-md-offset-3
-      %fieldset
-        %legend= "Capital Project: #{@project}"
+  :radio_buttons => :vertical_radio_and_checkboxes,
+  :file => :vertical_file_input,
+  :boolean => :vertical_boolean}) do |f|
 
-      = f.input :title, :placeholder => "Enter a title for this project..."
-      .row
-        .col-md-4
-          = f.input :fy_year, :collection => @fiscal_years, :label => "Fiscal Year"
-        .col-md-4
-          = f.association :team_ali_code, :collection => TeamAliCode.all_categories, :label_method => 'full_name', :label => 'Scope'
-        .col-md-4
-          = f.association :capital_project_type, :label => 'Project Type'
-      = f.input :emergency, :as => :radio_buttons
 
-      = f.input :description, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a description for this project..."
-      = f.input :justification, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for this project..."
+  = f.input :title, :placeholder => "Enter a title for this project..."
 
-      = f.button :submit, :class => "btn btn-primary"
+  - unless @project.sogr?
+    .row
+      .col-md-4
+        = f.input :fy_year, :collection => @fiscal_years, :label => "Fiscal Year"
+      .col-md-4
+        = f.association :team_ali_code, :collection => TeamAliCode.all_categories, :label_method => 'full_name', :label => 'Scope'
+      .col-md-4
+        = f.association :capital_project_type, :label => 'Project Type'
+
+    = f.input :emergency, :as => :radio_buttons
+
+  = f.input :description, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a description for this project..."
+  = f.input :justification, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for this project..."
+
+  = f.button :submit, :class => "btn btn-primary"
+  = link_to "Cancel", :back, {:id => 'cancel-button', :class => "btn btn-default"}
 
 :javascript
 

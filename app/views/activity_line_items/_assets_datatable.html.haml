@@ -26,7 +26,7 @@
 
     %tbody
       - ali.assets.each do |a|
-        %tr
+        %tr{:data => {:action_path => inventory_path(a)}}
           %td.left= a.asset_tag
           %td.left= a.description
           %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
@@ -43,6 +43,6 @@
           - if popup
             %td.center
               %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
-              - if delete
+              - if can? :update, @activity_line_item
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger

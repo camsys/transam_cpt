@@ -10,6 +10,6 @@
       %span.input-group-addon
         %i.fa.fa-usd
       = f.input_field :anticipated_cost, :class => "form-control"
-    = f.input :cost_justification, :placeholder => "Enter a justification for the cost..."
+    = f.input :cost_justification, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for the cost..."
 
     = f.button :submit, :class => "btn btn-primary"

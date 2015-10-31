@@ -7,10 +7,10 @@
   -#  %a{:href => "#fund", :data =>{:toggle => 'tab'}}
   -#    %span.badge.pull-right= @activity_line_item.funding_plans.count
   -#    = "Funding Plans"
-  %li
-    %a{:href => "#mile", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @activity_line_item.milestones.count
-      = "Milestones"
+  -# %li
+  -#   %a{:href => "#mile", :data =>{:toggle => 'tab'}}
+  -#     %span.badge.pull-right= @activity_line_item.milestones.count
+  -#     = "Milestones"
   %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @activity_line_item.comments.count
@@ -23,9 +23,9 @@
   -#.tab-pane.fade#fund
   -#  .tab-content
   -#    = render 'funding_plans'
-  .tab-pane.fade#mile
-    .tab-content
-      = render 'milestones'
+  -# .tab-pane.fade#mile
+  -#   .tab-content
+  -#     = render 'milestones'
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'

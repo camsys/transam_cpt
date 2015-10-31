@@ -54,4 +54,13 @@ module TransamPlannable
   #
   #------------------------------------------------------------------------------
 
+  # Returns the list of capital projects that this asset paricitpates in
+  def capital_projects
+
+    projects = []
+    activity_line_items.each{|x| projects << x.capital_project}
+    projects.uniq
+    
+  end
+
 end

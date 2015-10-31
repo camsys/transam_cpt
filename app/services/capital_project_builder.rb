@@ -32,7 +32,7 @@ class CapitalProjectBuilder
     asset_types = []
     org.asset_type_counts.each do |type, count|
       asset_type = AssetType.find(type)
-      if ['Vehicle', 'SupportVehicle', 'RailCar', 'Locomotive'].include? asset_type.class_name
+      if ['Vehicle', 'SupportVehicle', 'RailCar', 'Locomotive', 'Equipment'].include? asset_type.class_name
         asset_types << asset_type
       end
     end
@@ -251,7 +251,7 @@ class CapitalProjectBuilder
     else
       replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_purchase_replacement_code)
     end
-    rehab_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_rehab_ali_code)
+    rehab_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_rehabilitation_code)
 
     # See if the policy requires scheduling rehabilitations.
     rehab_month = asset.policy_analyzer.get_rehabilitation_service_month.to_i

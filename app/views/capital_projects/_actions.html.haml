@@ -4,21 +4,20 @@
     = " Actions"
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
-    - if can? :update, @project
-      %li
-        = link_to "#" do
-          %i.fa.fa-arrows-v.fa-fw
-          = " Change the priority"
-
-    %li.divider
-    - @project.allowable_events.each do |evt|
-      %li
-        = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
-          %i.fa.fa-fw{:class => get_event_icon(evt)}
-          = "#{evt} this project"
+    -# - if can? :update, @project
+    -#   %li
+    -#     = link_to "#" do
+    -#       %i.fa.fa-arrows-v.fa-fw
+    -#       = " Change the priority"
+    -#
+    -# %li.divider
+    -# - @project.allowable_events.each do |evt|
+    -#   %li
+    -#     = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
+    -#       %i.fa.fa-fw{:class => get_event_icon(evt)}
+    -#       = "#{evt} this project"
 
     - if can? :create, @project
-      %li.divider
       %li
         = link_to copy_capital_project_path(@project) do
           %i.fa.fa-copy.fa-fw

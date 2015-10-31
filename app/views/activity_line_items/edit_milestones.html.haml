@@ -1,7 +1,7 @@
 = render(:partial => 'shared/form_errors', :locals => {:obj => @activity_line_item}) unless @activity_line_item.errors.empty?
 
 .row
-  .col-md-4
+  .col-md-3
     .panel.panel-default.header-part
       .panel-heading
         .row
@@ -14,7 +14,7 @@
       .panel-body
         = render :partial => 'summary', :locals => {:ali => @activity_line_item}
 
-  .col-md-8
+  .col-md-9
     .panel.panel-default.header-part
       .panel-heading
         .row

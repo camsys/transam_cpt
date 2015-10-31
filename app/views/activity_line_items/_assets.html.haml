@@ -1,47 +1,48 @@
 .row
-  .col-md-12{:style => 'height:200px;overflow-y:auto;'}
+  .col-md-12
     = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => true, :delete => true}
 
-.row
-  .col-md-12
-    %fieldset
-      %legend Add Assets
-      - if @assets.empty?
-        %p There are no assets that can be added to this ALI
-      - else
-        %table.table.table-hover
-          %thead
-            %tr
-              %th.center Tag
-              %th.center Description
-              %th.center Fuel
+- if can? :update, @activity_line_item
+  .row
+    .col-md-12
+      %fieldset
+        %legend Add Assets
+        - if @assets.empty?
+          %p There are no assets that can be added to this ALI
+        - else
+          %table.table.table-hover
+            %thead
+              %tr
+                %th.center Tag
+                %th.center Description
+                %th.center Fuel
 
-              %th.center Age
-              %th.center Mileage
-              %th.center Rating
+                %th.center Age
+                %th.center Mileage
+                %th.center Rating
 
-              %th.center Orig.
-              %th.center Curr Val.
-              %th.center Est. Cost
-              %th
+                %th.center Orig.
+                %th.center Curr Val.
+                %th.center Est. Cost
+                %th
 
-            %tbody
-              - @assets.each do |a|
-                %tr
-                  %td.left= a.asset_tag
-                  %td.left= a.description
-                  %td.left= a.fuel_type.code unless a.fuel_type.nil?
+              %tbody
+                - @assets.each do |a|
+                  %tr
+                    %td.left= a.asset_tag
+                    %td.left= a.description
+                    %td.left= a.fuel_type.code unless a.fuel_type.nil?
 
-                  %td.right= a.age
-                  %td.right= format_as_integer(a.reported_mileage)
-                  %td.center= a.reported_condition_type
+                    %td.right= a.age
+                    %td.right= format_as_integer(a.reported_mileage)
+                    %td.center= a.reported_condition_type
 
-                  %td.right= format_as_currency(a.cost)
-                  %td.right= format_as_currency(a.estimated_value)
-                  %td.right= format_as_currency(a.estimated_replacement_cost)
-                  %td.center
-                    %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
-                    %i.fa.fa-check-circle.action-icon.text-success{:data => {:action_path => add_asset_capital_project_activity_line_item_path(@project, @activity_line_item, :asset => a.object_key)}, :title => 'Add this asset to the ALI'}
+                    %td.right= format_as_currency(a.cost)
+                    %td.right= format_as_currency(a.estimated_value)
+                    %td.right= format_as_currency(a.estimated_replacement_cost)
+                    %td.center
+                      %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
+                      %i.fa.fa-check-circle.action-icon.text-success{:data => {:action_path => add_asset_capital_project_activity_line_item_path(@project, @activity_line_item, :asset => a.object_key)}, :title => 'Add this asset to the ALI'}
 
 
 :javascript

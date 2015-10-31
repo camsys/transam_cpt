@@ -65,6 +65,8 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Allow selection of active instances
   scope :active, -> { where(:active => true) }
+  # set the default scope
+  default_scope { order(:capital_project_id, :team_ali_code_id) }
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
@@ -167,7 +169,7 @@ class ActivityLineItem < ActiveRecord::Base
     assets.each do |a|
       # Check to see if this is rehab or replacement ALI
       if rehabilitation_ali?
-        val += a.scheduled_rehabilitation_cost.present? ? a.scheduled_rehabilitation_cost : a.policy_analyzer.get_rehabilitation_cost
+        val += a.scheduled_rehabilitation_cost.present? ? a.scheduled_rehabilitation_cost : a.policy_analyzer.get_total_rehabilitation_cost
       else
         val += a.scheduled_replacement_cost.present? ? a.scheduled_replacement_cost : a.calculate_estimated_replacement_cost(capital_project.fy_year)
       end
