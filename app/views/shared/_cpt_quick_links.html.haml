@@ -1,3 +1,3 @@
 - if can? :create, CapitalProject
-  = render :partial => 'quick_link', :locals => {:action_title => 'New Project', :action_path => new_capital_project_build_path(0), :action_icon => 'fa fa-usd'}	
-= render :partial => 'quick_link', :locals => {:action_title => 'Projects', :action_path => new_search_path(:search_type => SearchesController::CAPITAL_PLAN_SEARCH_TYPE), :action_icon => 'fa fa-search'} 
+  = render :partial => 'quick_link', :locals => {:action_title => 'New Project', :action_path => new_capital_project_path, :action_icon => 'fa fa-usd'}	
+= render :partial => 'quick_link', :locals => {:action_title => 'Projects', :action_path => new_search_path(:search_type => SearchesController::CAPITAL_PLAN_SEARCH_TYPE), :action_icon => 'fa fa-search'}

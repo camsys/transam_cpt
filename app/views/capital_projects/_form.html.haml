@@ -7,18 +7,24 @@
   :boolean => :vertical_boolean}) do |f|
 
 
-  = f.input :title, :placeholder => "Enter a title for this project..."
+  .row
+    .col-md-8
+      = f.input :title, :placeholder => "Enter a title for this project..."
 
   - unless @project.sogr?
     .row
       .col-md-4
-        = f.input :fy_year, :collection => @fiscal_years, :label => "Fiscal Year"
+        = f.input :fy_year, :collection => @fiscal_years, :include_blank => false, :label => "Fiscal Year"
       .col-md-4
-        = f.association :team_ali_code, :collection => TeamAliCode.all_categories, :label_method => 'full_name', :label => 'Scope'
+        = f.association :team_ali_code, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
       .col-md-4
-        = f.association :capital_project_type, :label => 'Project Type'
+        = f.association :capital_project_type, :collection => CapitalProjectType.active, :include_blank => false, :label => 'Project Type'
 
-    = f.input :emergency, :as => :radio_buttons
+    .row
+      .col-md-4
+        = f.input :emergency, :as => :boolean, :label => 'Emergency project'
+      .col-md-4
+        = f.input :multi_year, :as => :boolean, :label => 'Multi year project'
 
   = f.input :description, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a description for this project..."
   = f.input :justification, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for this project..."

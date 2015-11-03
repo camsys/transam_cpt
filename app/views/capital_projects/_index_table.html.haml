@@ -21,6 +21,7 @@
       %th.left Project
       %th.center Scope
       %th.center SOGR
+      %th.center Multi Year
 
       %th.center Type
       %th.left Title
@@ -53,8 +54,9 @@
           %td= p.organization
         %td.center= p.fiscal_year
         %td= p.project_number
-        %td.center= p.team_ali_code
+        %td.center= p.team_ali_code.scope
         %td.center= format_as_checkbox(p.sogr?)
+        %td.center= format_as_checkbox(p.multi_year?)
         %td.center= p.capital_project_type.code
 
         %td= p.title
@@ -73,9 +75,9 @@
   %tfoot
     %tr
       - if @organization_list.count > 1
-        %td{:colspan => 7}
+        %td{:colspan => 8}
       - else
-        %td{:colspan => 6}
+        %td{:colspan => 7}
 
       %td.right= format_as_currency(total_cost)
       %td.right= format_as_currency(total_state)

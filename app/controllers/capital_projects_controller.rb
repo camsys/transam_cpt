@@ -239,7 +239,6 @@ class CapitalProjectsController < OrganizationAwareController
     add_breadcrumb "New", new_capital_project_path
 
     @project = CapitalProject.new
-
     @fiscal_years = get_fiscal_years
 
   end

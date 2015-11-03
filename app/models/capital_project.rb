@@ -81,6 +81,7 @@ class CapitalProject < ActiveRecord::Base
     :description,
     :justification,
     :emergency,
+    :multi_year,
     :active
   ]
   # List of fields which can be searched using a simple text-based search

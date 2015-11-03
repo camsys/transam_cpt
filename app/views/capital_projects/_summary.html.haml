@@ -1,6 +1,6 @@
 = format_field("Title", @project.title)
 = format_field("Fiscal Year", @project.fiscal_year)
-= format_field("Scope", @project.team_ali_code)
+= format_field("Scope", @project.team_ali_code.scope)
 = format_field("Type", @project.capital_project_type)
 = format_field("SOGR", format_as_yes_no(@project.sogr?))
 = format_field("Multi year", format_as_yes_no(@project.multi_year?))
