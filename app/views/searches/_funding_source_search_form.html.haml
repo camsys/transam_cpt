@@ -5,18 +5,18 @@
         %legend.panel-legend Funding Source
         .col-sm-4
           = f.input :keyword, :placeholder => "Enter A Search Term"
-          = f.input :funding_source_type_id, :collection => FundingSourceType.all
+          = f.input :funding_source_type_id, :collection => FundingSourceType.active
         .col-sm-4
           = f.input :federal_match_required, :wrapper => :vertical_prepend, :label => "Federal Match Percentage Required" do
             .input-group-btn
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
               %ul.dropdown-menu{:role => "menu"}
                 %li
-                  %a{:data => {:compare => "-1"}} Less Than 
+                  %a{:data => {:compare => "-1"}} Less Than
                 %li
-                  %a{:data => {:compare => "0"}} Equal To 
+                  %a{:data => {:compare => "0"}} Equal To
                 %li
-                  %a{:data => {:compare => "1"}} Greater Than 
+                  %a{:data => {:compare => "1"}} Greater Than
               = f.input_field :federal_match_required_comparator, :as => :hidden, :value => '0'
             = f.input_field :federal_match_required, :class => "form-control"
           = f.input :state_match_required, :wrapper => :vertical_prepend, :label => "State Match Percentage Required" do
@@ -24,11 +24,11 @@
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
               %ul.dropdown-menu{:role => "menu"}
                 %li
-                  %a{:data => {:compare => "-1"}} Less Than 
+                  %a{:data => {:compare => "-1"}} Less Than
                 %li
-                  %a{:data => {:compare => "0"}} Equal To 
+                  %a{:data => {:compare => "0"}} Equal To
                 %li
-                  %a{:data => {:compare => "1"}} Greater Than 
+                  %a{:data => {:compare => "1"}} Greater Than
               = f.input_field :state_match_required_comparator, :as => :hidden, :value => '0'
             = f.input_field :state_match_required, :class => "form-control"
           = f.input :local_match_required, :wrapper => :vertical_prepend, :label => "Local Match Percentage Required" do
@@ -36,11 +36,11 @@
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
               %ul.dropdown-menu{:role => "menu"}
                 %li
-                  %a{:data => {:compare => "-1"}} Less Than 
+                  %a{:data => {:compare => "-1"}} Less Than
                 %li
-                  %a{:data => {:compare => "0"}} Equal To 
+                  %a{:data => {:compare => "0"}} Equal To
                 %li
-                  %a{:data => {:compare => "1"}} Greater Than 
+                  %a{:data => {:compare => "1"}} Greater Than
               = f.input_field :local_match_required_comparator, :as => :hidden, :value => '0'
             = f.input_field :local_match_required, :class => "form-control"
         .col-sm-4

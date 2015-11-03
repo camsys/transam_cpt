@@ -24,7 +24,7 @@
           .col-lg-6.col-md-6.col-sm-6.col-xs-12
             = f.input :fy_year, :collection => @fiscal_years, :label => 'Fiscal year', :prompt => "Select..."
           .col-lg-6.col-md-6.col-sm-6.col-xs-12
-            = f.input :reason_id, :collection => ReplacementReasonType.all, :label => 'Reason for replacing', :prompt => "Select..."
+            = f.input :reason_id, :collection => ReplacementReasonType.active, :label => 'Reason for replacing', :prompt => "Select..."
         .row
           .col-lg-6.col-md-6.col-sm-6.col-xs-12
             = f.input :replace_with_new, :collection => [['Yes', 1], ['No', 0]], :label => 'Replace with new', :prompt => "Select..."
@@ -35,9 +35,9 @@
 
         .row
           .col-lg-6.col-md-6.col-sm-6.col-xs-12
-            = f.input :replace_subtype_id, :collection => @asset.asset_type.asset_subtypes, :prompt => "Leave blank for no change"
+            = f.input :replace_subtype_id, :collection => @asset.asset_type.asset_subtypes.active, :prompt => "Leave blank for no change"
           .col-lg-6.col-md-6.col-sm-6.col-xs-12
-            = f.input :replace_fuel_type_id, :collection => FuelType.all, :class => 'col-md-6', :prompt => "Leave blank for no change"
+            = f.input :replace_fuel_type_id, :collection => FuelType.active, :class => 'col-md-6', :prompt => "Leave blank for no change"
 
 
       .modal-footer
