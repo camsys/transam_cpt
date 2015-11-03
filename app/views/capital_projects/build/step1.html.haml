@@ -15,7 +15,7 @@
             = f.select(:fiscal_year, options_for_select(@fiscal_years, :selected => @proxy.fiscal_year), {:prompt => "Select the fiscal year"}, :required => true, :class => "form-control")
           .form-group
             %label Project Type
-            = f.select(:capital_project_type, options_for_select(CapitalProjectType.all, :selected => @proxy.capital_project_type), {:prompt => "Select the type of project"}, :required => true, :class => "form-control")
+            = f.select(:capital_project_type, options_for_select(CapitalProjectType.active, :selected => @proxy.capital_project_type), {:prompt => "Select the type of project"}, :required => true, :class => "form-control")
 
           %label Scope
           .radio

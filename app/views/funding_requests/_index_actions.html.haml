@@ -18,9 +18,9 @@
   .form-group
     = select_tag(:capital_project_state, options_for_select(CapitalProject.state_names.collect{|a| [a.humanize, a]}, :selected => @capital_project_state), :class => "form-control", :prompt => "Any status...")
   .form-group
-    = select_tag(:capital_project_type_id, options_for_select(CapitalProjectType.all.collect{|a| [a.name, a.id]}, :selected => @capital_project_type_id), :class => "form-control", :prompt => "Any project type...")
+    = select_tag(:capital_project_type_id, options_for_select(CapitalProjectType.active.collect{|a| [a.name, a.id]}, :selected => @capital_project_type_id), :class => "form-control", :prompt => "Any project type...")
   .form-group
-    = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.all, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")
+    = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.active, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")
 
 :javascript
   $(document).ready(function() {
