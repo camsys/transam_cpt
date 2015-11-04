@@ -1,27 +1,18 @@
 .row
-  .col-md-3
-    .panel.panel-default.header-part
+  .col-sm-12.col-lg-3
+    .panel.panel-default
       .panel-heading
         .row
-          .col-md-6
+          .col-sm-10
             %h3.panel-title
               %i.fa.fa-list
-              Activity Line Item
-          .col-md-6
+              = @activity_line_item
+          .col-sm-2
             = render 'actions'
-      .panel-body    
-        = render :partial => 'summary', :locals => {:ali => @activity_line_item} 
-        
-  .col-md-9
-    .panel.panel-default.header-part
-      .panel-heading
-        .row
-          .col-md-12
-            %h3.panel-title
-              %i.fa.fa-folder-open
-              Details
-                
       .panel-body
-        = render 'details'
+        = render :partial => 'summary', :locals => {:ali => @activity_line_item}
+
+  .col-sm-12.col-lg-9
+    = render 'details'
 
 = render 'scripts'

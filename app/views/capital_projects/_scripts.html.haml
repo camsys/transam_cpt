@@ -1,61 +1,25 @@
 :javascript
 
-  // Form Validations
-  // override jquery validate plugin defaults
-  $.validator.setDefaults({
-      highlight: function(element) {
-          $(element).closest('.form-group').addClass('has-error');
-      },
-      unhighlight: function(element) {
-          $(element).closest('.form-group').removeClass('has-error');
-      },
-      errorElement: 'span',
-      errorClass: 'help-block',
-      errorPlacement: function(error, element) {
-          if(element.parents('.input-group').length) {
-              error.insertAfter(element.parent());
-          } else {
-              error.insertAfter(element);
-          }
-      }
-  });
-
-  // Use validation plugin to validate the forms before submittal
-  $('#new_comment').validate({
-    submitHandler: function(form) {
-      $(form).submit();
-    }
-  });
-  $('#new_activity_line_item').validate({
-    submitHandler: function(form) {
-      $(form).submit();
-    }
-  });
-  $('#new_document').validate({
-    submitHandler: function(form) {
-      $(form).submit();
-    }
-  });
+  var tab_key = 'capital_project_tab_key';
 
   $(document).ready(function() {
 
-    transam.make_same_height('.header-part');
+    // Make the tabs responsive if the viewport gets smaller than the displayed tabs
+    $('.responsive-tabs').tabdrop({
+      text: '<i class="fa fa-align-justify"></i>'
+    });
 
     // Manage the tabs
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
       // save the latest tab
       var this_tab = $(this).attr('href');
-      transam.set_ui_key_value('capital_project_tab', this_tab);
-      // If this tab is the history then we need to re-render the timeline
-      if (this_tab == '#hist') {
-        timeline.redraw();
-      }
+      transam.set_ui_key_value(tab_key, this_tab);
     });
 
   });
 
   $(function() {
-    var last_tab = transam.get_ui_key_value('capital_project_tab');
+    var last_tab = transam.get_ui_key_value(tab_key);
     if (last_tab) {
       $('a[href='+last_tab+']').tab('show');
     } else {

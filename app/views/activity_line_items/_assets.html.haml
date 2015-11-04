@@ -1,6 +1,9 @@
 .row
-  .col-md-12
-    = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => true, :delete => true}
+  .col-sm-12
+    - if @activity_line_item.assets.empty?
+      %p There are no assets for this activity line item.
+    -else
+      = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => true, :delete => true}
 
 - if can? :update, @activity_line_item
   .row
@@ -13,17 +16,17 @@
           %table.table.table-hover
             %thead
               %tr
-                %th.center Tag
-                %th.center Description
+                %th.left Tag
+                %th.left Description
                 %th.center Fuel
 
                 %th.center Age
-                %th.center Mileage
+                %th.right Mileage
                 %th.center Rating
 
-                %th.center Orig.
-                %th.center Curr Val.
-                %th.center Est. Cost
+                %th.right Orig.
+                %th.right Curr Val.
+                %th.right Est. Cost
                 %th
 
               %tbody

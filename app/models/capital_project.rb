@@ -186,6 +186,10 @@ class CapitalProject < ActiveRecord::Base
   def multi_year?
     (multi_year)
   end
+  # Returns true if the project is an emergency project.
+  def emergency?
+    (emergency)
+  end
 
   # Returns true if the project's total cost has been set and
   # funding requests have been entered that cover the cost

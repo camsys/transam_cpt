@@ -1,17 +1,22 @@
 .row
-  .col-md-12{:style => 'height:200px;overflow-y:auto;'}
+  .col-sm-12
     - if @project.comments.empty?
       %p There are no comments for this project.
     - else
       = render :partial => 'shared/comments', :locals => {:comments => @project.comments}
 
-- if can? :update, @project
-  .row
-    .col-md-12
-      %fieldset
-        %legend Add Comment
-        = form_for [@project, Comment.new], :role => 'form' do |f|
-          .form-group
-            = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :minlength => 10, :maxlength => 254
-          = f.submit :class => 'btn btn-primary'
+- if can? :add_comment, @project
+  %button.btn.btn-primary{:data => {:toggle => "modal", :target => "#comment_modal"}}
+    %i.fa.fa-plus
+    = " Add Comment"
 
+.modal.fade#comment_modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{:data => {:dismiss => "modal"}}
+          x
+        %h4.modal-title
+          Add Comment
+      .modal-body
+        = render 'comment_form'

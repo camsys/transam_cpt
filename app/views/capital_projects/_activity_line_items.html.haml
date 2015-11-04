@@ -1,4 +1,9 @@
-= render :partial => 'activity_line_items_table', :locals => {:project => @project, :popup => true}
+.row
+  .col-sm-12
+    - if @project.activity_line_items.empty?
+      %p There are no activity line items for this project.
+    - else
+      = render :partial => 'activity_line_items_table', :locals => {:project => @project, :popup => true}
 
 - if can? :update, @project
   .row{:style => 'margin-top:10px;'}

@@ -1,20 +1,22 @@
 .row
-  .col-md-12{:style => 'height:180px;overflow-y:auto;'}
+  .col-sm-12
     - if @project.documents.empty?
       %p There are no documents for this project.
     - else
       = render :partial => 'shared/documents', :locals => {:documents => @project.documents}
 
-- if can? :update, @project
-  .row
-    .col-md-12
-      %fieldset
-        %legend Add Document
-        = simple_form_for([@project, Document.new],
-            :html => {:multipart => true, :class => 'form-vertical' },
-            :wrapper => :vertical_form,
-            :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-          = f.input :document, :required => true
-          = f.input :description, :as => :text, :placeholder => 'Enter a brief description of the document...', :required => true, :minlength => 10
-          = f.submit "Add Document", :class => 'btn btn-primary', :id => "document_submit"
-     
+- if can? :add_document, @project
+  %button.btn.btn-primary{:data => {:toggle => "modal", :target => "#document_modal"}}
+    %i.fa.fa-plus
+    = " Add Document"
+
+.modal.fade#document_modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{:data => {:dismiss => "modal"}}
+          x
+        %h4.modal-title
+          Add Document
+      .modal-body
+        = render 'document_form'

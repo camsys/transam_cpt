@@ -20,6 +20,7 @@
       %th.center FY
       %th.left Project
       %th.center Scope
+      %th.center Emgcy
       %th.center SOGR
       %th.center Multi Year
 
@@ -52,9 +53,10 @@
       %tr{:id => p.object_key, :class => 'action-path'}
         - if @organization_list.count > 1
           %td= p.organization
-        %td.center= p.fiscal_year
-        %td= p.project_number
-        %td.center= p.team_ali_code.scope
+        %td.center.nowrap= p.fiscal_year
+        %td.left.nowrap= p.project_number
+        %td.center.nowrap= p.team_ali_code.scope
+        %td.center= format_as_checkbox(p.emergency?)
         %td.center= format_as_checkbox(p.sogr?)
         %td.center= format_as_checkbox(p.multi_year?)
         %td.center= p.capital_project_type.code
@@ -62,12 +64,12 @@
         %td= p.title
         -#%td.center= p.state.humanize
 
-        %td.right= format_as_currency(p.total_cost)
+        %td.right.nowrap= format_as_currency(p.total_cost)
 
-        %td.right= format_as_currency(p.state_funds)
-        %td.right= format_as_currency(p.federal_funds)
-        %td.right= format_as_currency(p.local_funds)
-        %td.right= format_as_currency(p.total_funds)
+        %td.right.nowrap= format_as_currency(p.state_funds)
+        %td.right.nowrap= format_as_currency(p.federal_funds)
+        %td.right.nowrap= format_as_currency(p.local_funds)
+        %td.right.nowrap= format_as_currency(p.total_funds)
 
         %td.center
           %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
@@ -75,15 +77,15 @@
   %tfoot
     %tr
       - if @organization_list.count > 1
-        %td{:colspan => 8}
+        %td{:colspan => 9}
       - else
-        %td{:colspan => 7}
+        %td{:colspan => 8}
 
-      %td.right= format_as_currency(total_cost)
-      %td.right= format_as_currency(total_state)
-      %td.right= format_as_currency(total_federal)
-      %td.right= format_as_currency(total_local)
-      %td.right= format_as_currency(total_total)
+      %td.right.nowrap= format_as_currency(total_cost)
+      %td.right.nowrap= format_as_currency(total_state)
+      %td.right.nowrap= format_as_currency(total_federal)
+      %td.right.nowrap= format_as_currency(total_local)
+      %td.right.nowrap= format_as_currency(total_total)
       %td.center
 
 = render :partial => 'shared/table_scripts', :locals => {:table_id => table_dom_id, :path_pattern => capital_project_path("xxx")}

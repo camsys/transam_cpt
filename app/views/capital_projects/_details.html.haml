@@ -1,12 +1,15 @@
 %ul.nav.nav-tabs
   %li
+    %a{:href => "#note", :data =>{:toggle => 'tab'}}
+      = "Description "
+  %li
     %a{:href => "#alis", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @project.activity_line_items.count
       = "Activity Line Items "
-  %li
-    %a{:href => "#hist", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @project.history.count
-      = "History "
+  -# %li
+  -#   %a{:href => "#hist", :data =>{:toggle => 'tab'}}
+  -#     %span.badge.pull-right= @project.history.count
+  -#     = "History "
   %li
     %a{:href => "#docs", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @project.documents.count
@@ -17,12 +20,15 @@
       = "Comments "
 
 .tab-content
+  .tab-pane.fade#note
+    .tab-content
+      = render 'description'
   .tab-pane.fade#alis
     .tab-content
       = render 'activity_line_items'
-  .tab-pane.fade#hist
-    .tab-content
-      = render 'history_table'
+  -# .tab-pane.fade#hist
+  -#   .tab-content
+  -#     = render 'history_table'
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'

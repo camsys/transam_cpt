@@ -1,23 +1,29 @@
 Rails.application.routes.draw do
 
   # Budget Forcast
-  resources :budgets,   :only => [:index] do
-    collection do
-      post  'set'
-      post  'alter'
-    end
-  end
+  # resources :budgets,   :only => [:index] do
+  #   collection do
+  #     post  'set'
+  #     post  'alter'
+  #   end
+  # end
 
   # Asset replacement/rehabilitation
-  resources :planning, :only => [:index] do
+  # resources :planning, :only => [:index] do
+  #   collection do
+  #     get  'load_chart'
+  #     post  'asset_action'
+  #     post  'ali_action'
+  #     post  'add_funds'
+  #     post  'update_cost'
+  #     post  'edit_asset'
+  #     post  'move_ali'
+  #   end
+  # end
+
+  resources :team_codes, :only => [] do
     collection do
-      get  'load_chart'
-      post  'asset_action'
-      post  'ali_action'
-      post  'add_funds'
-      post  'update_cost'
-      post  'edit_asset'
-      post  'move_ali'
+      get  'children'
     end
   end
 
@@ -36,7 +42,7 @@ Rails.application.routes.draw do
   end
 
   # Funding Requests -- index only
-  resources :funding_requests, :only => [:index]
+  # resources :funding_requests, :only => [:index]
 
   # Capital Project Controllers
   resources :capital_projects do
@@ -59,9 +65,7 @@ Rails.application.routes.draw do
 
     resources :activity_line_items do
 
-      resources :funding_plans, :only => [:create, :destroy]
-      resources :comments
-
+      # resources :funding_plans, :only => [:create, :destroy]
       member do
         get 'edit_cost'
         post 'set_cost'
@@ -71,6 +75,10 @@ Rails.application.routes.draw do
       end
     end
 
+  end
+
+  resources :activity_line_items, :only => [] do
+    resources :comments
   end
 
 end

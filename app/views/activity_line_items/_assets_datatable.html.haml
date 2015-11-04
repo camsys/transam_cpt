@@ -1,26 +1,20 @@
-- if ali.assets.empty?
-  %p There are no assets for this activity line item.
--else
-  %table.table.table-hover
+.table-responsive
+  %table.table.table-condensed.table-hover
     %thead
       %tr
-        %th.center{:colspan => "3"} Asset
-        %th.center{:colspan => "3"} Condition
-        %th.center{:colspan => "3"} Replacement
-      %tr
-        %th.center Tag
-        %th.center Description
+        %th.left Tag
+        %th.left Description
         %th.center Fuel
 
         %th.center Age
-        %th.center Mileage
+        %th.right Mileage
         %th.center Rating
 
         %th.center Policy FY
-        %th.center Orig.
-        %th.center Book Val.
-        %th.center Est. Cost
-        %th.center Sch. Cost
+        %th.right Orig.
+        %th.right Book Val.
+        %th.right Est. Cost
+        %th.right Sch. Cost
         - if popup
           %th
 
