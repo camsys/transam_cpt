@@ -56,6 +56,9 @@ class ActivityLineItem < ActiveRecord::Base
   # Has 0 or more comments. Using a polynmorphic association
   has_many    :comments,  :as => :commentable
 
+  # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
+  has_many    :documents,   :as => :documentable, :dependent => :destroy
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------

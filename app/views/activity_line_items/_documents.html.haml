@@ -1,0 +1,22 @@
+.row
+  .col-sm-12
+    - if @activity_line_item.documents.empty?
+      %p There are no documents for this activity line item.
+    - else
+      = render :partial => 'shared/documents', :locals => {:documents => @activity_line_item.documents}
+
+- if can? :add_document, @activity_line_item
+  %button.btn.btn-primary{:data => {:toggle => "modal", :target => "#document_modal"}}
+    %i.fa.fa-plus
+    = " Add Document"
+
+.modal.fade#document_modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{:data => {:dismiss => "modal"}}
+          x
+        %h4.modal-title
+          Add Document
+      .modal-body
+        = render 'document_form'

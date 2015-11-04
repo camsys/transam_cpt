@@ -1,4 +1,4 @@
-- if can? :update, @project and can? :update, @activity_line_item
+- if can? :update, @activity_line_item or can? :update_cost, @activity_line_item
   .btn-group.pull-right.panel-action
     %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
       %i.fa.fa-cog
@@ -12,14 +12,15 @@
       %li
         = link_to edit_cost_capital_project_activity_line_item_path(@project, @activity_line_item), :remote => true do
           %i.fa.fa-usd.fa-fw
-          = " Update the cost"
-      %li.divider
-      %li
-        = link_to edit_capital_project_activity_line_item_path(@project, @activity_line_item), :remote => true do
-          %i.fa.fa-edit.fa-fw
-          = " Modify this ALI"
-      %li.divider
-      %li
-        = link_to capital_project_activity_line_item_path(@project, @activity_line_item), :method => :delete, :data => {:confirm => "Are you sure you want to remove this ALI? The action cannot be undone."}  do
-          %i.fa.fa-trash-o.fa-fw
-          = " Remove this ALI"
+          = " Update the expected cost"
+      - if can? :update, @activity_line_item
+        %li.divider
+        %li
+          = link_to edit_capital_project_activity_line_item_path(@project, @activity_line_item), :remote => true do
+            %i.fa.fa-edit.fa-fw
+            = " Modify this ALI"
+        %li.divider
+        %li
+          = link_to capital_project_activity_line_item_path(@project, @activity_line_item), :method => :delete, :data => {:confirm => "Are you sure you want to remove this ALI? The action cannot be undone."}  do
+            %i.fa.fa-trash-o.fa-fw
+            = " Remove this ALI"

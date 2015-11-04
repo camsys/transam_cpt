@@ -80,6 +80,7 @@ Rails.application.routes.draw do
 
   resources :activity_line_items, :only => [] do
     resources :comments
+    resources :documents
   end
 
 end

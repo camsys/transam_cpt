@@ -1,0 +1,29 @@
+= simple_form_for([@activity_line_item, Document.new],
+    :html => {:multipart => true, :class => 'form-vertical' },
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
+  = f.input :document, :required => true, :input_html => { :extension => "pdf|xls|xlsx|doc|docx" }
+  = f.input :description, :as => :text, :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :rows => 6, :maxlength => 254}
+  %p.text-info.text-limiter-counter
+    %span#document-description-counter
+    characters remaining.
+
+  = f.submit "Add Document", :class => 'btn btn-primary', :id => "document_submit"
+
+:javascript
+
+  var max_length = $('#document_description').attr('maxlength');
+  $('#document_description').simplyCountable({
+    counter: '#document-description-counter',
+    maxCount: max_length,
+    strictMax: false,
+    safeClass: 'text-info',
+    overClass: 'text-danger'
+  });
+
+  $('#new_document').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });

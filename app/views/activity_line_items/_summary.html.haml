@@ -7,7 +7,7 @@
   %hr
 
   = format_field("Estimated Cost", format_as_currency(ali.estimated_cost))
-  = format_field("Funds Required", format_as_currency(ali.cost))
+  = format_field("Expected Cost", format_as_currency(ali.cost))
   = format_field("Cost Difference", format_as_currency(ali.cost_difference))
   -# = format_field("Funding Shortfall", format_as_currency(ali.funds_required))
 
@@ -27,7 +27,7 @@
 
   .col-sm-4
     = format_field("Estimated Cost", format_as_currency(ali.estimated_cost))
-    = format_field("Funds Required", format_as_currency(ali.cost))
+    = format_field("Expected Cost", format_as_currency(ali.cost))
     = format_field("Cost Difference", format_as_currency(ali.cost_difference))
     -# = format_field("Funding Shortfall", format_as_currency(ali.funds_required))
 
