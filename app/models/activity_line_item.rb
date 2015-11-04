@@ -23,6 +23,11 @@ class ActivityLineItem < ActiveRecord::Base
   before_destroy { assets.clear }
 
   #------------------------------------------------------------------------------
+  # Transients
+  #------------------------------------------------------------------------------
+  attr_accessor :category_team_ali_code
+
+  #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
 
@@ -76,6 +81,7 @@ class ActivityLineItem < ActiveRecord::Base
     :anticipated_cost,
     :cost_justification,
     :active,
+    :category_team_ali_code,
     :asset_ids => [],
     :milestones_attributes => [Milestone.allowable_params]
   ]
@@ -222,6 +228,7 @@ class ActivityLineItem < ActiveRecord::Base
     self.active ||= true
     self.estimated_cost ||= 0
     self.anticipated_cost ||= 0
+    self.category_team_ali_code ||= team_ali_code.present? ? team_ali_code.parent.code : ''
   end
 
 end

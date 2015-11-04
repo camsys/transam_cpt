@@ -1,15 +1,62 @@
 = simple_form_for([@project, @activity_line_item],
-  :html => {:class => 'form-vertical' },
-  :wrapper => :vertical_form,
-  :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+    :wrapper => :vertical_form,
+    :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+  .row
+    .col-sm-12
+      = f.input :name, :required => true, :minlength => 10
+  .row
+    .col-sm-6
+      = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
+        %span.input-group-addon
+          %i.fa.fa-usd
+        = f.input_field :anticipated_cost, :class => "form-control"
+  .row
+    .col-sm-6
+      = f.input :category_team_ali_code, :collection => @project.team_ali_code.children.map{|x| [x.full_name, x.code]}, :label => 'Category', :required => true
+    .col-sm-6
+      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true
 
-  = dialog_tag('Activity Line Item', {:icon => 'fa fa-list', :class => "form-part"}) do
-    = f.input :name, :placeholder => "Enter a name for the ALI..."
-    = f.association :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name', :label => 'Sub Category'
-    = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
-      %span.input-group-addon
-        %i.fa.fa-usd
-      = f.input_field :anticipated_cost, :class => "form-control"
-    = f.input :cost_justification, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for the cost..."
+  = f.submit :class => 'btn btn-primary'
 
-    = f.button :submit, :class => "btn btn-primary"
+:javascript
+
+  var team_code_lookup_url = '#{children_team_codes_path}';
+  var category_code = '#{@activity_line_item.category_team_ali_code}';
+
+  // disable the second code selector
+  //transam.disable_element('#activity_line_item_team_ali_code_id');
+  // Update the code selector choices
+  update_selector(team_code_lookup_url, "#activity_line_item_team_ali_code_id", "Select...", category_code, '#{@activity_line_item.team_ali_code}');
+
+  // Detect changes in the category selected
+  $('#activity_line_item_category_team_ali_code').on('change', function(event) {
+    var id = $(this).val();
+    //console.log(id);
+    if (id != category_code) {
+      // store the selected borough id
+      category_code = id;
+      // Reset the OFT searcher
+      $('#activity_line_item_team_ali_code').val('');
+      //console.log("updating selector");
+      // Update the borough specific selectors
+      update_selector(team_code_lookup_url, "#activity_line_item_team_ali_code_id", "Select...", category_code);
+    }
+  });
+
+  // Updates a option select based on the user selecting a different category code
+  function update_selector(url, elem_id, blank_text, code, selected_val) {
+    //console.log("Selected val = '" + selected_val + "'");
+    $.getJSON(url, {code: code}, function(result) {
+      var options = '<option value="">' + blank_text + '</option>';
+      for (i = 0; i < result.length; i++) {
+        //console.log("result.code = '" + result[i].code + "'");
+        if (result[i].code == selected_val) {
+          options += '<option value="' + result[i].id + '" selected>' + result[i].full_name + '</option>';
+        } else {
+          options += '<option value="' + result[i].id + '">' + result[i].full_name + '</option>';
+        }
+      }
+      console.log(options);
+      $(elem_id).html(options);
+    });
+  };

@@ -37,6 +37,15 @@ class CapitalProjectsController < OrganizationAwareController
   end
 
   #-----------------------------------------------------------------------------
+  # Generic AJAX method for displaying a regular or modal view
+  #-----------------------------------------------------------------------------
+  def load_view
+
+    render params[:view]
+
+  end
+
+  #-----------------------------------------------------------------------------
   # Displays the SOGR analyzer form. When the form is commited the runner method
   # performs the analysis and generates the capital projects
   #-----------------------------------------------------------------------------

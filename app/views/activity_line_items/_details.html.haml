@@ -1,5 +1,9 @@
 %ul.nav.nav-tabs
   %li
+    %a{:href => "#cost", :data =>{:toggle => 'tab'}}
+      = "Cost Justification"
+
+  %li
     %a{:href => "#asst", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @activity_line_item.assets.count
       = "Assets"
@@ -17,6 +21,9 @@
       = "Comments"
 
 .tab-content
+  .tab-pane.fade#cost
+    .tab-content
+      = render 'cost_justification'
   .tab-pane.fade#asst
     .tab-content
       = render 'assets'

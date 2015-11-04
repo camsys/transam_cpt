@@ -1,7 +1,4 @@
-- if @org.type_of? :grantee
-  .tab-pane.fade#capital
-    .tab-content
-      = render 'capital_projects/rollup_table'
+- if @org.type_of? :transit_operator
   .tab-pane.fade#projects
     .tab-content
       = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => @org.capital_projects}

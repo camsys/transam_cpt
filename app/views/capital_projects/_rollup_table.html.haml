@@ -1,25 +1,26 @@
-%table.table
-  %thead
-    %tr
-      - @rollup_data[:labels].each_with_index do |col, col_index|
-        - if col_index == 0 
-          %th.left= col
-        - else
-          %th.right.nowrap= col
+.table-responsive
+  %table.table.table-condensed.table-hover
+    %thead
+      %tr
+        - @rollup_data[:labels].each_with_index do |col, col_index|
+          - if col_index == 0
+            %th.left= col
+          - else
+            %th.right.nowrap= col
 
-  %tbody
-    - @rollup_data[:data].each_with_index do |row, row_index|
-      - if row_index < 3
-        %tr
-          - row.each_with_index do |col, col_index|
-            - if col_index == 0
-              %td.left= col
-            - else
-              %td.right= format_as_currency(col)
-  %tfoot
-    %tr
-      - @rollup_data[:data][3].each_with_index do |col, col_index|            
-        - if col_index == 0
-          %td.left= col
-        - else
-          %td.right= format_as_currency(col)
+    %tbody
+      - @rollup_data[:data].each_with_index do |row, row_index|
+        - if row_index < 3
+          %tr
+            - row.each_with_index do |col, col_index|
+              - if col_index == 0
+                %td.left= col
+              - else
+                %td.right= format_as_currency(col)
+    %tfoot
+      %tr
+        - @rollup_data[:data][3].each_with_index do |col, col_index|
+          - if col_index == 0
+            %td.left= col
+          - else
+            %td.right= format_as_currency(col)

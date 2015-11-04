@@ -1,9 +1,5 @@
-- if @org.type_of? :grantee
-  %li
-    %a{:href => "#capital", :data =>{:toggle => 'tab'}}
-      = "Capital Needs"
+- if @org.type_of? :transit_operator
   %li
     %a{:href => "#projects", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @org.capital_projects.count
       = "Capital Projects"
-      

@@ -56,6 +56,7 @@ Rails.application.routes.draw do
     end
 
     member do
+      get 'load_view'
       get 'copy'
       get 'fire_workflow_event'
     end

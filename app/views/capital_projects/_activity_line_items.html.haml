@@ -6,21 +6,6 @@
       = render :partial => 'activity_line_items_table', :locals => {:project => @project, :popup => true}
 
 - if can? :update, @project
-  .row{:style => 'margin-top:10px;'}
-    .col-md-12
-      %fieldset
-        %legend Add Activity Line Item
-        = simple_form_for([@project, ActivityLineItem.new],
-            :wrapper => :vertical_form,
-            :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-          .row
-            .col-sm-6
-              = f.input :name, :required => true, :minlength => 10
-            .col-sm-3
-              = f.association :team_ali_code, :collection => @project.team_ali_code.children, :label_method => 'full_name', :required => true
-            .col-sm-3
-              = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
-                %span.input-group-addon
-                  %i.fa.fa-usd
-                = f.input_field :anticipated_cost, :class => "form-control"
-          = f.submit "Add Line Item", :class => 'btn btn-primary'
+  = link_to load_view_capital_project_path(@project, :view => 'new_activity_line_item'), :remote => true, :role => 'button', :class => 'btn btn-primary', :role => 'button', :title => 'Add new ALI...' do
+    %i.fa.fa-plus
+    Add Line Item
