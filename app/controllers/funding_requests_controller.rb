@@ -6,12 +6,12 @@ class FundingRequestsController < OrganizationAwareController
   before_action :get_activity_line_item
   before_filter :check_for_cancel,        :only => [:create, :update]
   before_action :set_funding_request,     :only => [:show, :edit, :update, :destroy]
-  
+
   # Include the fiscal year mixin
   include FiscalYear
 
   INDEX_KEY_LIST_VAR    = "funding_requests_key_list_cache_var"
-  
+
   # GET /funding_requests
   # GET /funding_requests.json
   def index
@@ -19,16 +19,16 @@ class FundingRequestsController < OrganizationAwareController
     add_breadcrumb "Funding Requests"
 
     @fiscal_years = get_fiscal_years
-   
+
      # Start to set up the query
     conditions  = []
     values      = []
-        
-    # Check to see if we got an organization to sub select on. 
+
+    # Check to see if we got an organization to sub select on.
     @org_filter = params[:org_id]
     conditions << 'organization_id IN (?)'
     if @org_filter.blank?
-      values << @organization_list      
+      values << @organization_list
     else
       @org_filter = @org_filter.to_i
       values << [@org_filter]
@@ -41,7 +41,7 @@ class FundingRequestsController < OrganizationAwareController
       conditions << 'fy_year = ?'
       values << @fiscal_year
     end
-    
+
     # See if we got a capital project type
     @capital_project_type_id = params[:capital_project_type_id]
     unless @capital_project_type_id.blank?
@@ -64,9 +64,9 @@ class FundingRequestsController < OrganizationAwareController
     else
       @funding_source_id = @funding_source_id.to_i
     end
-        
+
     # We have to build the list of funding requests by iterating through the
-    # set of matching capital projects    
+    # set of matching capital projects
     @funding_requests = []
     projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id)
     projects.each do |project|
@@ -75,7 +75,7 @@ class FundingRequestsController < OrganizationAwareController
           # If we got a funding source fitler, check that this request is for that source
           if @funding_source_id > 0
             if request.federal_funding_line_item.funding_source_id == @funding_source_id or request.state_funding_line_item.funding_source_id == @funding_source_id
-              @funding_requests << request 
+              @funding_requests << request
             end
           else
             # no funding source filter
@@ -83,19 +83,19 @@ class FundingRequestsController < OrganizationAwareController
           end
         end
       end
-    end  
-      
+    end
+
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
-      cache_list(@funding_requests, INDEX_KEY_LIST_VAR)        
+      cache_list(@funding_requests, INDEX_KEY_LIST_VAR)
     end
-    
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @funding_requests }
       format.xls
     end
-        
+
   end
 
   # GET /funding_requests/1
@@ -146,12 +146,12 @@ class FundingRequestsController < OrganizationAwareController
         notify_user(:notice, "The Funding Request was successfully added to ALI #{@activity_line_item.name}.")
         # See if the capital proejct is fully funded
         if @funding_request.activity_line_item.funding_difference == 0
-          notify_user(:notice, "ALI #{@activity_line_item.name} is fully funded.")          
+          notify_user(:notice, "ALI #{@activity_line_item.name} is fully funded.")
         end
         if @funding_request.activity_line_item.capital_project.funding_difference == 0
           capital_project = @funding_request.activity_line_item.capital_project
           capital_project.save
-          notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")          
+          notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")
         end
         format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
         format.json { render action: 'show', status: :created, location: @funding_request }
@@ -200,7 +200,7 @@ class FundingRequestsController < OrganizationAwareController
     if capital_project.funding_difference != 0
       capital_project.save
     end
-    
+
     respond_to do |format|
       format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
       format.json { head :no_content }

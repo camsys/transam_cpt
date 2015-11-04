@@ -1,12 +1,24 @@
+#-------------------------------------------------------------------------------
+# UnconstrainedCapitalNeedsForecast
+#
+# As capital projects can span multiple years, this report needs to summarize
+# ALI costs for each project within each fiscal year
+#
+#-------------------------------------------------------------------------------
 class UnconstrainedCapitalNeedsForecast < AbstractReport
 
   # Include the fiscal year mixin
   include FiscalYear
 
+  #-----------------------------------------------------------------------------
   def initialize(attributes = {})
     super(attributes)
   end
 
+  #-----------------------------------------------------------------------------
+  # Main method that takes a list of capital projects and summarizes the ALI costs
+  # Returns an array of arrays
+  #-----------------------------------------------------------------------------
   def get_data_from_result_list(capital_project_list)
 
     # Capital Needs by year
@@ -14,14 +26,17 @@ class UnconstrainedCapitalNeedsForecast < AbstractReport
     labels = ['Fiscal Year']
     labels << "Capital Needs"
 
+    # Get a unique list of capital project ids
+    capital_project_ids = capital_project_list.pluck(:id).uniq
+
     (current_planning_year_year..last_fiscal_year_year).each do |year|
       row = []
       row << fiscal_year(year)
       total = 0
       # get the capital projects for this analysis year and state
-      capital_projects =  capital_project_list.where('fy_year = ?', year)
-      capital_projects.find_each do |cp|
-        total += cp.total_cost
+      alis = ActivityLineItem.where('fy_year = ? AND capital_project_id IN (?)', year, capital_project_ids)
+      alis.find_each do |ali|
+        total += ali.cost
       end
       row << total
       a << row

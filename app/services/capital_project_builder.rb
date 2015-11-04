@@ -436,7 +436,7 @@ class CapitalProjectBuilder
     else
       # Create the ALI and add it to the project
       ali_name = "#{action} #{ali_code.name} assets."
-      ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code})
+      ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
       ali.save
 
       # Now add the asset to it

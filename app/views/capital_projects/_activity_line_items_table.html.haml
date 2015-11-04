@@ -3,7 +3,8 @@
     %thead
       %tr
         %th Name
-        %th.left Sub Category
+        %th.center FY
+        %th.center Sub Category
         %th.right Count
         %th.right Cost
         %th.right Requested
@@ -22,6 +23,7 @@
         %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
 
           %td.left= ali.name
+          %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
           %td.center.nowrap= ali.team_ali_code
           %td.right.nowrap= format_as_integer(ali.assets.count)
           %td.right.nowrap= format_as_currency(ali.cost)
@@ -42,7 +44,7 @@
 
     %tfoot
       %tr
-        %td{:colspan => 3}
+        %td{:colspan => 4}
         %td.right.nowrap= format_as_currency(project.total_cost)
         %td.right.nowrap= format_as_currency(project.total_funds)
 

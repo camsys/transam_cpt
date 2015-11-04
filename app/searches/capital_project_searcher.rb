@@ -1,4 +1,4 @@
-# Inventory searcher. 
+# Inventory searcher.
 # Designed to be populated from a search form using a new/create controller model.
 #
 class CapitalProjectSearcher < BaseSearcher
@@ -32,20 +32,20 @@ class CapitalProjectSearcher < BaseSearcher
   def results_view
     'capital_project_search_results_table'
   end
-  
+
   def cache_variable_name
     CapitalProjectsController::INDEX_KEY_LIST_VAR
   end
 
-  # return a select array of fiscal years             
+  # return a select array of fiscal years
   def fiscal_years
     get_fiscal_years
-  end  
-  
+  end
+
   def initialize(attributes = {})
     super(attributes)
-  end    
-  
+  end
+
   private
 
 
@@ -61,7 +61,7 @@ class CapitalProjectSearcher < BaseSearcher
     CapitalProject.where(state: capital_project_state) unless capital_project_state.blank?
   end
 
-  
+
   #---------------------------------------------------
   # Comparator Queries
   #---------------------------------------------------
@@ -112,11 +112,11 @@ class CapitalProjectSearcher < BaseSearcher
   def asset_type_conditions
     CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}).uniq unless asset_type.blank?
   end
-  
+
   def asset_subtype_conditions
     CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}).uniq unless asset_subtype.blank?
   end
-  
+
   def team_ali_code_conditions
     CapitalProject.where(team_ali_code_id: TeamAliCode.find(team_ali_code).leaves) unless team_ali_code.blank?
   end
@@ -140,5 +140,5 @@ class CapitalProjectSearcher < BaseSearcher
       CapitalProject.where(organization_id: organization_id)
     end
   end
-  
+
 end

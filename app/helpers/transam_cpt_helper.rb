@@ -1,10 +1,32 @@
 module TransamCptHelper
 
+  # Include the fiscal year mixin
+  include FiscalYear
+
   # Return the version of TransAM CPT that is running
   def transam_cpt_version
     begin
       Gem.loaded_specs['transam_cpt'].version
     rescue
+    end
+  end
+
+  # Returns a fiscal year array for a project
+  def get_project_fiscal_years project
+    if project.blank?
+      []
+    elsif project.multi_year?
+      a = []
+      get_fiscal_years.each do |fy|
+        if fy[1] < project.fy_year
+          next
+        else
+          a << fy
+        end
+      end
+      a
+    else
+      [[project.fiscal_year, project.fy_year]]
     end
   end
 

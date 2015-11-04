@@ -1,4 +1,4 @@
-# Inventory searcher. 
+# Inventory searcher.
 # Designed to be populated from a search form using a new/create controller model.
 #
 class FundingLineItemSearcher < BaseSearcher
@@ -27,21 +27,21 @@ class FundingLineItemSearcher < BaseSearcher
   def results_view
     'funding_line_item_search_results_table'
   end
-  
+
   def cache_variable_name
     FundingLineItemsController::INDEX_KEY_LIST_VAR
   end
 
-  # return a select array of fiscal years             
+  # return a select array of fiscal years
   def fiscal_years
     get_fiscal_years
-  end  
-  
+  end
+
   def initialize(attributes = {})
     super(attributes)
-  end    
+  end
 
-  
+
   private
 
   #---------------------------------------------------
@@ -59,7 +59,7 @@ class FundingLineItemSearcher < BaseSearcher
   #---------------------------------------------------
   # Comparator Queries
   #---------------------------------------------------
-  
+
   def amount_conditions
     unless amount.blank?
       amount_as_float = sanitize_to_float(amount)
@@ -86,7 +86,7 @@ class FundingLineItemSearcher < BaseSearcher
   def discretionary_type_conditions
     FundingLineItem.joins(:funding_source).where('funding_sources.discretionary_fund = ?', discretionary_type) unless discretionary_type.blank?
   end
-  
+
   def funding_source_type_conditions
     FundingLineItem.joins(:funding_source => :funding_source_type).where(:funding_source_types => {:id => funding_source_type}) unless funding_source_type.blank?
   end

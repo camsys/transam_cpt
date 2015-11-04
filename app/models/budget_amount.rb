@@ -2,18 +2,18 @@
 #
 # BudgetAmount
 #
-# Represents the amount in $ allocated to an agency in a fiscal year by 
+# Represents the amount in $ allocated to an agency in a fiscal year by
 # funding source type
 #
 #------------------------------------------------------------------------------
 class BudgetAmount < ActiveRecord::Base
-    
+
   # Include the object key mixin
   include TransamObjectKey
-  
+
   # Include the fiscal year mixin
   include FiscalYear
-  
+
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
@@ -24,15 +24,15 @@ class BudgetAmount < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   # Every budget record belongs to a transit agency
-  belongs_to  :organization 
+  belongs_to  :organization
 
   # Every budget record belongs to a funding source
-  belongs_to  :funding_source 
+  belongs_to  :funding_source
 
-  # Every budget amount has 0 or more funding plans. These will be removed if the 
-  # budget amount is deleted 
+  # Every budget amount has 0 or more funding plans. These will be removed if the
+  # budget amount is deleted
   has_many    :funding_plans, :dependent => :destroy
-        
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ class BudgetAmount < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Scopes
   #------------------------------------------------------------------------------
-  
+
   # default scope
   default_scope { order(:fy_year)  }
 
@@ -54,26 +54,26 @@ class BudgetAmount < ActiveRecord::Base
     :id,
     :object_key,
     :organization_id,
-    :funding_source_id, 
+    :funding_source_id,
     :fy_year,
     :amount,
     :estimated
   ]
-  
+
   #------------------------------------------------------------------------------
   #
   # Class Methods
   #
   #------------------------------------------------------------------------------
-  
+
   def name
     funding_source.nil? ? "" : funding_source
   end
-  
+
   def to_s
     name
   end
-  
+
   # Calculate the amount of the budget that has been spent (in the plan)
   def spent
     val = 0
@@ -81,39 +81,39 @@ class BudgetAmount < ActiveRecord::Base
       val += bp.amount
     end
     val
-  end  
-  
+  end
+
   # Calculate the amount of the budget remaining
   #def available
   #  amount - spent
   #end
-  
+
   def self.allowable_params
     FORM_PARAMS
   end
-  
+
   #------------------------------------------------------------------------------
   #
   # Instance Methods
   #
   #------------------------------------------------------------------------------
-  
+
   # Override the mixin method and delegate to it
   def fiscal_year
     super(fy_year)
   end
-  
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
   #
   #------------------------------------------------------------------------------
-  protected 
+  protected
 
   # Set resonable defaults for a new capital project
   def set_defaults
     self.estimated ||= true
     self.amount ||= 0
-  end    
-      
+  end
+
 end

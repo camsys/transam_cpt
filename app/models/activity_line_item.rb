@@ -4,14 +4,15 @@
 #
 # Represents a group of self-similar assets that the organization is requesting
 # funding for as part of a larger capital project. Each ALI is associated with
-# a single TEAM ALI code eg 11.12.01 that indicates the type of fundiung being
-# applied for.
+# a single TEAM ALI code eg 11.12.01 that indicates the type of activity funding
+# is being applied for.
 #
 #------------------------------------------------------------------------------
 class ActivityLineItem < ActiveRecord::Base
 
   # Include the object key mixin
   include TransamObjectKey
+  # Include the fiscal year mixin
   include FiscalYear
 
   #------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ class ActivityLineItem < ActiveRecord::Base
   validates :name,              :presence => true
   validates :anticipated_cost,  :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
   validates :team_ali_code,     :presence => true
+  validates :fy_year,           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1900}
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -74,11 +76,12 @@ class ActivityLineItem < ActiveRecord::Base
   # Allow selection of active instances
   scope :active, -> { where(:active => true) }
   # set the default scope
-  default_scope { order(:capital_project_id, :team_ali_code_id) }
+  default_scope { order(:capital_project_id, :fy_year, :team_ali_code_id) }
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :capital_project_id,
+    :fy_year,
     :name,
     :team_ali_code_id,
     :anticipated_cost,
@@ -232,6 +235,8 @@ class ActivityLineItem < ActiveRecord::Base
     self.estimated_cost ||= 0
     self.anticipated_cost ||= 0
     self.category_team_ali_code ||= team_ali_code.present? ? team_ali_code.parent.code : ''
+    self.fy_year    ||= current_planning_year_year
+
   end
 
 end

@@ -2,6 +2,7 @@ CREATE TABLE activity_line_items  (
 	id                	int(11) AUTO_INCREMENT NOT NULL,
 	object_key        	varchar(12) NOT NULL,
 	capital_project_id	int(11) NOT NULL,
+	fy_year            	int(11) NOT NULL,
 	team_ali_code_id  	int(11) NOT NULL,
 	name              	varchar(64) NOT NULL,
 	anticipated_cost  	int(11) NOT NULL,
