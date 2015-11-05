@@ -74,41 +74,49 @@ class CapitalProjectBuilder
 
     # Get the capital project. If it is a multi-year project we can just move
     # the ALI year. If the project starts later, we update the project as well
-    cp = ali.capital_project
-    if cp.multi_year?
+    project = ali.capital_project
+    if project.multi_year?
       Rails.logger.debug "Multi-year project. Moving ALI to #{fy_year}"
       ali.fy_year = fy_year
-      if ali.fy_year < cp.fy_year
+      if ali.fy_year < project.fy_year
         Rails.logger.debug "Multi-year project. Moving project to #{fy_year}"
-        cp.fy_year = ali.fy_year
+        project.fy_year = ali.fy_year
       end
       ali.save(:validate => false)
-      if cp.changed?
-        cp.save(:validate => false)
+      if project.changed?
+        project.save(:validate => false)
       end
-      return
+      projects_and_alis = [project, ali]
+    elsif project.capital_project_type_id == 1 or project.capital_project_type_id == 3
+      # These are replacement or improvement projects and may have assets
+      # associated with them. If they are SOGR projects we are allowed to manage
+      # the projects and ALIs otherwise we must leave empty projects and ALIs
+      # for the user to clean up
+
+
+    elsif project.capital_project_type_id == 2
+      # Its an expansion project -- these dont have assets so we can simply move
+      # the ALI to the new fy year and make sure that a project exists for it
+
+      # Use the utility method to set up a new project and ALI if needed. This
+      # retuns an array [project, ali]
+      a = add_to_project(nil, ali.ali_code, fy_year, project.capital_project_type, project.sogr)
+      new_project = a.first
+      new_ali = a.last
+      # We don't need the new ali so we can just replace the new one on the
+      # project with the old one after updating the fy_year. This preserves
+      # any documents, comments, etc. that are asscoiated with this ALI
+      new_project.activity_line_items.destroy new_ali
+      ali.capital_project = new_project
+      ali.fy_year = fy_year
+      ali.save(:validate => false)
+      ali.reload
+      # complete the update and we are done
+      new_project.activity_line_items << ali
+      new_project.save(:validate => false)
+      new_project.reload
+      projects_and_alis = [new_project, ali]
     end
-
-    # If it is not a multi-year project we remove this projec
-    assets = ali.assets.collect{|a| Asset.get_typed_asset(a)}
-
-    projects_and_alis = assets.collect do |asset|
-      move_asset(asset, fy_year, ali)
-    end
-
-    # The ALI should now be empty, and so we remove it because we "moved" it
-    ali.reload
-    unless ali.assets.empty?
-      ali.assets.each do |a|
-        Rails.logger.info a.ai
-      end
-      raise "assertion failed, ALI is not empty: #{ali}"
-    end
-    ali.destroy
-
-    # Check if the ALI's capital project is now empty, and if so, destroy it
-    cp.reload
-    cp.destroy if cp.activity_line_items.empty?
 
     projects_and_alis
   end
@@ -389,10 +397,10 @@ class CapitalProjectBuilder
   end
 
   #-----------------------------------------------------------------------------
-  # Adds an asset to a SOGR project. If the project does not
+  # Adds an asset to a capital project. If the project does not
   # exist it is created first,
   #-----------------------------------------------------------------------------
-  def add_to_project(asset, ali_code, year, project_type)
+  def add_to_project(asset, ali_code, year, project_type, sogr=true)
 
     Rails.logger.debug "add_to_project: asset=#{asset.object_key} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
     # The ALI project scope is the parent of the ali code so if the ALI code is 11.11.01 (replace 40 ft bus)
@@ -432,11 +440,11 @@ class CapitalProjectBuilder
     end
 
     # See if there is an existing project for this scope and year
-    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ?', asset.organization.id, scope.id, year)
+    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr => ?', asset.organization.id, scope.id, year, sogr)
     if project.nil?
       # create this project
       project_title = "#{focus} #{request} project"
-      project = create_capital_project(asset.organization, year, scope, project_title, project_type)
+      project = create_capital_project(asset.organization, year, scope, project_title, project_type, sogr)
       @project_count += 1
       Rails.logger.debug "Created new project #{project.object_key}"
     else
@@ -458,8 +466,8 @@ class CapitalProjectBuilder
       ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
       ali.save
 
-      # Now add the asset to it
-      ali.assets << asset
+      # Now add the asset to it if there is one
+      ali.assets << asset unless asset.blank?
       Rails.logger.debug "Created new ALI #{ali.object_key}"
     end
 
@@ -469,12 +477,12 @@ class CapitalProjectBuilder
   #-----------------------------------------------------------------------------
   # Creates a new capital project
   #-----------------------------------------------------------------------------
-  def create_capital_project(org, fiscal_year, ali_code, title, capital_project_type)
+  def create_capital_project(org, fiscal_year, ali_code, title, capital_project_type, sogr=true)
 
     project = CapitalProject.new
     project.organization = org
     project.active = true
-    project.sogr = true
+    project.sogr = sogr
     project.multi_year = false
     project.emergency = false
     project.fy_year = fiscal_year

@@ -1,3 +1,16 @@
+:css
+  tr td:nth-child(odd) {
+    //background-color: #4DDBB8;
+  }
+  tr td:nth-child(even) {
+    background-color: #A6EDDC;
+  }
+  .well-sm {
+    background-color: #00A37A !important;
+    color: #FFF;
+  }
+  //colors: ['#4DDBB8', '#A6EDDC', '#00A37A'],
+
 .table-responsive
   %table.table.table-condensed#plan-table
     %thead
@@ -7,13 +20,17 @@
           %th.center= format_as_fiscal_year(year)
     %tbody
       %tr
-        %td.left
+        %td.left Unconstrained Needs
         - @years.each do |year|
           %td.center
-            .well.well-sm DROP
+            .well.well-sm= format_as_currency(sum_projects_cost(@projects, year))
+
       - @projects.each do |project|
         %tr{:data => {:project => project.object_key}}
-          %td.left.nowrap= "#{project.title}<br/>#{project.project_number}".html_safe
+          %td.left.nowrap
+            = link_to project.title, capital_project_path(project)
+            <br/>
+            = project.project_number
           - @years.each do |year|
             %td.drop-target{:data => {:year => year}}
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|

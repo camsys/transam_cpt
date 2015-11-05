@@ -11,6 +11,11 @@ module TransamCptHelper
     end
   end
 
+  def sum_projects_cost projects, year
+    val = 0
+    projects.each{|x| val += x.total_cost(year)}
+    val
+  end
   # Returns a fiscal year array for a project
   def get_project_fiscal_years project
     if project.blank?
