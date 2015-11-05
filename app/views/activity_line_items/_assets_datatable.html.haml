@@ -36,7 +36,13 @@
           %td.right= format_as_currency(a.scheduled_replacement_cost)
           - if popup
             %td.center
-              %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{a.name}", :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'auto', :container => 'body', :title => "#{a.name}",  :content => "#{raw render :partial => 'assets/asset_table_info_popup', :locals => {:asset => a}}"}}
+                %i.fa.fa-info-circle.fa-1-25x.text-info
               - if can? :update, @activity_line_item
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger
+
+:javascript
+  $('.transam-popover').popover({
+    trigger: 'hover',
+  });

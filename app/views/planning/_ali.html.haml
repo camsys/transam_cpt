@@ -1,0 +1,5 @@
+.panel.panel-default.draggable{:data => {:url => "#{ali_action_planning_index_path}", :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key}}
+  .panel-body
+    %p= ali.name
+    %p= ali.team_ali_code
+    %p.bold= format_as_currency(ali.cost)

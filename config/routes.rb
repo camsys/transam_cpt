@@ -9,17 +9,17 @@ Rails.application.routes.draw do
   # end
 
   # Asset replacement/rehabilitation
-  # resources :planning, :only => [:index] do
-  #   collection do
-  #     get  'load_chart'
-  #     post  'asset_action'
-  #     post  'ali_action'
-  #     post  'add_funds'
-  #     post  'update_cost'
-  #     post  'edit_asset'
-  #     post  'move_ali'
-  #   end
-  # end
+  resources :planning, :only => [:index] do
+    collection do
+      get  'load_chart'
+      post  'asset_action'
+      post  'ali_action'
+      post  'add_funds'
+      post  'update_cost'
+      post  'edit_asset'
+      post  'move_ali'
+    end
+  end
 
   resources :team_codes, :only => [] do
     collection do

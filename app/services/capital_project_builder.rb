@@ -62,15 +62,34 @@ class CapitalProjectBuilder
 
   end
 
+  #-----------------------------------------------------------------------------
   # Update an activity line item and all of its assets to a new planning year
   # Note what process_asset actually does is create a new ALI
+  #-----------------------------------------------------------------------------
   def move_ali_to_planning_year(ali, fy_year)
     unless ali
       Rails.logger.error "Nil ALI"
       return nil
     end
 
+    # Get the capital project. If it is a multi-year project we can just move
+    # the ALI year. If the project starts later, we update the project as well
     cp = ali.capital_project
+    if cp.multi_year?
+      Rails.logger.debug "Multi-year project. Moving ALI to #{fy_year}"
+      ali.fy_year = fy_year
+      if ali.fy_year < cp.fy_year
+        Rails.logger.debug "Multi-year project. Moving project to #{fy_year}"
+        cp.fy_year = ali.fy_year
+      end
+      ali.save(:validate => false)
+      if cp.changed?
+        cp.save(:validate => false)
+      end
+      return
+    end
+
+    # If it is not a multi-year project we remove this projec
     assets = ali.assets.collect{|a| Asset.get_typed_asset(a)}
 
     projects_and_alis = assets.collect do |asset|

@@ -1,8 +1,8 @@
 .row
-  .col-md-12
+  .col-sm-12
     #plan_view
       = render 'plan_view'
-      
+
 #add-funds-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
   = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Add Funds...'}
 

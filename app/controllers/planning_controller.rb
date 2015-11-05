@@ -15,11 +15,11 @@ class PlanningController < OrganizationAwareController
   ASSET_RESET_ACTION                = '4'
 
   # Controller actions that can be invoked from the view to manuipulate ALIs
-  ALI_MOVE_YEAR_ACTION    = '1'  
-  ALI_UPDATE_COST_ACTION  = '2'  
+  ALI_MOVE_YEAR_ACTION    = '1'
+  ALI_UPDATE_COST_ACTION  = '2'
   ALI_REMOVE_ACTION       = '3'
   ALI_ADD_FUND_ACTION     = '4'
-  ALI_REMOVE_FUND_ACTION  = '5' 
+  ALI_REMOVE_FUND_ACTION  = '5'
 
   ACTIONS = [
     ["Replace", ASSET_REPLACE_ACTION],
@@ -42,21 +42,23 @@ class PlanningController < OrganizationAwareController
 
     # Get the ALIs for each year
     @alis = get_alis(@fiscal_year)
-
+    # check to see if there is a filter on the organization
+    org = @org_id.blank? ? @organization.id : @org_id
+    @projects = CapitalProject.where(:organization_id => org).order(:fy_year)
   end
 
   def load_chart
-    
+
     @funding_source = FundingSource.find_by_object_key(params[:fund])
     report = BudgetBurndown.new
     @data = report.get_data(@organization, {:funding_source => @funding_source})
 
     respond_to do |format|
-      format.js 
+      format.js
       format.json { render :json => @data.to_json }
-    end    
+    end
   end
-  
+
   # Render the partial for the asset edit modal.
   def edit_asset
 
@@ -83,10 +85,10 @@ class PlanningController < OrganizationAwareController
 
   # Render the partial for adding a funding plan to the ALI
   def add_funds
-    
+
     @ali = ActivityLineItem.find_by_object_key(params[:ali])
     @budget_amounts = @organization.budget_amounts.where('fy_year = ? AND amount > 0', @ali.capital_project.fy_year)
-        
+
     render :partial => 'add_funds_modal_form'
   end
 
@@ -97,7 +99,7 @@ class PlanningController < OrganizationAwareController
     asset = Asset.find_by_object_key(proxy.object_key)
 
     updated = false
-    
+
     case proxy.action_id
     when ASSET_REPLACE_ACTION
       Rails.logger.debug "Updating asset #{asset.object_key}. New scheduled replacement year = #{proxy.fy_year.to_i}"
@@ -149,64 +151,69 @@ class PlanningController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
+  #-----------------------------------------------------------------------------
   def ali_action
-   
-    @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])    
+
+    @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
     action = params[:invoke]
-    
+
     case action
     when ALI_MOVE_YEAR_ACTION
-      new_fy_year = params[:new_year]
+      new_fy_year = params[:year]
       CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
-      @msg = "The ALI was successfully moved to #{new_fy_year}."
-      
+      notify_user :notice, "The ALI was successfully moved to #{new_fy_year}."
+
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
       if @activity_line_item.save
-        @msg = "The ALI was successfully updated."
+        notify_user :notice,  "The ALI was successfully updated."
       else
-        @msg = "An error occurred while updating the ALI."
+        notify_user :alert,  "An error occurred while updating the ALI."
       end
-      
+
     when ALI_REMOVE_ACTION
       @project = @activity_line_item.capital_project
       @activity_line_item.destroy
-      @msg = "The ALI was successfully removed from project #{@project.project_number}."
+      notify_user :notice,  "The ALI was successfully removed from project #{@project.project_number}."
 
     when ALI_ADD_FUND_ACTION
       budget_amount = BudgetAmount.find(params[:source])
       amount = params[:amount].to_i
-    
+
       # Add a funding plan to this ALI
       @activity_line_item.funding_plans.create({:budget_amount => budget_amount, :amount => amount})
-      @msg = "The ALI was successfully updated."
+      notify_user :notice,  "The ALI was successfully updated."
 
     when ALI_REMOVE_FUND_ACTION
       fp = FundingPlan.find_by_object_key(params[:funding_plan])
       @activity_line_item.funding_plans.delete fp
-      @msg = "The ALI was successfully updated."
+      notify_user :notice,  "The ALI was successfully updated."
     end
 
     # Get the ALIs for each year
     @alis = get_alis(@fiscal_year)
+    # check to see if there is a filter on the organization
+    org = @org_id.blank? ? @organization.id : @org_id
+    @projects = CapitalProject.where(:organization_id => org).order(:fy_year)
 
   end
-      
+
   protected
 
   # Sets the view variables that control the filters. called before each action is invoked
   def set_view_vars
 
     @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
-        
+
     # This is the first year that the user can plan for
     @first_year = current_planning_year_year
     # This is the last year  the user can plan for
     @last_year = last_fiscal_year_year
     # This is an array of years that the user can plan for
-    years = (@first_year..@last_year).to_a
+    @years = (@first_year..@last_year).to_a
 
     # Set the view up. Start year is the first year in the view
     @fiscal_year = params[:fiscal_year].blank? ? @first_year : params[:fiscal_year].to_i
@@ -217,7 +224,7 @@ class PlanningController < OrganizationAwareController
       @prev_year_path = "#"
     else
       @prev_year = @fiscal_year - 1
-      @prev_year_path = planning_index_path(:fiscal_year => @prev_year)      
+      @prev_year_path = planning_index_path(:fiscal_year => @prev_year)
     end
 
     if @fiscal_year == @last_year
@@ -225,9 +232,9 @@ class PlanningController < OrganizationAwareController
       @next_year_path = "#"
     else
       @next_year = @fiscal_year + 1
-      @next_year_path = planning_index_path(:fiscal_year => @next_year)      
+      @next_year_path = planning_index_path(:fiscal_year => @next_year)
     end
-    
+
   end
 
   def get_alis(year)

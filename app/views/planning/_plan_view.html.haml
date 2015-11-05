@@ -1,12 +1,74 @@
 #plan-summary
   = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@fiscal_year], :action => '/planning'}
 
-.row
-  .col-md-6
-    #swimlane
-      = render 'swimlane'
-  .col-md-6
-    .row
-      .col-md-12
-        #budgets
-          = render 'funds'
+#spinner{:style => 'padding: 20px;'}= loader_panel_tag({:message => "Working...", :size => 3, :spinner => "refresh"})
+
+#plan
+  = render 'plan'
+
+:javascript
+
+  $(document).ready(function() {
+    // Set up the event listeners
+    configure_event_listeners();
+    $("#spinner").hide();
+  });
+
+  // Initialize the draggable elements
+  function configure_draggable() {
+    $(".draggable").draggable({
+      cursor: "crosshair",
+      opacity: "0.75",
+  		helper : 'clone',
+  		revert : 'invalid',
+      start: function(event, ui) {
+        var project = $(this).data('project');
+        //console.log("tr[data-project='" + project + "']")
+        $(this).draggable('option', 'containment', "tr[data-project='" + project + "']");
+      }
+    });
+  };
+
+
+  // Configure all event listeners
+  function configure_event_listeners() {
+    // Config draggable elements
+    configure_draggable();
+
+    // Mark droppable targets
+    configure_droppable();
+  };
+
+  // Creates drop targets for draggable items.
+  function configure_droppable() {
+    $(".drop-target").droppable({
+  		hoverClass : 'drop-zone-active',
+  		drop : function(ev, ui) {
+        var year = $(this).data('year');
+        var project = ui.draggable.data('project');
+        var url = ui.draggable.data('url');
+        var ali = ui.draggable.data('ali');
+        var action = ui.draggable.data('action');
+        $("#plan-table").hide();
+        $("#spinner").show();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+              ali: ali,
+              invoke: action,
+              year: year,
+              project: project
+            },
+            success: function (response) {
+              $("#plan-table").show();
+              $('#spinner').hide();
+            },
+            error: function () {
+              $("#plan-table").show();
+              $('#spinner').hide();
+            }
+        });
+  		}
+  	});
+  };

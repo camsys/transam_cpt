@@ -229,10 +229,18 @@ class CapitalProject < ActiveRecord::Base
     val
   end
 
-  # Returns the total cost of the project
-  def total_cost
+  # Returns the total cost of the project. If a fiscal year is added the costs
+  # are summarized for that fiscal year only. This is needed for multi-year
+  # projects
+  def total_cost selected_fy_year=nil
+
+    selected_fy_year ||= self.fy_year
     val = 0
-    activity_line_items.each {|x| val += x.cost}
+    activity_line_items.each do |x|
+      if x.fy_year == selected_fy_year
+        val += x.cost
+      end
+    end
     val
   end
 

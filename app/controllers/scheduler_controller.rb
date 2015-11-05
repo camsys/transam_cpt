@@ -287,9 +287,9 @@ class SchedulerController < OrganizationAwareController
 
     # check to see if there is a filter on the organization
     org = @org_id.blank? ? @organization.id : @org_id
-    projects = CapitalProject.where('organization_id = ? AND fy_year = ?', org, year)
+    capital_project_ids = CapitalProject.where(:organization_id => org)
 
-    ActivityLineItem.where(:capital_project_id => projects)
+    ActivityLineItem.where(:capital_project_id => capital_project_ids, :fy_year => year)
   end
 
   private

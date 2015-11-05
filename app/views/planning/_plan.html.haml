@@ -1,0 +1,20 @@
+.table-responsive
+  %table.table.table-condensed#plan-table
+    %thead
+      %tr
+        %th.left Project
+        - @years.each do |year|
+          %th.center= format_as_fiscal_year(year)
+    %tbody
+      %tr
+        %td.left
+        - @years.each do |year|
+          %td.center
+            .well.well-sm DROP
+      - @projects.each do |project|
+        %tr{:data => {:project => project.object_key}}
+          %td.left.nowrap= "#{project.title}<br/>#{project.project_number}".html_safe
+          - @years.each do |year|
+            %td.drop-target{:data => {:year => year}}
+              - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
+                = render :partial => 'ali', :locals => {:ali => ali}

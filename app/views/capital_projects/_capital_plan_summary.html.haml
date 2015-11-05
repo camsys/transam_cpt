@@ -11,5 +11,4 @@
 - results[:data].each do |row|
   - highlight = highlight_years.include? row[0]
   - action_path = "#{action}?fiscal_year=#{row[0]}"
-  = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :num_remove => row[3], :cost => row[4], :highlight => highlight, :action_path => action_path}
-    
+  = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :num_remove => row[3], :num_other => row[4], :cost => row[5], :highlight => highlight, :action_path => action_path}
