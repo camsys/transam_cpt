@@ -1,15 +1,59 @@
-:css
-  tr td:nth-child(odd) {
-    //background-color: #4DDBB8;
+:scss
+  $emphasis_color: #aaffff;
+
+  hr.ali {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border-top: 1px solid darken($emphasis_color, 10%);
   }
-  tr td:nth-child(even) {
-    background-color: #A6EDDC;
+  .popover {
+    z-index: 1060;
+  }
+  tr td.striped {
+    width: 110px;
+  }
+  tr td.striped:nth-child(odd) {
+    //background-color: #dae5f4;
+  }
+  tr td.striped:nth-child(even) {
+    //background-color: #A6EDDC;
+    background-color: #dae5f4;
+    //background-color: #b8d1f3;
   }
   .well-sm {
-    background-color: #00A37A !important;
+    background-color: #4e95f4 !important;
     color: #FFF;
   }
+  .panel-body > p {
+    font-size: 0.85em;
+    margin: 0 0 2px;
+  }
+  .panel-default {
+    background-color: lighten($emphasis_color, 10%) !important;
+    border: 1px solid darken($emphasis_color, 10%)!important;
+  }
+  .draggable:hover {
+    background-color: $emphasis_color !important;
+    //background-color: #A6EDDC !important;
+    //border: 1px solid #00A37A !important;
+  }
   //colors: ['#4DDBB8', '#A6EDDC', '#00A37A'],
+
+  .modal-backdrop {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .ajax-loader {
+    position: fixed;
+    top: 400px;
+    width: 100%;
+    margin: 20px auto 20px;
+    padding: 20px;
+    z-index: 1099;
+    background-color: #FFF;
+    border: 1px solid #EEE;
+  }
 
 .table-responsive
   %table.table.table-condensed#plan-table
@@ -17,21 +61,23 @@
       %tr
         %th.left Project
         - @years.each do |year|
-          %th.center= format_as_fiscal_year(year)
+          %th.center.nowrap
+            = format_as_fiscal_year(year)
+            <br/>
+            .well.well-sm.bold= format_as_currency(sum_projects_cost(@projects, year))
     %tbody
-      %tr
-        %td.left Unconstrained Needs
-        - @years.each do |year|
-          %td.center
-            .well.well-sm= format_as_currency(sum_projects_cost(@projects, year))
-
       - @projects.each do |project|
         %tr{:data => {:project => project.object_key}}
           %td.left.nowrap
             = link_to project.title, capital_project_path(project)
             <br/>
             = project.project_number
+            = format_field("Total Cost", format_as_currency(project.total_cost))
+            = format_field("Type", project.capital_project_type)
+            = format_field("SOGR", format_as_yes_no(project.sogr?))
+            = format_field("Multi year", format_as_yes_no(project.multi_year?))
+            = format_field("Emergency", format_as_yes_no(project.emergency))
           - @years.each do |year|
-            %td.drop-target{:data => {:year => year}}
+            %td.striped.drop-target{:data => {:year => year}}
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
-                = render :partial => 'ali', :locals => {:ali => ali}
+                = render :partial => 'ali', :locals => {:project => project, :ali => ali}

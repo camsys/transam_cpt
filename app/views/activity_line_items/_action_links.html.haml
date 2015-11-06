@@ -1,0 +1,19 @@
+-# %li
+-#   = link_to edit_milestones_capital_project_activity_line_item_path(@project, @activity_line_item) do
+-#     %i.fa.fa-edit.fa-fw
+-#     = " Update the milestones"
+%li
+  = link_to edit_cost_capital_project_activity_line_item_path(project, ali), :remote => true do
+    %i.fa.fa-usd.fa-fw
+    = " Update the expected cost"
+- if can? :update, ali
+  %li.divider
+  %li
+    = link_to edit_capital_project_activity_line_item_path(project, ali), :remote => true do
+      %i.fa.fa-edit.fa-fw
+      = " Modify this ALI"
+  %li.divider
+  %li
+    = link_to capital_project_activity_line_item_path(project, ali), :method => :delete, :data => {:confirm => "Are you sure you want to remove this ALI? The action cannot be undone."}  do
+      %i.fa.fa-trash-o.fa-fw
+      = " Remove this ALI"

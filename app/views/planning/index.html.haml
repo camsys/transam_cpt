@@ -1,18 +1,13 @@
 .row
   .col-sm-12
     .page-header
-      %h2 Capital Planning
+      .btn-toolbar.pull-right
+        = render 'planning_actions'
+      %h2 Project Planning
 
 .row
   .col-sm-12
     #plan_view
       = render 'plan_view'
 
-#add-funds-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
-  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Add Funds...'}
-
-#update-cost-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
-  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Update ALI cost'}
-
-#edit-asset-modal.modal.fade{:tabindex => "-1", :role => 'dialog', :aria_hidden => "true"}
-  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Edit Asset'}
+.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}

@@ -8,7 +8,7 @@
               %i.fa.fa-list
               = @activity_line_item
           .col-sm-2
-            = render 'actions'
+            = render :partial => 'actions', :locals => {:project => @project, :ali => @activity_line_item}
       .panel-body
         = render :partial => 'summary', :locals => {:ali => @activity_line_item}
 

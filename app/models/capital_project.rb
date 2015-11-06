@@ -234,12 +234,12 @@ class CapitalProject < ActiveRecord::Base
   # projects
   def total_cost selected_fy_year=nil
 
-    selected_fy_year ||= self.fy_year
     val = 0
-    activity_line_items.each do |x|
-      if x.fy_year == selected_fy_year
-        val += x.cost
-      end
+    if multi_year? and selected_fy_year.blank?
+      activity_line_items.each{|x| val += x.cost }
+    else
+      selected_fy_year ||= self.fy_year
+      activity_line_items.where(:fy_year => selected_fy_year).each{|x| val += x.cost }
     end
     val
   end

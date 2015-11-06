@@ -5,7 +5,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
   before_action :get_capital_project
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
-                                                    :edit_cost, :edit_milestones, :set_cost]
+                                                    :edit_cost, :edit_milestones, :set_cost, :assets]
   before_filter :reformat_date_fields,    :only => [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
@@ -106,6 +106,15 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Modify"
+
+  end
+
+  # GET /activity_line_items/1/assets
+  def assets
+
+    add_breadcrumb @project.project_number, capital_project_path(@project)
+    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
+    add_breadcrumb "Assets"
 
   end
 

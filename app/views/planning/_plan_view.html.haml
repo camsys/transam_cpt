@@ -1,4 +1,4 @@
-#spinner{:style => 'padding: 20px;'}= loader_panel_tag({:message => "Working...", :size => 3, :spinner => "refresh"})
+#spinner= loader_panel_tag({:message => "Working...", :size => 3, :spinner => "refresh"})
 
 #plan
   = render 'plan'
@@ -41,12 +41,18 @@
     $(".drop-target").droppable({
   		hoverClass : 'drop-zone-active',
   		drop : function(ev, ui) {
-        var year = $(this).data('year');
+        var drop_year = $(this).data('year');
+        var ali_year = ui.draggable.data('year');
         var project = ui.draggable.data('project');
         var url = ui.draggable.data('url');
         var ali = ui.draggable.data('ali');
         var action = ui.draggable.data('action');
-        $("#plan-table").hide();
+        // Make sure it is not a redundant drop
+        if (ali_year === drop_year) {
+          return;
+        }
+        //$("#plan-table").hide();
+        $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
         $("#spinner").show();
         $.ajax({
             url: url,
@@ -54,16 +60,18 @@
             data: {
               ali: ali,
               invoke: action,
-              year: year,
+              year: drop_year,
               project: project
             },
             success: function (response) {
-              $("#plan-table").show();
+              //$("#plan-table").show();
               $('#spinner').hide();
+              $(".modal-backdrop").remove();
             },
             error: function () {
-              $("#plan-table").show();
+              //$("#plan-table").show();
               $('#spinner').hide();
+              $(".modal-backdrop").remove();
             }
         });
   		}
