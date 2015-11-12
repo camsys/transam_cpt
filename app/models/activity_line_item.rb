@@ -219,13 +219,23 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Callback to update the estimated costs when another asset is added
   def after_add_asset_callback(asset)
-    self.estimated_cost += asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
+    # Check to see if this is rehab or replacement ALI
+    if rehabilitation_ali?
+      self.estimated_cost += asset.policy_analyzer.get_total_rehabilitation_cost
+    else
+      self.estimated_cost += asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
+    end
     save
   end
 
   # Callback to update the estimated costs when an asset is removed
   def after_remove_asset_callback(asset)
-    self.estimated_cost -= asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
+    # Check to see if this is rehab or replacement ALI
+    if rehabilitation_ali?
+      self.estimated_cost -= asset.policy_analyzer.get_total_rehabilitation_cost
+    else
+      self.estimated_cost -= asset.estimated_replacement_cost unless asset.estimated_replacement_cost.nil?
+    end
     save
   end
 

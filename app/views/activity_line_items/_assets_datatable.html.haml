@@ -1,3 +1,7 @@
+:css
+  .popover {
+    width: 350px;
+  }
 .table-responsive
   %table.table.table-condensed.table-hover
     %thead
@@ -11,15 +15,25 @@
         %th.center Rating
 
         %th.center Policy FY
-        %th.right Orig.
+        %th.right Orig. Cost
         %th.right Book Val.
         %th.right Est. Cost
-        %th.right Sch. Cost
+        - unless ali.rehabilitation_ali?
+          %th.right Sch. Cost
         - if popup
           %th
 
     %tbody
+      - cost = book_value = estimated_cost = scheduled_replacement_cost = 0
       - ali.assets.each do |a|
+        - cost += a.cost
+        - book_value += a.book_value
+        - if ali.rehabilitation_ali?
+          - estimated_cost += a.estimated_rehabilitation_cost
+        - else
+          - estimated_cost += a.estimated_replacement_cost
+          - scheduled_replacement_cost += a.scheduled_replacement_cost
+
         %tr{:data => {:action_path => inventory_path(a)}}
           %td.left= a.asset_tag
           %td.left= a.description
@@ -32,17 +46,34 @@
           %td.center= format_as_fiscal_year(a.policy_replacement_year)
           %td.right= format_as_currency(a.cost)
           %td.right= format_as_currency(a.book_value)
-          %td.right= format_as_currency(a.estimated_replacement_cost)
-          %td.right= format_as_currency(a.scheduled_replacement_cost)
+          - if ali.rehabilitation_ali?
+            %td.right= format_as_currency(a.estimated_rehabilitation_cost)
+          - else
+            %td.right= format_as_currency(a.estimated_replacement_cost)
+            %td.right= format_as_currency(a.scheduled_replacement_cost)
           - if popup
             %td.center
-              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'right', :container => 'body', :title => "#{a.name}",  :content => "#{raw render :partial => 'assets/summary', :locals => {:asset => a}}"}}
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => "#{raw render :partial => 'assets/summary', :locals => {:asset => a}}"}}
                 %i.fa.fa-info-circle.fa-1-25x.text-info
               - if can? :update, @activity_line_item
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger
 
+    %tfoot
+      %tr
+        %td{:colspan => 7}
+        %td.right= format_as_currency(cost)
+        %td.right= format_as_currency(book_value)
+        %td.right= format_as_currency(estimated_cost)
+        - unless ali.rehabilitation_ali?
+          %td.right= format_as_currency(scheduled_replacement_cost)
+
+
 :javascript
-  $('.transam-popover').popover({
-    trigger: 'hover',
+  $(document).ready(function() {
+    $('.transam-popover').popover({
+      trigger: 'hover',
+      container: 'body',
+      placement: 'left'
+    });
   });
