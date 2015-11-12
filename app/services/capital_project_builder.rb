@@ -440,7 +440,7 @@ class CapitalProjectBuilder
     end
 
     # See if there is an existing project for this scope and year
-    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr => ?', asset.organization.id, scope.id, year, sogr)
+    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ?', asset.organization.id, scope.id, year, sogr)
     if project.nil?
       # create this project
       project_title = "#{focus} #{request} project"
