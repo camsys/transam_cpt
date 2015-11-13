@@ -31,7 +31,7 @@
           - estimated_cost += a.estimated_rehabilitation_cost
         - else
           - estimated_cost += a.estimated_replacement_cost
-          - scheduled_replacement_cost += a.scheduled_replacement_cost
+          - scheduled_replacement_cost += a.scheduled_replacement_cost.to_i
 
         %tr{:data => {:action_path => inventory_path(a)}}
           %td.left= a.asset_tag
