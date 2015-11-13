@@ -1,9 +1,13 @@
+:css
+  .popover {
+    width: 350px;
+  }
 .row
   .col-sm-12
     - if @activity_line_item.assets.empty?
       %p There are no assets for this activity line item.
     -else
-      = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => true, :delete => true}
+      = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
 
 - if can? :update, @activity_line_item
   .row

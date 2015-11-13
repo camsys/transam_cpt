@@ -1,7 +1,6 @@
-:css
-  .popover {
-    width: 350px;
-  }
+:ruby
+  popup ||= '0'
+
 .table-responsive
   %table.table.table-condensed.table-hover
     %thead
@@ -20,7 +19,7 @@
         %th.right Est. Cost
         - unless ali.rehabilitation_ali?
           %th.right Sch. Cost
-        - if popup
+        - if popup == '1'
           %th
 
     %tbody
@@ -51,7 +50,7 @@
           - else
             %td.right= format_as_currency(a.estimated_replacement_cost)
             %td.right= format_as_currency(a.scheduled_replacement_cost)
-          - if popup
+          - if popup == '1'
             %td.center
               %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => "#{raw render :partial => 'assets/summary', :locals => {:asset => a}}"}}
                 %i.fa.fa-info-circle.fa-1-25x.text-info

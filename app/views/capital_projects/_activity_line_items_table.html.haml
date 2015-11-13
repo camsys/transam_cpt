@@ -1,3 +1,6 @@
+:ruby
+  popup ||= '0'
+
 .table-responsive
   %table.table.table-condensed.table-hover
     %thead
@@ -38,9 +41,9 @@
           %td.right.nowrap= format_as_currency(ali.local_funds)
           %td.right.nowrap= format_as_percentage(ali.local_funds / ali.cost * 100.0) unless ali.local_funds == 0
 
-          - if popup
+          - if popup == '1'
             %td.center
-              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'auto', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => 'activity_line_items/assets_datatable', :locals => {:ali => ali, :popup => false}}"}}
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => 'activity_line_items/assets_datatable', :locals => {:ali => ali, :popup => '0'}}"}}
                 %i.fa.fa-info-circle.text-info.fa-1-25x
 
     %tfoot
@@ -60,5 +63,8 @@
 
 :javascript
   $('.transam-popover').popover({
-    trigger: 'hover'
+    trigger: 'hover',
+    html: 'true',
+    placement: 'left',
+    container: 'body'
   });

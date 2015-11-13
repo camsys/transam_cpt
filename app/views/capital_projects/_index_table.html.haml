@@ -72,7 +72,7 @@
         %td.right.nowrap= format_as_currency(p.total_funds)
 
         %td.center
-          %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'auto', :container => 'body', :title => "#{p.project_number}: Activity Line Items",  :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
+          %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{p.project_number}: Activity Line Items",  :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => '0'}}"}}
             %i.fa.fa-info-circle.fa-1-25x.text-info
 
   %tfoot
