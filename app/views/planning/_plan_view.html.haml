@@ -18,7 +18,7 @@
       opacity: "0.75",
   		helper : 'clone',
   		revert : 'invalid',
-      start: function(event, ui) {
+      create: function(event, ui) {
         var project = $(this).data('project');
         //console.log("tr[data-project='" + project + "']")
         $(this).draggable('option', 'containment', "tr[data-project='" + project + "']");
