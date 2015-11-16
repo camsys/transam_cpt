@@ -163,11 +163,13 @@ class PlanningController < OrganizationAwareController
     case action
     when ALI_MOVE_YEAR_ACTION
       new_fy_year = params[:year]
+      Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
       CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
       notify_user :notice, "The ALI was successfully moved to #{new_fy_year}."
 
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
+      Rails.logger.debug "Updating anticipated cost for ali #{@activity_line_item} to  #{params[:activity_line_item][:anticipated_cost]}"
       if @activity_line_item.save
         notify_user :notice,  "The ALI was successfully updated."
       else
@@ -177,6 +179,7 @@ class PlanningController < OrganizationAwareController
     when ALI_REMOVE_ACTION
       @project = @activity_line_item.capital_project
       @activity_line_item.destroy
+      Rails.logger.debug "Removing ali #{@activity_line_item} from project #{@project}"
       notify_user :notice,  "The ALI was successfully removed from project #{@project.project_number}."
 
     when ALI_ADD_FUND_ACTION

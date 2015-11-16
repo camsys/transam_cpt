@@ -8,6 +8,11 @@
 #-------------------------------------------------------------------------------
 class CapitalProjectBuilder
 
+  REPLACEMENT_PROJECT_TYPE    = 1
+  EXPANSION_PROJECT_TYPE      = 2
+  IMPROVEMENT_PROJECT_TYPE    = 3
+  DEMONSTRATION_PROJECT_TYPE  = 4
+
   # Include the fiscal year mixin
   include FiscalYear
 
@@ -67,15 +72,28 @@ class CapitalProjectBuilder
   # Note what process_asset actually does is create a new ALI
   #-----------------------------------------------------------------------------
   def move_ali_to_planning_year(ali, fy_year)
-    unless ali
-      Rails.logger.error "Nil ALI"
+    unless ali.present?
+      Rails.logger.warning "Missing ALI"
+      return nil
+    end
+    unless fy_year.present?
+      Rails.logger.warning "Missing fy_year"
       return nil
     end
 
-    # Get the capital project. If it is a multi-year project we can just move
-    # the ALI year. If the project starts later, we update the project as well
+    # Double check that we are not copying to the same year
+    if ali.fy_year == fy_year
+      Rails.logger.info "Can't move ALI to the same year. Nothing to do."
+      return nil
+    end
+
+    # Get the capital project.
     project = ali.capital_project
+    # We need to know what type of project we are working with and go through all
+    # the cases
     if project.multi_year?
+      # Multi year projects do not have assets associated with them for now. The
+      # ALI can be simply moved to the selected year.
       Rails.logger.debug "Multi-year project. Moving ALI to #{fy_year}"
       ali.fy_year = fy_year
       if ali.fy_year < project.fy_year
@@ -87,20 +105,67 @@ class CapitalProjectBuilder
         project.save(:validate => false)
       end
       projects_and_alis = [project, ali]
-    elsif project.capital_project_type_id == 1 or project.capital_project_type_id == 3
+    elsif project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE or project.capital_project_type_id == IMPROVEMENT_PROJECT_TYPE
+      Rails.logger.debug "Replacement or Rehabilitation project"
       # These are replacement or improvement projects and may have assets
       # associated with them. If they are SOGR projects we are allowed to manage
       # the projects and ALIs otherwise we must leave empty projects and ALIs
       # for the user to clean up
+      Rails.logger.debug "ALI has #{ali.assets.count} assets"
+      if ali.assets.present?
+        # Need to figure out if it is a SOGR project or not. SOGR projects are
+        # internally managed while non-SOGR projects are not.
+
+        # Take each asset, update the scheduled activity year and re-run it
+        ali.assets.each do |x|
+          asset = Asset.get_typed_asset x
+          Rails.logger.debug "Processing #{asset}"
+          if project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE
+            # Set the scheduled replacement year
+            asset.scheduled_replacement_year = fy_year
+          else
+            asset.scheduled_rehabilitation_year = fy_year
+          end
+          asset.save(:validate => false)
+          projects_and_alis = process_asset(asset, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
+        end
+        ali.reload
+        # We can clean up any ALIs we created
+        if project.sogr? and ali.assets.empty?
+          project.activity_line_items.destroy ali
+        end
+        project.reload
+      else
+        # There are no assets so simply move the ALI. This is a little more
+        # involved as we may need to create a new project so we use the utility
+        # method to create the ALIs and projects as needed then we do a little
+        # cleanup
+        a = add_to_project(project.organization, nil, ali.team_ali_code, fy_year, project.capital_project_type, project.sogr)
+        new_project = a.first
+        new_ali = a.last
+        # We don't need the new ali so we can just replace the new one on the
+        # project with the old one after updating the fy_year. This preserves
+        # any documents, comments, etc. that are asscoiated with this ALI
+        new_project.activity_line_items.destroy new_ali
+        ali.capital_project = new_project
+        ali.fy_year = fy_year
+        ali.save(:validate => false)
+        ali.reload
+        # complete the update and we are done
+        new_project.activity_line_items << ali
+        new_project.save(:validate => false)
+        new_project.reload
+        projects_and_alis = [new_project, ali]
+      end
 
 
-    elsif project.capital_project_type_id == 2
+    elsif project.capital_project_type_id == EXPANSION_PROJECT_TYPE
       # Its an expansion project -- these dont have assets so we can simply move
       # the ALI to the new fy year and make sure that a project exists for it
 
       # Use the utility method to set up a new project and ALI if needed. This
       # retuns an array [project, ali]
-      a = add_to_project(nil, ali.ali_code, fy_year, project.capital_project_type, project.sogr)
+      a = add_to_project(nproject.organization, il, ali.team_ali_code, fy_year, project.capital_project_type, project.sogr)
       new_project = a.first
       new_ali = a.last
       # We don't need the new ali so we can just replace the new one on the
@@ -223,16 +288,25 @@ class CapitalProjectBuilder
       assets.each do |a|
         # do the work...
         process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
+        a.reload
       end
 
       # Get the next asset type id
+    end
+
+    # Clean up any degenerate SOGR projects
+    projects = organization.capital_projects.where(:sogr => true)
+    projects.each do |p|
+      if p.activity_line_items.blank?
+        p.destroy
+      end
     end
 
   end
 
   #-----------------------------------------------------------------------------
   # Process a single asset adding it to replacement and rehabilitation projects as
-  # needed. Projects are created if they fon't already exists otherwise the
+  # needed. Projects are created if they don't already exists otherwise the
   # asset is added to existing projects
   #-----------------------------------------------------------------------------
   def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type, target_year=nil, current_ali=nil)
@@ -286,12 +360,13 @@ class CapitalProjectBuilder
 
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
-      projects_and_alis << add_to_project(asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
+      projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type)
     end
 
     # Initial replacement
     year = asset.scheduled_replacement_year
     min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
+    Rails.logger.debug "Replacement year = #{year}, min_service_life_years = #{min_service_life_years}"
 
     unless year < start_year or year > last_year
 
@@ -299,12 +374,12 @@ class CapitalProjectBuilder
       # Step 3: Process initial replacement and rehab
       #-------------------------------------------------------------------------
       # Add the initial replacement. If the project does not exist it is created
-      projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
+      projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type)
 
       if process_rehabs
         rehab_year = year + (rehab_month / 12)
         if rehab_year <= last_year
-          projects_and_alis << add_to_project(asset, rehab_ali_code, rehab_year, rehabilitation_project_type)
+          projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, rehab_year, rehabilitation_project_type)
         end
       end
 
@@ -316,12 +391,12 @@ class CapitalProjectBuilder
 
       while year < last_year
         # Add a future re-replacement project for the asset
-        projects_and_alis << add_to_project(asset, replace_ali_code, year, replacement_project_type)
+        projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type)
 
         if process_rehabs
           rehab_year = year + (rehab_month / 12)
           if rehab_year <= last_year
-            projects_and_alis << add_to_project(asset, rehab_ali_code, rehab_year, rehabilitation_project_type)
+            projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, rehab_year, rehabilitation_project_type)
           end
         end
 
@@ -355,14 +430,10 @@ class CapitalProjectBuilder
 
     # Set the schedule replacement year to the policy year if it is not already
     # set
-    if asset.scheduled_replacement_year.nil?
-      asset.scheduled_replacement_year = asset.policy_replacement_year
-    end
-
-    # Take care of backlogged assets. Any asset in backlog will be scheduled for
-    # replacement in the first planning year
-    if asset.policy_replacement_year < start_year
-      asset.scheduled_replacement_year = start_year
+    if asset.scheduled_replacement_year.blank?
+      # if no scheduled replacement year is set then use the default. If the
+      # asset is in backlog set the to start year
+      asset.scheduled_replacement_year = [asset.policy_replacement_year, start_year].max
     end
 
     # Check to see if the asset has a scheduled rehabilitation year and if so
@@ -400,9 +471,9 @@ class CapitalProjectBuilder
   # Adds an asset to a capital project. If the project does not
   # exist it is created first,
   #-----------------------------------------------------------------------------
-  def add_to_project(asset, ali_code, year, project_type, sogr=true)
+  def add_to_project(organization, asset, ali_code, year, project_type, sogr=true)
 
-    Rails.logger.debug "add_to_project: asset=#{asset.object_key} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
+    Rails.logger.debug "add_to_project: asset=#{asset} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
     # The ALI project scope is the parent of the ali code so if the ALI code is 11.11.01 (replace 40 ft bus)
     # the scope becomes 11.11.XX (bus replacement project)
     scope = ali_code.parent
@@ -440,11 +511,11 @@ class CapitalProjectBuilder
     end
 
     # See if there is an existing project for this scope and year
-    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ?', asset.organization.id, scope.id, year, sogr)
+    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ?', organization.id, scope.id, year, sogr)
     if project.nil?
       # create this project
       project_title = "#{focus} #{request} project"
-      project = create_capital_project(asset.organization, year, scope, project_title, project_type, sogr)
+      project = create_capital_project(organization, year, scope, project_title, project_type, sogr)
       @project_count += 1
       Rails.logger.debug "Created new project #{project.object_key}"
     else
@@ -454,11 +525,13 @@ class CapitalProjectBuilder
     # if there is an exisiting ALI, see if the asset is in it
     if ali
       Rails.logger.debug "Using existing ALI #{ali.object_key}"
-      unless ali.assets.exists?(asset)
-        Rails.logger.debug "asset not in ALI, adding it"
-        ali.assets << asset
-      else
-        Rails.logger.debug "asset already in ALI, not adding it"
+      if asset.present?
+        unless ali.assets.exists?(asset)
+          Rails.logger.debug "asset not in ALI, adding it"
+          ali.assets << asset
+        else
+          Rails.logger.debug "asset already in ALI, not adding it"
+        end
       end
     else
       # Create the ALI and add it to the project
