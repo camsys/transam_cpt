@@ -65,6 +65,21 @@ class CapitalProjectBuilder
     # Run the update
     process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
 
+    # Check for empty projects and ALIs
+    CapitalProject.where(:organization_id => asset.organization_id, :sogr => true).each do |cp|
+      cp.activity_line_items.each do |ali|
+        if ali.assets.empty?
+          Rails.logger.debug "Removing empty ALI #{ali}"
+          cp.activity_line_items.destroy ali
+        end
+      end
+      if cp.activity_line_items.empty?
+        Rails.logger.debug "Removing empty SOGR proejct #{cp}"
+        cp.destroy
+      end
+
+    end
+
   end
 
   #-----------------------------------------------------------------------------

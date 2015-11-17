@@ -107,6 +107,7 @@ class PlanningController < OrganizationAwareController
         a.save(:validate => false)
         a.reload
         service.update_asset_schedule(a)
+        a.reload
       end
       notify_user :notice,  "Moved #{assets.count} assets to #{fiscal_year(@fy_year)}"
     else
