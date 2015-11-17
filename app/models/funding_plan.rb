@@ -77,7 +77,7 @@ class FundingPlan < ActiveRecord::Base
   end
 
   def name
-    "#{funding_source.name} $#{amount}" unless budget_amount.nil?
+    "#{funding_source.name} $#{amount}" unless amount.nil?
   end
 
   # Returns the amount of this funding plan that will be met by federal dollars
@@ -103,7 +103,7 @@ class FundingPlan < ActiveRecord::Base
   def local_percentage
     100.0 * (local_share / amount) if amount.to_i > 0
   end
-  
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
