@@ -91,13 +91,19 @@ class PlanningController < OrganizationAwareController
 
   # Processes a bulk move of assets from one FY to another
   def move_assets
+
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
     @fy_year = params[:year].to_i
     if @activity_line_item.present? and @fy_year > 0
       service = CapitalProjectBuilder.new
       assets = @activity_line_item.assets.where(:object_key => params[:targets])
       assets.each do |a|
-        a.scheduled_replacement_year = @fy_year
+        # Replace or Rehab?
+        if @activity_line_item.rehabilitation_ali?
+          a.scheduled_rehabilitation_year = @fy_year
+        else
+          a.scheduled_replacement_year = @fy_year
+        end
         a.save(:validate => false)
         a.reload
         service.update_asset_schedule(a)
