@@ -13,7 +13,7 @@
           %i.fa.fa-edit
           %span.caret
         %ul.dropdown-menu{:role => 'menu'}
-          = render :partial => 'activity_line_items/action_links', :locals => {:project => project, :ali => ali}
+          = render :partial => 'activity_line_item_action_links', :locals => {:project => project, :ali => ali}
 
       - unless ali.assets.empty?
         .btn-group.pull-left.panel-action

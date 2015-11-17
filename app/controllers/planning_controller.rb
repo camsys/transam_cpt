@@ -96,7 +96,8 @@ class PlanningController < OrganizationAwareController
     @fy_year = params[:year].to_i
     if @activity_line_item.present? and @fy_year > 0
       service = CapitalProjectBuilder.new
-      assets = @activity_line_item.assets.where(:object_key => params[:targets])
+      assets = @activity_line_item.assets.where(:object_key => params[:targets].split(','))
+      Rails.logger.debug "Found #{assets.count} assets to process"
       assets.each do |a|
         # Replace or Rehab?
         if @activity_line_item.rehabilitation_ali?

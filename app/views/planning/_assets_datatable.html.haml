@@ -3,11 +3,25 @@
 
 :css
   .popover {
-    //width: 500px;
+    width: 350px;
   }
   .modal-lg {
     width: 80%;
   }
+
+#asset-actions.btn-toolbar
+  .btn-group{:role => 'group'}
+    %button.btn.btn-info#move-assets-action{:type => 'button'}
+      %i.fa.fa-tasks
+      %span#button-text Move selected to FY
+    %button.btn.btn-info.dropdown-toggle{:type => 'button', :data => {:toggle => 'dropdown'}, :aria => {:haspopup => 'true', :expanded => 'false'}}
+      %span.caret
+      %span.sr-only Toggle Dropdown
+    %ul.dropdown-menu
+      - @fiscal_years.each do |fy|
+        - unless fy[1] == @project.fy_year
+          %li
+            = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action'
 
 .table-responsive
   %table.table.table-condensed.table-hover{:id => "assets-popup-table",
@@ -19,6 +33,8 @@
     :single_select => 'false'}}
     %thead
       %tr
+        %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+        %th.center{:data => {:visible => 'false'}} Object
         %th.left Tag
         %th.left Description
         %th.center Fuel
@@ -49,6 +65,8 @@
           - scheduled_replacement_cost += a.scheduled_replacement_cost.to_i
 
         %tr{:data => {:action_path => inventory_path(a)}}
+          %td{:data => {:checkbox => true}}
+          %td.center= a.object_key
           %td.left= a.asset_tag
           %td.left= a.description
           %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
@@ -76,7 +94,7 @@
 
     %tfoot
       %tr
-        %td{:colspan => 8}
+        %td{:colspan => 9}
         %td.right= format_as_currency(cost)
         %td.right= format_as_currency(book_value)
         %td.right= format_as_currency(estimated_cost)
@@ -86,7 +104,12 @@
 
 :javascript
 
+  var selected_assets = new Set();
+
   $(document).ready(function() {
+
+    // Disable the package actions
+    enable_disable_asset_actions();
 
     $('#assets-popup-table').bootstrapTable();
 
@@ -96,4 +119,55 @@
       placement: 'left'
     });
 
+    // Add a handler for the move action which appends the selected assets to
+    // the href
+    $(".move-assets-action").on('click', function(e) {
+      //alert(selected_assets);
+      var msg = "Move " + selected_assets.size + " assets?";
+      var href = $(this).attr('href');
+      $(this).attr('href', href + '&targets=' + Array.from(selected_assets));
+      //console.log($(this).attr('href'));
+      $('#form-modal').modal('hide');
+      $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+      $("#spinner").show();
+      return true;
+    });
   });
+
+  $('#assets-popup-table').on('check.bs.table', function(e, row) {
+    update_selected();
+  }).on('uncheck.bs.table', function(e, row) {
+    update_selected();
+  }).on('check-all.bs.table', function(e, row) {
+    update_selected();
+  }).on('uncheck-all.bs.table', function(e, row) {
+    update_selected();
+  });
+
+  // Enables or disables the package actions depending on how many are selected
+  function enable_disable_asset_actions() {
+    if (selected_assets.size > 0) {
+      $('#move-assets-action').removeClass('disabled');
+      $('#button-text').html("Move " + selected_assets.size + " assets to fiscal year")
+    } else {
+      $('#move-assets-action').addClass('disabled');
+    }
+  };
+
+  // Updates the selected rows in the table
+  function update_selected() {
+    var selected = $('#assets-popup-table').bootstrapTable('getSelections');
+    //console.log(selected);
+    selected_assets = new Set();
+    for (i = 0; i < selected.length; i++) {
+      selected_assets.add(selected[i][1]);
+    }
+    //console.log(selected_assets);
+    enable_disable_asset_actions();
+  };
+
+  // Removes an order identified by its object key from the set of orders selected
+  function remove_from_selected(object_key) {
+    selected_assets.delete(object_key);
+    enable_disable_asset_actions();
+  };
