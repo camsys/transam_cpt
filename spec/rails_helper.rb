@@ -20,8 +20,8 @@ ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
-  DatabaseCleaner.strategy = :truncation, {:only => %w[assets asset_events organizations capital_projects
-    activity_line_items activity_line_items_assets]}
+  DatabaseCleaner.strategy = :truncation, {:only => %w[assets asset_events budget_amounts organizations capital_projects
+    activity_line_items activity_line_items_assets funding_plans funding_sources milestones]}
   config.before(:suite) do
     begin
       DatabaseCleaner.start

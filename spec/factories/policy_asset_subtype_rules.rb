@@ -1,13 +1,13 @@
 FactoryGirl.define do
 
   factory :policy_asset_subtype_rule do
-    ali_code 'XXXXXXXX'
-    max_service_life_months 144
-    max_service_life_miles 500000
+    min_service_life_months 144
+    min_service_life_miles 500000
     replacement_cost 395500
-    cost_fy_year 6
-    replacement_ali_code 'XXXXXXXX'
+    cost_fy_year { Date.today.year - 1 }
     replace_with_new true
     replace_with_leased false
+    purchase_replacement_code 'XXXXXXXX'
+    rehabilitation_code 'XXXXXXXX'
   end
 end
