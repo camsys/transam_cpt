@@ -1,6 +1,6 @@
 class PlanningController < OrganizationAwareController
 
-  before_filter :set_view_vars,  :only => [:index, :asset_action, :ali_action, :add_funds, :update_cost, :edit_asset]
+  before_filter :set_view_vars,  :only => [:index, :move_assets, :asset_action, :ali_action, :add_funds, :update_cost, :edit_asset]
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Planning", :planning_index_path
@@ -39,9 +39,6 @@ class PlanningController < OrganizationAwareController
   # Returns the list of assets that are scheduled for replacement/rehabilitation in the given
   # fiscal year.
   def index
-
-    # Get the ALIs for each year
-    @alis = get_alis(@fiscal_year)
     # check to see if there is a filter on the organization
     org = @org_id.blank? ? @organization.id : @org_id
     @projects = CapitalProject.where(:organization_id => org).order(:fy_year)
@@ -92,13 +89,34 @@ class PlanningController < OrganizationAwareController
     render :partial => 'add_funds_modal_form'
   end
 
+  # Processes a bulk move of assets from one FY to another
+  def move_assets
+    @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
+    @fy_year = params[:year].to_i
+    if @activity_line_item.present? and @fy_year > 0
+      service = CapitalProjectBuilder.new
+      assets = @activity_line_item.assets.where(:object_key => params[:targets])
+      assets.each do |a|
+        a.scheduled_replacement_year = @fy_year
+        a.save(:validate => false)
+        a.reload
+        service.update_asset_schedule(a)
+      end
+      notify_user :notice,  "Moved #{assets.count} assets to #{fiscal_year(@fy_year)}"
+    else
+      notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
+    end
+
+    # check to see if there is a filter on the organization
+    org = @org_id.blank? ? @organization.id : @org_id
+    @projects = CapitalProject.where(:organization_id => org).order(:fy_year)
+
+  end
+
   # Process a scheduler action for an asset. This must be called using a JS action
   def asset_action
 
-    proxy = SchedulerActionProxy.new(params[:scheduler_action_proxy])
-    asset = Asset.find_by_object_key(proxy.object_key)
-
-    updated = false
+    #proxy = SchedulerActionProxy.new(params[:scheduler_action_proxy])
 
     case proxy.action_id
     when ASSET_REPLACE_ACTION
@@ -145,9 +163,6 @@ class PlanningController < OrganizationAwareController
     if updated
       CapitalProjectBuilder.new.update_asset_schedule(asset)
     end
-
-    # Get the ALIs for each year
-    @alis = get_alis(@fiscal_year)
 
   end
 
@@ -196,8 +211,6 @@ class PlanningController < OrganizationAwareController
       notify_user :notice,  "The ALI was successfully updated."
     end
 
-    # Get the ALIs for each year
-    @alis = get_alis(@fiscal_year)
     # check to see if there is a filter on the organization
     org = @org_id.blank? ? @organization.id : @org_id
     @projects = CapitalProject.where(:organization_id => org).order(:fy_year)
@@ -218,35 +231,7 @@ class PlanningController < OrganizationAwareController
     # This is an array of years that the user can plan for
     @years = (@first_year..@last_year).to_a
 
-    # Set the view up. Start year is the first year in the view
-    @fiscal_year = params[:fiscal_year].blank? ? @first_year : params[:fiscal_year].to_i
 
-    # Set up the ability to page through planning years
-    if @fiscal_year == @first_year
-      @prev_year = 0
-      @prev_year_path = "#"
-    else
-      @prev_year = @fiscal_year - 1
-      @prev_year_path = planning_index_path(:fiscal_year => @prev_year)
-    end
-
-    if @fiscal_year == @last_year
-      @next_year = 0
-      @next_year_path = "#"
-    else
-      @next_year = @fiscal_year + 1
-      @next_year_path = planning_index_path(:fiscal_year => @next_year)
-    end
-
-  end
-
-  def get_alis(year)
-
-    # check to see if there is a filter on the organization
-    org = @org_id.blank? ? @organization.id : @org_id
-    projects = CapitalProject.where('organization_id = ? AND fy_year = ?', org, year)
-
-    ActivityLineItem.where(:capital_project_id => projects)
   end
 
   private

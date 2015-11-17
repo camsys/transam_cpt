@@ -1,4 +1,5 @@
 = render 'ajax_view_update'
+$('#spinner').hide();
+$(".modal-backdrop").remove();  
 - if @message.present?
   transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
-  

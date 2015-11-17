@@ -37,6 +37,7 @@
   };
 
   // Creates drop targets for draggable items.
+  var confirm_result = false;
   function configure_droppable() {
     $(".drop-target").droppable({
   		hoverClass : 'drop-zone-active',
@@ -51,29 +52,38 @@
         if (ali_year === drop_year) {
           return;
         }
-        //$("#plan-table").hide();
-        $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
-        $("#spinner").show();
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: {
-              ali: ali,
-              invoke: action,
-              year: drop_year,
-              project: project
-            },
-            success: function (response) {
-              //$("#plan-table").show();
-              $('#spinner').hide();
-              $(".modal-backdrop").remove();
-            },
-            error: function () {
-              //$("#plan-table").show();
-              $('#spinner').hide();
-              $(".modal-backdrop").remove();
-            }
+        var msg = "Move ALI from " + ali_year + " to " + drop_year + "?";
+        bootbox.confirm(msg, function(result) {
+          if (result) {
+            move_ali(url, ali, action, drop_year, project);
+          }
         });
   		}
   	});
   };
+
+  function move_ali(url, ali, action, drop_year, project) {
+    //$("#plan-table").hide();
+    $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+    $("#spinner").show();
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+          ali: ali,
+          invoke: action,
+          year: drop_year,
+          project: project
+        },
+        success: function (response) {
+          //$("#plan-table").show();
+          $('#spinner').hide();
+          $(".modal-backdrop").remove();
+        },
+        error: function () {
+          //$("#plan-table").show();
+          $('#spinner').hide();
+          $(".modal-backdrop").remove();
+        }
+    });
+  }

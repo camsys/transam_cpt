@@ -1,1 +1,3 @@
 = render 'ajax_view_update'
+- if @message.present?
+  transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");

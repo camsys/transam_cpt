@@ -11,8 +11,9 @@ Rails.application.routes.draw do
   # Asset replacement/rehabilitation
   resources :planning, :only => [:index] do
     collection do
-      get  'load_chart'
-      post  'asset_action'
+      get   'load_chart'
+      get   'asset_action'
+      get   'move_assets'
       post  'ali_action'
       post  'add_funds'
       post  'update_cost'

@@ -116,6 +116,8 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Assets"
 
+    @fiscal_years = @activity_line_item.get_fiscal_years
+
   end
 
   # GET /activity_line_items/1/edit_cost
