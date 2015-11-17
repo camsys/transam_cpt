@@ -67,7 +67,7 @@ class BudgetAmount < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   def name
-    funding_source.nil? ? "" : funding_source
+    funding_source.nil? ? "" : funding_source.to_s
   end
 
   def to_s
