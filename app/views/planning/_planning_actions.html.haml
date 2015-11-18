@@ -35,44 +35,50 @@
 :javascript
   $(document).ready(function() {
 
-  $('#capital_project_filter').multiselect({
-    buttonText: function(options, select) {
-      if (options.length === 0) {
-        return 'Project types...';
-      } else {
-        return 'Project types - ' + options.length + ' selected';
+    $('#capital_project_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Project types...';
+        } else {
+          return 'Project types - ' + options.length + ' selected';
+        }
       }
-    }
-  });
-  $('#asset_subtype_filter').multiselect({
-    enableClickableOptGroups: true,
-    enableCollapsibleOptGroups: true,
-    inheritClass: true,
-    maxHeight: 250,
-    buttonText: function(options, select) {
-      if (options.length === 0) {
-        return 'Asset types...';
-      } else {
-        return 'Asset types - ' + options.length + ' selected';
+    });
+    $('#asset_subtype_filter').multiselect({
+      enableClickableOptGroups: true,
+      enableCollapsibleOptGroups: true,
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Asset types...';
+        } else {
+          return 'Asset types - ' + options.length + ' selected';
+        }
       }
-    }
-  });
-  $('#fiscal_year_filter').multiselect({
-    buttonText: function(options, select) {
-      if (options.length === 0) {
-        return 'Fiscal years...';
-      } else {
-        return 'Fiscal years - ' + options.length + ' selected';
+    });
+    $('#fiscal_year_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Fiscal years...';
+        } else {
+          return 'Fiscal years - ' + options.length + ' selected';
+        }
       }
-    }
-  });
-  $('#org_filter').multiselect({
-    buttonText: function(options, select) {
-      if (options.length === 0) {
-        return 'Organizations...';
-      } else {
-        return 'Organizations - ' + options.length + ' selected';
+    });
+    $('#org_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Organizations...';
+        } else {
+          return 'Organizations - ' + options.length + ' selected';
+        }
       }
-    }
-  });
+    });
   });

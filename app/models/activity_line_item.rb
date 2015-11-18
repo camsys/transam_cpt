@@ -115,6 +115,15 @@ class ActivityLineItem < ActiveRecord::Base
   #
   #------------------------------------------------------------------------------
 
+  # Returns true if the ALI is an SOGR ALI
+  def sogr?
+    (capital_project.sogr?)
+  end
+  # Returns true if the ALI is an future projected ALI
+  def notional?
+    (capital_project.notional?)
+  end
+
   def to_s
     name
   end
@@ -183,7 +192,11 @@ class ActivityLineItem < ActiveRecord::Base
       if rehabilitation_ali?
         val += a.scheduled_rehabilitation_cost.present? ? a.scheduled_rehabilitation_cost : a.policy_analyzer.get_total_rehabilitation_cost
       else
-        val += a.scheduled_replacement_cost.present? ? a.scheduled_replacement_cost : a.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))
+        if self.notional? or a.scheduled_replacement_cost.blank?
+          val += a.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))
+        else
+          val += a.scheduled_replacement_cost
+        end
       end
     end
     val

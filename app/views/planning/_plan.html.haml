@@ -1,10 +1,11 @@
 :scss
-  $emphasis_color: #aaffff;
+  $active_color: #aaffff;
+  $disabled_color: #ffaaff;
 
   hr.ali {
     margin-top: 5px;
     margin-bottom: 10px;
-    border-top: 1px solid darken($emphasis_color, 10%);
+    border-top: 1px solid darken($active_color, 10%);
   }
   .popover {
     z-index: 1060;
@@ -29,11 +30,15 @@
     margin: 0 0 2px;
   }
   .panel-default {
-    background-color: lighten($emphasis_color, 10%) !important;
-    border: 1px solid darken($emphasis_color, 10%)!important;
+    background-color: lighten($active_color, 10%) !important;
+    border: 1px solid darken($active_color, 10%)!important;
+  }
+  .panel-success {
+    background-color: lighten($disabled_color, 10%) !important;
+    border: 1px solid darken($disabled_color, 10%)!important;
   }
   .draggable:hover {
-    background-color: $emphasis_color !important;
+    background-color: $active_color !important;
     //background-color: #A6EDDC !important;
     //border: 1px solid #00A37A !important;
   }
@@ -86,4 +91,7 @@
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}}
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
-                = render :partial => 'ali', :locals => {:project => project, :ali => ali}
+                - if ali.notional?
+                  = render :partial => 'notional_ali', :locals => {:project => project, :ali => ali}
+                - else
+                  = render :partial => 'actual_ali', :locals => {:project => project, :ali => ali}

@@ -181,6 +181,12 @@ class CapitalProject < ActiveRecord::Base
   def sogr?
     (sogr)
   end
+
+  # Returns true if the project is an future predicted SOGR project that was created by the SOGR
+  # builder
+  def notional?
+    (notional)
+  end
   # Returns true if the project is an multi-year project. These can only be created
   # for facility projects
   def multi_year?

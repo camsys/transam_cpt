@@ -1,21 +1,19 @@
-.panel.panel-default.draggable{:data => {:url => ali_action_planning_index_path, :year => ali.fy_year, :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key}}
-  .panel-body
-    %p.text-center.bold= ali.name
-    %p.text-center= ali.team_ali_code
-    %p.text-center
-      = format_as_integer(ali.assets.count)
-      assets
-    %p.text-center.bold= format_as_currency(ali.cost)
-    %hr.ali
-    - if can? :update, ali or can? :update_cost, ali
-      .btn-group.pull-right.panel-action
-        %button.btn.btn-info.btn-xs.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-          %i.fa.fa-edit
-          %span.caret
-        %ul.dropdown-menu{:role => 'menu'}
-          = render :partial => 'activity_line_item_action_links', :locals => {:project => project, :ali => ali}
+%p.text-center.bold= ali.name
+%p.text-center= ali.team_ali_code
+%p.text-center
+  = format_as_integer(ali.assets.count)
+  assets
+%p.text-center.bold= format_as_currency(ali.cost)
+%hr.ali
+- if can? :update, ali or can? :update_cost, ali
+  .btn-group.pull-right.panel-action
+    %button.btn.btn-info.btn-xs.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+      %i.fa.fa-edit
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu'}
+      = render :partial => 'activity_line_item_action_links', :locals => {:project => project, :ali => ali}
 
-      - unless ali.assets.empty?
-        .btn-group.pull-left.panel-action
-          = link_to assets_capital_project_activity_line_item_path(project, ali), :class => 'btn btn-success btn-xs', :remote => true do
-            %i.fa.fa-list.fa-fw
+  - unless ali.assets.empty?
+    .btn-group.pull-left.panel-action
+      = link_to assets_capital_project_activity_line_item_path(project, ali), :class => 'btn btn-success btn-xs', :remote => true do
+        %i.fa.fa-list.fa-fw

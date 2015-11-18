@@ -22,6 +22,7 @@
       %th.center Scope
       %th.center Emgcy
       %th.center SOGR
+      %th.center Notional
       %th.center Multi Year
 
       %th.center Type
@@ -58,6 +59,7 @@
         %td.center.nowrap= p.team_ali_code.scope
         %td.center= format_as_boolean(p.emergency?)
         %td.center= format_as_boolean(p.sogr?)
+        %td.center= format_as_boolean(p.notional?)
         %td.center= format_as_boolean(p.multi_year?)
         %td.center= p.capital_project_type.code
 
@@ -78,9 +80,9 @@
   %tfoot
     %tr
       - if @organization_list.count > 1
-        %td{:colspan => 9}
+        %td{:colspan => 10}
       - else
-        %td{:colspan => 8}
+        %td{:colspan => 9}
 
       %td.right.nowrap= format_as_currency(total_cost)
       %td.right.nowrap= format_as_currency(total_state)

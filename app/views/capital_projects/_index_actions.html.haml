@@ -36,6 +36,8 @@
   $(document).ready(function() {
 
     $('#capital_project_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
       buttonText: function(options, select) {
         if (options.length === 0) {
           return 'Project types...';
@@ -58,6 +60,8 @@
       }
     });
     $('#fiscal_year_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
       buttonText: function(options, select) {
         if (options.length === 0) {
           return 'Fiscal years...';
@@ -67,6 +71,8 @@
       }
     });
     $('#org_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
       buttonText: function(options, select) {
         if (options.length === 0) {
           return 'Organizations...';
