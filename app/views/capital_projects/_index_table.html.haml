@@ -56,9 +56,9 @@
         %td.center.nowrap= p.fiscal_year
         %td.left.nowrap= p.project_number
         %td.center.nowrap= p.team_ali_code.scope
-        %td.center= format_as_checkbox(p.emergency?)
-        %td.center= format_as_checkbox(p.sogr?)
-        %td.center= format_as_checkbox(p.multi_year?)
+        %td.center= format_as_boolean(p.emergency?)
+        %td.center= format_as_boolean(p.sogr?)
+        %td.center= format_as_boolean(p.multi_year?)
         %td.center= p.capital_project_type.code
 
         %td= p.title

@@ -54,7 +54,7 @@
           %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
 
           %td.center= a.age
-          %td.center= format_as_checkbox(a.in_backlog)
+          %td.center= format_as_boolean(a.in_backlog)
           %td.right= format_as_integer(a.reported_mileage)
           %td.center= format_as_decimal(a.reported_condition_rating, 1)
 

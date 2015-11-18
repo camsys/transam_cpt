@@ -34,7 +34,7 @@
         %td.center= p.fiscal_year
         %td= p.project_number
         %td.center= p.team_ali_code
-        %td.center= format_as_checkbox(p.sogr?)
+        %td.center= format_as_boolean(p.sogr?)
         %td.center= p.capital_project_type.code
 
         %td= p.title
