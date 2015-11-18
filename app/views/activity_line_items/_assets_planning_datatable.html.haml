@@ -59,7 +59,7 @@
         - cost += a.cost
         - book_value += a.book_value
         - if ali.rehabilitation_ali?
-          - estimated_cost += a.estimated_rehabilitation_cost
+          - estimated_cost += ali.rehabilitation_cost a
         - else
           - estimated_cost += a.estimated_replacement_cost
           - scheduled_replacement_cost += a.scheduled_replacement_cost.to_i

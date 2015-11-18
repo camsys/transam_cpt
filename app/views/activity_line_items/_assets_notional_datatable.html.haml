@@ -28,14 +28,20 @@
       - estimated_cost = 0
       - cost_date = start_of_fiscal_year(ali.capital_project.fy_year)
       - ali.assets.each do |a|
-        - asset_cost = a.estimated_replacement_cost
         - if ali.rehabilitation_ali?
-          - estimated_cost += a.estimated_rehabilitation_cost(cost_date)
+          - asset_cost = ali.rehabilitation_cost a
         - else
-          - estimated_cost += asset_cost
+          - asset_cost = ali.replacement_cost a
+
+        - estimated_cost += asset_cost
 
         %tr
-          %td.left= "Replacement for #{a.description}"
+          %td.left
+            - if ali.rehabilitation_ali?
+              = "Rehabilitation for #{a.description} replaced in #{format_as_fiscal_year(a.scheduled_replacement_year)}"
+            - else
+              = "Replacement for #{a.description} replaced in #{format_as_fiscal_year(a.scheduled_replacement_year)}"
+
           %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
 
           %td.center= format_as_integer(a.policy_analyzer.get_min_service_life_months / 12)
