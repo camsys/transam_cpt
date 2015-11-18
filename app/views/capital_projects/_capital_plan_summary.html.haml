@@ -1,14 +1,17 @@
-:ruby
-  rep = CapitalPlanSummaryReport.new
-  results = rep.get_data(@organization_list, {})
-  if ! defined? highlight_years
-    highlight_years = []
-  end
-  if ! defined? action
-    action = '/capital_projects'
-  end
+:css
+  .well-sm {
+    background-color: #4e95f4 !important;
+    color: #FFF;
+  }
 
-- results[:data].each do |row|
-  - highlight = highlight_years.include? row[0]
-  - action_path = "#{action}?fiscal_year=#{row[0]}"
-  = render :partial => 'capital_projects/capital_plan_summary_detail', :locals => {:year => row[0], :num_replace => row[1], :num_rehab => row[2], :num_remove => row[3], :num_other => row[4], :cost => row[5], :highlight => highlight, :action_path => action_path}
+
+.table-responsive
+  %table.table.table-condensed#plan-summary-table
+    %thead
+      %tr
+        - @years.each do |year|
+          %th.col-sm-1.center.nowrap
+            = format_as_fiscal_year(year)
+            <br/>
+            .well.well-sm.bold= format_as_currency(sum_projects_cost(@projects, year))
+    %tbody
