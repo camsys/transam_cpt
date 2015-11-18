@@ -4,6 +4,11 @@
     = " Actions"
     %span.caret
   %ul.dropdown-menu{:role => 'menu'}
+    - if can? :create, CapitalProject
+      %li.text-left
+        = link_to new_capital_project_path do
+          %i.fa.fa-plus.fa-fw
+          = " New Capital Project"
     %li
       = link_to capital_projects_path(:capital_project_type_id => @capital_project_type_id, :org_id => @org_filter, :fiscal_year => @fiscal_year, :status_type_id => @status_type_id, :start_row => 0, :format => 'xls') do
         %i.fa.fa-fw.fa-file-excel-o

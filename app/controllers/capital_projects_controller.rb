@@ -220,6 +220,13 @@ class CapitalProjectsController < OrganizationAwareController
       @data = report_instance.get_data_from_result_list(@projects)
     end
 
+    # This is the first year that the user can plan for
+    @first_year = current_planning_year_year
+    # This is the last year  the user can plan for
+    @last_year = last_fiscal_year_year
+    # This is an array of years that the user can plan for
+    @years = (@first_year..@last_year).to_a
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @projects }

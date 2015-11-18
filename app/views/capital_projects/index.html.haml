@@ -1,36 +1,33 @@
 .row
   .col-sm-12
-    .panel.panel-default.header-part
-      .panel-heading
-        .row
-          .col-sm-2
-            %h3.panel-title
-              %i.fa.fa-cubes
-              Capital Projects
-          .col-sm-10
-            = render 'index_actions'
-      .panel-body
-        - if @projects.empty?
-          %p No matching capital projects found
-        - else
-          %ul.nav.nav-tabs
-            %li
-              %a{:href => "#summary", :data =>{:toggle => 'tab'}}
-                = "Plan Summary"
-            %li
-              %a{:href => "#chart", :data =>{:toggle => 'tab'}}
-                = "Capital Needs Chart"
-          .tab-content{:style => 'min-height: 0;'}
-            .tab-pane.fade#chart
-              .row
-                .col-sm-12
-                  .chart{:id => "chart_#{@report.id}"}
-            .tab-pane.fade#summary
-              .row
-                .col-sm-12
-                  = render 'capital_plan_summary'
+    .page-header
+      .btn-toolbar.pull-right{:style => 'margin-top: 7px;'}
+        = render 'index_actions'
+      %h2 Capital Projects
 
+.row
+  .col-sm-12
+    %ul.nav.nav-tabs
+      %li
+        %a{:href => "#summary", :data =>{:toggle => 'tab'}}
+          = "Plan Summary"
+      %li
+        %a{:href => "#chart", :data =>{:toggle => 'tab'}}
+          = "Capital Needs Chart"
+    .tab-content{:style => 'min-height: 0;'}
+      .tab-pane.fade#chart
+        .row
           .col-sm-12
-            = render 'index_table'
+            .chart{:id => "chart_#{@report.id}"}
+      .tab-pane.fade#summary
+        .row
+          .col-sm-12
+            = render 'capital_plan_summary'
+
+    .col-sm-12
+      - if @projects.empty?
+        %p No matching capital projects found
+      - else
+        = render 'index_table'
 
 = render 'index_scripts'
