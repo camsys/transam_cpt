@@ -17,23 +17,63 @@
 = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   - if @organization_list.count > 1
     .form-group
-      = select_tag(:org_id, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :style => "width: 200px;", :prompt => "Any organization...")
+      = select_tag(:org_filter, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :multiple => true, :selected => @org_filter), :class => "form-control")
   .form-group
-    = select_tag(:fiscal_year, options_for_select(@fiscal_years, :selected => @fiscal_year), :class => "form-control", :style => "width: 100px;", :prompt => "Any FY...")
+    = select_tag(:fiscal_year_filter, options_for_select(@fiscal_years, :selected => @fiscal_year_filter), :class => "form-control", :multiple => true)
   -# .form-group
   -#   = select_tag(:capital_project_state, options_for_select(CapitalProject.state_names.collect{|a| [a.humanize, a]}, :selected => @capital_project_state), :class => "form-control", :prompt => "Any status...")
   .form-group
-    = select_tag(:capital_project_type_id, options_for_select(CapitalProjectType.active.collect{|a| [a.name, a.id]}, :selected => @capital_project_type_id), :class => "form-control", :prompt => "Any project type...")
+    = select_tag(:capital_project_filter, options_for_select(CapitalProjectType.active.collect{|a| [a.name, a.id]}, :selected => @capital_project_filter), :class => "form-control", :multiple => true)
   -# .form-group
   -#   = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.active, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")
   .form-group
-    = select_tag(:asset_subtype_id, option_groups_from_collection_for_select(AssetType.active, :asset_subtypes, :name, :id, :name, :selected => @asset_subtype_id), :class => "form-control", :prompt => "Any asset type...")
+    = select_tag(:asset_subtype_filter, option_groups_from_collection_for_select(AssetType.active, :asset_subtypes, :name, :id, :name, :selected => @asset_subtype_filter), :class => "form-control", :multiple => true)
+
+  = button_tag :class => 'btn btn-success', :type => 'submit' do
+    %i.fa.fa-filter
 
 :javascript
   $(document).ready(function() {
 
-    $('#fiscal_year, #capital_project_state, #capital_project_type_id, #org_id, #funding_source_id, #asset_subtype_id').change(function() {
-      $('#filter_form').submit();
+    $('#capital_project_filter').multiselect({
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Project types...';
+        } else {
+          return 'Project types - ' + options.length + ' selected';
+        }
+      }
+    });
+    $('#asset_subtype_filter').multiselect({
+      enableClickableOptGroups: true,
+      enableCollapsibleOptGroups: true,
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Asset types...';
+        } else {
+          return 'Asset types - ' + options.length + ' selected';
+        }
+      }
+    });
+    $('#fiscal_year_filter').multiselect({
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Fiscal years...';
+        } else {
+          return 'Fiscal years - ' + options.length + ' selected';
+        }
+      }
+    });
+    $('#org_filter').multiselect({
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Organizations...';
+        } else {
+          return 'Organizations - ' + options.length + ' selected';
+        }
+      }
     });
 
   });

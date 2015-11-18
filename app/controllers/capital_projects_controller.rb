@@ -121,44 +121,44 @@ class CapitalProjectsController < OrganizationAwareController
     values      = []
 
     # Check to see if we got an organization to sub select on.
-    @org_filter = params[:org_id]
+    @org_filter = params[:org_filter]
     conditions << 'organization_id IN (?)'
     if @org_filter.blank?
       values << @organization_list
     else
-      @org_filter = @org_filter.to_i
-      values << [@org_filter]
+      values << @org_filter
+    end
+
+    @capital_project_filter = params[:capital_project_filter]
+    unless @capital_project_filter.blank?
+      conditions << 'capital_project_type_id IN (?)'
+      values << @capital_project_filter
     end
 
     # See if we got search
-    @fiscal_year = params[:fiscal_year]
-    unless @fiscal_year.blank?
-      @fiscal_year = @fiscal_year.to_i
-      conditions << 'fy_year = ?'
-      values << @fiscal_year
+    @fiscal_year_filter = params[:fiscal_year_filter]
+    unless @fiscal_year_filter.blank?
+      conditions << 'fy_year IN (?)'
+      values << @fiscal_year_filter
     end
 
-    @capital_project_type_id = params[:capital_project_type_id]
-    unless @capital_project_type_id.blank?
-      @capital_project_type_id = @capital_project_type_id.to_i
-      if @capital_project_type_id > 0
-        conditions << 'capital_project_type_id = ?'
-        values << @capital_project_type_id
+
+    # Filter by asset type. Requires jopining across CP <- ALI <- ALI-Assets <- Assets
+    @asset_subtype_filter = params[:asset_subtype_filter]
+    unless @asset_subtype_filter.blank?
+      capital_project_ids = []
+      # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
+      asset_ids = Asset.where('asset_subtype_id IN (?) AND organization_id IN (?)', @asset_subtype_filter, values[0]).pluck(:id)
+      unless asset_ids.empty?
+        # now get CPs by subselecting on CP <- ALI <- ALI-Assets
+        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
+        cps = CapitalProject.connection.execute(query, :skip_logging)
+        cps.each do |cp|
+          capital_project_ids << cp[0]
+        end
       end
-    end
-
-    @capital_project_state = params[:capital_project_state]
-    unless @capital_project_state.blank?
-      conditions << 'state = ?'
-      values << @capital_project_state
-    end
-
-    # Get the capital project status type filter, if one is not found default to 0
-    @capital_project_type_id = params[:capital_project_type_id]
-    if @capital_project_type_id.blank?
-      @capital_project_type_id = 0
-    else
-      @capital_project_type_id = @capital_project_type_id.to_i
+      conditions << 'id IN (?)'
+      values << capital_project_ids.uniq  # make sure there are no duplicates
     end
 
     # Filter by funding source and/or asset type. This takes more work and each uses a custom query to pre-select
@@ -177,27 +177,6 @@ class CapitalProjectsController < OrganizationAwareController
         cps = CapitalProject.connection.execute(query, :skip_logging)
         cps.each do |cp|
           capital_project_ids << cp[0]
-        end
-        conditions << 'id IN (?)'
-        values << capital_project_ids.uniq  # make sure there are no duplicates
-      end
-    end
-
-    # Filter by asset type. Requires jopining across CP <- ALI <- ALI-Assets <- Assets
-    @asset_subtype_id = params[:asset_subtype_id]
-    unless @asset_subtype_id.blank?
-      @asset_subtype_id = @asset_subtype_id.to_i
-      if @asset_subtype_id > 0
-        capital_project_ids = []
-        # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
-        asset_ids = Asset.where('asset_subtype_id = ? AND organization_id IN (?)', @asset_subtype_id, values[0]).pluck(:id)
-        unless asset_ids.empty?
-          # now get CPs by subselecting on CP <- ALI <- ALI-Assets
-          query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
-          cps = CapitalProject.connection.execute(query, :skip_logging)
-          cps.each do |cp|
-            capital_project_ids << cp[0]
-          end
         end
         conditions << 'id IN (?)'
         values << capital_project_ids.uniq  # make sure there are no duplicates
