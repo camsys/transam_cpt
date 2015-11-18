@@ -186,14 +186,14 @@ class ActivityLineItem < ActiveRecord::Base
   # Returns the total replacment or rehabilitation costs of the assets in this ALI
   def total_asset_cost
     val = 0
-    first_date = start_of_fiscal_year(capital_project.fy_year)
+    cost_date = start_of_fiscal_year(capital_project.fy_year)
     assets.each do |a|
       # Check to see if this is rehab or replacement ALI
       if rehabilitation_ali?
         val += a.scheduled_rehabilitation_cost.present? ? a.scheduled_rehabilitation_cost : a.policy_analyzer.get_total_rehabilitation_cost
       else
         if self.notional? or a.scheduled_replacement_cost.blank?
-          val += a.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))
+          val += a.calculate_estimated_replacement_cost(cost_date)
         else
           val += a.scheduled_replacement_cost
         end

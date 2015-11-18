@@ -1,0 +1,67 @@
+:ruby
+  popup ||= '0'
+
+:css
+  .popover {
+    width: 350px;
+  }
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => "assets-popup-table",
+    :data => {:toggle => 'table',
+    :classes => 'table-no-bordered',
+    :search => 'false',
+    :striped => 'true',
+    :single_select => 'false'}}
+    %thead
+      %tr
+        %th.left Description
+        %th.center Fuel
+
+        %th.center Age
+
+        %th.center Policy FY
+        %th.right Est. Cost
+        - if popup == '1'
+          %th
+
+    %tbody
+      - estimated_cost = 0
+      - cost_date = start_of_fiscal_year(ali.capital_project.fy_year)
+      - ali.assets.each do |a|
+        - asset_cost = a.estimated_replacement_cost
+        - if ali.rehabilitation_ali?
+          - estimated_cost += a.estimated_rehabilitation_cost(cost_date)
+        - else
+          - estimated_cost += asset_cost
+
+        %tr
+          %td.left= "Replacement for #{a.description}"
+          %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
+
+          %td.center= format_as_integer(a.policy_analyzer.get_min_service_life_months / 12)
+
+          %td.center= format_as_fiscal_year(ali.fy_year)
+          %td.right= format_as_currency(asset_cost)
+          - if popup == '1'
+            %td.center
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => "#{raw render :partial => 'assets/summary', :locals => {:asset => a}}"}}
+                %i.fa.fa-info-circle.fa-1-25x.text-info
+
+    %tfoot
+      %tr
+        %td{:colspan => 4}
+        %td.right= format_as_currency(estimated_cost)
+
+:javascript
+
+  $(document).ready(function() {
+
+    $('#assets-popup-table').bootstrapTable();
+
+    $('.transam-popover').popover({
+      trigger: 'hover',
+      container: 'body',
+      placement: 'left'
+    });
+
+  });

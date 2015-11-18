@@ -1,11 +1,11 @@
 :scss
-  $active_color: #aaffff;
-  $disabled_color: #ffaaff;
+  $sogr_project_color: #aaffff;
+  $other_project_color: #bbffaa;
+  $notional_project_color: #ffaaff;
 
   hr.ali {
     margin-top: 5px;
     margin-bottom: 10px;
-    border-top: 1px solid darken($active_color, 10%);
   }
   .popover {
     z-index: 1060;
@@ -29,18 +29,34 @@
     font-size: 0.85em;
     margin: 0 0 2px;
   }
-  .panel-default {
-    background-color: lighten($active_color, 10%) !important;
-    border: 1px solid darken($active_color, 10%)!important;
+  .panel-sogr {
+    background-color: lighten($sogr_project_color, 10%) !important;
+    border: 1px solid darken($sogr_project_color, 10%)!important;
   }
-  .panel-success {
-    background-color: lighten($disabled_color, 10%) !important;
-    border: 1px solid darken($disabled_color, 10%)!important;
+  .panel-sogr > .panel-body > hr.ali {
+    border-top: 1px solid darken($sogr_project_color, 10%);
   }
-  .draggable:hover {
-    background-color: $active_color !important;
-    //background-color: #A6EDDC !important;
-    //border: 1px solid #00A37A !important;
+  .panel-sogr:hover {
+    background-color: $sogr_project_color !important;
+  }
+
+  .panel-other {
+    background-color: lighten($other_project_color, 10%) !important;
+    border: 1px solid darken($other_project_color, 10%)!important;
+  }
+  .panel-other > .panel-body > hr.ali {
+    border-top: 1px solid darken($other_project_color, 10%);
+  }
+  .panel-other:hover {
+    background-color: $other_project_color !important;
+  }
+
+  .panel-notional {
+    background-color: lighten($notional_project_color, 10%) !important;
+    border: 1px solid darken($notional_project_color, 10%)!important;
+  }
+  .panel-notional > .panel-body > hr.ali {
+    border-top: 1px solid darken($notional_project_color, 10%);
   }
   //colors: ['#4DDBB8', '#A6EDDC', '#00A37A'],
 
@@ -93,5 +109,7 @@
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
                 - if ali.notional?
                   = render :partial => 'notional_ali', :locals => {:project => project, :ali => ali}
+                - elsif ali.sogr?
+                  = render :partial => 'sogr_ali', :locals => {:project => project, :ali => ali}
                 - else
-                  = render :partial => 'actual_ali', :locals => {:project => project, :ali => ali}
+                  = render :partial => 'other_ali', :locals => {:project => project, :ali => ali}

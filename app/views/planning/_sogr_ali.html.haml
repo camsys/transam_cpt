@@ -1,0 +1,3 @@
+.panel.panel-sogr.draggable{:data => {:url => ali_action_planning_index_path, :year => ali.fy_year, :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key}}
+  .panel-body
+    = render :partial => 'ali', :locals => {:project => project, :ali => ali}
