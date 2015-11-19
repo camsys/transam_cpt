@@ -365,7 +365,7 @@ class CapitalProjectBuilder
     # Get the policy analyzer for this asset
     policy_analyzer = asset.policy_analyzer
 
-    # Get the replacment and rehab ALI codes for this asset. If the policy rule
+    # Get the replacement and rehab ALI codes for this asset. If the policy rule
     # specifies leased we need the lease
     if policy_analyzer.get_replace_with_leased
       replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_lease_replacement_code)
@@ -377,21 +377,39 @@ class CapitalProjectBuilder
     # See if the policy requires scheduling rehabilitations.
     rehab_month = asset.policy_analyzer.get_rehabilitation_service_month.to_i
     process_rehabs = (rehab_month.to_i > 0)
+    # Get the number of additional years to add
+    extended_years = asset.policy_analyzer.extended_service_life_months.to_i / 12
 
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
       projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type, true, false)
+      year = asset.scheduled_replacement_year + extended_years
+    else
+      year = asset.scheduled_replacement_year
     end
 
     # Initial replacement
-    year = asset.scheduled_replacement_year
     min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
+    # Factor in any additional years based on a rehab
+    min_service_life_years += extended_years
+
     Rails.logger.debug "Replacement year = #{year}, min_service_life_years = #{min_service_life_years}"
     unless year < start_year or year > last_year
 
       #-------------------------------------------------------------------------
       # Step 3: Process initial replacement and rehab
       #-------------------------------------------------------------------------
+
+      # See if there is a technology change
+      # new_subtype_id = asset.policy_analyzer.get_replace_asset_subtype_id
+      # if new_subtype_id.present and asset.asset_subtype_id != new_subtype_id
+      #   asset.asset_subtype_id = new_subtype_id
+      # end
+      # new_fuel_type_id = asset.policy_analyzer.get_replace_asset_fuel_type_id
+      # if new_fuel_type_id.present and asset.fuel_type_id != new_fuel_type_id
+      #   asset.fuel_type_id = new_fuel_type_id
+      # end
+
       # Add the initial replacement. If the project does not exist it is created
       projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false)
 
@@ -403,7 +421,7 @@ class CapitalProjectBuilder
       end
 
       #-------------------------------------------------------------------------
-      # Step 4: Process replacements
+      # Step 4: Process replacement replacements
       #-------------------------------------------------------------------------
       year += min_service_life_years
       Rails.logger.debug "Max Service Life = #{min_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
