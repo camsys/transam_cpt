@@ -1,6 +1,6 @@
 :scss
   $sogr_project_color: #aaffff;
-  $other_project_color: #bbffaa;
+  $other_project_color: #9fff87;
   $notional_project_color: #ffaaff;
 
   hr.ali {
@@ -96,14 +96,8 @@
       - @projects.each do |project|
         %tr{:data => {:project => project.object_key}}
           %td.left.nowrap
-            = link_to project.title, capital_project_path(project)
-            <br/>
-            = project.project_number
-            = format_field("Total Cost", format_as_currency(project.total_cost))
-            = format_field("Type", project.capital_project_type)
-            = format_field("SOGR", format_as_yes_no(project.sogr?))
-            = format_field("Multi year", format_as_yes_no(project.multi_year?))
-            = format_field("Emergency", format_as_yes_no(project.emergency))
+            = render :partial => 'plan_project_detail', :locals => {:project => project}
+
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}}
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|

@@ -308,7 +308,16 @@ class CapitalProjectsController < OrganizationAwareController
     @project.destroy
     notify_user(:notice, "Capital Project was successfully removed.")
     respond_to do |format|
-      format.html { redirect_to capital_projects_url }
+      format.html {
+        # See if we got a view to render
+        if params[:view] == "back"
+          redirect_to :back
+        elsif params[:view] == "planning"
+          redirect_to planning_index_url
+        else
+          redirect_to capital_projects_url
+        end
+      }
       format.json { head :no_content }
     end
   end

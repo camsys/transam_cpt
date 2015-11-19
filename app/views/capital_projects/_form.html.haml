@@ -1,5 +1,5 @@
 = simple_form_for(@project,
-  :html => {:class => 'form-vertical'},
+  :html => {:class => 'form-vertical', :id => 'capital_project_form'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
   :radio_buttons => :vertical_radio_and_checkboxes,
@@ -8,7 +8,10 @@
 
   .row
     .col-md-8
-      = f.input :title, :placeholder => "Enter a title for this project..."
+      = f.input :title, :placeholder => "Enter a title for this project...", :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :maxlength => 64}
+      %p.text-muted.text-limiter-counter
+        %span#title-counter
+        characters remaining.
 
   - unless @project.sogr?
     .row
@@ -25,15 +28,47 @@
       .col-md-4
         = f.input :multi_year, :as => :boolean, :label => 'Multi year project'
 
-  = f.input :description, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a description for this project..."
-  = f.input :justification, :as => :text, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for this project..."
+  = f.input :description, :as => :text, :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :rows => 4, :maxlength => 254}
+  %p.text-muted.text-limiter-counter
+    %span#description-counter
+    characters remaining.
+
+  = f.input :justification, :as => :text, :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :rows => 4, :maxlength => 254}
+  %p.text-muted.text-limiter-counter
+    %span#justification-counter
+    characters remaining.
 
   = f.button :submit, :class => "btn btn-primary"
-  = link_to "Cancel", :back, {:id => 'cancel-button', :class => "btn btn-default"}
+  %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
 
 :javascript
 
-  // Document Ready
-  $(document).ready(function(){
-    transam.make_same_height('.header-part');
+  $('#capital_project_form').validate({
+    submitHandler: function(form){
+      form.submit();
+    }
+  });
+
+  $('#capital_project_title').simplyCountable({
+    counter: '#title-counter',
+    maxCount: $('#capital_project_title').attr('maxlength'),
+    strictMax: false,
+    safeClass: 'text-muted',
+    overClass: 'text-danger'
+  });
+
+  $('#capital_project_description').simplyCountable({
+    counter: '#description-counter',
+    maxCount: $('#capital_project_description').attr('maxlength'),
+    strictMax: false,
+    safeClass: 'text-muted',
+    overClass: 'text-danger'
+  });
+
+  $('#capital_project_justification').simplyCountable({
+    counter: '#justification-counter',
+    maxCount: $('#capital_project_justification').attr('maxlength'),
+    strictMax: false,
+    safeClass: 'text-muted',
+    overClass: 'text-danger'
   });

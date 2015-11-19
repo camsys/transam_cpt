@@ -293,6 +293,7 @@ class CapitalProject < ActiveRecord::Base
   def set_defaults
     self.active     ||= true
     self.sogr       ||= false
+    self.notional   ||= false
     self.multi_year ||= false
     self.emergency  ||= false
     self.state      ||= :unsubmitted

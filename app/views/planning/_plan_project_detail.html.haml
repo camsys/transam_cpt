@@ -1,0 +1,28 @@
+= link_to project.title, capital_project_path(project)
+%br
+= project.project_number
+= format_field("Total Cost", format_as_currency(project.total_cost))
+= format_field("Type", project.capital_project_type)
+= format_field("SOGR", format_as_yes_no(project.sogr?))
+= format_field("Multi year", format_as_yes_no(project.multi_year?))
+= format_field("Emergency", format_as_yes_no(project.emergency))
+%br
+.button-toolbar{:role => 'toolbar'}
+  - if can? :add_alis, project
+    .btn-group.pull-right.panel-action
+      = link_to load_view_capital_project_path(project, :view => 'new_activity_line_item'), :remote => true, :role => 'button', :class => 'btn btn-default btn-xs', :role => 'button', :title => 'Add new ALI...' do
+        %i.fa.fa-plus
+        Add Line Item
+
+  - if can? :update, project
+    .btn-group.pull-left.panel-action
+      = link_to load_view_capital_project_path(project, :view => 'edit'), :remote => true, :role => 'button', :class => 'btn btn-default btn-xs', :role => 'button', :title => 'Update this project...' do
+        %i.fa.fa-edit
+        Edit
+
+  - if can? :destroy, project
+    .btn-group.pull-left.panel-action{:style => 'margin-left: 2px;'}
+      = link_to capital_project_path(project, :view => "planning"), :method => :delete, :class => 'btn btn-default btn-xs', :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
+        %i.fa.fa-trash-o
+        Remove
+%br

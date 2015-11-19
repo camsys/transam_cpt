@@ -273,8 +273,6 @@ class ActivityLineItem < ActiveRecord::Base
     self.estimated_cost ||= 0
     self.anticipated_cost ||= 0
     self.category_team_ali_code ||= team_ali_code.present? ? team_ali_code.parent.code : ''
-    self.fy_year    ||= current_planning_year_year
-
   end
 
 end

@@ -156,28 +156,28 @@ class CapitalProjectBuilder
         end
         project.reload
       else
-        # There are no assets so simply move the ALI. This is a little more
-        # involved as we may need to create a new project so we use the utility
-        # method to create the ALIs and projects as needed then we do a little
-        # cleanup
-        a = add_to_project(project.organization, nil, ali.team_ali_code, fy_year, project.capital_project_type, project.sogr, project.notional)
-        new_project = a.first
-        new_ali = a.last
-        # We don't need the new ali so we can just replace the new one on the
-        # project with the old one after updating the fy_year. This preserves
-        # any documents, comments, etc. that are asscoiated with this ALI
-        new_project.activity_line_items.destroy new_ali
+        # There are no assets so we can move the ALI. First we need to see
+        # if an existing project exists in the target year. If not we create
+        # it by copying the existing one
+        new_project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ? and notional = ?', project.organization.id, project.team_ali_code.id, fy_year, project.sogr, project.notional)
+        if new_project.nil?
+          # Not found so copy the existing project to the new year
+          Rails.logger.debug "Project not found. Duplicating existing project"
+          new_project = project.dup
+          new_project.object_key = nil
+          new_project.fy_year = fy_year
+          new_project.save
+        else
+          Rails.logger.debug "Existing project found #{new_project}."
+        end
         ali.capital_project = new_project
         ali.fy_year = fy_year
-        ali.save(:validate => false)
+        ali.save
         ali.reload
-        # complete the update and we are done
-        new_project.activity_line_items << ali
-        new_project.save(:validate => false)
         new_project.reload
+        project.reload
         projects_and_alis = [new_project, ali]
       end
-
 
     elsif project.capital_project_type_id == EXPANSION_PROJECT_TYPE
       # Its an expansion project -- these dont have assets so we can simply move

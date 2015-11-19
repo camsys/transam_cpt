@@ -6,14 +6,15 @@
 %p.text-center.bold= format_as_currency(ali.cost)
 %hr.ali
 - if can? :update, ali or can? :update_cost, ali
-  .btn-group.pull-right.panel-action
-    %button.btn.btn-info.btn-xs.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-      %i.fa.fa-edit
-      %span.caret
-    %ul.dropdown-menu{:role => 'menu'}
-      = render :partial => 'activity_line_item_action_links', :locals => {:project => project, :ali => ali}
+  .button-toolbar{:role => 'toolbar'}
+    .btn-group.pull-right.panel-action
+      %button.btn.btn-info.btn-xs.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+        %i.fa.fa-edit
+        %span.caret
+      %ul.dropdown-menu{:role => 'menu'}
+        = render :partial => 'activity_line_item_action_links', :locals => {:project => project, :ali => ali}
 
-  - unless ali.assets.empty?
-    .btn-group.pull-left.panel-action
-      = link_to assets_capital_project_activity_line_item_path(project, ali), :class => 'btn btn-success btn-xs', :remote => true do
-        %i.fa.fa-list.fa-fw
+    - unless ali.assets.empty?
+      .btn-group.pull-left.panel-action
+        = link_to assets_capital_project_activity_line_item_path(project, ali), :class => 'btn btn-success btn-xs', :remote => true do
+          %i.fa.fa-list.fa-fw

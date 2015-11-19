@@ -161,6 +161,9 @@ class ActivityLineItemsController < OrganizationAwareController
 
     @activity_line_item = ActivityLineItem.new(form_params)
     @activity_line_item.capital_project = @project
+    if @activity_line_item.fy_year.blank?
+      @activity_line_item.fy_year = @project.fy_year
+    end
 
     respond_to do |format|
       if @activity_line_item.save

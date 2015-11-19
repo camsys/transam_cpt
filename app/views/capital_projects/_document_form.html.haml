@@ -5,7 +5,7 @@
 
   = f.input :document, :required => true, :input_html => { :extension => "pdf|xls|xlsx|doc|docx" }
   = f.input :description, :as => :text, :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :rows => 6, :maxlength => 254}
-  %p.text-info.text-limiter-counter
+  %p.text-muted.text-limiter-counter
     %span#document-description-counter
     characters remaining.
 
@@ -18,7 +18,7 @@
     counter: '#document-description-counter',
     maxCount: max_length,
     strictMax: false,
-    safeClass: 'text-info',
+    safeClass: 'text-muted',
     overClass: 'text-danger'
   });
 
