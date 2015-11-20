@@ -9,7 +9,7 @@ FactoryGirl.define do
     url 'http://www.example.com'
     phone '9999999999'
     grantor_id 1
-    association :organization_type, :factory => :organization_type
+    organization_type OrganizationType.find_by(:class_name => 'TransitOperator') rescue Rails.logger.info "ERROR: No seed data."
     sequence(:name) { |n| "Org #{n}" }
     short_name {name}
     license_holder true

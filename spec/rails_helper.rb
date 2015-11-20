@@ -20,7 +20,8 @@ ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
-  DatabaseCleaner.strategy = :truncation, {:only => %w[activity_line_items activity_line_items_assets assets asset_events budget_amounts capital_projects funding_plans funding_sources milestones organizations policies policy_asset_subtype_rules policy_asset_type_rules team_ali_codes]}
+  config.include Devise::TestHelpers, :type => :controller
+  DatabaseCleaner.strategy = :truncation, {:only => %w[activity_line_items activity_line_items_assets assets asset_events budget_amounts capital_projects funding_plans funding_sources milestones organizations policies policy_asset_subtype_rules policy_asset_type_rules team_ali_codes users]}
   config.before(:suite) do
     begin
       DatabaseCleaner.start

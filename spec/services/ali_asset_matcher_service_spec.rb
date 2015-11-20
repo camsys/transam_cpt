@@ -2,12 +2,6 @@ require 'rails_helper'
 
 RSpec.describe AliAssetMatcherService, :type => :service do
 
-  class TestOrg < Organization
-    def get_policy
-      return Policy.find_by_organization_id(self.id)
-    end
-  end
-
   let(:test_service) { AliAssetMatcherService.new }
   let(:test_ali) { create(:activity_line_item) }
 

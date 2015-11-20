@@ -1,10 +1,4 @@
 require 'rails_helper'
-#
-# class TestOrg < TransitAgency
-#   def get_policy
-#     Policy.where("`organization_id` = ?",self.id).order('created_at').last
-#   end
-# end
 
 def show_asset asset
   puts

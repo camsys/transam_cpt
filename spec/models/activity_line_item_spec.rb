@@ -1,13 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ActivityLineItem, :type => :model do
-
-  class TestOrg < Organization
-    def get_policy
-      return Policy.find_by_organization_id(self.id)
-    end
-  end
-
+  
   let(:test_line_item) { create(:activity_line_item) }
 
   describe 'associations' do
