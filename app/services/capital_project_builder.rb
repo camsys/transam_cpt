@@ -378,7 +378,7 @@ class CapitalProjectBuilder
     rehab_month = asset.policy_analyzer.get_rehabilitation_service_month.to_i
     process_rehabs = (rehab_month.to_i > 0)
     # Get the number of additional years to add
-    extended_years = asset.policy_analyzer.extended_service_life_months.to_i / 12
+    extended_years = asset.policy_analyzer.get_extended_service_life_months.to_i / 12
 
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
