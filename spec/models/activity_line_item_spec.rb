@@ -215,7 +215,6 @@ RSpec.describe ActivityLineItem, :type => :model do
       expect(new_line_item.active).to be true
       expect(new_line_item.estimated_cost).to eq(0)
       expect(new_line_item.anticipated_cost).to eq(0)
-      expect(new_line_item.fy_year).to eq(Date.today.month > 6 ? Date.today.year + 1 : Date.today.year)
     end
     describe 'category_team_ali_code' do
       it 'no team ali code' do

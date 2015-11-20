@@ -1,8 +1,8 @@
 FactoryGirl.define do
-    
+
   factory :capital_project do
     organization
-    team_ali_code
+    association :team_ali_code, :factory => :replacement_ali_code
     capital_project_type
     fy_year 2014
     title 'capital project title'
