@@ -31,22 +31,19 @@
         %th.center Policy FY
         %th.right Orig. Cost
         %th.right Book Val.
-        %th.right Est. Cost
-        - unless ali.rehabilitation_ali?
-          %th.right Sch. Cost
+        %th.right Sch. Cost
         - if popup == '1'
           %th
 
     %tbody
-      - cost = book_value = estimated_cost = scheduled_replacement_cost = 0
+      - cost = book_value = scheduled_cost = 0
       - ali.assets.each do |a|
         - cost += a.cost
         - book_value += a.book_value
         - if ali.rehabilitation_ali?
-          - estimated_cost += a.estimated_rehabilitation_cost
+          - scheduled_cost += a.estimated_rehabilitation_cost
         - else
-          - estimated_cost += a.estimated_replacement_cost
-          - scheduled_replacement_cost += a.scheduled_replacement_cost.to_i
+          - scheduled_cost += a.scheduled_replacement_cost.to_i
 
         %tr{:data => {:action_path => inventory_path(a)}}
           %td.left= a.asset_tag
@@ -64,7 +61,6 @@
           - if ali.rehabilitation_ali?
             %td.right= format_as_currency(a.estimated_rehabilitation_cost)
           - else
-            %td.right= format_as_currency(a.estimated_replacement_cost)
             %td.right= format_as_currency(a.scheduled_replacement_cost)
           - if popup == '1'
             %td.center
@@ -79,9 +75,7 @@
         %td{:colspan => 8}
         %td.right= format_as_currency(cost)
         %td.right= format_as_currency(book_value)
-        %td.right= format_as_currency(estimated_cost)
-        - unless ali.rehabilitation_ali?
-          %td.right= format_as_currency(scheduled_replacement_cost)
+        %td.right= format_as_currency(scheduled_cost)
 
 
 :javascript
