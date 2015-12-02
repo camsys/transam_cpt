@@ -1,4 +1,4 @@
 - if @activity_line_item.cost_justification.blank?
   %p No cost justification has been provided.
 - else
-  = simple_format(@activity_line_item.cost_justification)
+  = format_as_text(@activity_line_item.cost_justification)
