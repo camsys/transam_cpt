@@ -1,0 +1,85 @@
+:css
+  .modal-backdrop {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .ajax-loader-message {
+    font-size: 20px;
+  }
+  .ajax-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    //width: 100%;
+    margin-left: -50px;
+    margin-top: -50px;
+    padding: 20px;
+    z-index: 1099;
+    background-color: #FFF;
+    border: 1px solid #EEE;
+    border-radius:5px;
+  }
+
+#spinner= loader_panel_tag({:message => "Loading...", :size => 3, :spinner => "cog"})
+
+#wrapper
+  - unless @data.projects.blank?
+    .col-md-12#projects_report
+      = render partial: 'capital_projects_report_rollup' if @data.organization_ids.count > 1
+      - @data.projects_by_organization.each do |org, projects|
+        .report{:id => org.short_name, :style => 'margin-top: 50px'}
+          %fieldset
+            %legend= org.name
+            = render :partial => 'capital_projects_report_summary', :locals => {:org => org, :projects => projects}
+            -# Render a container for each project's alis
+            - projects.each do |project|
+              .well.well-sm.row-detail-panel.hidden{:id => "row-detail-#{project.object_key}"}
+
+  - else
+    %p No Capital Projects
+
+:javascript
+
+  var report_detail_path = '#{alis_capital_project_path("xxx") + ".js"}';
+
+  $(document).ready(function() {
+
+    // Hide the processing div
+    $('#spinner').hide();
+
+    // Click handler that loads the report detail via AJAX into a project ALI project-alis-panel
+    // when a row in the summary table is clicked
+    $(".row-action").on("click", function() {
+      // Toggle the selected class on the table
+      $(this).toggleClass("selected");
+      // Get the selected project and target panel
+      var project_key = $(this).data('target');
+      var target_panel_id = "#row-detail-" + project_key;
+      // Check to see if the row is selected -- if it is we load the ALIs into
+      // the corresponding panel
+      if ($(this).hasClass('selected')) {
+        var url = report_detail_path.replace('xxx', project_key);
+        // AJAX load the panel
+        $.ajax({
+            url: url,
+            data: {
+              view: "reports/capital_projects_report_alis"
+            },
+            beforeSend: function() {
+              $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+              $("#spinner").show();
+            },
+            complete: function (response) {
+              //$("#plan-table").show();
+              $('#spinner').hide();
+              $(".modal-backdrop").remove();
+            },
+            error: function () {
+              transam.show_popup_message("Warning", "Something went wrong. Please try again!", "warning");
+            }
+        });
+      }
+      // Show or hide the panel
+      $(target_panel_id).toggleClass("hidden");
+    });
+  });

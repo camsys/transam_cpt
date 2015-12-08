@@ -48,7 +48,8 @@ CREATE TABLE capital_projects  (
 	organization_id               	int(11) NOT NULL,
 	team_ali_code_id              	int(11) NOT NULL,
 	capital_project_type_id       	int(11) NOT NULL,
-	sogr	                          tinyint(1) NOT NULL,
+	sogr	                        tinyint(1) NOT NULL,
+    notional                        tinyint(1) NOT NULL,
 	multi_year                      tinyint(1) NOT NULL,
 	state                           varchar(32) NOT NULL,
 	title                         	varchar(64) NOT NULL,
@@ -76,7 +77,7 @@ GO
 CREATE TABLE milestone_types  (
 	id                 	int(11) AUTO_INCREMENT NOT NULL,
 	name               	varchar(64) NOT NULL,
-	description        	varchar(255) NOT NULL,
+	description        	varchar(254) NOT NULL,
 	is_vehicle_delivery	tinyint(1) NOT NULL,
 	active             	tinyint(1) NOT NULL,
 	PRIMARY KEY(id)
@@ -106,7 +107,7 @@ CREATE TABLE funding_plans  (
 	object_key           	varchar(12) NOT NULL,
 	activity_line_item_id	int(11) NOT NULL,
 	funding_source_id    	int(11) NOT NULL,
-	amount        				int(11) NOT NULL,
+	amount        			int(11) NOT NULL,
 	created_at           	datetime NULL,
 	updated_at           	datetime NULL,
 	PRIMARY KEY(id)
@@ -145,4 +146,11 @@ INSERT INTO milestone_types(active, name, is_vehicle_delivery, description)
 GO
 INSERT INTO milestone_types(active, name, is_vehicle_delivery, description)
     VALUES(1, 'Contract Completed', 0, 'Contract Completed')
+GO
+
+INSERT INTO reports(report_type_id, name, description, class_name, view_name, roles, custom_sql, show_in_nav, show_in_dashboard, chart_type, chart_options, active, created_at, updated_at)
+	VALUES(2, 'Unconstrained Capital Needs Forecast', 'Displays a chart showing unconstrained capital needs forecast by fiscal year.', 'UnconstrainedCapitalNeedsForecast', 'generic_chart', 'user,manager', '', 0, 0, 'column', "{is3D : false, isStacked: false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}", 1, '2015-11-12 15:25:54', '2015-11-12 15:25:54')
+GO
+INSERT INTO reports(report_type_id, name, description, class_name, view_name, roles, custom_sql, show_in_nav, show_in_dashboard, chart_type, chart_options, active, created_at, updated_at)
+	VALUES(2, 'Unconstrained Capital Projects Report', 'Displays a report showing unconstrained capital projects by fiscal year.', 'CapitalProjectsReport', 'capital_projects_report', 'user', '', 1, 1, '', '', 1, '2015-11-12 15:25:54', '2015-11-12 15:25:54')
 GO

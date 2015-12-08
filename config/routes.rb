@@ -57,6 +57,7 @@ Rails.application.routes.draw do
       get 'load_view'
       get 'copy'
       get 'fire_workflow_event'
+      get 'alis'
     end
 
     resources :comments

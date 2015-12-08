@@ -1,0 +1,2 @@
+var panel_id = "#row-detail-#{@project.object_key}";
+$(panel_id).html("#{escape_javascript(render 'reports/capital_projects_report_detail')}");

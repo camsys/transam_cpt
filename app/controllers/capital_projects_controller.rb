@@ -44,6 +44,16 @@ class CapitalProjectsController < OrganizationAwareController
     render params[:view]
 
   end
+  #-----------------------------------------------------------------------------
+  # Returns the ALIs for a project. Caller must pass in the view component to
+  # be rendered
+  #-----------------------------------------------------------------------------
+  def alis
+
+    @alis = @project.activity_line_items
+    render params[:view]
+
+  end
 
   #-----------------------------------------------------------------------------
   # Displays the SOGR analyzer form. When the form is commited the runner method

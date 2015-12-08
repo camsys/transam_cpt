@@ -1,0 +1,22 @@
+%fieldset
+  %legend All Transit Operators
+  %table.table
+    %thead
+      %tr
+        %th.left Org
+        %th.right Count
+        %th.right Cost
+    %tbody
+      - sum_cost = 0
+      - @data.projects.group_by(&:organization).each do |org, projects_by_org|
+        %tr
+          %td.left= org.short_name
+          %td.right= format_as_integer(projects_by_org.count)
+          - cost = projects_by_org.sum{ |a| a.total_cost.to_i }
+          - sum_cost += cost
+          %td.right= format_as_currency(cost)
+    %tfoot
+      %tr
+        %td
+        %td.right= format_as_integer(@data.projects.count)
+        %td.right= format_as_currency(sum_cost)

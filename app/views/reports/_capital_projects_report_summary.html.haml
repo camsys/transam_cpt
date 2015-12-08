@@ -1,0 +1,47 @@
+%table.table.table-hover#summary-table
+  %thead
+    %tr
+      %th.left FY
+      %th.left Project
+      %th.left Title
+      %th.left Scope
+      %th.right Cost
+      %th.center # ALIs
+      %th.center # Assets
+      %th.center Type
+      %th.center Emgcy
+      %th.center SOGR
+      %th.center Notional
+      %th.center Multi Year
+
+  %tbody
+    - sum_cost = 0
+    - sum_alis = 0
+    - sum_assets = 0
+    - projects.each do |p|
+      - cost = p.total_cost
+      - count_alis = p.activity_line_items.count
+      - count_assets = 0
+      - sum_cost += cost
+      - sum_alis += count_alis
+      - sum_assets += count_assets
+      %tr.row-action{:data => {:target => "#{p.object_key}"}}
+        %td.left= format_as_fiscal_year(p.fy_year)
+        %td.left= p.project_number
+        %td= p.title
+        %td.left= p.team_ali_code.scope
+        %td.right= format_as_currency(cost)
+        %td.center= format_as_integer(count_alis)
+        %td.center= format_as_integer(count_assets)
+        %td.center= p.capital_project_type.code
+        %td.center= format_as_boolean(p.emergency?)
+        %td.center= format_as_boolean(p.sogr?)
+        %td.center= format_as_boolean(p.notional?)
+        %td.center= format_as_boolean(p.multi_year?)
+  %tfoot
+    %tr
+      %td{:colspan => 4}
+      %td.right= format_as_currency(sum_cost)
+      %td.center= format_as_integer(sum_alis)
+      %td.center= format_as_integer(sum_assets)
+      %td{:colspan => 5}

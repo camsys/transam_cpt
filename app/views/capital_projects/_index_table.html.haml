@@ -54,7 +54,7 @@
       %tr{:id => p.object_key, :class => 'action-path'}
         - if @organization_list.count > 1
           %td= p.organization
-        %td.center.nowrap= p.fiscal_year
+        %td.center.nowrap= format_as_fiscal_year(p.fy_year)
         %td.left.nowrap= p.project_number
         %td.center.nowrap= p.team_ali_code.scope
         %td.center= format_as_boolean(p.emergency?)
