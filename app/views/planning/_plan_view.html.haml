@@ -64,8 +64,6 @@
 
   function move_ali(url, ali, action, drop_year, project) {
     //$("#plan-table").hide();
-    $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
-    $("#spinner").show();
     $.ajax({
         url: url,
         type: 'POST',
@@ -75,15 +73,17 @@
           year: drop_year,
           project: project
         },
-        success: function (response) {
+        beforeSend: function() {
+          $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+          $("#spinner").show();
+        },
+        complete: function (response) {
           //$("#plan-table").show();
           $('#spinner').hide();
           $(".modal-backdrop").remove();
         },
         error: function () {
-          //$("#plan-table").show();
-          $('#spinner').hide();
-          $(".modal-backdrop").remove();
+          transam.show_popup_message("Warning", "Something went wrong. Please try again!", "warning");
         }
     });
   }

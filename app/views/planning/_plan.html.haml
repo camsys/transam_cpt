@@ -90,7 +90,7 @@
         - @years.each do |year|
           %th.center.nowrap
             = format_as_fiscal_year(year)
-            <br/>
+            %br
             .well.well-sm.bold= format_as_currency(sum_projects_cost(@projects, year))
     %tbody
       - @projects.each do |project|
