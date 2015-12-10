@@ -52,6 +52,9 @@ class CapitalProjectBuilder
 
     build_bottom_up(organization, options)
 
+    # Cleanup any empty projects and ALIs
+    post_build_clean_up organization
+
     # Return the number of projects created
     return @project_count
   end
@@ -65,20 +68,8 @@ class CapitalProjectBuilder
     # Run the update
     process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
 
-    # Check for empty projects and ALIs
-    CapitalProject.where(:organization_id => asset.organization_id, :sogr => true).each do |cp|
-      cp.activity_line_items.each do |ali|
-        if ali.assets.empty?
-          Rails.logger.debug "Removing empty ALI #{ali}"
-          cp.activity_line_items.destroy ali
-        end
-      end
-      if cp.activity_line_items.empty?
-        Rails.logger.debug "Removing empty SOGR proejct #{cp}"
-        cp.destroy
-      end
-
-    end
+    # Cleanup any empty projects and ALIs
+    post_build_clean_up asset.organization
 
   end
 
@@ -203,6 +194,9 @@ class CapitalProjectBuilder
       projects_and_alis = [new_project, ali]
     end
 
+    # Cleanup any empty projects and ALIs
+    post_build_clean_up project.organization
+
     projects_and_alis
   end
 
@@ -229,6 +223,22 @@ class CapitalProjectBuilder
   # Protected Methods
   #-----------------------------------------------------------------------------
   protected
+
+  def post_build_clean_up organization
+    # Check for empty projects and ALIs
+    CapitalProject.where(:organization_id => organization.id, :sogr => true).each do |cp|
+      cp.activity_line_items.each do |ali|
+        if ali.assets.empty?
+          Rails.logger.debug "Removing empty ALI #{ali}"
+          cp.activity_line_items.destroy ali
+        end
+      end
+      if cp.activity_line_items.empty?
+        Rails.logger.debug "Removing empty SOGR proejct #{cp}"
+        cp.destroy
+      end
+    end
+  end
 
   def build_bottom_up(organization, options)
 
