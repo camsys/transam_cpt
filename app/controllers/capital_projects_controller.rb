@@ -41,6 +41,7 @@ class CapitalProjectsController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def load_view
 
+    @fiscal_years = get_fiscal_years
     render params[:view]
 
   end
