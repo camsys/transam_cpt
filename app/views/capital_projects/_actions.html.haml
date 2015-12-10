@@ -16,21 +16,26 @@
     -#     = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
     -#       %i.fa.fa-fw{:class => get_event_icon(evt)}
     -#       = "#{evt} this project"
-
-    - if can? :create, @project
+    - count = 0
+    - if can? :copy, @project
+      - count += 1
       %li
         = link_to copy_capital_project_path(@project) do
           %i.fa.fa-copy.fa-fw
           = " Make a copy"
     - if can? :update, @project
-      %li.divider
+      - if count > 0
+        %li.divider
+      - count += 1
       %li
         = link_to load_view_capital_project_path(@project, :view => 'edit'), :remote => true do
           %i.fa.fa-edit.fa-fw
           = " Modify this project"
 
     - if can? :destroy, @project
-      %li.divider
+      - if count > 0
+        %li.divider
+      - count += 1
       %li
         = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
           %i.fa.fa-trash-o.fa-fw
