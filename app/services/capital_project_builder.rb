@@ -262,7 +262,7 @@ class CapitalProjectBuilder
 
     # Cache the list of eligible asset types for this organization
     org_asset_types = eligible_asset_types(organization)
-    Rails.logger.debug "  Eligible asset types = org_asset_types.inspect"
+    Rails.logger.debug "  Eligible asset types = #{org_asset_types.inspect}"
 
     #---------------------------------------------------------------------------
     # Basic Algorithm:
@@ -289,7 +289,6 @@ class CapitalProjectBuilder
     # @last_year = last year that we will generate projects for
 
     Rails.logger.info  "start_year = #{@start_year}, last_year  #{@last_year}"
-    Rails.logger.debug "start_year = #{@start_year}, last_year  #{@last_year}"
 
     # Loop through the list of asset type ids
     asset_type_ids.each do |asset_type_id|
@@ -345,11 +344,36 @@ class CapitalProjectBuilder
 
     projects_and_alis = []
 
-    # Remove the asset from any existing ALIs, or the specified one
+    #---------------------------------------------------------------------------
+    # Initial reset.
+    # 1) If the asset has been marked disposed, remove from all SOGR projects after
+    #    the disposition date or start date, whichever is first but not before the
+    #    first planning year
+    # 2) If the asset has been marked for disposal, remove from all SOGR projects after
+    #    the scheduled disposition date or start date, whichever is first but
+    #    not before the first planning year
+    # 3) Remove the asset from any existing SOGR ALIs if the FY year is greater than
+    #    or equal to the starting FY year for this analysis.
+    #---------------------------------------------------------------------------
     if current_ali.nil?
-      asset.activity_line_items.each do |ali|
-        Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
-        ali.assets.delete asset
+      if asset.disposed?
+        # start date is the later of the FY the asset was disposed and the current
+        # planning year
+        start_fy_year = [fiscal_year_year_on_date(asset.disposition_date), current_planning_year_year].max
+      elsif asset.scheduled_for_disposition?
+        # start date is the later of the FY the asset is scheduled for disposal
+        # and the current planning year
+        start_fy_year = [asset.scheduled_disposition_year, current_planning_year_year].max
+      else
+        # Start year is infinite
+        start_fy_year = 9999
+      end
+      
+      asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
+        if ali.capital_project.sogr?
+          Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
+          ali.assets.delete asset
+        end
       end
     else
       Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{current_ali.object_key}"
