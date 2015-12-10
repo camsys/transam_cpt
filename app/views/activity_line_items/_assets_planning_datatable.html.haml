@@ -11,10 +11,10 @@
 
 #asset-actions.btn-toolbar
   .btn-group{:role => 'group'}
-    %button.btn.btn-info#move-assets-action{:type => 'button'}
+    %button.btn.btn-info.move-assets-button{:type => 'button'}
       %i.fa.fa-tasks
       %span#button-text Move selected to FY
-    %button.btn.btn-info.dropdown-toggle{:type => 'button', :data => {:toggle => 'dropdown'}, :aria => {:haspopup => 'true', :expanded => 'false'}}
+    %button.btn.btn-info.move-assets-button.dropdown-toggle{:type => 'button', :data => {:toggle => 'dropdown'}, :aria => {:haspopup => 'true', :expanded => 'false'}}
       %span.caret
       %span.sr-only Toggle Dropdown
     %ul.dropdown-menu
@@ -141,10 +141,10 @@
   // Enables or disables the package actions depending on how many are selected
   function enable_disable_asset_actions() {
     if (selected_assets.size > 0) {
-      $('#move-assets-action').removeClass('disabled');
+      $('.move-assets-button').removeClass('disabled');
       $('#button-text').html("Move " + selected_assets.size + " assets to fiscal year")
     } else {
-      $('#move-assets-action').addClass('disabled');
+      $('.move-assets-button').addClass('disabled');
     }
   };
 
