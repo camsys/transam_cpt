@@ -37,7 +37,7 @@ class CapitalProjectBuilder
     asset_types = []
     org.asset_type_counts.each do |type, count|
       asset_type = AssetType.find(type)
-      if ['Vehicle', 'SupportVehicle', 'RailCar', 'Locomotive', 'Equipment'].include? asset_type.class_name
+      if ['Vehicle', 'SupportVehicle', 'RailCar', 'Locomotive', 'Equipment', 'SupportFacility', 'TransitFacility'].include? asset_type.class_name
         asset_types << asset_type
       end
     end
