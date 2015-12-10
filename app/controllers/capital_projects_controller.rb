@@ -262,6 +262,7 @@ class CapitalProjectsController < OrganizationAwareController
 
     new_project = @project.dup
     new_project.object_key = nil
+    new_project.title = "Copy of #{@project.title}"
     new_project.save
     @project.activity_line_items.each do |ali|
       new_ali = ali.dup
@@ -270,7 +271,7 @@ class CapitalProjectsController < OrganizationAwareController
     end
 
     notify_user(:notice, "Capital Project #{@project.project_number} was successfully copied to #{new_project.project_number}.")
-    redirect_to capital_project_url(new_project)
+    redirect_to edit_capital_project_url(new_project)
 
   end
 
