@@ -9,7 +9,7 @@
       = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :anticipated_cost, :class => "form-control"
+        = f.input_field :anticipated_cost, :required => true, :class => "form-control"
     .col-sm-6
       = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => "Fiscal Year", :disabled => ! @project.multi_year?
   .row
@@ -58,7 +58,13 @@
           options += '<option value="' + result[i].id + '">' + result[i].full_name + '</option>';
         }
       }
-      console.log(options);
+      //console.log(options);
       $(elem_id).html(options);
     });
   };
+  // validate the form before submit
+  $('#new_activity_line_item').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
