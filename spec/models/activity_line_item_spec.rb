@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ActivityLineItem, :type => :model do
-  
+
   let(:test_line_item) { create(:activity_line_item) }
 
   describe 'associations' do
@@ -68,6 +68,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       :name,
       :team_ali_code_id,
       :anticipated_cost,
+      :cost,
       :cost_justification,
       :active,
       :category_team_ali_code,
@@ -183,7 +184,7 @@ RSpec.describe ActivityLineItem, :type => :model do
   describe 'callbacks' do
     it '.after_add_asset_callback' do
       expect(test_line_item.estimated_cost).to eq(0)
-      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
+      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123, :asset_type => create(:asset_type), :asset_subtype => create(:asset_subtype))
       test_line_item.assets << test_asset
       test_line_item.save!
 
