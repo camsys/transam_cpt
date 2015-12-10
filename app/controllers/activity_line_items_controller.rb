@@ -127,6 +127,10 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Update Cost"
 
+    # If they have not updated the cost before, we copy the estimated cost
+    # to the anticipated cost
+    @activity_line_item.anticipated_cost == @activity_line_item.cost
+
   end
 
   # GET /activity_line_items/1/edit_milestones

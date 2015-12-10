@@ -4,10 +4,10 @@
 
   .row
     .col-sm-6
-      = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
+      = f.input :cost, :wrapper => :vertical_prepend, :label => "Cost Estimate" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :anticipated_cost, :class => "form-control"
+        = f.input_field :cost, :class => "form-control"
   .row
     .col-sm-12
       = f.input :cost_justification, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for this cost estimate..."

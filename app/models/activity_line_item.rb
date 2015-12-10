@@ -10,10 +10,15 @@
 #------------------------------------------------------------------------------
 class ActivityLineItem < ActiveRecord::Base
 
+  #------------------------------------------------------------------------------
+  # Behaviors
+  #------------------------------------------------------------------------------
   # Include the object key mixin
   include TransamObjectKey
   # Include the fiscal year mixin
   include FiscalYear
+  # Include the numeric sanitizers mixin
+  include TransamNumericSanitizers
 
   #------------------------------------------------------------------------------
   # Callbacks
@@ -85,6 +90,7 @@ class ActivityLineItem < ActiveRecord::Base
     :name,
     :team_ali_code_id,
     :anticipated_cost,
+    :cost,
     :cost_justification,
     :active,
     :category_team_ali_code,
@@ -181,6 +187,10 @@ class ActivityLineItem < ActiveRecord::Base
     else
       total_asset_cost
     end
+  end
+
+  def cost=(num)
+    self[:anticipated_cost] = sanitize_to_int(num)
   end
 
   # Returns the total replacment or rehabilitation costs of the assets in this ALI
