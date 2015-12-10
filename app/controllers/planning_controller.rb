@@ -138,6 +138,7 @@ class PlanningController < OrganizationAwareController
     if @activity_line_item.present? and @fy_year > 0
       service = CapitalProjectBuilder.new
       assets = @activity_line_item.assets.where(:object_key => params[:targets].split(','))
+      assets_count = assets.count
       Rails.logger.debug "Found #{assets.count} assets to process"
       assets.each do |a|
         # Replace or Rehab?
@@ -151,7 +152,7 @@ class PlanningController < OrganizationAwareController
         service.update_asset_schedule(a)
         a.reload
       end
-      notify_user :notice,  "Moved #{assets.count} assets to #{fiscal_year(@fy_year)}"
+      notify_user :notice,  "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
     else
       notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
     end
