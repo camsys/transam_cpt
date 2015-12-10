@@ -1,4 +1,5 @@
 = simple_form_for([@project, @activity_line_item],
+  :html => {:class => 'form-vertical', :id => 'edit_form'},
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
@@ -7,9 +8,30 @@
       = f.input :cost, :wrapper => :vertical_prepend, :label => "Cost Estimate" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :cost, :class => "form-control"
+        = f.input_field :cost, :required => true, :input_html => {:min => 0, :integer => true}, :class => "form-control"
   .row
     .col-sm-12
-      = f.input :cost_justification, :input_html => { :rows => 3 }, :placeholder => "Enter a justification for this cost estimate..."
+      = f.input :cost_justification, :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :rows => 3, :maxlength => 254}, :placeholder => "Enter a justification for this cost estimate..."
+      %p.text-muted.text-limiter-counter
+        %span#counter
+        characters remaining.
 
   = f.submit :class => 'btn btn-primary'
+  %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
+
+:javascript
+
+  $('#activity_line_item_cost_justification').simplyCountable({
+    counter: '#counter',
+    maxCount: $('#activity_line_item_cost_justification').attr('maxlength'),
+    strictMax: false,
+    safeClass: 'text-muted',
+    overClass: 'text-danger'
+  });
+
+  // validate the form before submit
+  $('.simple_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });

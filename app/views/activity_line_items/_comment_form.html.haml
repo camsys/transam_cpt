@@ -1,22 +1,21 @@
 = simple_form_for([@activity_line_item, Comment.new],
-  :html => {:multipart => true, :class => 'form-vertical' },
+  :html => {:class => 'form-vertical' },
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
   = f.input :comment, :as => :text, :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :rows => 6, :maxlength => 254}
   %p.text-info.muted-limiter-counter
-    %span#comment-comment-counter
+    %span#counter
     characters remaining.
 
-
   = f.submit "Add Comment", :class => 'btn btn-primary', :id => "comment_submit"
+  %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
 
 :javascript
 
-  var max_length = $('#comment_comment').attr('maxlength');
   $('#comment_comment').simplyCountable({
-    counter: '#comment-comment-counter',
-    maxCount: max_length,
+    counter: '#counter',
+    maxCount: $('#comment_comment').attr('maxlength'),
     strictMax: false,
     safeClass: 'text-muted',
     overClass: 'text-danger'

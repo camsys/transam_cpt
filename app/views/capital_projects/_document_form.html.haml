@@ -10,13 +10,13 @@
     characters remaining.
 
   = f.submit "Add Document", :class => 'btn btn-primary', :id => "document_submit"
+  %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
 
 :javascript
 
-  var max_length = $('#document_description').attr('maxlength');
   $('#document_description').simplyCountable({
     counter: '#document-description-counter',
-    maxCount: max_length,
+    maxCount: $('#document_description').attr('maxlength'),
     strictMax: false,
     safeClass: 'text-muted',
     overClass: 'text-danger'

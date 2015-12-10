@@ -192,10 +192,11 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       if @activity_line_item.update(form_params)
         notify_user(:notice, "The ALI was successfully updated")
-        format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
+        #format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
+        format.html { redirect_to :back }
         format.json { head :no_content }
       else
-        if params[:activity_line_item][:anticipated_cost]
+        if params[:activity_line_item][:cost]
           format.html { render action: 'edit_cost' }
         else
           format.html { render action: 'edit' }

@@ -9,7 +9,7 @@
       = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :anticipated_cost, :required => true, :class => "form-control"
+        = f.input_field :anticipated_cost, :required => true, :input_html => {:min => 0, :integer => true}, :class => "form-control"
     .col-sm-6
       = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => "Fiscal Year", :disabled => ! @project.multi_year?
   .row
