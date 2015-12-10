@@ -31,9 +31,6 @@
           %fieldset
             %legend= org.name
             = render :partial => 'capital_projects_report_summary', :locals => {:org => org, :projects => projects}
-            -# Render a container for each project's alis
-            - projects.each do |project|
-              .well.well-sm.row-detail-panel.hidden{:id => "row-detail-#{project.object_key}"}
 
   - else
     %p No Capital Projects

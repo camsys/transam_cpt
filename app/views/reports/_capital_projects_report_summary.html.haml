@@ -39,6 +39,9 @@
         %td.center= format_as_boolean(p.sogr?)
         %td.center= format_as_boolean(p.notional?)
         %td.center= format_as_boolean(p.multi_year?)
+      %tr
+        %td.row-detail-panel.hidden{:id => "row-detail-#{p.object_key}", :colspan => 12}
+
   %tfoot
     %tr
       %td{:colspan => 4}
