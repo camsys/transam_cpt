@@ -50,12 +50,12 @@
       // Toggle the selected class on the table
       $(this).toggleClass("selected");
       // Get the selected project and target panel
-      var project_key = $(this).data('target');
-      var target_panel_id = "#row-detail-" + project_key;
+      var target_key = $(this).data('target');
+      var target_panel_id = "#row-detail-" + target_key;
       // Check to see if the row is selected -- if it is we load the ALIs into
       // the corresponding panel
       if ($(this).hasClass('selected')) {
-        var url = report_detail_path.replace('xxx', project_key);
+        var url = report_detail_path.replace('xxx', target_key);
         // AJAX load the panel
         $.ajax({
             url: url,
