@@ -1,87 +1,3 @@
-:scss
-  $sogr_project_color: #aaffff;
-  $other_project_color: #9fff87;
-  $notional_project_color: #ffaaff;
-
-  hr.ali {
-    margin-top: 5px;
-    margin-bottom: 10px;
-  }
-  .popover {
-    z-index: 1060;
-  }
-  tr td.striped {
-    width: 110px;
-  }
-  tr td.striped:nth-child(odd) {
-    //background-color: #dae5f4;
-  }
-  tr td.striped:nth-child(even) {
-    //background-color: #A6EDDC;
-    background-color: #dae5f4;
-    //background-color: #b8d1f3;
-  }
-  .well-sm {
-    background-color: #4e95f4 !important;
-    color: #FFF;
-  }
-  .panel-body > p {
-    font-size: 0.85em;
-    margin: 0 0 2px;
-  }
-  .panel-sogr {
-    background-color: lighten($sogr_project_color, 10%) !important;
-    border: 1px solid darken($sogr_project_color, 10%)!important;
-  }
-  .panel-sogr > .panel-body > hr.ali {
-    border-top: 1px solid darken($sogr_project_color, 10%);
-  }
-  .panel-sogr:hover {
-    background-color: $sogr_project_color !important;
-  }
-
-  .panel-other {
-    background-color: lighten($other_project_color, 10%) !important;
-    border: 1px solid darken($other_project_color, 10%)!important;
-  }
-  .panel-other > .panel-body > hr.ali {
-    border-top: 1px solid darken($other_project_color, 10%);
-  }
-  .panel-other:hover {
-    background-color: $other_project_color !important;
-  }
-
-  .panel-notional {
-    background-color: lighten($notional_project_color, 10%) !important;
-    border: 1px solid darken($notional_project_color, 10%)!important;
-  }
-  .panel-notional > .panel-body > hr.ali {
-    border-top: 1px solid darken($notional_project_color, 10%);
-  }
-  //colors: ['#4DDBB8', '#A6EDDC', '#00A37A'],
-
-  .modal-backdrop {
-    display: none;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .ajax-loader-message {
-    font-size: 20px;
-  }
-  .ajax-loader {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    //width: 100%;
-    margin-left: -50px;
-    margin-top: -50px;
-    padding: 20px;
-    z-index: 1099;
-    background-color: #FFF;
-    border: 1px solid #EEE;
-    border-radius:5px;
-  }
-
 .table-responsive
   %table.table.table-condensed#plan-table
     %thead
@@ -107,3 +23,9 @@
                   = render :partial => 'sogr_ali', :locals => {:project => project, :ali => ali}
                 - else
                   = render :partial => 'other_ali', :locals => {:project => project, :ali => ali}
+
+:javascript
+
+  var org_filter = #{@org_filter};
+  var capital_project_filter = #{@capital_project_filter};
+  var asset_subtype_filter = #{@asset_subtype_filter};
