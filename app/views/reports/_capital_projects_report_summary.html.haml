@@ -22,6 +22,7 @@
       - cost = p.total_cost
       - count_alis = p.activity_line_items.count
       - count_assets = 0
+      - p.activity_line_items.each{|x| count_assets += x.assets.count}
       - sum_cost += cost
       - sum_alis += count_alis
       - sum_assets += count_assets

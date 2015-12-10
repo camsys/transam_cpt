@@ -22,7 +22,9 @@
           %th.center
 
     %tbody
+      - sum_assets = 0
       - project.activity_line_items.each do |ali|
+        - sum_assets += ali.assets.count
         %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
 
           %td.left.nowrap= ali.name
@@ -48,7 +50,9 @@
 
     %tfoot
       %tr
-        %td{:colspan => 4}
+        %td{:colspan => 3}
+        %td.right.nowrap= format_as_integer(sum_assets)
+
         %td.right.nowrap= format_as_currency(project.total_cost)
         %td.right.nowrap= format_as_currency(project.total_funds)
 
