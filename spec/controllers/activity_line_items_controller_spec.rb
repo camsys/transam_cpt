@@ -96,6 +96,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
     expect(test_project.activity_line_items.count).to eq(1)
   end
   it 'POST update' do
+    request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
     post :update, :capital_project_id => test_project.object_key, :id => test_ali.object_key, :activity_line_item => {:name => 'activity line item name 222'}
     test_ali.reload
 
