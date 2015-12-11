@@ -268,6 +268,13 @@ class CapitalProject < ActiveRecord::Base
     project_number
   end
 
+  # For multi-year projects we set the start FY to the FY of the first ALI
+  def update_project_fiscal_year
+    if multi_year? and activity_line_items.present?
+      self.fy_year = activity_line_items.pluck(:fy_year).min
+    end
+  end
+
   def update_project_number
     create_project_number
   end

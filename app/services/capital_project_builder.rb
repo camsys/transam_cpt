@@ -112,7 +112,11 @@ class CapitalProjectBuilder
         project.fy_year = ali.fy_year
       end
       ali.save(:validate => false)
+      # Update the starting fiscal year if needed
+      project.update_project_fiscal_year
       if project.changed?
+        # If the FY changes we need to update the project number
+        project.update_project_number
         project.save(:validate => false)
       end
       projects_and_alis = [project, ali]
@@ -368,7 +372,7 @@ class CapitalProjectBuilder
         # Start year is infinite
         start_fy_year = 9999
       end
-      
+
       asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
         if ali.capital_project.sogr?
           Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
