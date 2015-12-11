@@ -190,7 +190,9 @@ class ActivityLineItem < ActiveRecord::Base
   end
 
   def cost=(num)
-    self[:anticipated_cost] = sanitize_to_int(num)
+    unless num.blank?
+      self[:anticipated_cost] = sanitize_to_int(num)
+    end
   end
 
   # Returns the total replacment or rehabilitation costs of the assets in this ALI
