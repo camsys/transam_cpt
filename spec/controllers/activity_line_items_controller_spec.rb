@@ -90,6 +90,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   end
 
   it 'POST create' do
+    request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
     post :create, :capital_project_id => test_project.object_key, :activity_line_item => attributes_for(:activity_line_item, :team_ali_code_id => create(:replacement_ali_code, :parent => create(:replacement_ali_code)).id)
     test_project.reload
 
