@@ -1,12 +1,12 @@
-class PlanningController < OrganizationAwareController
-
-  before_filter :set_view_vars,  :only => [:index, :move_assets, :asset_action, :ali_action, :add_funds, :update_cost, :edit_asset]
+#-------------------------------------------------------------------------------
+# PlanningController
+#
+#
+#-------------------------------------------------------------------------------
+class PlanningController < AbstractCapitalProjectsController
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Planning", :planning_index_path
-
-  # Include the fiscal year mixin
-  include FiscalYear
 
   # Controller actions that can be invoked from the view to manuipulate assets
   ASSET_REPLACE_ACTION              = '1'
@@ -36,14 +36,18 @@ class PlanningController < OrganizationAwareController
     ['No', NO]
   ]
 
+  #-----------------------------------------------------------------------------
   # Returns the list of assets that are scheduled for replacement/rehabilitation in the given
   # fiscal year.
+  #-----------------------------------------------------------------------------
   def index
 
     get_projects
 
   end
 
+  #-----------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   def load_chart
 
     @funding_source = FundingSource.find_by_object_key(params[:fund])
@@ -56,7 +60,9 @@ class PlanningController < OrganizationAwareController
     end
   end
 
+  #-----------------------------------------------------------------------------
   # Render the partial for the asset edit modal.
+  #-----------------------------------------------------------------------------
   def edit_asset
 
     @asset = Asset.find_by_object_key(params[:id])
@@ -72,7 +78,9 @@ class PlanningController < OrganizationAwareController
     render :partial => 'edit_asset_modal_form'
   end
 
+  #-----------------------------------------------------------------------------
   # Render the partial for the update cost modal.
+  #-----------------------------------------------------------------------------
   def update_cost
 
     @ali = ActivityLineItem.where(object_key: params[:ali]).first
@@ -80,7 +88,9 @@ class PlanningController < OrganizationAwareController
     render :partial => 'update_cost_modal_form'
   end
 
+  #-----------------------------------------------------------------------------
   # Render the partial for adding a funding plan to the ALI
+  #-----------------------------------------------------------------------------
   def add_funds
 
     @ali = ActivityLineItem.find_by_object_key(params[:ali])
@@ -89,7 +99,9 @@ class PlanningController < OrganizationAwareController
     render :partial => 'add_funds_modal_form'
   end
 
+  #-----------------------------------------------------------------------------
   # Processes a bulk move of assets from one FY to another
+  #-----------------------------------------------------------------------------
   def move_assets
 
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
@@ -120,7 +132,9 @@ class PlanningController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
   # Process a scheduler action for an asset. This must be called using a JS action
+  #-----------------------------------------------------------------------------
   def asset_action
 
     #proxy = SchedulerActionProxy.new(params[:scheduler_action_proxy])
@@ -222,71 +236,13 @@ class PlanningController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
   protected
-
-  def get_projects
-
-    # Start to set up the query
-   conditions  = []
-   values      = []
-
-   # Check to see if we got an organization to sub select on.
-   @org_filter = params[:org_filter]
-   conditions << 'organization_id IN (?)'
-   if @org_filter.blank?
-     values << @organization_list
-     @org_filter = []
-   else
-     values << @org_filter
-   end
-
-   @capital_project_filter = params[:capital_project_filter]
-   if @capital_project_filter.blank?
-     @capital_project_filter = []
-   else
-     conditions << 'capital_project_type_id IN (?)'
-     values << @capital_project_filter
-   end
-
-   # Filter by asset type. Requires joining across CP <- ALI <- ALI-Assets <- Assets
-   @asset_subtype_filter = params[:asset_subtype_filter]
-   if @asset_subtype_filter.blank?
-     @asset_subtype_filter = []
-   else
-     capital_project_ids = []
-     # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
-     asset_ids = Asset.where('asset_subtype_id IN (?) AND organization_id IN (?)', @asset_subtype_filter, values[0]).pluck(:id)
-     unless asset_ids.empty?
-       # now get CPs by subselecting on CP <- ALI <- ALI-Assets
-       query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
-       cps = CapitalProject.connection.execute(query, :skip_logging)
-       cps.each do |cp|
-         capital_project_ids << cp[0]
-       end
-     end
-     conditions << 'id IN (?)'
-     values << capital_project_ids.uniq  # make sure there are no duplicates
-   end
-
-   # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter
-   @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
-
-  end
-  # Sets the view variables that control the filters. called before each action is invoked
-  def set_view_vars
-
-    @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
-
-    # This is the first year that the user can plan for
-    @first_year = current_planning_year_year
-    # This is the last year  the user can plan for
-    @last_year = last_fiscal_year_year
-    # This is an array of years that the user can plan for
-    @years = (@first_year..@last_year).to_a
+  #-----------------------------------------------------------------------------
 
 
-  end
-
+  #-----------------------------------------------------------------------------
   private
+  #-----------------------------------------------------------------------------
 
 end

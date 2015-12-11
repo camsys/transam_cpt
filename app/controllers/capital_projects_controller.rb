@@ -1,40 +1,18 @@
-class CapitalProjectsController < OrganizationAwareController
+#-------------------------------------------------------------------------------
+# CapitalProjectsController
+#
+# Basic Capital Project CRUD management
+#
+#-------------------------------------------------------------------------------
+class CapitalProjectsController < AbstractCapitalProjectsController
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  # Include the fiscal year mixin
-  include FiscalYear
-
-  #before_filter :authorize_admin
-  before_filter :check_for_cancel,  :only =>    [:create, :update, :runner]
   before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
-
-  def fire_workflow_event
-
-    # Check that this is a valid event name for the state machines
-    if @project.class.event_names.include? params[:event]
-      event_name = params[:event]
-      if @project.fire_state_event(event_name)
-        event = WorkflowEvent.new
-        event.creator = current_user
-        event.accountable = @project
-        event.event_type = event_name
-        event.save
-        notify_user(:notice, "Capital Project #{@project.project_number} is now #{@project.state.humanize}.")
-      else
-        notify_user(:alert, "Could not #{event_name.humanize} capital project #{@project.project_number}")
-      end
-    else
-      notify_user(:alert, "#{params[:event_name]} is not a valid event for a #{@project.class.name}")
-    end
-
-    redirect_to :back
-
-  end
 
   #-----------------------------------------------------------------------------
   # Generic AJAX method for displaying a regular or modal view
@@ -123,82 +101,18 @@ class CapitalProjectsController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
+  # Search interface
+  #-----------------------------------------------------------------------------
   def index
 
     @fiscal_years = get_fiscal_years
 
-     # Start to set up the query
-    conditions  = []
-    values      = []
-
-    # Check to see if we got an organization to sub select on.
-    @org_filter = params[:org_filter]
-    conditions << 'organization_id IN (?)'
-    if @org_filter.blank?
-      values << @organization_list
-    else
-      values << @org_filter
-    end
-
-    @capital_project_filter = params[:capital_project_filter]
-    unless @capital_project_filter.blank?
-      conditions << 'capital_project_type_id IN (?)'
-      values << @capital_project_filter
-    end
-
-    # See if we got search
-    @fiscal_year_filter = params[:fiscal_year_filter]
-    unless @fiscal_year_filter.blank?
-      conditions << 'fy_year IN (?)'
-      values << @fiscal_year_filter
-    end
-
-
-    # Filter by asset type. Requires jopining across CP <- ALI <- ALI-Assets <- Assets
-    @asset_subtype_filter = params[:asset_subtype_filter]
-    unless @asset_subtype_filter.blank?
-      capital_project_ids = []
-      # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
-      asset_ids = Asset.where('asset_subtype_id IN (?) AND organization_id IN (?)', @asset_subtype_filter, values[0]).pluck(:id)
-      unless asset_ids.empty?
-        # now get CPs by subselecting on CP <- ALI <- ALI-Assets
-        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
-        cps = CapitalProject.connection.execute(query, :skip_logging)
-        cps.each do |cp|
-          capital_project_ids << cp[0]
-        end
-      end
-      conditions << 'id IN (?)'
-      values << capital_project_ids.uniq  # make sure there are no duplicates
-    end
-
     # Filter by funding source and/or asset type. This takes more work and each uses a custom query to pre-select
     # capital projects that meet this partial match
 
-    # Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
-    @funding_source_id = params[:funding_source_id]
-    unless @funding_source_id.blank?
-      funding_source = FundingSource.find(@funding_source_id)
-      @funding_source_id = funding_source.id
-      column_name = funding_source.federal? ? 'federal_funding_line_item_id' : 'state_funding_line_item_id'
-      if @funding_source_id > 0
-        capital_project_ids = []
-        # Use a custom query to join across the five tables
-        query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE #{column_name} IN (SELECT id FROM funding_line_items WHERE funding_source_id = #{@funding_source_id})))"
-        cps = CapitalProject.connection.execute(query, :skip_logging)
-        cps.each do |cp|
-          capital_project_ids << cp[0]
-        end
-        conditions << 'id IN (?)'
-        values << capital_project_ids.uniq  # make sure there are no duplicates
-      end
-    end
-
-    #puts conditions.inspect
-    #puts values.inspect
-
-    # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter
-    @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
+    # Get the list of projects and set the view vars for filtering
+    get_projects
 
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
@@ -210,13 +124,6 @@ class CapitalProjectsController < OrganizationAwareController
       @data = report_instance.get_data_from_result_list(@projects)
     end
 
-    # This is the first year that the user can plan for
-    @first_year = current_planning_year_year
-    # This is the last year  the user can plan for
-    @last_year = last_fiscal_year_year
-    # This is an array of years that the user can plan for
-    @years = (@first_year..@last_year).to_a
-
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @projects }
@@ -224,6 +131,9 @@ class CapitalProjectsController < OrganizationAwareController
     end
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def show
 
     add_breadcrumb @project.project_number, capital_project_path(@project)
@@ -239,7 +149,9 @@ class CapitalProjectsController < OrganizationAwareController
     end
   end
 
-
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def new
 
     add_breadcrumb "New", new_capital_project_path
@@ -249,6 +161,9 @@ class CapitalProjectsController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def edit
 
     add_breadcrumb @project.project_number, capital_project_path(@project)
@@ -258,6 +173,9 @@ class CapitalProjectsController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def copy
 
     new_project = @project.dup
@@ -275,6 +193,9 @@ class CapitalProjectsController < OrganizationAwareController
 
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def create
 
     add_breadcrumb "New", new_capital_project_path
@@ -295,6 +216,9 @@ class CapitalProjectsController < OrganizationAwareController
     end
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def update
 
     add_breadcrumb @project.project_number, capital_project_path(@project)
@@ -315,6 +239,9 @@ class CapitalProjectsController < OrganizationAwareController
     end
   end
 
+  #-----------------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------------
   def destroy
 
     @project.destroy
@@ -334,9 +261,15 @@ class CapitalProjectsController < OrganizationAwareController
     end
   end
 
+  #-----------------------------------------------------------------------------
+  # Protected Methods
+  #-----------------------------------------------------------------------------
   protected
 
 
+  #-----------------------------------------------------------------------------
+  # Private methods
+  #-----------------------------------------------------------------------------
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
@@ -344,27 +277,4 @@ class CapitalProjectsController < OrganizationAwareController
     params.require(:capital_project).permit(CapitalProject.allowable_params)
   end
 
-  def get_project
-    # See if it is our project
-    @project = CapitalProject.find_by_object_key(params[:id]) unless params[:id].nil?
-    # if not found or the object does not belong to the users
-    # send them back to index.html.erb
-    if @project.nil?
-      notify_user(:alert, 'Record not found!')
-      redirect_to(capital_projects_url)
-      return
-    end
-
-  end
-
-  def check_for_cancel
-    unless params[:cancel].blank?
-      # get the policy, if one was being edited
-      if params[:id]
-        redirect_to(capital_project_url(params[:id]))
-      else
-        redirect_to(capital_projects_url)
-      end
-    end
-  end
 end
