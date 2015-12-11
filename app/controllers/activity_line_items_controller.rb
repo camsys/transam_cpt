@@ -172,7 +172,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       if @activity_line_item.save
         notify_user(:notice, "The ALI was successfully added to project #{@project.project_number}.")
-        format.html { redirect_to capital_project_url(@project) }
+        format.html { redirect_to :back }
         format.json { render action: 'show', status: :created, location: @activity_line_item }
       else
         format.html { render action: 'new' }
