@@ -23,19 +23,32 @@
   -# .form-group
   -#   = select_tag(:capital_project_state, options_for_select(CapitalProject.state_names.collect{|a| [a.humanize, a]}, :selected => @capital_project_state), :class => "form-control", :prompt => "Any status...")
   .form-group
-    = select_tag(:capital_project_filter, options_for_select(CapitalProjectType.active.collect{|a| [a.name, a.id]}, :selected => @capital_project_filter), :class => "form-control", :multiple => true)
+    = select_tag(:capital_project_flag_filter, options_for_select(CapitalProjectsController::CAPITAL_PROJECT_FLAGS, :selected => @capital_project_flag_filter), :class => "form-control", :multiple => true)
+  .form-group
+    = select_tag(:capital_project_type_filter, options_for_select(CapitalProjectType.active.collect{|a| [a.name, a.id]}, :selected => @capital_project_type_filter), :class => "form-control", :multiple => true)
   -# .form-group
   -#   = select_tag(:funding_source_id, option_groups_from_collection_for_select(FundingSourceType.active, :funding_sources, :name, :id, :name, :selected => @funding_source_id), :class => "form-control", :prompt => "Any funding source...")
   .form-group
     = select_tag(:asset_subtype_filter, option_groups_from_collection_for_select(AssetType.active, :asset_subtypes, :name, :id, :name, :selected => @asset_subtype_filter), :class => "form-control", :multiple => true)
 
-  = button_tag :class => 'btn btn-success', :type => 'submit' do
+  = button_tag :class => 'btn btn-default', :type => 'submit' do
     %i.fa.fa-filter
 
 :javascript
   $(document).ready(function() {
 
-    $('#capital_project_filter').multiselect({
+    $('#capital_project_flag_filter').multiselect({
+      inheritClass: true,
+      maxHeight: 250,
+      buttonText: function(options, select) {
+        if (options.length === 0) {
+          return 'Project flags...';
+        } else {
+          return 'Project flags - ' + options.length + ' selected';
+        }
+      }
+    });
+    $('#capital_project_type_filter').multiselect({
       inheritClass: true,
       maxHeight: 250,
       buttonText: function(options, select) {
