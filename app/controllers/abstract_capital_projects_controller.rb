@@ -166,8 +166,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     @project = CapitalProject.find_by_object_key(params[:id]) unless params[:id].nil?
     # if not found or the object does not belong to the users
     if @project.nil?
-      notify_user(:alert, 'Record not found!')
-      redirect_to(capital_projects_url)
+      redirect_to '/404'
       return
     end
 
