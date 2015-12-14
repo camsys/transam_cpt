@@ -4,7 +4,7 @@ source "https://rubygems.org"
 #ruby-gemset=transam
 
 # lock to a specific version of Ruby
-ruby '2.1.1'
+ruby '2.2.2'
 
 # Declare your gem's dependencies in transam_cpt.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
