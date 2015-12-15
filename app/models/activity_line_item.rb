@@ -201,10 +201,11 @@ class ActivityLineItem < ActiveRecord::Base
     assets.each do |a|
       # Check to see if this is rehab or replacement ALI
       if rehabilitation_ali?
-        val += rehabilitation_cost(a)
+        cost = rehabilitation_cost(a)
       else
-        val += replacement_cost(a)
+        cost = replacement_cost(a)
       end
+      val += cost.to_i
     end
     val
   end
