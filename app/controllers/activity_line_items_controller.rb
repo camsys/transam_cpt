@@ -219,7 +219,7 @@ class ActivityLineItemsController < OrganizationAwareController
       }
       format.html {
         notify_user(:notice, msg)
-        redirect_to capital_project_path(@project)
+        redirect_to :back
       }
     end
   end
