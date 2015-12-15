@@ -104,6 +104,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
     expect(test_ali.name).to eq('activity line item name 222')
   end
   it 'DELETE destroy' do
+    request.env["HTTP_REFERER"] = capital_projects_path
     delete :destroy, :capital_project_id => test_project.object_key, :id => test_ali.object_key
 
     expect(assigns(:project)).to eq(test_project)
