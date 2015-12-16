@@ -37,9 +37,7 @@ class CapitalProjectBuilder
     asset_types = []
     org.asset_type_counts.each do |type, count|
       asset_type = AssetType.find(type)
-      if ['Vehicle', 'SupportVehicle', 'RailCar', 'Locomotive', 'Equipment', 'SupportFacility', 'TransitFacility'].include? asset_type.class_name
-        asset_types << asset_type
-      end
+      asset_types << asset_type
     end
     asset_types
   end
@@ -259,15 +257,6 @@ class CapitalProjectBuilder
       @start_year = options[:start_fy].to_i
     end
 
-    create_tasks = options[:create_tasks].blank? ? true : options[:create_tasks]
-    send_message = options[:send_message].blank? ? true : options[:send_message]
-
-    Rails.logger.info "  Options: create_tasks = '#{create_tasks}', send_message = '#{send_message}'"
-
-    # Cache the list of eligible asset types for this organization
-    org_asset_types = eligible_asset_types(organization)
-    Rails.logger.debug "  Eligible asset types = #{org_asset_types.inspect}"
-
     #---------------------------------------------------------------------------
     # Basic Algorithm:
     #
@@ -307,15 +296,9 @@ class CapitalProjectBuilder
         next
       end
 
-      # Filter out anything that is not eleigible for building
-      unless org_asset_types.include? asset_type
-        Rails.logger.info "Can't process asset type #{asset_type}."
-        next
-      end
-
       # Find all the matching assets for this organization. This logic returns a strongly typed set of assets
       klass = asset_type.class_name.constantize
-      assets = klass.where('organization_id = ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id)
+      assets = klass.where('organization_id = ? AND asset_type_id = ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, asset_type_id)
 
       # Process each asset in turn...
       assets.each do |a|
@@ -344,9 +327,20 @@ class CapitalProjectBuilder
   #-----------------------------------------------------------------------------
   def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type, target_year=nil, current_ali=nil)
 
-    Rails.logger.info "Processing asset #{asset.object_key}, start_year = #{start_year}, last_year = #{last_year}, #{replacement_project_type}, #{rehabilitation_project_type}, target_year=#{target_year}"
+    Rails.logger.debug "Processing asset #{asset.object_key}, start_year = #{start_year}, last_year = #{last_year}, #{replacement_project_type}, #{rehabilitation_project_type}, target_year=#{target_year}"
 
     projects_and_alis = []
+
+    #---------------------------------------------------------------------------
+    # Get the policy analyzer for this asset. If the policy is not configured
+    # correctly we may miss a rule so we check first to avoid nastiness
+    #---------------------------------------------------------------------------
+    policy_analyzer = asset.policy_analyzer
+    # Whine if we dont have a valid policy for this asset type
+    if policy_analyzer.warnings?
+      Rails.logger.info "No valid policy found for asset #{asset.object_key}. #{policy_analyzer.warnings.join('\n')}."
+      return
+    end
 
     #---------------------------------------------------------------------------
     # Initial reset.
@@ -400,8 +394,6 @@ class CapitalProjectBuilder
     # the initial rehab happens before the initial replacement)
     #---------------------------------------------------------------------------
 
-    # Get the policy analyzer for this asset
-    policy_analyzer = asset.policy_analyzer
 
     # Get the replacement and rehab ALI codes for this asset. If the policy rule
     # specifies leased we need the lease
