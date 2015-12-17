@@ -338,7 +338,8 @@ class CapitalProjectBuilder
     policy_analyzer = asset.policy_analyzer
     # Whine if we dont have a valid policy for this asset type
     if policy_analyzer.warnings?
-      Rails.logger.info "No valid policy found for asset #{asset.object_key}. #{policy_analyzer.warnings.join('\n')}."
+      #Rails.logger.info "No valid policy found for asset #{asset.object_key}. #{policy_analyzer.warnings.join('\n')}."
+      Rails.logger.info "No valid policy found for asset #{asset.object_key}."
       return
     end
 
