@@ -57,6 +57,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
   # view variables
   #   @projects                     -- list of matching capital projects
   #   @org_filter                   -- list of selected organization ids
+  #   @fiscal_year_filter           -- list of selected fiscal years
   #   @capital_project_type_filter  -- list of selected capital project types
   #   @capital_project_flag_filter  -- list of selected capital project flags
   #   @asset_subtype_filter         -- list of selected asset subtype ids
@@ -76,6 +77,14 @@ class AbstractCapitalProjectsController < OrganizationAwareController
      @org_filter = []
    else
      values << @org_filter
+   end
+
+   @fiscal_year_filter = params[:fiscal_year_filter]
+   if @fiscal_year_filter.blank?
+     @fiscal_year_filter = []
+   else
+     conditions << 'fy_year IN (?)'
+     values << @fiscal_year_filter
    end
 
    @capital_project_type_filter = params[:capital_project_type_filter]
