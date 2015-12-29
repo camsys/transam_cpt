@@ -2,7 +2,7 @@ FactoryGirl.define do
 
   factory :policy_asset_subtype_rule do
     association :policy
-    association :asset_subtype
+    asset_subtype_id 1
     min_service_life_months 144
     min_service_life_miles 500000
     replacement_cost 395500

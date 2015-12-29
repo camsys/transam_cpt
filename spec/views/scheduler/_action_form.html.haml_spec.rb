@@ -3,8 +3,8 @@ require 'rails_helper'
 describe "scheduler/_action_form.html.haml", :type => :view do
   it 'fields' do
     if AssetType.count == 0 || AssetSubtype.count == 0
-      create(:asset_type)
-      create(:asset_subtype)
+      AssetType.first
+      AssetSubtype.first
     end
     assign(:proxy, SchedulerActionProxy.new)
     assign(:asset_subtype_id, 1)

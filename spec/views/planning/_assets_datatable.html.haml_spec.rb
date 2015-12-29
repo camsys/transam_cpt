@@ -3,8 +3,8 @@ require 'rails_helper'
 describe "planning/_assets_datatable.html.haml", :type => :view do
   it 'table' do
     if AssetType.count == 0 || AssetSubtype.count == 0
-      create(:asset_type)
-      create(:asset_subtype)
+      AssetType.first
+      AssetSubtype.first
     end
     test_proj = create(:capital_project)
     test_ali = create(:activity_line_item, :capital_project => test_proj)

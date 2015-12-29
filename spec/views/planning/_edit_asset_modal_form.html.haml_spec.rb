@@ -7,7 +7,7 @@ describe "planning/_edit_asset_modal_form.html.haml", :type => :view do
     assign(:fiscal_year, Date.today.year)
     assign(:fiscal_years, [Date.today.year-1, Date.today.year])
     assign(:actions, [1,2,3])
-    assign(:asset, create(:buslike_asset, :asset_type => create(:asset_type), :asset_subtype => create(:asset_subtype)))
+    assign(:asset, create(:buslike_asset, :asset_type => AssetType.first, :asset_subtype => AssetSubtype.first))
     render
 
     expect(rendered).to have_field('scheduler_action_proxy_action_id')

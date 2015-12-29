@@ -3,8 +3,8 @@ require 'rails_helper'
 describe "scheduler/_asset_detail.html.haml", :type => :view do
   it 'details' do
     if AssetType.count == 0 || AssetSubtype.count == 0
-      create(:asset_type)
-      create(:asset_subtype)
+      AssetType.first
+      AssetSubtype.first
     end
     test_asset = create(:buslike_asset, :asset_tag => 'TAG123')
     render 'scheduler/asset_detail', :asset => test_asset, :year => Date.today.year
