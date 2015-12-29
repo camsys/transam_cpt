@@ -65,7 +65,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'POST create' do
-    test_type = create(:capital_project_type)
+    test_type = CapitalProjectType.first
     test_ali = create(:replacement_ali_code, :parent => create(:replacement_ali_code))
     post :create, :capital_project => attributes_for(:capital_project, :organization => nil, :capital_project_type_id => test_type.id, :team_ali_code_id => test_ali.id)
 
