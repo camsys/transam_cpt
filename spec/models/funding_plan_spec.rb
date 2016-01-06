@@ -6,10 +6,10 @@ RSpec.describe FundingPlan, :type => :model do
 
   describe 'associations' do
     it 'has an activity line item' do
-      expect(FundingPlan.column_names).to include('activity_line_item_id')
+      expect(test_plan).to belong_to(:activity_line_item)
     end
     it 'has a funding source' do
-      expect(FundingPlan.column_names).to include('funding_source_id')
+      expect(test_plan).to belong_to(:funding_source)
     end
   end
   describe 'validations' do

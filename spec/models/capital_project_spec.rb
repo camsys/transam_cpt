@@ -6,22 +6,22 @@ RSpec.describe CapitalProject, :type => :model do
 
   describe 'associations' do
     it 'has an org' do
-      expect(CapitalProject.column_names).to include('organization_id')
+      expect(test_project).to belong_to(:organization)
     end
     it 'has an ali code' do
-      expect(CapitalProject.column_names).to include('team_ali_code_id')
+      expect(test_project).to belong_to(:team_ali_code)
     end
     it 'has a type' do
-      expect(CapitalProject.column_names).to include('capital_project_type_id')
+      expect(test_project).to belong_to(:capital_project_type)
     end
     it 'has activity line items' do
-      expect(ActivityLineItem.column_names).to include('capital_project_id')
+      expect(test_project).to have_many(:activity_line_items)
     end
     it 'has documents' do
-
+      expect(test_project).to have_many(:documents)
     end
     it 'has comments' do
-
+      expect(test_project).to have_many(:comments)
     end
   end
 
@@ -212,6 +212,6 @@ RSpec.describe CapitalProject, :type => :model do
     expect(new_project.emergency).to be false
     expect(new_project.state).to eq('unsubmitted')
     expect(new_project.project_number).to eq('TEMP')
-    expect(new_project.fy_year).to eq(Date.today.month > 6 ? Date.today.year : Date.today.year + 1)
+    expect(new_project.fy_year).to eq(Date.today.month > 6 ? Date.today.year : Date.today.year - 1)
   end
 end

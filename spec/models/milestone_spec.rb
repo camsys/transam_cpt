@@ -6,10 +6,10 @@ RSpec.describe Milestone, :type => :model do
 
   describe 'associations' do
     it 'has an activity line item' do
-      expect(Milestone.column_names).to include('activity_line_item_id')
+      expect(test_milestone).to belong_to(:activity_line_item)
     end
     it 'has a type' do
-      expect(Milestone.column_names).to include('milestone_type_id')
+      expect(test_milestone).to belong_to(:milestone_type)
     end
   end
 

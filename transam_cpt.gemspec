@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "database_cleaner"
   s.add_development_dependency "mysql2"
   s.add_development_dependency "cucumber-rails"
+  s.add_development_dependency "shoulda-matchers"
   s.add_development_dependency 'growl'
   s.add_development_dependency 'awesome_print'
 

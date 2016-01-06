@@ -6,13 +6,13 @@ RSpec.describe BudgetAmount, :type => :model do
 
   describe 'associations' do
     it 'has an org' do
-      expect(BudgetAmount.column_names).to include('organization_id')
+      expect(test_amount).to belong_to(:organization)
     end
     it 'has a funding source' do
-      expect(BudgetAmount.column_names).to include('funding_source_id')
+      expect(test_amount).to belong_to(:funding_source)
     end
     it 'has many funding plans', :skip do
-      expect(FundingPlan.column_names).to include('budget_amount_id')
+      expect(test_amount).to have_many(:funding_plans)
     end
   end
 

@@ -6,16 +6,16 @@ RSpec.describe ActivityLineItem, :type => :model do
 
   describe 'associations' do
     it 'belongs to capital project' do
-      expect(ActivityLineItem.column_names).to include('capital_project_id')
+      expect(test_line_item).to belong_to(:capital_project)
     end
     it 'has a team ali code' do
-      expect(ActivityLineItem.column_names).to include('team_ali_code_id')
+      expect(test_line_item).to belong_to(:team_ali_code)
     end
     it 'has many milestones' do
-      expect(Milestone.column_names).to include('activity_line_item_id')
+      expect(test_line_item).to have_many(:milestones)
     end
     it 'has many funding plans' do
-      expect(FundingPlan.column_names).to include('activity_line_item_id')
+      expect(test_line_item).to have_many(:funding_plans)
     end
   end
   describe 'validations' do
