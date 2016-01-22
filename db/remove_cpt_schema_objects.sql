@@ -1,14 +1,14 @@
 DROP TABLE IF EXISTS activity_line_items
 GO
 DROP TABLE IF EXISTS activity_line_items_assets
-Go
+GO
 DROP TABLE IF EXISTS capital_project_types
-Go
+GO
 DROP TABLE IF EXISTS capital_projects
-Go
+GO
 DROP TABLE IF EXISTS milestone_types
-Go
+GO
 DROP TABLE IF EXISTS milestones
-Go
+GO
 DROP TABLE IF EXISTS funding_plans
-Go
+GO
