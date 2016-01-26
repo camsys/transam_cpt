@@ -115,13 +115,27 @@ reports = [
     :name => 'Unconstrained Capital Needs Forecast',
     :class_name => "UnconstrainedCapitalNeedsForecast",
     :view_name => "generic_chart",
-    :show_in_nav => 1,
-    :show_in_dashboard => 1,
+    :show_in_nav => 0,
+    :show_in_dashboard => 0,
     :roles => 'user,manager',
     :description => 'Displays a chart showing unconstrained capital needs forecast by fiscal year.',
     :chart_type => 'column',
     :chart_options => "{is3D : false, isStacked: false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
-    }
+  },
+  {
+    :active => 1,
+    :belongs_to => 'report_type',
+    :type => "Capital Needs Report",
+    :name => 'Unconstrained Capital Projects Report',
+    :class_name => "CapitalProjectsReport",
+    :view_name => "capital_projects_report",
+    :show_in_nav => 1,
+    :show_in_dashboard => 1,
+    :roles => 'user',
+    :description => 'Displays a report showing unconstrained capital projects by fiscal year.',
+    :chart_type => '',
+    :chart_options => ""
+  }
 
 ]
 
