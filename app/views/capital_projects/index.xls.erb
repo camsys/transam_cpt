@@ -25,8 +25,11 @@
       <Column ss:AutoFitWidth="1" ss:Width="125"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
-      <Column ss:AutoFitWidth="1" ss:Width="120"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="85"/>
+      <Column ss:AutoFitWidth="1" ss:Width="120"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
       <Column ss:AutoFitWidth="1" ss:Width="85"/>
@@ -35,12 +38,15 @@
 
       <Row>
         <Cell><Data ss:Type="String">Agency</Data></Cell>
-        <Cell><Data ss:Type="String">Fiscal Year</Data></Cell>
+        <Cell><Data ss:Type="String">FY</Data></Cell>
         <Cell><Data ss:Type="String">Project #</Data></Cell>
         <Cell><Data ss:Type="String">Scope</Data></Cell>
+        <Cell><Data ss:Type="String">Emgcy</Data></Cell>
+        <Cell><Data ss:Type="String">SOGR</Data></Cell>
+        <Cell><Data ss:Type="String">Shadow</Data></Cell>
+        <Cell><Data ss:Type="String">Multi Year</Data></Cell>
         <Cell><Data ss:Type="String">Type</Data></Cell>
         <Cell><Data ss:Type="String">Title</Data></Cell>
-        <Cell><Data ss:Type="String">Status</Data></Cell>
         <Cell><Data ss:Type="String">Cost</Data></Cell>
         <Cell><Data ss:Type="String">State</Data></Cell>
         <Cell><Data ss:Type="String">Federal</Data></Cell>
@@ -53,15 +59,18 @@
           <Cell><Data ss:Type="String"><%= p.organization %></Data></Cell>
           <Cell><Data ss:Type="String"><%= p.fiscal_year %></Data></Cell>
           <Cell><Data ss:Type="String"><%= p.project_number %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= p.team_ali_code %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.team_ali_code.scope %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.emergency? ? 'Yes' : 'No' %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.sogr? ? 'Yes' : 'No' %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.notional? ? 'Yes' : 'No' %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= p.multi_year? ? 'Yes' : 'No' %></Data></Cell>
           <Cell><Data ss:Type="String"><%= p.capital_project_type.code %></Data></Cell>
           <Cell><Data ss:Type="String"><%= p.title %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= p.capital_project_status_type %></Data></Cell>
           <Cell><Data ss:Type="String"><%= format_as_currency(p.total_cost) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(p.state_request) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(p.federal_request) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(p.local_request) %></Data></Cell>
-          <Cell><Data ss:Type="String"><%= format_as_currency(p.total_request) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.state_funds) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.federal_funds) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.local_funds) %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= format_as_currency(p.total_funds) %></Data></Cell>
         </Row>
       <% end %>
 
