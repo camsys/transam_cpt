@@ -12,7 +12,7 @@ describe "planning/_planning_actions.html.haml", :type => :view do
     render
 
     expect(rendered).to have_link('New Capital Project')
-    expect(rendered).to have_link('Export plan to Excel')
+    # expect(rendered).to have_link('Export plan to Excel')
     expect(rendered).to have_field('org_filter')
     expect(rendered).to have_field('capital_project_flag_filter')
     expect(rendered).to have_field('capital_project_type_filter')
