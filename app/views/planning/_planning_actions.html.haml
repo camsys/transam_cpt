@@ -9,10 +9,10 @@
         = link_to new_capital_project_path do
           %i.fa.fa-plus.fa-fw
           = " New Capital Project"
-    %li
-      = link_to planning_index_path(:capital_project_type_id => @capital_project_type_id, :org_id => @org_filter, :status_type_id => @status_type_id, :start_row => 0, :format => 'xls') do
-        %i.fa.fa-fw.fa-file-excel-o
-        = " Export plan to Excel"
+    -# %li
+    -#   = link_to planning_index_path(:capital_project_type_id => @capital_project_type_id, :org_id => @org_filter, :status_type_id => @status_type_id, :start_row => 0, :format => 'xls') do
+    -#     %i.fa.fa-fw.fa-file-excel-o
+    -#     = " Export plan to Excel"
 
 = form_tag planning_index_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   - if @organization_list.count > 1
