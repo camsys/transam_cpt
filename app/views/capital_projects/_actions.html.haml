@@ -1,42 +1,43 @@
-.btn-group.pull-right.panel-action
-  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-    %i.fa.fa-cog
-    = " Actions"
-    %span.caret
-  %ul.dropdown-menu{:role => 'menu'}
-    -# - if can? :update, @project
-    -#   %li
-    -#     = link_to "#" do
-    -#       %i.fa.fa-arrows-v.fa-fw
-    -#       = " Change the priority"
-    -#
-    -# %li.divider
-    -# - @project.allowable_events.each do |evt|
-    -#   %li
-    -#     = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
-    -#       %i.fa.fa-fw{:class => get_event_icon(evt)}
-    -#       = "#{evt} this project"
-    - count = 0
-    - if can? :copy, @project
-      - count += 1
-      %li
-        = link_to copy_capital_project_path(@project) do
-          %i.fa.fa-copy.fa-fw
-          = " Make a copy"
-    - if can? :update, @project
-      - if count > 0
-        %li.divider
-      - count += 1
-      %li
-        = link_to load_view_capital_project_path(@project, :view => 'edit'), :remote => true do
-          %i.fa.fa-edit.fa-fw
-          = " Modify this project"
+- if (can? :copy, @project) || (can? :update, @project) || (can? :destroy, @project)
+  .btn-group.pull-right.panel-action
+    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+      %i.fa.fa-cog
+      = " Actions"
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu'}
+      -# - if can? :update, @project
+      -#   %li
+      -#     = link_to "#" do
+      -#       %i.fa.fa-arrows-v.fa-fw
+      -#       = " Change the priority"
+      -#
+      -# %li.divider
+      -# - @project.allowable_events.each do |evt|
+      -#   %li
+      -#     = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
+      -#       %i.fa.fa-fw{:class => get_event_icon(evt)}
+      -#       = "#{evt} this project"
+      - count = 0
+      - if can? :copy, @project
+        - count += 1
+        %li
+          = link_to copy_capital_project_path(@project) do
+            %i.fa.fa-copy.fa-fw
+            = " Make a copy"
+      - if can? :update, @project
+        - if count > 0
+          %li.divider
+        - count += 1
+        %li
+          = link_to load_view_capital_project_path(@project, :view => 'edit'), :remote => true do
+            %i.fa.fa-edit.fa-fw
+            = " Modify this project"
 
-    - if can? :destroy, @project
-      - if count > 0
-        %li.divider
-      - count += 1
-      %li
-        = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
-          %i.fa.fa-trash-o.fa-fw
-          = " Remove this project"
+      - if can? :destroy, @project
+        - if count > 0
+          %li.divider
+        - count += 1
+        %li
+          = link_to capital_project_path(@project), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
+            %i.fa.fa-trash-o.fa-fw
+            = " Remove this project"
