@@ -24,7 +24,7 @@
               %li
                 = link_to scheduler_ali_action_scheduler_index_path(:ali => ali.object_key, :invoke => SchedulerController::ALI_REMOVE_ACTION, :active_year => @active_year),
                   :remote => true, :title => "Remove this activity line item.",
-                  :data => {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone."} do
+                  :data => {confirm: "Are you sure you want to remove this activity line item? The action can't be undone."} do
                   %i.fa.fa-trash-o
                   Remove ALI
     %i.fa.fa-lg.fa-caret-right.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
@@ -47,7 +47,7 @@
             %td.right= format_as_currency(fp.amount)
             %td.right
               = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
-                :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
+                :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
                 :class => 'btn btn-xs btn-warning'  do
                 %i.fa.fa-trash-o
       %tfoot

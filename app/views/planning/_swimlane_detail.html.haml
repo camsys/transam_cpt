@@ -42,7 +42,7 @@
               %li
                 = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_REMOVE_ACTION, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Remove this activity line item.",
-                  :data => {confirm: "Are you sure you want to remove this activity line item?. The action can't be undone."} do
+                  :data => {confirm: "Are you sure you want to remove this activity line item? The action can't be undone."} do
                   %i.fa.fa-trash-o
                   Remove ALI
     %i.fa.fa-lg.fa-caret-right.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
@@ -65,7 +65,7 @@
             %td.right= format_as_currency(fp.amount)
             %td.right
               = link_to ali_action_planning_index_path(:fiscal_year => @fiscal_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => PlanningController::ALI_REMOVE_FUND_ACTION),
-                :remote => :true, :method => 'post', :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund?. The action can't be undone."},
+                :remote => :true, :method => 'post', :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
                 :class => 'btn btn-xs btn-warning'  do
                 %i.fa.fa-trash-o
       %tfoot
