@@ -282,7 +282,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Set resonable defaults for a new activity line item
   def set_defaults
-    self.active ||= true
+    self.active = self.active.nil? ? true : self.active
     self.estimated_cost ||= 0
     self.anticipated_cost ||= 0
     self.category_team_ali_code ||= team_ali_code.present? ? team_ali_code.parent.code : ''

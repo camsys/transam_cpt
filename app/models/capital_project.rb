@@ -298,7 +298,7 @@ class CapitalProject < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.active     ||= true
+    self.active = self.active.nil? ? true : self.active
     self.sogr       ||= false
     self.notional   ||= false
     self.multi_year ||= false

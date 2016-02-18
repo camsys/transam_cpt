@@ -112,7 +112,7 @@ class BudgetAmount < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.estimated ||= true
+    self.estimated = self.estimated.nil? ? true : self.estimated
     self.amount ||= 0
   end
 
