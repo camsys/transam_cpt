@@ -18,7 +18,7 @@
       .col-md-4
         = f.input :fy_year, :collection => @fiscal_years, :include_blank => false, :label => "Fiscal Year"
       .col-md-4
-        = f.association :team_ali_code, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
+        = f.association :team_ali_code, :disabled => !@project.new_record?, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
       .col-md-4
         = f.association :capital_project_type, :collection => CapitalProjectType.active, :include_blank => false, :label => 'Project Type'
 
