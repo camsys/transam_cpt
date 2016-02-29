@@ -549,42 +549,13 @@ class CapitalProjectBuilder
     scope = ali_code.parent
 
     # Decode the scope so we can set the project up
-    if scope.type == "11"
-      focus = "Bus"
-    elsif scope.type == "12"
-      focus = "Rail"
-    else
-      focus = "Unknown"
-    end
-
-    if scope.category[0] == "4"
-      focus = "#{focus} support vehicles"
-    end
-
-    if ["2"].include? scope.category[1]
-      request = "replacement"
-      action = "Purchase"
-    elsif ["6"].include? scope.category[1]
-      request = "replacement"
-      action = "Lease"
-    elsif ["4"].include? scope.category[1]
-      request = "rehabilitation"
-      action = "Rehabilitate"
-    elsif ["5"].include? scope.category[1]
-      request = "mid-life rebuild"
-      action = "Rebuild"
-    elsif ["7"].include? scope.category[1]
-      request = "vehicle overhaul"
-      action = "Overhaul"
-    else
-      request = "unknown"
-    end
+    scope_context = scope.context.split('->')
 
     # See if there is an existing project for this scope and year
     project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ? and notional = ?', organization.id, scope.id, year, sogr, notional)
     if project.nil?
       # create this project
-      project_title = "#{focus} #{request} project"
+      project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
       project = create_capital_project(organization, year, scope, project_title, project_type, sogr, notional)
       @project_count += 1
       Rails.logger.debug "Created new project #{project.object_key}"
@@ -605,7 +576,7 @@ class CapitalProjectBuilder
       end
     else
       # Create the ALI and add it to the project
-      ali_name = "#{action} #{ali_code.name} assets."
+      ali_name = "#{scope.name} #{ali_code.name} assets."
       ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
       ali.save
 
