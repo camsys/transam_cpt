@@ -292,7 +292,8 @@ class CapitalProject < ActiveRecord::Base
 
   def create_project_number
     years = fiscal_year.split[1]
-    project_number = "#{organization.short_name}-#{years}-#{team_ali_code.scope}-#{id}"
+    count = CapitalProject.where(:organization => organization, :fy_year => fy_year).count
+    project_number = "#{organization.short_name} #{years} ##{count+1}"
     self.update_attributes(:project_number => project_number)
   end
 
