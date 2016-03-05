@@ -200,7 +200,7 @@ RSpec.describe CapitalProject, :type => :model do
   end
 
   it '.create_project_number' do
-    expect(test_project.project_number).to eq("#{test_project.organization.short_name}-14-15-111-#{test_project.id}")
+    expect(test_project.project_number).to eq("#{test_project.organization.short_name} 14-15 #1")
   end
 
   it '.set_defaults' do
