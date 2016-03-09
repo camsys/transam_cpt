@@ -12,4 +12,4 @@ before_install:
   -in spec/dummy/db/schema.rb.enc -out spec/dummy/db/schema.rb -d
 script:
 - bundle exec rake app:transam_cpt:prepare_rspec
-- bundle exec rspec RAILS_VERSION=4.1.9
+- bundle exec rspec
