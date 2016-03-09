@@ -4,15 +4,12 @@ rvm:
 branches:
   only:
   - master
-env:
-- TEST_SUITE=rspec RAILS_VERSION=4.1.9
-- TEST_SUITE=cucumber RAILS_VERSION=4.1.9
-script:
-- bundle exec rake app:transam_cpt:prepare_rspec
-- bundle exec $TEST_SUITE
 before_script:
 - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
 before_install:
 - mysql -e "create database IF NOT EXISTS transam_cpt_testing;" -uroot
 - openssl aes-256-cbc -K $encrypted_ab1144f7667a_key -iv $encrypted_ab1144f7667a_iv
   -in spec/dummy/db/schema.rb.enc -out spec/dummy/db/schema.rb -d
+script:
+- bundle exec rake app:transam_cpt:prepare_rspec
+- bundle exec rspec RAILS_VERSION=4.1.9
