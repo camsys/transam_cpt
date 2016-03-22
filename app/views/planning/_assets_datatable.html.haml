@@ -61,7 +61,7 @@
         - else
           - scheduled_cost += a.scheduled_replacement_cost.to_i
 
-        %tr{:data => {:action_path => inventory_path(a)}}
+        %tr{:data => {:action_path => inventory_path(a), :policy_replacement_year => a.policy_replacement_year}}
           %td{:data => {:checkbox => true}}
           %td.center= a.object_key
           %td.left= a.asset_tag
