@@ -136,17 +136,41 @@
         if (ali_year === drop_year) {
           return;
         }
-        var msg = "Move ALI from " + ali_year + " to " + drop_year + "?";
-        bootbox.confirm(msg, function(result) {
-          if (result) {
-            move_ali(url, ali, action, drop_year, project);
+
+        var is_sogr = ui.draggable.hasClass('panel-sogr');
+        var policy_years = ui.draggable.data('assets-policy-replacement-years');
+        var is_early_replacement = false;
+        // iterate all SOGR assets, check if any early replacement happens
+        if(is_sogr && policy_years) {
+          for(var i=0, year_count=policy_years.length; i<year_count; i++) {
+            if(policy_years[i] > drop_year) {
+              is_early_replacement = true;
+              break;
+            }
           }
-        });
+        }
+
+        // early replacemnt SOGR: need to prompt user to provide reason
+        if(is_early_replacement) {
+          var msg = "You are moving ALI from " + ali_year + " to " + drop_year + ". This put some assets in early replacement, please provide an explanation:";
+          transam.bootbox_comment_dialog(msg, function(reason) {
+            if(reason != null) {
+              move_ali(url, ali, action, drop_year, project, reason);
+            }
+          });
+        } else {
+          var msg = "Move ALI from " + ali_year + " to " + drop_year + "?";
+          bootbox.confirm(msg, function(result) {
+            if (result) {
+              move_ali(url, ali, action, drop_year, project);
+            }
+          });
+        }
   		}
   	});
   };
 
-  function move_ali(url, ali, action, drop_year, project) {
+  function move_ali(url, ali, action, drop_year, project, early_replacement_reason) {
     $.ajax({
         url: url,
         type: 'POST',
@@ -155,6 +179,7 @@
           invoke: action,
           year: drop_year,
           project: project,
+          early_replacement_reason: early_replacement_reason,
           // preserve the state of the filter menu
           org_filter: org_filter,
           capital_project_type_filter: capital_project_type_filter,

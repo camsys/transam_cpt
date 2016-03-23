@@ -34,6 +34,8 @@
         %th.right Sch. Cost
         - if popup == '1'
           %th
+        - if ali.has_early_replacement_assets?
+          %th
 
     %tbody
       - cost = book_value = scheduled_cost = 0
@@ -69,7 +71,10 @@
               - if can? :update, @activity_line_item
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger
-
+          - if a.is_early_replacement?
+            %td.center
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :title => "Early Replacement",  :content => "<p>#{a.formatted_early_replacement_reason}</p>"}}
+                %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}       
     %tfoot
       %tr
         %td{:colspan => 8}

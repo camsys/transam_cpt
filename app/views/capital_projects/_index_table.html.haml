@@ -43,6 +43,7 @@
     - total_federal = 0
     - total_local = 0
     - total_total = 0
+    - has_early_replacement_assets = false
 
     - @projects.each do |p|
       - total_cost += p.total_cost
@@ -50,6 +51,9 @@
       - total_federal += p.federal_funds
       - total_local += p.local_funds
       - total_total += p.total_funds
+
+      - project_has_early_replacement_assets = p.has_early_replacement_assets?
+      - has_early_replacement_assets = true if project_has_early_replacement_assets
 
       %tr{:id => p.object_key, :class => 'action-path'}
         - if @organization_list.count > 1
@@ -73,9 +77,12 @@
         %td.right.nowrap= format_as_currency(p.local_funds)
         %td.right.nowrap= format_as_currency(p.total_funds)
 
-        %td.center
+        %td.center.project-icon-column
           %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{p.project_number}: Activity Line Items",  :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => '0'}}"}}
             %i.fa.fa-info-circle.fa-1-25x.text-info
+          - if project_has_early_replacement_assets
+            %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Has assets in early replacement"}}
+              %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
 
   %tfoot
     %tr
@@ -99,4 +106,12 @@
     $('.transam-popover').popover({
       trigger: 'hover'
     });
+
+    $('.transam-tooltip').tooltip();
+
+    if(#{has_early_replacement_assets}) {
+      $('.project-icon-column').width(40);
+    }
   });
+
+

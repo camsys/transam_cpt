@@ -111,13 +111,16 @@ class PlanningController < AbstractCapitalProjectsController
       assets = @activity_line_item.assets.where(:object_key => params[:targets].split(','))
       assets_count = assets.count
       Rails.logger.debug "Found #{assets.count} assets to process"
+      early_replacement_reason = params[:early_replacement_reason]
       assets.each do |a|
         # Replace or Rehab?
         if @activity_line_item.rehabilitation_ali?
           a.scheduled_rehabilitation_year = @fy_year
         else
           a.scheduled_replacement_year = @fy_year
+          a.update_early_replacement_reason(early_replacement_reason)
         end
+
         a.save(:validate => false)
         a.reload
         service.update_asset_schedule(a)
@@ -200,7 +203,7 @@ class PlanningController < AbstractCapitalProjectsController
     when ALI_MOVE_YEAR_ACTION
       new_fy_year = params[:year]
       Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
-      CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
+      CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
       notify_user :notice, "The ALI was successfully moved to #{new_fy_year}."
 
     when ALI_UPDATE_COST_ACTION

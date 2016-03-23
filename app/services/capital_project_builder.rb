@@ -75,7 +75,7 @@ class CapitalProjectBuilder
   # Update an activity line item and all of its assets to a new planning year
   # Note what process_asset actually does is create a new ALI
   #-----------------------------------------------------------------------------
-  def move_ali_to_planning_year(ali, fy_year)
+  def move_ali_to_planning_year(ali, fy_year, early_replacement_reason)
     unless ali.present?
       Rails.logger.warning "Missing ALI"
       return nil
@@ -128,7 +128,6 @@ class CapitalProjectBuilder
       if ali.assets.present?
         # Need to figure out if it is a SOGR project or not. SOGR projects are
         # internally managed while non-SOGR projects are not.
-
         # Take each asset, update the scheduled activity year and re-run it
         ali.assets.each do |x|
           asset = Asset.get_typed_asset x
@@ -136,6 +135,8 @@ class CapitalProjectBuilder
           if project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE
             # Set the scheduled replacement year
             asset.scheduled_replacement_year = fy_year
+            # Update early_replacement_reason if applicable
+            asset.update_early_replacement_reason early_replacement_reason
           else
             asset.scheduled_rehabilitation_year = fy_year
           end

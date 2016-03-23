@@ -21,7 +21,7 @@
       - @fiscal_years.each do |fy|
         - unless fy[1] == @project.fy_year
           %li
-            = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action'
+            = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
 
 .table-responsive
   %table.table.table-condensed.table-hover{:id => "assets-popup-table",
@@ -50,6 +50,8 @@
         %th.right Sch. Cost
         - if popup == '1'
           %th
+        - if ali.has_early_replacement_assets?
+          %th
 
     %tbody
       - cost = book_value = scheduled_cost = 0
@@ -61,7 +63,7 @@
         - else
           - scheduled_cost += a.scheduled_replacement_cost.to_i
 
-        %tr{:data => {:action_path => inventory_path(a)}}
+        %tr{:data => {:action_path => inventory_path(a), :policy_replacement_year => a.policy_replacement_year}}
           %td{:data => {:checkbox => true}}
           %td.center= a.object_key
           %td.left= a.asset_tag
@@ -88,6 +90,11 @@
                 = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
                   %i.fa.fa-times-circle.action-icon.text-danger
 
+          - if a.is_early_replacement?
+            %td.center
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "Early Replacement",  :content => "<p>#{a.formatted_early_replacement_reason}</p>"}}
+                %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
+
     %tfoot
       %tr
         %td{:colspan => 9}
@@ -113,13 +120,60 @@
       placement: 'left'
     });
 
+    // get the policy years of selected assets
+    function get_asset_policy_years() {
+      var years = [];
+      $('#assets-popup-table td.bs-checkbox input[type=checkbox]:checked').each(function() {
+        var year = $(this).closest('tr').data('policy-replacement-year');
+        if($.isNumeric(year) && years.indexOf(year) < 0) {
+          years.push(year);
+        }
+      });
+      return years;
+    }
+
+    // check if has early_replacement asset by comparing move_year to asset policy replacement year
+    function is_early_replacement(move_year) {
+      var is_early = false;
+      if($.isNumeric(move_year)) {
+        var years = get_asset_policy_years();
+        for(var i=0, year_count=years.length; i<year_count; i++) {
+          var policy_year = years[i];
+          if(policy_year > move_year) {
+            is_early = true;
+            break;
+          }
+        }
+      }
+      return is_early;
+    }
+
     // Add a handler for the move action which appends the selected assets to
     // the href
     $(".move-assets-action").on('click', function(e) {
-      //alert(selected_assets);
-      var msg = "Move " + selected_assets.size + " assets?";
       var href = $(this).attr('href');
-      $(this).attr('href', href + '&targets=' + Array.from(selected_assets));
+      href += ('&targets=' + Array.from(selected_assets));
+      
+      
+      var move_year = $(this).data('year');
+
+      var is_early = is_early_replacement(move_year);
+      if(is_early) {
+        var msg = "You are moving assets to " + move_year + ". This put some assets in early replacement, please provide an explanation:";
+        transam.bootbox_comment_dialog(msg, function(reason) {
+          if(reason != null) {
+            href += ('&early_replacement_reason=' + reason);
+            $('#form-modal').modal('hide');
+            $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+            $("#spinner").show();
+            $.ajax({url: href});
+          }
+        });
+
+        return false;
+      } 
+
+      $(this).attr('href', href + href);
       //console.log($(this).attr('href'));
       $('#form-modal').modal('hide');
       $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
