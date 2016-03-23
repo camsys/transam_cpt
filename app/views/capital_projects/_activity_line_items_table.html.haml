@@ -20,6 +20,8 @@
         %th.right %
         - if popup
           %th.center
+        - if project.has_early_replacement_assets?
+          %th.center
 
     %tbody
       - sum_assets = 0
@@ -47,6 +49,11 @@
             %td.center
               %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => 'activity_line_items/assets_datatable', :locals => {:ali => ali, :popup => '0'}}"}}
                 %i.fa.fa-info-circle.text-info.fa-1-25x
+          - if ali.has_early_replacement_assets?
+            %td.center
+              %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Has assets in early replacement"}}
+                %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
+
 
     %tfoot
       %tr
@@ -72,3 +79,5 @@
     placement: 'left',
     container: 'body'
   });
+
+  $('.transam-tooltip').tooltip();

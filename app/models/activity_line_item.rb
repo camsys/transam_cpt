@@ -251,6 +251,11 @@ class ActivityLineItem < ActiveRecord::Base
     SEARCHABLE_FIELDS
   end
 
+  # check if has any assets that in early replacement
+  def has_early_replacement_assets?
+    sogr? && !assets.early_replacement.empty?
+  end
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods

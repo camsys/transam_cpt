@@ -152,9 +152,11 @@
 
         // early replacemnt SOGR: need to prompt user to provide reason
         if(is_early_replacement) {
-          var msg = "You are moving ALI from " + ali_year + " to " + drop_year + ". This move affects assets with early replacement based on policy replacement year, please provide an explation:";
-          bootbox.prompt(msg, function(reason) {
-            move_ali(url, ali, action, drop_year, project, reason);
+          var msg = "You are moving ALI from " + ali_year + " to " + drop_year + ". This put some assets in early replacement, please provide an explanation:";
+          transam.bootbox_comment_dialog(msg, function(reason) {
+            if(reason != null) {
+              move_ali(url, ali, action, drop_year, project, reason);
+            }
           });
         } else {
           var msg = "Move ALI from " + ali_year + " to " + drop_year + "?";

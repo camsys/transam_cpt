@@ -283,6 +283,19 @@ class CapitalProject < ActiveRecord::Base
     SEARCHABLE_FIELDS
   end
 
+  # check if project has any early replacement assets
+  def has_early_replacement_assets?
+    early_replacement = false
+    activity_line_items.find_each do |ali|
+      if ali.has_early_replacement_assets?
+        early_replacement = true 
+        break
+      end
+    end
+
+    early_replacement
+  end
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods

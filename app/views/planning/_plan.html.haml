@@ -11,6 +11,7 @@
     %tbody
       - @projects.each do |project|
         %tr{:data => {:project => project.object_key}}
+          - project_has_early_replacement_assets = false
           %td.left.nowrap
             = render :partial => 'plan_project_detail', :locals => {:project => project}
 
@@ -21,9 +22,15 @@
                   = render :partial => 'notional_ali', :locals => {:project => project, :ali => ali}
                 - elsif ali.sogr?
                   = render :partial => 'sogr_ali', :locals => {:project => project, :ali => ali}
+                  - project_has_early_replacement_assets = true if ali.has_early_replacement_assets?
+
                 - else
                   = render :partial => 'other_ali', :locals => {:project => project, :ali => ali}
-
+          - if project_has_early_replacement_assets
+            :javascript
+              $('tr[data-project="#{project.object_key}"] .project-early-replacement-warning').html(
+              '<a class="transam-tooltip" data-placement="top" data-title="Has assets in early replacement" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' +
+              '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
 :javascript
 
   var org_filter = #{@org_filter};
