@@ -152,7 +152,7 @@
 
       var is_early = is_early_replacement(move_year);
       if(is_early) {
-        var msg = "You are moving assets from to " + move_year + ". This move affects assets with early replacement based on policy replacement year, please provide an explation:";
+        var msg = "You are moving assets to " + move_year + ". This move affects assets with early replacement based on policy replacement year, please provide an explation:";
         bootbox.prompt(msg, function(reason) {
           href += ('&early_replacement_reason=' + reason);
           $('#form-modal').modal('hide');
