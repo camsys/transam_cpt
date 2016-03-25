@@ -105,7 +105,7 @@
 
 :javascript
 
-  var selected_assets = new Set();
+  var selected_assets = [];
 
   $(document).ready(function() {
 
@@ -152,7 +152,7 @@
     // the href
     $(".move-assets-action").on('click', function(e) {
       var href = $(this).attr('href');
-      href += ('&targets=' + Array.from(selected_assets));
+      href += ('&targets=' + selected_assets.join(','));
       
       
       var move_year = $(this).data('year');
@@ -173,7 +173,7 @@
         return false;
       } 
 
-      $(this).attr('href', href + href);
+      $(this).attr('href', href);
       //console.log($(this).attr('href'));
       $('#form-modal').modal('hide');
       $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
@@ -194,9 +194,9 @@
 
   // Enables or disables the package actions depending on how many are selected
   function enable_disable_asset_actions() {
-    if (selected_assets.size > 0) {
+    if (selected_assets.length > 0) {
       $('.move-assets-button').removeClass('disabled');
-      $('#button-text').html("Move " + selected_assets.size + " assets to fiscal year")
+      $('#button-text').html("Move " + selected_assets.length + " assets to fiscal year")
     } else {
       $('.move-assets-button').addClass('disabled');
     }
@@ -206,9 +206,12 @@
   function update_selected() {
     var selected = $('#assets-popup-table').bootstrapTable('getSelections');
     //console.log(selected);
-    selected_assets = new Set();
+    selected_assets = [];
     for (i = 0; i < selected.length; i++) {
-      selected_assets.add(selected[i][1]);
+      var selected_key = selected[i][1];
+      if(selected_assets.indexOf(selected_key) < 0) {
+        selected_assets.push(selected_key);
+      }
     }
     //console.log(selected_assets);
     enable_disable_asset_actions();
@@ -216,6 +219,9 @@
 
   // Removes an order identified by its object key from the set of orders selected
   function remove_from_selected(object_key) {
-    selected_assets.delete(object_key);
+    var asset_index = selected_assets.indexOf(object_key);
+    if(asset_index >= 0) {
+      selected_assets.splice(asset_index, 1);
+    }
     enable_disable_asset_actions();
   };
