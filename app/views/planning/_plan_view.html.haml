@@ -120,6 +120,12 @@
     configure_droppable();
   };
 
+  // Make fiscal years available in front-end
+  var fiscal_years = #{get_fiscal_years_collection.to_h.invert.to_json} || {};
+  function getFiscalYear(year) {
+    return fiscal_years[year] || year;
+  }
+
   // Creates drop targets for draggable items.
   var confirm_result = false;
   function configure_droppable() {
@@ -152,9 +158,13 @@
 
         // early replacemnt SOGR: need to prompt user to provide reason
         if(is_early_replacement) {
-          var msg = "You are moving ALI from " + ali_year + " to " + drop_year + ". This put some assets in early replacement, please provide an explanation:";
+          var msg = "You are moving an ALI from " + getFiscalYear(ali_year) + " to " + getFiscalYear(drop_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
           transam.bootbox_comment_dialog(msg, function(reason) {
-            if(reason != null) {
+            if(reason == null) {
+              return true;
+            } else if (reason.trim() == "") {
+              return false;
+            } else {
               move_ali(url, ali, action, drop_year, project, reason);
             }
           });

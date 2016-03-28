@@ -81,7 +81,7 @@
           %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{p.project_number}: Activity Line Items",  :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => '0'}}"}}
             %i.fa.fa-info-circle.fa-1-25x.text-info
           - if project_has_early_replacement_assets
-            %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Has assets in early replacement"}}
+            %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Contains early replacement assets"}}
               %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
 
   %tfoot

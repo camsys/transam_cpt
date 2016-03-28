@@ -4,7 +4,7 @@
   = format_as_integer(ali.assets.count)
   assets
   - if ali.has_early_replacement_assets?
-    %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'top', :title => "Has assets in early replacement"}}
+    %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'top', :title => "Contains early replacement assets"}}
       %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
 %p.text-center.bold= format_as_currency(ali.cost)
 %hr.ali
