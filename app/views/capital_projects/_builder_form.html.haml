@@ -7,6 +7,10 @@
   :file => :vertical_file_input,
   :boolean => :vertical_boolean}) do |f|
 
+  - if @organization_list.count > 1
+    .row
+      .col-md-12
+        = f.input :organization_id,   :collection => Organization.where(id: @organization_list)
   .row
     .col-md-6
       = f.input :asset_types,   :collection => @asset_types, :multiple => true, :as => :check_boxes

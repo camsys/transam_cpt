@@ -3,6 +3,9 @@ class BuilderProxy < Proxy
 
   # General state variables
 
+  # organization
+  attr_accessor     :organization_id
+
   # Starting FY to generate projects for
   attr_accessor     :start_fy
 

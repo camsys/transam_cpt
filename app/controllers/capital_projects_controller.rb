@@ -80,7 +80,12 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
       #puts options.inspect
       builder = CapitalProjectBuilder.new
-      num_created = builder.build(@organization, options)
+      if @builder_proxy.organization_id.blank?
+        num_created = builder.build(@organization, options)
+      else
+        org = Organization.get_typed_organization(Organization.find(@builder_proxy.organization_id))
+        num_created = builder.build(org, options)
+      end
 
       # Let the user know the results
       if num_created > 0
