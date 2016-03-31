@@ -185,7 +185,14 @@ class ActivityLineItem < ActiveRecord::Base
     if anticipated_cost > 0
       anticipated_cost
     else
-      total_asset_cost
+      if estimated_cost && estimated_cost > 0
+        Rails.logger.info "hit"
+      else
+        Rails.logger.info "miss"
+        self.estimated_cost = total_asset_cost
+        save
+      end
+      estimated_cost
     end
   end
 
@@ -242,6 +249,11 @@ class ActivityLineItem < ActiveRecord::Base
   end
 
   # Update the estimated cost of the ALI based on the assets
+  # Add and remove asset are handled in separate callbacks.
+  # This should be called when:
+  # * When Capital Project changes
+  # * When fiscal year changes
+  # 
   def update_estimated_cost
     self.estimated_cost = total_asset_cost
     save
