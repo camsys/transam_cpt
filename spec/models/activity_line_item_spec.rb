@@ -209,7 +209,7 @@ RSpec.describe ActivityLineItem, :type => :model do
                           
       # Fake a re-estimation based on changed capital project
       # by updating asset and then changing project
-      expect(test_line_item).to receive(:update_estimated_cost)
+      expect(test_line_item).to receive(:total_asset_cost)
       test_cp = create(:capital_project, fy_year: 2015)
       test_line_item.capital_project = test_cp
       test_line_item.save!
@@ -219,7 +219,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       test_line_item.assets << test_asset
       # Fake a re-estimation based on changed capital project
       # by updating asset and then changing project
-      expect(test_line_item).to receive(:update_estimated_cost)
+      expect(test_line_item).to receive(:total_asset_cost)
       test_line_item.fy_year = 2015
       test_line_item.save!
     end
@@ -229,7 +229,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       test_line_item.assets << test_asset
       # Fake a re-estimation based on changed capital project
       # by updating asset and then changing project
-      expect(test_line_item).not_to receive(:update_estimated_cost)
+      expect(test_line_item).not_to receive(:total_asset_cost)
       test_line_item.name = 'ALI 2'
       test_line_item.save!
     end
