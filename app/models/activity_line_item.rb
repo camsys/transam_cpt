@@ -28,6 +28,8 @@ class ActivityLineItem < ActiveRecord::Base
   # Clean up any HABTM associations before the ali is destroyed
   before_destroy { assets.clear }
 
+  after_update :after_update_callback
+  
   #------------------------------------------------------------------------------
   # Transients
   #------------------------------------------------------------------------------
@@ -297,6 +299,10 @@ class ActivityLineItem < ActiveRecord::Base
     save
   end
 
+  def after_update_callback
+    update_estimated_cost if self.capital_project_id_changed? || self.fy_year_changed?
+  end
+  
   # Set resonable defaults for a new activity line item
   def set_defaults
     self.active = self.active.nil? ? true : self.active

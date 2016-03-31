@@ -123,8 +123,10 @@ RSpec.describe ActivityLineItem, :type => :model do
         test_line_item.anticipated_cost = 123
         expect(test_line_item.cost).to eq(123)
       end
-      it 'not anticipated' do
+      it 'is not anticipated' do
+        expect(test_line_item.estimated_cost).to eq(0)
         expect(test_line_item.cost).to eq(test_line_item.total_asset_cost)
+        expect(test_line_item.estimated_cost).to eq(test_line_item.total_asset_cost)
       end
     end
     describe '.total_asset_cost', :skip do
@@ -184,21 +186,52 @@ RSpec.describe ActivityLineItem, :type => :model do
   describe 'callbacks' do
     it '.after_add_asset_callback' do
       expect(test_line_item.estimated_cost).to eq(0)
-      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123, :asset_type => AssetType.first, :asset_subtype => AssetSubtype.first)
+      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123,
+                          :asset_type => AssetType.first, :asset_subtype => AssetSubtype.first)
       test_line_item.assets << test_asset
       test_line_item.save!
 
       expect(test_line_item.estimated_cost).to eq(123)
     end
-    it '.after_remove_asset_callback', :skip do
+    it '.after_remove_asset_callback' do
       test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
       test_line_item.assets << test_asset
       test_line_item.save!
       expect(test_line_item.estimated_cost).to eq(123)
 
-      test_line_item.assets.last.destroy
+      test_line_item.assets.delete(test_asset)
       test_line_item.reload
       expect(test_line_item.estimated_cost).to eq(0)
+    end
+    it '.after_update_callback capital_project updated' do
+      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
+      test_line_item.assets << test_asset
+                          
+      # Fake a re-estimation based on changed capital project
+      # by updating asset and then changing project
+      expect(test_line_item).to receive(:update_estimated_cost)
+      test_cp = create(:capital_project, fy_year: 2015)
+      test_line_item.capital_project = test_cp
+      test_line_item.save!
+    end
+    it '.after_update_callback fy_year updated' do
+      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
+      test_line_item.assets << test_asset
+      # Fake a re-estimation based on changed capital project
+      # by updating asset and then changing project
+      expect(test_line_item).to receive(:update_estimated_cost)
+      test_line_item.fy_year = 2015
+      test_line_item.save!
+    end
+    it '.after_update_callback name updated' do
+      # Changing another field should not force a re-estimation
+      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
+      test_line_item.assets << test_asset
+      # Fake a re-estimation based on changed capital project
+      # by updating asset and then changing project
+      expect(test_line_item).not_to receive(:update_estimated_cost)
+      test_line_item.name = 'ALI 2'
+      test_line_item.save!
     end
   end
 
