@@ -46,7 +46,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :team_ali_code
 
   # Has 0 or more assets
-  has_and_belongs_to_many    :assets, -> { operational }, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
+  has_and_belongs_to_many    :assets, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
 
   # Has 0 or more milestones
   has_many    :milestones, :dependent => :destroy
