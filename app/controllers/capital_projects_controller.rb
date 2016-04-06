@@ -131,7 +131,12 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render :json => @projects }
+      format.json { 
+        render :json => {
+          :total => @projects.count,
+          :rows =>  @projects.limit(params[:limit]).offset(params[:offset]).as_json
+          }
+      }
       format.xls
     end
   end
