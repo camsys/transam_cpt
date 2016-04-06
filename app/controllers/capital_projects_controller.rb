@@ -132,10 +132,15 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     respond_to do |format|
       format.html # index.html.erb
       format.json { 
+        projects_json = @projects.limit(params[:limit]).offset(params[:offset]).collect{ |p| 
+          p.as_json.merge!({
+            popup_content: render_to_string(partial: 'capital_projects/activity_line_items_table', locals: {project: p, popup: '0'}, formats: 'html')
+          })
+        }
         render :json => {
           :total => @projects.count,
-          :rows =>  @projects.limit(params[:limit]).offset(params[:offset]).as_json
-          }
+          :rows =>  projects_json
+        }
       }
       format.xls
     end

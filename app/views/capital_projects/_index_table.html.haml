@@ -28,9 +28,9 @@
     %thead
       %tr
         %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}}Agency
-        %th.center{data: {field: 'fy_year'}} FY
-        %th.left{data: {field: 'project_number'}} Project
-        %th.center{data: {field: 'scope'}} Scope
+        %th.center.nowrap{data: {field: 'fy_year'}} FY
+        %th.left.nowrap{data: {field: 'project_number'}} Project
+        %th.center.nowrap{data: {field: 'scope'}} Scope
         %th.center{data: {field: 'is_emergency', formatter: 'boolean_formatter'}} Emgcy
         %th.center{data: {field: 'is_sogr', formatter: 'boolean_formatter'}} SOGR
         %th.center{data: {field: 'is_notional', formatter: 'boolean_formatter'}} Shadow
@@ -39,14 +39,15 @@
         %th.center{data: {field: 'type'}} Type
         %th.left{data: {field: 'title'}} Title
         -#%th.center Status
-        %th.right{data: {field: 'total_cost', formatter: 'currency_formatter'}} Cost
+        %th.right.nowrap{data: {field: 'total_cost', formatter: 'currency_formatter'}} Cost
 
-        %th.right{data: {field: 'state_funds', formatter: 'currency_formatter'}} State
-        %th.right{data: {field: 'federal_funds', formatter: 'currency_formatter'}} Federal
-        %th.right{data: {field: 'local_funds', formatter: 'currency_formatter'}} Local
-        %th.right{data: {field: 'total_funds', formatter: 'currency_formatter'}} Total
+        %th.right.nowrap{data: {field: 'state_funds', formatter: 'currency_formatter'}} State
+        %th.right.nowrap{data: {field: 'federal_funds', formatter: 'currency_formatter'}} Federal
+        %th.right.nowrap{data: {field: 'local_funds', formatter: 'currency_formatter'}} Local
+        %th.right.nowrap{data: {field: 'total_funds', formatter: 'currency_formatter'}} Total
 
-        %th.center{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
+        %th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
+        %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
 
 
 :javascript
@@ -121,6 +122,14 @@
 
   function currency_formatter(value) {
     return "$" + formatMoney(value);
+  }
+
+  function popup_formatter(value, data) {
+    if(value) {
+      return '<a class="transam-popover" data-container="body" data-content="' + value + '" data-html="true" data-placement="left" data-title="' + data.project_number + ': Activity Line Items" data-toggle="popover" tabindex="0" data-original-title="" title=""><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+    } else {
+      return "";
+    }
   }
 
   function early_replacement_flag_formatter(value) {
