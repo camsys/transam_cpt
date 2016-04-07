@@ -129,6 +129,15 @@ RSpec.describe ActivityLineItem, :type => :model do
         expect(test_line_item.estimated_cost).to eq(test_line_item.total_asset_cost)
       end
     end
+    it '.restore_estimated_cost' do 
+      test_line_item.anticipated_cost = 123
+      test_line_item.estimated_cost = 100
+      test_line_item.restore_estimated_cost
+
+      expect(test_line_item.anticipated_cost).to eq(0)
+      expect(test_line_item.estimated_cost).to eq(100)
+    end
+
     describe '.total_asset_cost', :skip do
       before(:each) do
 
