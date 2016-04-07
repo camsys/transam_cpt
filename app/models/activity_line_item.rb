@@ -184,7 +184,7 @@ class ActivityLineItem < ActiveRecord::Base
   end
 
   def cost
-    if anticipated_cost > 0
+    unless is_cost_estimated?
       anticipated_cost
     else
       if estimated_cost && estimated_cost > 0
@@ -201,6 +201,10 @@ class ActivityLineItem < ActiveRecord::Base
     unless num.blank?
       self[:anticipated_cost] = sanitize_to_int(num)
     end
+  end
+
+  def is_cost_estimated?
+    ! (anticipated_cost > 0)
   end
 
   def restore_estimated_cost

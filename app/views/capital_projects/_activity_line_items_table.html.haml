@@ -33,7 +33,7 @@
           %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
           %td.center.nowrap= ali.team_ali_code
           %td.right.nowrap= format_as_integer(ali.assets.count)
-          %td.right.nowrap= format_as_currency(ali.cost)
+          %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
           %td.right.nowrap= format_as_currency(ali.total_funds)
 
           %td.right.nowrap= format_as_currency(ali.federal_funds)
