@@ -135,6 +135,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
   def restore_cost
     @activity_line_item.restore_estimated_cost
+    redirect_to :back
   end
 
   # GET /activity_line_items/1/edit_milestones
