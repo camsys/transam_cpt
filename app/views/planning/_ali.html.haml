@@ -1,9 +1,10 @@
+- is_sogr = false if local_assigns[:is_sogr].nil?
 %p.text-center.bold= ali.name
 %p.text-center= ali.team_ali_code
 %p.text-center
   = format_as_integer(ali.assets.count)
   assets
-  - if ali.has_early_replacement_assets?
+  - if is_sogr && ali.has_early_replacement_assets?
     %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'top', :title => "Contains early replacement assets"}}
       %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
 %p.text-center.bold= format_as_currency(ali.cost)

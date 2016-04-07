@@ -18,7 +18,7 @@
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}}
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
-                - project_has_early_replacement_assets = true if ali.sogr? && ali.has_early_replacement_assets?
+                - project_has_early_replacement_assets = true if !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
                 = render 'ali_render_adaptor', project: project, ali: ali
           - if project_has_early_replacement_assets
             :javascript
