@@ -24,8 +24,6 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'GET builder' do
-    pending('TODO')
-    fail
     get :builder
   end
 
@@ -36,10 +34,9 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'GET index' do
-    pending('TODO')
-    fail
     get :index
   end
+
   it 'GET show' do
     get :show, :id => test_project.object_key
 
