@@ -2,13 +2,14 @@
 -#   = link_to edit_milestones_capital_project_activity_line_item_path(@project, @activity_line_item) do
 -#     %i.fa.fa-edit.fa-fw
 -#     = " Update the milestones"
+
 %li
   = link_to edit_cost_capital_project_activity_line_item_path(project, ali), :remote => true do
     %i.fa.fa-usd.fa-fw
     = " Update the expected cost"
 - if ali.anticipated_cost && ali.anticipated_cost > 0
   %li
-    = link_to restore_cost_capital_project_activity_line_item_path(project, ali), :remote => true do
+    = link_to restore_cost_capital_project_activity_line_item_path(project, ali) do
       %i.fa.fa-usd.fa-fw
       = " Restore SOGR Estimated Cost"
 - if can? :update, ali
