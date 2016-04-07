@@ -81,7 +81,9 @@
 :javascript
   var path = '#{capital_project_path("x")}';
   function row_style(row, index) {
-    return 'action-path';
+    return {
+      classes: 'action-path'
+    };
   };
 
   $('#' + '#{table_dom_id}').on('click-row.bs.table', function (e, row, $element) {
