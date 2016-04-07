@@ -260,6 +260,29 @@ class CapitalProject < ActiveRecord::Base
     super(fy_year)
   end
 
+  # Render the project as a JSON object -- overrides the default json encoding
+  def as_json(options={})
+    {
+      object_key: object_key,
+      agency: organization.try(:to_s),
+      fy_year: fiscal_year,
+      project_number: project_number,
+      scope: team_ali_code.try(:scope),
+      is_emergency: emergency?,
+      is_sogr: sogr?,
+      is_notional: notional?,
+      is_multi_year: multi_year?,
+      type: capital_project_type.try(:code),
+      title: title,
+      total_cost: total_cost,
+      state_funds: state_funds,
+      local_funds: local_funds,
+      federal_funds: federal_funds,
+      total_funds: total_funds,
+      has_early_replacement_assets: has_early_replacement_assets?
+    }
+  end
+
   def to_s
     project_number
   end

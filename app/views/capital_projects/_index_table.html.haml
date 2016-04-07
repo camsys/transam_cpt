@@ -1,117 +1,173 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
-%table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
-  :pagination => 'true',
-  :show_pagination_switch => 'true',
-  :page_list => "[5, 10, 20, 50, 100, 200]",
-  :page_size => current_user.num_table_rows,
-  :search => 'false',
-  :toolbar => "#table_actions",
-  :export_types => "['csv', 'txt', 'excel']",
-  :show_export => 'true',
-  :show_columns => 'true',
-  :show_footer => true,
-  :show_toggle => 'true'}}
-  %thead
-    %tr
-      - if @organization_list.count > 1
-        %th.left Agency
-      %th.center FY
-      %th.left Project
-      %th.center Scope
-      %th.center Emgcy
-      %th.center SOGR
-      %th.center Shadow
-      %th.center Multi Year
-
-      %th.center Type
-      %th.left Title
-      -#%th.center Status
-      %th.right Cost
-
-      %th.right State
-      %th.right Federal
-      %th.right Local
-      %th.right Total
-
-      %th.center
-
-  %tbody
-    - total_cost = 0
-    - total_state = 0
-    - total_federal = 0
-    - total_local = 0
-    - total_total = 0
-    - has_early_replacement_assets = false
-
-    - @projects.each do |p|
-      - total_cost += p.total_cost
-      - total_state += p.state_funds
-      - total_federal += p.federal_funds
-      - total_local += p.local_funds
-      - total_total += p.total_funds
-
-      - project_has_early_replacement_assets = p.has_early_replacement_assets?
-      - has_early_replacement_assets = true if project_has_early_replacement_assets
-
-      %tr{:id => p.object_key, :class => 'action-path'}
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :url => capital_projects_path(format: :json),
+    :card_view => "false",
+    :pagination => 'true',
+    :side_pagination => 'server',
+    :show_pagination_switch => 'true',
+    :page_number => '1',
+    :page_list => "[5, 10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
+    :search => 'false',
+    :show_columns => 'true',
+    :toolbar => "#table_actions",
+    :show_export => 'true',
+    :row_style => 'row_style',
+    :click_to_select => 'true',
+    :query_params => "query_params",
+    :show_export => 'true',
+    :id_field => 'object_key',
+    :export_types => "['csv', 'txt', 'excel']",
+    :state_save => 'true',
+    :state_save_id_table => "capital_projects_id",
+    :state_save_expire => "1y",
+    :single_select => 'true'}}
+    %thead
+      %tr
         - if @organization_list.count > 1
-          %td= p.organization
-        %td.center.nowrap= format_as_fiscal_year(p.fy_year)
-        %td.left.nowrap= p.project_number
-        %td.center.nowrap= p.team_ali_code.scope
-        %td.center= format_as_boolean(p.emergency?)
-        %td.center= format_as_boolean(p.sogr?)
-        %td.center= format_as_boolean(p.notional?)
-        %td.center= format_as_boolean(p.multi_year?)
-        %td.center= p.capital_project_type.code
+          %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}}Agency
+        %th.center.nowrap{data: {field: 'fy_year'}} FY
+        %th.left.nowrap{data: {field: 'project_number'}} Project
+        %th.center.nowrap{data: {field: 'scope'}} Scope
+        %th.center{data: {field: 'is_emergency', formatter: 'boolean_formatter'}} Emgcy
+        %th.center{data: {field: 'is_sogr', formatter: 'boolean_formatter'}} SOGR
+        %th.center{data: {field: 'is_notional', formatter: 'boolean_formatter'}} Shadow
+        %th.center{data: {field: 'is_multi_year', formatter: 'boolean_formatter'}} Multi Year
 
-        %td= p.title
-        -#%td.center= p.state.humanize
+        %th.center{data: {field: 'type'}} Type
+        %th.left{data: {field: 'title'}} Title
+        -#%th.center Status
+        %th.right.nowrap{data: {field: 'total_cost', formatter: 'currency_formatter'}} Cost
 
-        %td.right.nowrap= format_as_currency(p.total_cost)
+        %th.right.nowrap{data: {field: 'state_funds', formatter: 'currency_formatter'}} State
+        %th.right.nowrap{data: {field: 'federal_funds', formatter: 'currency_formatter'}} Federal
+        %th.right.nowrap{data: {field: 'local_funds', formatter: 'currency_formatter'}} Local
+        %th.right.nowrap{data: {field: 'total_funds', formatter: 'currency_formatter'}} Total
 
-        %td.right.nowrap= format_as_currency(p.state_funds)
-        %td.right.nowrap= format_as_currency(p.federal_funds)
-        %td.right.nowrap= format_as_currency(p.local_funds)
-        %td.right.nowrap= format_as_currency(p.total_funds)
+        %th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
+        %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
+    %tfoot
+      %tr
+        - if @organization_list.count > 1
+          %td{:colspan => 10}
+        - else
+          %td{:colspan => 9}
 
-        %td.center.project-icon-column
-          %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{p.project_number}: Activity Line Items",  :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => '0'}}"}}
-            %i.fa.fa-info-circle.fa-1-25x.text-info
-          - if project_has_early_replacement_assets
-            %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Contains early replacement assets"}}
-              %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
+        - total_cost = 0
+        - total_state = 0
+        - total_federal = 0
+        - total_local = 0
+        - total_total = 0
+        - has_early_replacement_assets = false
 
-  %tfoot
-    %tr
-      - if @organization_list.count > 1
-        %td{:colspan => 10}
-      - else
-        %td{:colspan => 9}
+        - @projects.each do |p|
+          - total_cost += p.total_cost
+          - total_state += p.state_funds
+          - total_federal += p.federal_funds
+          - total_local += p.local_funds
+          - total_total += p.total_funds
+        %td.right.nowrap= format_as_currency(total_cost)
+        %td.right.nowrap= format_as_currency(total_state)
+        %td.right.nowrap= format_as_currency(total_federal)
+        %td.right.nowrap= format_as_currency(total_local)
+        %td.right.nowrap= format_as_currency(total_total)
+        %td.center
+        %td.center
 
-      %td.right.nowrap= format_as_currency(total_cost)
-      %td.right.nowrap= format_as_currency(total_state)
-      %td.right.nowrap= format_as_currency(total_federal)
-      %td.right.nowrap= format_as_currency(total_local)
-      %td.right.nowrap= format_as_currency(total_total)
-      %td.center
-
-= render :partial => 'shared/table_scripts', :locals => {:table_id => table_dom_id, :path_pattern => capital_project_path("xxx")}
 
 :javascript
+  var path = '#{capital_project_path("x")}';
+  function row_style(row, index) {
+    return {
+      classes: 'action-path'
+    };
+  };
 
-  $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+  $('#' + '#{table_dom_id}').on('click-row.bs.table', function (e, row, $element) {
+    var url = path.replace("x", row['object_key']);
+    document.location.href = url;
+  }).on('post-body.bs.table', function () {
     $('.transam-popover').popover({
       trigger: 'hover'
     });
 
     $('.transam-tooltip').tooltip();
-
-    if(#{has_early_replacement_assets}) {
-      $('.project-icon-column').width(40);
-    }
   });
+
+  $(window).resize(function() {
+    $('#' + '#{table_dom_id}').bootstrapTable('resetView');
+  });
+
+  var org_filter = #{@org_filter || []};
+  var fiscal_year_filter = #{@fiscal_year_filter || []};
+  var capital_project_flag_filter = #{@capital_project_flag_filter || []};
+  var capital_project_type_filter = #{@capital_project_type_filter || []};
+  var asset_subtype_filter = #{@asset_subtype_filter || []};
+  
+  function query_params(params) {
+    if(org_filter.length > 0) {
+      params.org_filter = org_filter;
+    }
+
+    if(fiscal_year_filter.length > 0) {
+      params.fiscal_year_filter = fiscal_year_filter;
+    }
+
+    if(capital_project_flag_filter.length > 0) {
+      params.capital_project_flag_filter = capital_project_flag_filter;
+    }
+
+    if(capital_project_type_filter.length > 0) {
+      params.capital_project_type_filter = capital_project_type_filter;
+    }
+
+    if(asset_subtype_filter.length > 0) {
+      params.asset_subtype_filter = asset_subtype_filter;
+    }
+
+    return params;
+  }
+
+  var formatMoney = function(n, c, d, t) {
+    var c = isNaN(c = Math.abs(c)) ? 0 : c, 
+    d = d == undefined ? "." : d, 
+    t = t == undefined ? "," : t, 
+    s = n < 0 ? "-" : "", 
+    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+    j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+  }
+
+  function boolean_formatter(value) {
+    if (value) {
+      // add hidden div for exporting
+      return '<i class="fa fa-check"></i><div style = "visibility: hidden;">Yes</div>';
+    } else {
+      return '<div style = "visibility: hidden;">No</div>';
+    }
+  }
+
+  function currency_formatter(value) {
+    return "$" + formatMoney(value);
+  }
+
+  function popup_formatter(value, data) {
+    if(value) {
+      return '<a class="transam-popover" data-container="body" data-content="' + value + '" data-html="true" data-placement="left" data-title="' + data.project_number + ': Activity Line Items" data-toggle="popover" tabindex="0" data-original-title="" title=""><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+    } else {
+      return "";
+    }
+  }
+
+  function early_replacement_flag_formatter(value) {
+    if(value) {
+      return '<a class="transam-tooltip" data-placement="left" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }
 
 

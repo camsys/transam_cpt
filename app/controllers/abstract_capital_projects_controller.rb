@@ -80,6 +80,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
    end
 
    @fiscal_year_filter = params[:fiscal_year_filter]
+   
    if @fiscal_year_filter.blank?
      @fiscal_year_filter = []
    else
