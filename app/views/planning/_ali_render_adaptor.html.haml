@@ -1,0 +1,6 @@
+- if ali.notional?
+  = render :partial => 'planning/notional_ali', :locals => {:project => project, :ali => ali}
+- elsif ali.sogr?
+  = render :partial => 'planning/sogr_ali', :locals => {:project => project, :ali => ali}
+- else
+  = render :partial => 'planning/other_ali', :locals => {:project => project, :ali => ali}

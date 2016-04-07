@@ -191,8 +191,7 @@ class ActivityLineItem < ActiveRecord::Base
         Rails.logger.info "hit"
       else
         Rails.logger.info "miss"
-        self.estimated_cost = total_asset_cost
-        save
+        update_estimated_cost
       end
       estimated_cost
     end
@@ -202,6 +201,12 @@ class ActivityLineItem < ActiveRecord::Base
     unless num.blank?
       self[:anticipated_cost] = sanitize_to_int(num)
     end
+  end
+
+  def restore_estimated_cost
+    self.anticipated_cost = 0
+    self.estimated_cost = total_asset_cost unless estimated_cost && estimated_cost > 0
+    save
   end
 
   # Returns the total replacment or rehabilitation costs of the assets in this ALI
