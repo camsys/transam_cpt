@@ -56,24 +56,11 @@
         - else
           %td{:colspan => 9}
 
-        - total_cost = 0
-        - total_state = 0
-        - total_federal = 0
-        - total_local = 0
-        - total_total = 0
-        - has_early_replacement_assets = false
-
-        - @projects.each do |p|
-          - total_cost += p.total_cost
-          - total_state += p.state_funds
-          - total_federal += p.federal_funds
-          - total_local += p.local_funds
-          - total_total += p.total_funds
-        %td.right.nowrap= format_as_currency(total_cost)
-        %td.right.nowrap= format_as_currency(total_state)
-        %td.right.nowrap= format_as_currency(total_federal)
-        %td.right.nowrap= format_as_currency(total_local)
-        %td.right.nowrap= format_as_currency(total_total)
+        %td.right.nowrap= format_as_currency(@total_projects_cost)
+        %td.right.nowrap= format_as_currency(@total_projects_state_funds)
+        %td.right.nowrap= format_as_currency(@total_projects_federal_funds)
+        %td.right.nowrap= format_as_currency(@total_projects_local_funds)
+        %td.right.nowrap= format_as_currency(@total_projects_funds)
         %td.center
         %td.center
 

@@ -161,6 +161,33 @@ class CapitalProject < ActiveRecord::Base
     FORM_PARAMS
   end
 
+  def self.total_cost
+    alis = self.joins(:activity_line_items)
+    alis.where("anticipated_cost > 0").sum(:anticipated_cost) + alis.where.not("anticipated_cost > 0").sum(:estimated_cost)
+  end
+
+  def self.total_funds
+    self.joins(activity_line_items: :funding_plans).sum("funding_plans.amount")
+  end
+
+  def self.total_federal_funds
+    0
+
+    #TODO: revisit when funding_source is enabled, refer to instance method .federal_funds
+  end
+
+  def self.total_state_funds
+    0
+
+    #TODO: revisit when funding_source is enabled, refer to instance method .state_funds
+  end
+
+  def self.total_local_funds
+    0
+
+    #TODO: revisit when funding_source is enabled, refer to instance method .local_funds
+  end
+
   #------------------------------------------------------------------------------
   #
   # Instance Methods
@@ -212,27 +239,28 @@ class CapitalProject < ActiveRecord::Base
   end
 
   def state_funds
-    val = 0
-    activity_line_items.each {|x| val += x.state_funds}
-    val
+    0
+
+    # TODO: reeable following line when funding_source is enabled
+    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.state_match_required / 100.0)")
   end
 
   def federal_funds
-    val = 0
-    activity_line_items.each {|x| val += x.federal_funds}
-    val
+    0
+
+    # TODO: reeable following line when funding_source is enabled
+    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.federal_match_required / 100.0)")
   end
 
   def local_funds
-    val = 0
-    activity_line_items.each {|x| val += x.local_funds}
-    val
+    0
+
+    # TODO: reeable following line when funding_source is enabled
+    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.local_match_required / 100.0)")
   end
 
   def total_funds
-    val = 0
-    activity_line_items.each {|x| val += x.total_funds}
-    val
+    activity_line_items.joins(:funding_plans).sum("funding_plans.amount")
   end
 
   # Returns the total cost of the project. If a fiscal year is added the costs
@@ -240,14 +268,14 @@ class CapitalProject < ActiveRecord::Base
   # projects
   def total_cost selected_fy_year=nil
 
-    val = 0
-    if multi_year? and selected_fy_year.blank?
-      activity_line_items.each{|x| val += x.cost }
+    alis = if multi_year? && selected_fy_year.blank?
+      activity_line_items
     else
       selected_fy_year ||= self.fy_year
-      activity_line_items.where(:fy_year => selected_fy_year).each{|x| val += x.cost }
+      activity_line_items.where(:fy_year => selected_fy_year)
     end
-    val
+    
+    alis.where("anticipated_cost > 0").sum(:anticipated_cost) + alis.where.not("anticipated_cost > 0").sum(:estimated_cost)
   end
 
   # Returns the amount that is not yet funded

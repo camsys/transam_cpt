@@ -138,9 +138,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Returns the total amount of funding planned for this ali
   def total_funds
-    val = 0
-    funding_plans.each {|x| val += x.amount}
-    val
+    funding_plans.sum(:amount)
   end
 
   def funds_required
@@ -149,23 +147,26 @@ class ActivityLineItem < ActiveRecord::Base
 
   # Returns the total value of federal funds requested
   def federal_funds
-    val = 0
-    funding_plans.each {|x| val += x.federal_share}
-    val
+    0
+
+    # TODO: reeable following line when funding_source is enabled
+    #funding_plans.joins(:funding_source).sum("amount * (funding_sources.federal_match_required / 100.0)")
   end
 
   # Returns the total value of state funds requested
   def state_funds
-    val = 0
-    funding_plans.each {|x| val += x.state_share}
-    val
+    0
+
+    # TODO: reeable following line when funding_source is enabled
+    #funding_plans.joins(:funding_source).sum("amount * (funding_sources.state_match_required / 100.0)")
   end
 
   # Returns the total value of local funds requested
   def local_funds
-    val = 0
-    funding_plans.each {|x| val += x.local_share}
-    val
+    0
+
+    # TODO: reeable following line when funding_source is enabled
+    #funding_plans.joins(:funding_source).sum("amount * (funding_sources.local_match_required / 100.0)")
   end
   def federal_percentage
     100.0 * (federal_funds / total_funds) if total_funds.to_i > 0
