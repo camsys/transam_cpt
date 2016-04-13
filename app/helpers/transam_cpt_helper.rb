@@ -11,15 +11,7 @@ module TransamCptHelper
     end
   end
 
-  def sum_projects_cost_by_year projects
-    alis = projects.joins(:activity_line_items)
-    anticipated_cost_by_year = alis.where("anticipated_cost > 0").group("activity_line_items.fy_year").sum(:anticipated_cost) 
-    estimated_cost_by_year = alis.where.not("anticipated_cost > 0").group("activity_line_items.fy_year").sum(:estimated_cost)
-    
-    # merge and sum by same year
-    anticipated_cost_by_year.merge!(estimated_cost_by_year) { |k, o, n| o + n }
-  end
-
+  #deprecated
   def sum_projects_cost projects, year
     val = 0
     projects.each{|x| val += x.total_cost(year)}

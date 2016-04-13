@@ -162,8 +162,7 @@ class CapitalProject < ActiveRecord::Base
   end
 
   def self.total_cost
-    alis = self.joins(:activity_line_items)
-    alis.where("anticipated_cost > 0").sum(:anticipated_cost) + alis.where.not("anticipated_cost > 0").sum(:estimated_cost)
+    self.joins(:activity_line_items).sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
   end
 
   def self.total_funds
@@ -241,21 +240,21 @@ class CapitalProject < ActiveRecord::Base
   def state_funds
     0
 
-    # TODO: reeable following line when funding_source is enabled
+    # TODO: re-enable following line when funding_source is enabled
     #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.state_match_required / 100.0)")
   end
 
   def federal_funds
     0
 
-    # TODO: reeable following line when funding_source is enabled
+    # TODO: re-enable following line when funding_source is enabled
     #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.federal_match_required / 100.0)")
   end
 
   def local_funds
     0
 
-    # TODO: reeable following line when funding_source is enabled
+    # TODO: re-enable following line when funding_source is enabled
     #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.local_match_required / 100.0)")
   end
 
@@ -275,7 +274,7 @@ class CapitalProject < ActiveRecord::Base
       activity_line_items.where(:fy_year => selected_fy_year)
     end
     
-    alis.where("anticipated_cost > 0").sum(:anticipated_cost) + alis.where.not("anticipated_cost > 0").sum(:estimated_cost)
+    alis.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
   end
 
   # Returns the amount that is not yet funded

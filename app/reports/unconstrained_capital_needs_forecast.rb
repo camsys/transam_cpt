@@ -34,7 +34,7 @@ class UnconstrainedCapitalNeedsForecast < AbstractReport
       row << fiscal_year(year)
       # get the capital projects for this analysis year and state
       alis = ActivityLineItem.where('fy_year = ? AND capital_project_id IN (?)', year, capital_project_ids)
-      total = alis.where("anticipated_cost > 0").sum(:anticipated_cost) + alis.where.not("anticipated_cost > 0").sum(:estimated_cost)
+      total = alis.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
       row << total
       a << row
     end
