@@ -84,7 +84,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
    if @fiscal_year_filter.blank?
      @fiscal_year_filter = []
    else
-     conditions << 'fy_year IN (?)'
+     conditions << 'capital_projects.fy_year IN (?)'
      values << @fiscal_year_filter
    end
 
@@ -128,13 +128,13 @@ class AbstractCapitalProjectsController < OrganizationAwareController
      asset_ids = Asset.where('asset_subtype_id IN (?) AND organization_id IN (?)', @asset_subtype_filter, values[0]).pluck(:id)
      unless asset_ids.empty?
        # now get CPs by subselecting on CP <- ALI <- ALI-Assets
-       query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
+       query = "SELECT DISTINCT(id) FROM capital_projects WHERE capital_projects.id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE activity_line_items.id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
        cps = CapitalProject.connection.execute(query, :skip_logging)
        cps.each do |cp|
          capital_project_ids << cp[0]
        end
      end
-     conditions << 'id IN (?)'
+     conditions << 'capital_projects.id IN (?)'
      values << capital_project_ids.uniq  # make sure there are no duplicates
    end
 
