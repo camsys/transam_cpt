@@ -96,22 +96,22 @@ RSpec.describe ActivityLineItem, :type => :model do
       expect(test_line_item.funds_required).to eq(123)
     end
     it '.federal_funds' do
-      expect(test_line_item.federal_funds).to eq(test_line_item.funding_plans.first.federal_share)
+      expect(test_line_item.federal_funds).to eq(0)
     end
     it '.state_funds' do
-      expect(test_line_item.state_funds).to eq(test_line_item.funding_plans.first.state_share)
+      expect(test_line_item.state_funds).to eq(0)
     end
     it '.local_funds' do
-      expect(test_line_item.local_funds).to eq(test_line_item.funding_plans.first.local_share)
+      expect(test_line_item.local_funds).to eq(0)
     end
     it '.federal_percentage' do
-      expect(test_line_item.federal_percentage).to eq(test_line_item.funding_plans.first.federal_share)
+      expect(test_line_item.federal_percentage).to eq(0)
     end
     it '.state_percentage' do
-      expect(test_line_item.state_percentage).to eq(test_line_item.funding_plans.first.state_share)
+      expect(test_line_item.state_percentage).to eq(0)
     end
     it '.local_percentage' do
-      expect(test_line_item.local_percentage).to eq(test_line_item.funding_plans.first.local_share)
+      expect(test_line_item.local_percentage).to eq(0)
     end
     it '.cost_difference' do
       test_line_item.update!(:anticipated_cost => 456, :estimated_cost => 123)

@@ -11,6 +11,7 @@ module TransamCptHelper
     end
   end
 
+  #deprecated
   def sum_projects_cost projects, year
     val = 0
     projects.each{|x| val += x.total_cost(year)}

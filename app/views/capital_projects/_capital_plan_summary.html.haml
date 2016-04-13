@@ -9,9 +9,10 @@
   %table.table.table-condensed#plan-summary-table
     %thead
       %tr
+        - cost_by_year = @total_projects_cost_by_year || {}
         - @years.each do |year|
           %th.col-sm-1.center.nowrap
             = format_as_fiscal_year(year)
             <br/>
-            .well.well-sm.bold= format_as_currency(sum_projects_cost(@projects, year))
+            .well.well-sm.bold= format_as_currency(cost_by_year[year])
     %tbody

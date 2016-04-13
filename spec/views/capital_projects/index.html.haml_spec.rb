@@ -6,7 +6,7 @@ describe "capital_projects/index.html.haml", :type => :view do
     assign(:organization_list, [])
     assign(:fiscal_years, [2010])
     assign(:fiscal_year_filter, 2010)
-    assign(:projects, [])
+    assign(:projects, CapitalProject.none)
     assign(:report, Report.new(:id => 1))
     assign(:years, [])
     assign(:data, {:labels => ['test_label'], :data => []})

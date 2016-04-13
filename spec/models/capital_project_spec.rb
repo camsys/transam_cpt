@@ -135,6 +135,36 @@ RSpec.describe CapitalProject, :type => :model do
       test_project.save!
     end
 
+    it '#state_funds' do
+      expect(CapitalProject.where(id: test_project.id).total_state_funds).to eq(test_line_item.state_funds)
+    end
+    it '#federal_funds' do
+      expect(CapitalProject.where(id: test_project.id).total_federal_funds).to eq(test_line_item.federal_funds)
+    end
+    it '#local_funds' do
+      expect(CapitalProject.where(id: test_project.id).total_local_funds).to eq(test_line_item.local_funds)
+    end
+    it '#total_funds' do
+      expect(CapitalProject.where(id: test_project.id).total_funds).to eq(test_line_item.total_funds)
+    end
+
+    it '#total_cost' do 
+      project_1 = create(:capital_project)
+      project_2 = create(:capital_project)
+
+      project_1.activity_line_items << create(:activity_line_item, anticipated_cost: 100)
+      project_1.save!
+
+      ali_with_estimated_cost = create(:activity_line_item, anticipated_cost: 0)
+      project_2.activity_line_items << ali_with_estimated_cost
+      project_2.save!
+      # I have to explicitly set it after project save otherwise the estimated_cost will be overrided by ActivityLineItem#after_update_callback due to project change
+      ali_with_estimated_cost.estimated_cost = 200 
+      ali_with_estimated_cost.save!
+
+      expect(CapitalProject.where(id: [project_1.id, project_2.id]).total_cost).to eq(300)
+    end
+
     it '.state_funds' do
       expect(test_project.state_funds).to eq(test_line_item.state_funds)
     end

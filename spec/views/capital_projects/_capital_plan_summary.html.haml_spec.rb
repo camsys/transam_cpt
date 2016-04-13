@@ -4,7 +4,7 @@ describe "capital_projects/_capital_plan_summary.html.haml", :type => :view do
   it 'list' do
     test_proj = create(:capital_project, :fy_year => 2010)
     assign(:years, [2010])
-    assign(:projects, [test_proj])
+    assign(:projects, CapitalProject.where(id: test_proj.id))
     render
 
     expect(rendered).to have_content('FY 10-11')
