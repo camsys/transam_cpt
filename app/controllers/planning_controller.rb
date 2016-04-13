@@ -44,6 +44,7 @@ class PlanningController < AbstractCapitalProjectsController
 
     get_projects
 
+    @total_projects_cost_by_year = @projects.joins(:activity_line_items).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
   end
 
   #-----------------------------------------------------------------------------
