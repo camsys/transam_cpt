@@ -3,7 +3,7 @@
     %thead
       %tr
         %th.left Project
-        - cost_by_year = @total_projects_cost_by_year || {}
+        - cost_by_year = @projects.joins(:activity_line_items).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE) || {}
         - @years.each do |year|
           %th.center.nowrap
             = format_as_fiscal_year(year)
