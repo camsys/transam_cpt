@@ -41,10 +41,8 @@ class PlanningController < AbstractCapitalProjectsController
   # fiscal year.
   #-----------------------------------------------------------------------------
   def index
-
-    get_projects
-
-    @total_projects_cost_by_year = @projects.joins(:activity_line_items).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
+    prepare_projects_display
+    
   end
 
   #-----------------------------------------------------------------------------
@@ -132,7 +130,7 @@ class PlanningController < AbstractCapitalProjectsController
       notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
     end
 
-    get_projects
+    prepare_projects_display
 
   end
 
@@ -236,17 +234,57 @@ class PlanningController < AbstractCapitalProjectsController
       notify_user :notice,  "The ALI was successfully updated."
     end
 
-    get_projects
+    prepare_projects_display
 
   end
 
   #-----------------------------------------------------------------------------
   protected
   #-----------------------------------------------------------------------------
+  # prepare data and sessions for displaying projects on planner page
+  def prepare_projects_display
+    # query projects
+    get_projects
 
+    # check if reaches threshold
+    @project_display_threshold_reached = @projects.count > max_projects_display_threshold
+    
+    # when reach the threshold, we only display one year's projects at a time
+    # pass :display_fy_year in URL to request for a year's projects
+    @display_fy_year = if !@project_display_threshold_reached
+      # if not reach the max threshold, then display projects in all years
+      nil
+    elsif !params[:display_fy_year].blank?
+      # otherwise, check if explicity param exist in URL
+      params[:display_fy_year].to_i 
+    elsif !session[:display_fy_year].blank?
+      # otherwise, use previous session
+      session[:display_fy_year]
+    else
+      # otherwise, use first available year
+      @years.first
+    end
+
+    # update session
+    session[:display_fy_year] = @display_fy_year
+
+    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.") if @project_display_threshold_reached
+  end
 
   #-----------------------------------------------------------------------------
   private
   #-----------------------------------------------------------------------------
+  
+  # max amount of projects on planner page
+  def max_projects_display_threshold
+    if Rails.application.config.respond_to?(:max_count_display_on_project_planner) 
+      config_value = Rails.application.config.max_count_display_on_project_planner
+      if config_value.is_a?(Integer) &&  config_value > 0
+        return config_value
+      end
+    end
+
+    100
+  end
 
 end

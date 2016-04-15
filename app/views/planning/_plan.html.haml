@@ -1,23 +1,39 @@
+:css
+  .planner-project-column {
+    min-width: 200px !important;
+    max-width: 300px !important;
+  }
 .table-responsive
   %table.table.table-condensed#plan-table
     %thead
       %tr
         %th.left Project
-        - cost_by_year = @total_projects_cost_by_year || {}
+        - cost_by_year = @projects.joins(:activity_line_items).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE) || {}
         - @years.each do |year|
           %th.center.nowrap
-            = format_as_fiscal_year(year)
+            - if @project_display_threshold_reached
+              - if @display_fy_year == year
+                %button.btn.btn-default.disabled.bold
+                  = format_as_fiscal_year(year)
+              - else
+                = link_to format_as_fiscal_year(year), params.merge({display_fy_year: year}), class: "btn btn-info bold project-planner-year-link", data: {year: year}, title: "Click to load #{format_as_fiscal_year(year)} projects"
+            - else
+              = format_as_fiscal_year(year)
+            
             %br
             .well.well-sm.bold= format_as_currency(cost_by_year[year])
     %tbody
-      - @projects.find_each do |project|
+      - projs = @projects
+      - projs = projs.where("capital_projects.fy_year": @display_fy_year) if @display_fy_year
+      - projs.each do |project|
         %tr{:data => {:project => project.object_key}}
           - project_has_early_replacement_assets = false
-          %td.left.nowrap
+          %td.left.planner-project-column
             = render :partial => 'plan_project_detail', :locals => {:project => project}
 
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}}
+              - next if @display_fy_year != year if @display_fy_year
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
                 - project_has_early_replacement_assets = true if !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
                 = render 'ali_render_adaptor', project: project, ali: ali
@@ -26,9 +42,21 @@
               $('tr[data-project="#{project.object_key}"] .project-early-replacement-warning').html(
               '<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' +
               '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
+
+- if @project_display_threshold_reached
+  :javascript
+    $(function() {
+      $('.project-planner-year-link').click(function() {
+        var year = $(this).data('year');
+        var current_url = window.location.href;
+      });
+    });
+
 :javascript
 
   var org_filter = #{@org_filter};
   var capital_project_type_filter = #{@capital_project_type_filter};
   var capital_project_flag_filter = #{@capital_project_flag_filter};
   var asset_subtype_filter = #{@asset_subtype_filter};
+
+

@@ -4,10 +4,10 @@
 %span.project-early-replacement-warning
 = format_field("Total Cost", format_as_currency(project.total_cost))
 = format_field("Type", project.capital_project_type)
+= format_field("Emergency", format_as_yes_no(project.emergency?)) if project.emergency?
 = format_field("SOGR", format_as_yes_no(project.sogr?))
-= format_field("Shadow", format_as_yes_no(project.notional?))
-= format_field("Multi year", format_as_yes_no(project.multi_year?))
-= format_field("Emergency", format_as_yes_no(project.emergency))
+= format_field("Shadow", format_as_yes_no(project.notional?)) if project.notional?
+= format_field("Multi year", format_as_yes_no(project.multi_year?)) if project.multi_year?
 %br
 .button-toolbar{:role => 'toolbar'}
   - if can? :add_alis, project
