@@ -17,8 +17,8 @@
     .col-md-6
       = f.input :start_fy, :required => true,      :collection => @fiscal_years, :include_blank => false, :label => "Starting Fiscal Year"
 
-  - builder_warning_style = ""
-  - builder_warning_style = "display: none;" if @organization_list.count > 1 && @organization.has_sogr_projects?
+  - builder_warning_style = "display: none;"
+  - builder_warning_style = "" if @organization_list.count == 1 && @organization.has_sogr_projects?
   .row.builder-warning{style: builder_warning_style}
     .col-md-12
       = render 'builder_warning'
@@ -27,45 +27,43 @@
 
 
 :javascript
-  var org_id = 0;
-  var asset_types = JSON.parse('#{@asset_types.to_json}');
-  var current_planning_year = #{current_planning_year_year};
-  var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
+  $(function(){
+    var org_id = 0;
+    var asset_types = JSON.parse('#{@asset_types.to_json}');
+    var current_planning_year = #{current_planning_year_year};
+    var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
 
-  //console.log(asset_types);
+    // Detect changes in the org selected
+    $('#builder_proxy_organization_id').on('change', function(event) {
+      var id = $(this).val();
 
-  // Detect changes in the org selected
-  $('#builder_proxy_organization_id').on('change', function(event) {
-    var id = $(this).val();
+      if (id != org_id) {
+        // store the selected org
+        org_id = id;
 
-    if (id != org_id) {
-      // store the selected org
-      org_id = id;
-
-      var org_has_sogr_project = has_sogr_project_org_list[org_id];
-      var fy_year = current_planning_year;
-      if(org_has_sogr_project) {
-        $('.builder-warning').show();
-        fy_year += 3;
-      } else {
-        $('.builder-warning').hide();
-      }
-
-      // Reset
-      $('#builder_proxy_asset_type_id').val('');
-      $('#builder_proxy_start_fy').val(fy_year);
-
-      // Set asset types of org only
-      for (var j = 0; j < asset_types.length; j++){
-        type = asset_types[j]
-
-        if ($.inArray( parseInt(id), type.orgs ) >= 0) {
-          $('#builder_proxy_asset_types_'+type.id).parent().parent().show();
+        var org_has_sogr_project = has_sogr_project_org_list[org_id];
+        var fy_year = current_planning_year;
+        if(org_has_sogr_project) {
+          $('.builder-warning').show();
+          fy_year += 3;
         } else {
-          $('#builder_proxy_asset_types_'+type.id).parent().parent().hide(); // hide whole span
+          $('.builder-warning').hide();
+        }
+
+        // Reset
+        $('#builder_proxy_asset_type_id').val('');
+        $('#builder_proxy_start_fy').val(fy_year);
+
+        // Set asset types of org only
+        for (var j = 0; j < asset_types.length; j++){
+          type = asset_types[j]
+
+          if ($.inArray( parseInt(id), type.orgs ) >= 0) {
+            $('#builder_proxy_asset_types_'+type.id).parent().parent().show();
+          } else {
+            $('#builder_proxy_asset_types_'+type.id).parent().parent().hide(); // hide whole span
+          }
         }
       }
-
-      // TODO show/hide builder form
-    }
+    });
   });

@@ -67,9 +67,6 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       @has_sogr_project_org_list = CapitalProject.joins(:organization).where(organization_id: @organization_list).sogr.group(:organization_id).count
     end
 
-    # TODO get info for orgs if organization_list > 0 for determining if has_sogr_projects?. needed for view
-
-
     @message = "Creating SOGR capital projects. This process might take a while."
 
   end
