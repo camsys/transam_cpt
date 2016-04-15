@@ -268,6 +268,7 @@ class PlanningController < AbstractCapitalProjectsController
     # update session
     session[:display_fy_year] = @display_fy_year
 
+    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.") if @project_display_threshold_reached
   end
 
   #-----------------------------------------------------------------------------

@@ -45,8 +45,6 @@
 
 - if @project_display_threshold_reached
   :javascript
-    transam.show_popup_message("Too many projects", "The amount of projects exceeds the display threshold, only the projrects for #{format_as_fiscal_year(@display_fy_year)} are displayed. Please click the year button at page top to view a different year's projects!");
-
     $(function() {
       $('.project-planner-year-link').click(function() {
         var year = $(this).data('year');
