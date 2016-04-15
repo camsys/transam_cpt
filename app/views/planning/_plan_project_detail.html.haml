@@ -1,6 +1,4 @@
-= link_to project.title, capital_project_path(project)
-%br
-= project.project_number
+= link_to project.project_number, capital_project_path(project), title: project.title
 %span.project-early-replacement-warning
 = format_field("Total Cost", format_as_currency(project.total_cost))
 = format_field("Type", project.capital_project_type)
