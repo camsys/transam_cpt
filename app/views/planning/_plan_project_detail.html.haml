@@ -9,7 +9,7 @@
 = format_field("Shadow", format_as_yes_no(project.notional?)) if project.notional?
 = format_field("Multi year", format_as_yes_no(project.multi_year?)) if project.multi_year?
 %br
-.button-toolbar{:role => 'toolbar'}
+.row.button-toolbar{:role => 'toolbar', :style => "padding-right: 5px;"}
   - if can? :add_alis, project
     .btn-group.pull-right.panel-action
       = link_to load_view_capital_project_path(project, :view => 'new_activity_line_item'), :remote => true, :role => 'button', :class => 'btn btn-default btn-xs', :role => 'button', :title => 'Add new ALI...' do
