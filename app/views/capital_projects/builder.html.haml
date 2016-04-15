@@ -24,11 +24,14 @@
     // Hide the processing div and show the form
     $('#processing').hide();
     $('#form').show();
+  });
 
-    // install a submit handler for the form
-    $('#new_builder_proxy').submit(function() {
+  // jquery validations
+  $('#new_builder_proxy').validate({
+    ignore: [], //validate hidden fields
+    submitHandler: function(form) {
       $('#processing').show();
       $('#form').hide();
-      return true;
-    });
+      form.submit();
+    }
   });
