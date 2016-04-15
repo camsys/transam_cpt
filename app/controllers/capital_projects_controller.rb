@@ -45,15 +45,28 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     # Select the asset types that they are allowed to build. This is narrowed down to only
     # asset types they own and those which are fta vehicles
     builder = CapitalProjectBuilder.new
-    @asset_types = builder.eligible_asset_types(@organization)
+    #@asset_types = builder.eligible_asset_types(@organization)
+    @asset_types = []
+    AssetType.all.each do |type|
+       klass = type.class_name.constantize
+      if klass.where(organization: @organization_list).count > 0
+        @asset_types << {id: type.id, name: type.to_s, orgs: @organization_list.select{|o| klass.where(organization_id: o).count > 0}}
+      end
+    end
+
     @fiscal_years = get_fiscal_years
     @builder_proxy = BuilderProxy.new
 
-    if @organization.has_sogr_projects?
-      @builder_proxy.start_fy = current_planning_year_year + 3
-    else
-      @builder_proxy.start_fy = current_planning_year_year
+    if @organization_list.count == 1
+      if @organization.has_sogr_projects?
+        @builder_proxy.start_fy = current_planning_year_year + 3
+      else
+        @builder_proxy.start_fy = current_planning_year_year
+      end
     end
+
+    # TODO get info for orgs if organization_list > 0 for determining if has_sogr_projects?. needed for view
+
 
     @message = "Creating SOGR capital projects. This process might take a while."
 
@@ -140,8 +153,8 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { 
-        projects_json = @projects.limit(params[:limit]).offset(params[:offset]).collect{ |p| 
+      format.json {
+        projects_json = @projects.limit(params[:limit]).offset(params[:offset]).collect{ |p|
           p.as_json.merge!({
             popup_content: render_to_string(partial: 'capital_projects/activity_line_items_table', locals: {project: p, popup: '0'}, formats: 'html')
           })
