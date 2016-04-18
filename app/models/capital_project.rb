@@ -27,6 +27,8 @@ class CapitalProject < ActiveRecord::Base
     create_project_number
   end
 
+  after_update :after_update_callback
+
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -363,6 +365,25 @@ class CapitalProject < ActiveRecord::Base
     # Set the fiscal year to the current fiscal year which can be different from
     # the calendar year
     self.fy_year    ||= current_fiscal_year_year
+  end
+
+  def after_update_callback
+    unless self.sogr?
+      # If a multiyear project is changed to a single year project, all ALIs must be shifted to the Project FY.
+      update_all_ali_fy = true if self.multi_year_changed? && !self.multi_year
+
+      # After the FY change, Any ALI in a year PRIOR to the Project FY should be shifted to the new Project FY.
+      update_prior_project_fy_ali_fy = true if self.fy_year_changed?
+
+      proj_fy_year = self.fy_year
+      to_update_alis = if update_all_ali_fy
+        self.activity_line_items.where.not(fy_year: proj_fy_year)
+      elsif update_prior_project_fy_ali_fy
+        self.activity_line_items.where("activity_line_items.fy_year < ?", proj_fy_year)
+      end
+
+      to_update_alis.update_all(fy_year: proj_fy_year) if to_update_alis
+    end
   end
 
 end
