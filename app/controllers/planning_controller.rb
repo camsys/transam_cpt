@@ -268,7 +268,18 @@ class PlanningController < AbstractCapitalProjectsController
     # update session
     session[:display_fy_year] = @display_fy_year
 
-    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.") if @project_display_threshold_reached
+    # projects to display at a time
+    # if only display for a year, then:
+    #    - for multi_year project, use fy_year <= @display_fy_year
+    #    - for single year project, use fy_year == @display_fy_year
+    @display_projects = @projects
+    
+    @display_projects = @display_projects.where("
+      (capital_projects.multi_year != 1 AND capital_projects.fy_year = ?) OR 
+      (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?)", 
+      @display_fy_year, @display_fy_year) if @display_fy_year
+    
+    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.") if @project_display_threshold_reached 
   end
 
   #-----------------------------------------------------------------------------
