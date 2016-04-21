@@ -279,7 +279,7 @@ class PlanningController < AbstractCapitalProjectsController
       (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?)", 
       @display_fy_year, @display_fy_year) if @display_fy_year
     
-    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.") if @project_display_threshold_reached 
+    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.", now: true) if @project_display_threshold_reached 
   end
 
   #-----------------------------------------------------------------------------
