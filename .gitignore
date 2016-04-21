@@ -21,7 +21,7 @@
 # Ignore any attachments that have been uploaded
 /public/attachments
 
-Gemfile.lock
+#Gemfile.lock
 
 /spec/dummy/db/*.sqlite3
 /spec/dummy/log/*
