@@ -48,9 +48,9 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     #@asset_types = builder.eligible_asset_types(@organization)
     @asset_types = []
     AssetType.all.each do |type|
-       klass = type.class_name.constantize
-      if klass.where(organization: @organization_list).count > 0
-        @asset_types << {id: type.id, name: type.to_s, orgs: @organization_list.select{|o| klass.where(organization_id: o).count > 0}}
+      assets = Asset.where(asset_type: type)
+      if assets.where(organization: @organization_list).count > 0
+        @asset_types << {id: type.id, name: type.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
       end
     end
 
