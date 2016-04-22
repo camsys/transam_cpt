@@ -266,7 +266,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         @project.update_project_number
         @project.save
         notify_user(:notice, "Capital Project #{@project.name} was successfully updated.")
-        format.html { redirect_to capital_project_url(@project) }
+        format.html { redirect_to :back }
         format.json { head :no_content }
       else
         format.html { render :action => "edit" }
