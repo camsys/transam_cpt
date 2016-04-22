@@ -7,7 +7,7 @@
   = link_to edit_cost_capital_project_activity_line_item_path(project, ali), :remote => true do
     %i.fa.fa-usd.fa-fw
     = " Update the expected cost"
-- if ali.anticipated_cost && ali.anticipated_cost > 0
+- if ali.sogr? && ali.anticipated_cost && ali.anticipated_cost > 0
   %li
     = link_to restore_cost_capital_project_activity_line_item_path(project, ali) do
       %i.fa.fa-usd.fa-fw
