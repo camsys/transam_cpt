@@ -244,4 +244,30 @@ RSpec.describe CapitalProject, :type => :model do
     expect(new_project.project_number).to eq('TEMP')
     expect(new_project.fy_year).to eq(Date.today.month > 6 ? Date.today.year : Date.today.year - 1)
   end
+
+  describe "callbacks" do
+    let(:test_multi_year_project) {create(:capital_project, multi_year: true, fy_year: 2016)}
+    let(:test_line_item) { create(:activity_line_item, :fy_year => 2018) }
+    
+    describe ".after_update_callback" do 
+      it 'change multi_year to single year,all ALIs must be shifted to the Project FY' do 
+        test_multi_year_project.activity_line_items << test_line_item
+        test_multi_year_project.save!
+
+        test_multi_year_project.update_attributes(multi_year: false)
+
+        expect(test_line_item.reload.fy_year).to eq(2016)
+      end
+
+      it 'FY change, any ALI in a year PRIOR to the Project FY should be shifted to the new Project FY.' do 
+        test_multi_year_project.activity_line_items << test_line_item
+        test_multi_year_project.save!
+
+        test_multi_year_project.update_attributes(fy_year: 2019)
+
+        expect(test_line_item.reload.fy_year).to eq(2019)
+      end
+    end
+
+  end
 end

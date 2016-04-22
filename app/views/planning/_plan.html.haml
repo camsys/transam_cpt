@@ -23,9 +23,7 @@
             %br
             .well.well-sm.bold= format_as_currency(cost_by_year[year])
     %tbody
-      - projs = @projects
-      - projs = projs.where("capital_projects.fy_year": @display_fy_year) if @display_fy_year
-      - projs.each do |project|
+      - @display_projects.each do |project|
         %tr{:data => {:project => project.object_key}}
           - project_has_early_replacement_assets = false
           %td.left.planner-project-column
@@ -33,7 +31,7 @@
 
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}}
-              - next if @display_fy_year != year if @display_fy_year
+              - next if @display_fy_year != year if !project.multi_year && @display_fy_year
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
                 - project_has_early_replacement_assets = true if !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
                 = render 'ali_render_adaptor', project: project, ali: ali
