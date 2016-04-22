@@ -70,6 +70,8 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'POST update' do
+    request.env["HTTP_REFERER"] = root_path
+    
     post :update, :id => test_project.object_key, :capital_project => {:title => 'captial project title 222'}
     test_project.reload
 
