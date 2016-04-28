@@ -8,7 +8,7 @@
 = format_field("Multi year", format_as_yes_no(project.multi_year?)) if project.multi_year?
 %br
 .row.button-toolbar{:role => 'toolbar', :style => "padding-right: 5px;"}
-  - if can? :add_alis, project
+  - if !project.sogr? && can?(:add_alis, project)
     .btn-group.pull-right.panel-action
       = link_to load_view_capital_project_path(project, :view => 'new_activity_line_item'), :remote => true, :role => 'button', :class => 'btn btn-default btn-xs', :role => 'button', :title => 'Add new ALI...' do
         %i.fa.fa-plus
@@ -20,7 +20,7 @@
         %i.fa.fa-edit
         Edit
 
-  - if can? :destroy, project
+  - if !project.sogr? && can?(:destroy, project)
     .btn-group.pull-left.panel-action{:style => 'margin-left: 2px;'}
       = link_to capital_project_path(project, :view => "planning"), :method => :delete, :class => 'btn btn-default btn-xs', :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
         %i.fa.fa-trash-o
