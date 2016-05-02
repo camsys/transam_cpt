@@ -81,7 +81,7 @@ reports = [
     :chart_options => "{is3D : false, isStacked: false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     },
   {
-    :active => 1,
+    :active => 0,
     :belongs_to => 'report_type',
     :type => "Capital Needs Report",
     :name => 'Cash Flow Forecast',
@@ -95,7 +95,7 @@ reports = [
     :chart_options => "{is3D : false, seriesType: 'bars', series: {3: {type: 'line'}}, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     },
   {
-    :active => 1,
+    :active => 0,
     :belongs_to => 'report_type',
     :type => "Capital Needs Report",
     :name => 'Budget Rollup',
