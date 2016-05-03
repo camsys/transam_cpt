@@ -20,7 +20,9 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
 
     asset_event_type = AssetEventType.where(:class_name => 'DispositionUpdateEvent').first
     asset_event = AssetEvent.where(:asset_id => asset.id, :asset_event_type_id => asset_event_type.id).last
-    asset.transfer asset_event.organization_id
+    if(asset_event.dispostion_type.name == 'Trasnferred')
+      asset.transfer asset_event.organization_id
+    end
 
     asset.record_disposition
   end
