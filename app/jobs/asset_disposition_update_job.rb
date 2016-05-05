@@ -39,8 +39,6 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
     # Get the admin users
     admins = get_users_for_organization asset.organization
 
-    puts "Admins length #{admins.length}"
-
     # Get the priority
     priority_type = PriorityType.find_by_name('Normal')
 
@@ -72,8 +70,6 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
         users = find_users(organization, user_role)
       end
     end
-
-    puts "User found for #{user_role.name} with user length #{users.length}"
 
     return users
   end
