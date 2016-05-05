@@ -303,6 +303,10 @@ class CapitalProjectBuilder
 
       # Process each asset in turn...
       assets.each do |a|
+        # reset scheduled replacment year
+        a.scheduled_replacement_year = nil
+        a.update_early_replacement_reason
+
         # do the work...
         process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
         a.reload
@@ -502,8 +506,10 @@ class CapitalProjectBuilder
     if asset.scheduled_replacement_year.blank?
       # if no scheduled replacement year is set then use the default. If the
       # asset is in backlog set the to start year
-      asset.scheduled_replacement_year = [asset.policy_replacement_year, start_year].max
+      asset.scheduled_replacement_year = asset.policy_replacement_year
     end
+    asset.scheduled_replacement_year = current_planning_year_year if asset.scheduled_replacement_year < current_planning_year_year
+
 
     # Check to see if the asset has a scheduled rehabilitation year and if so
     # make sure it is rational ie. must be before the replacement year
