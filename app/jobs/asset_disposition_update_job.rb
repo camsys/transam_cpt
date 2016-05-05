@@ -39,6 +39,8 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
     # Get the admin users
     admins = get_users_for_organization asset.organization
 
+    puts "Admins length #{admins.length}"
+
     # Get the priority
     priority_type = PriorityType.find_by_name('Normal')
 
@@ -49,8 +51,9 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
         msg.user          = sys_user
         msg.to_user       = admin
         msg.subject       = "A new asset has been transferred to you"
-        msg.body          = "Before the asset can be used some details need to be updated. The asset can be updated at <a href='#{event_url}'>here</a>"
+        msg.body          = "Before the asset can be used some details need to be updated. The asset can be updated <a href='#{event_url}'>here</a>."
         msg.priority_type = priority_type
+        msg.organization  = asset.organization
         msg.save
     end
   end
@@ -69,6 +72,8 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
         users = find_users(organization, user_role)
       end
     end
+
+    puts "User found for #{user_role.name} with user length #{users.length}"
 
     return users
   end
