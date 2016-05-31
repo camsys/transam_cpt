@@ -126,7 +126,9 @@ class PlanningController < AbstractCapitalProjectsController
         a.reload
 
         # update the original ALI's estimated cost for its assets
+        @activity_line_item.reload
         @activity_line_item.update_estimated_cost
+        Rails.logger.debug("NEW COST::: #{@activity_line_item.estimated_cost}")
       end
       notify_user :notice,  "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
     else
