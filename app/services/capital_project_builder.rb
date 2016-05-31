@@ -532,8 +532,8 @@ class CapitalProjectBuilder
     # See if the asset has any scheduled replacement or rehabilitation costs, if not
     # use the estimated costs
     if asset.scheduled_replacement_cost.blank?
-      Rails.logger.debug "asset scheduled_replacement_cost is blank, setting to est: #{asset.estimated_replacement_cost}"
-      asset.scheduled_replacement_cost = asset.calculate_estimated_replacement_cost()
+      Rails.logger.debug "asset scheduled_replacement_cost is blank, setting to est: #{asset.scheduled_replacement_cost}"
+      asset.scheduled_replacement_cost = asset.calculate_estimated_replacement_cost(asset.scheduled_replacement_cost)
     end
 
     if asset.changed?

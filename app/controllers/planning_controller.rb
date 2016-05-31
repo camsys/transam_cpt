@@ -124,6 +124,9 @@ class PlanningController < AbstractCapitalProjectsController
         a.reload
         service.update_asset_schedule(a)
         a.reload
+
+        # update the original ALI's estimated cost for its assets
+        @activity_line_item.update_estimated_cost
       end
       notify_user :notice,  "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
     else
