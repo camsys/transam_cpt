@@ -195,7 +195,7 @@ RSpec.describe ActivityLineItem, :type => :model do
   describe 'callbacks' do
     it '.after_add_asset_callback' do
       expect(test_line_item.estimated_cost).to eq(0)
-      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123,
+      test_asset = create(:buslike_asset, :scheduled_replacement_cost => 123,
                           :asset_type => AssetType.first, :asset_subtype => AssetSubtype.first)
       test_line_item.assets << test_asset
       test_line_item.save!
@@ -203,7 +203,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       expect(test_line_item.estimated_cost).to eq(123)
     end
     it '.after_remove_asset_callback' do
-      test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
+      test_asset = create(:buslike_asset, :scheduled_replacement_cost => 123)
       test_line_item.assets << test_asset
       test_line_item.save!
       expect(test_line_item.estimated_cost).to eq(123)

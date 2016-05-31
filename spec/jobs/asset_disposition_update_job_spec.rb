@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AssetDispositionUpdateJob, :type => :job do
 
-  let(:test_asset) { create(:buslike_asset, estimated_replacement_cost: 123) }
+  let(:test_asset) { create(:buslike_asset, scheduled_replacement_cost: 123) }
   let(:test_line_item) { create(:activity_line_item) }
 
 
