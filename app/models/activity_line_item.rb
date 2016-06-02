@@ -301,7 +301,7 @@ class ActivityLineItem < ActiveRecord::Base
     if rehabilitation_ali?
       self.estimated_cost += asset.policy_analyzer.get_total_rehabilitation_cost
     else
-      self.estimated_cost += asset.scheduled_replacement_cost unless asset.scheduled_replacement_cost.nil?
+      self.estimated_cost += replacement_cost(asset) unless asset.scheduled_replacement_cost.nil?
     end
     save
   end
@@ -312,7 +312,7 @@ class ActivityLineItem < ActiveRecord::Base
     if rehabilitation_ali?
       self.estimated_cost -= asset.policy_analyzer.get_total_rehabilitation_cost
     else
-      self.estimated_cost -= asset.scheduled_replacement_cost unless asset.scheduled_replacement_cost.nil?
+      self.estimated_cost -= replacement_cost(asset) unless asset.scheduled_replacement_cost.nil?
     end
     save
   end
