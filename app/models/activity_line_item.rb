@@ -239,9 +239,9 @@ class ActivityLineItem < ActiveRecord::Base
 
   def rehabilitation_cost asset
     if self.notional?
-      asset.calculate_estimated_rehabilitation_cost(start_of_fiscal_year(capital_project.fy_year))
+      (asset.calculate_estimated_rehabilitation_cost(start_of_fiscal_year(capital_project.fy_year))+0.5).to_i
     elsif asset.scheduled_rehabilitation_cost.blank?
-      asset.calculate_estimated_rehabilitation_cost(start_of_fiscal_year(capital_project.fy_year))
+      (asset.calculate_estimated_rehabilitation_cost(start_of_fiscal_year(capital_project.fy_year))+0.5).to_i
     else
       asset.scheduled_rehabilitation_cost
     end
@@ -249,9 +249,9 @@ class ActivityLineItem < ActiveRecord::Base
 
   def replacement_cost asset
     if self.notional?
-      asset.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))
+      (asset.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))+0.5).to_i
     elsif asset.scheduled_replacement_cost.blank?
-      asset.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))
+      (asset.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))+0.5).to_i
     else
       asset.scheduled_replacement_cost
     end
