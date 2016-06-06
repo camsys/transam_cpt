@@ -462,7 +462,7 @@ class CapitalProjectBuilder
       year += min_service_life_years
       Rails.logger.debug "Max Service Life = #{min_service_life_years} Next replacement = #{year}. Last year = #{last_year}"
 
-      while year < last_year
+      while year <= last_year
         # Add a future re-replacement project for the asset
         projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, true)
 
