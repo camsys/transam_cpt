@@ -1,9 +1,11 @@
 namespace :transam do
   desc "Build SOGR projects from scratch"
-  task build_sogr_projects: :environment do
-    CapitalProject.destroy_all
+  task :build_sogr_projects, [:org_short_name] => [:environment] do |t, args|
+    org = Organization.find_by(short_name: args[:org_short_name])
+    orgs = org.nil? ? Organization.all : [org]
+    CapitalProject.where(organization: orgs).destroy_all
 
-    Organization.all.each do |o|
+    orgs.each do |o|
       org = Organization.get_typed_organization(o)
 
       builder = CapitalProjectBuilder.new
