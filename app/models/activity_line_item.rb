@@ -314,6 +314,8 @@ class ActivityLineItem < ActiveRecord::Base
     else
       self.estimated_cost -= replacement_cost(asset) unless asset.scheduled_replacement_cost.nil?
     end
+    self.estimated_cost = 0 if self.estimated_cost < 0
+
     save
   end
 
