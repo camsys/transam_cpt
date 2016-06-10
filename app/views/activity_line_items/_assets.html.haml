@@ -6,8 +6,11 @@
   .col-sm-12
     - if @activity_line_item.assets.empty?
       %p There are no assets for this activity line item.
-    -else
-      = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
+    - else
+      - if @activity_line_item.notional?
+        = render :partial => 'assets_notional_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
+      - else
+        = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
 
 :javascript
   $('.popup-details').popover({
