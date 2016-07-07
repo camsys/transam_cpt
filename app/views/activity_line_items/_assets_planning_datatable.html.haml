@@ -1,4 +1,5 @@
 :ruby
+  table_dom_id = SecureRandom.hex
   popup ||= '0'
 
 :css
@@ -24,84 +25,61 @@
             = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
 
 .table-responsive
-  %table.table.table-condensed.table-hover{:id => "assets-popup-table",
-    :data => {:toggle => 'table',
-    :classes => 'table-no-bordered',
-    :toolbar => "#asset-actions",
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
+    :card_view => "false",
+    :pagination => 'true',
+    :side_pagination => 'server',
+    :show_pagination_switch => 'true',
+    :page_number => '1',
+    :page_list => "[10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
     :search => 'false',
     :striped => 'true',
-    :single_select => 'false'}}
+    :single_select => 'false',
+    :show_columns => 'true',
+    :toolbar => "#asset-actions",
+    :row_style => 'row_style',
+    :click_to_select => 'false',
+    :show_export => 'false',
+    :id_field => 'object_key',
+    :state_save => 'true',
+    :state_save_id_table => "assets_id",
+    :state_save_expire => "1y",
+    :classes => 'table-no-bordered'}}
     %thead
       %tr
         %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
-        %th.center{:data => {:visible => 'false'}} Object
-        %th.left Tag
-        %th.left Description
-        %th.center Fuel
+        %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
+        %th.policy-year.center{:data => {:field => 'policy_replacement_year', :visible => 'false'}} Policy Replacement Year
+        %th.left{data: {field: 'asset_tag'}} Tag
+        %th.left{data: {field: 'description'}} Description
+        %th.center{data: {field: 'fuel_type'}} Fuel
 
-        %th.center Age
-        %th.center Bcklg
-        %th.right Mileage
-        %th.center Cond.
+        %th.center{data: {field: 'age'}} Age
+        %th.center{data: {field: 'in_backlog', formatter: 'boolean_formatter'}} Bcklg
+        %th.right{data: {field: 'reported_mileage', formatter: 'integer_formatter'}} Mileage
+        %th.center{data: {field: 'reported_condition_rating'}} Cond.
 
-        %th.center Policy FY
-        %th.right Orig. Cost
-        %th.right Book Val.
-        %th.right Sch. Cost
+        %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy FY
+        %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter'}} Orig. Cost
+        %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
+        %th.right{data: {field: 'scheduled_replacement_cost', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
-          %th
+          %th.center{data: {field: 'popup_content', formatter: 'popup_formatter'}}
         - if ali.has_early_replacement_assets?
-          %th
+          %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
 
-    %tbody
-      - cost = book_value = scheduled_cost = 0
-      - ali.assets.each do |a|
-        - cost += a.cost
-        - book_value += a.book_value
-        - if ali.rehabilitation_ali?
-          - scheduled_cost += ali.rehabilitation_cost a
-        - else
-          - scheduled_cost += a.scheduled_replacement_cost.to_i
-
-        %tr{:data => {:action_path => inventory_path(a), :policy_replacement_year => a.policy_replacement_year}}
-          %td{:data => {:checkbox => true}}
-          %td.center= a.object_key
-          %td.left= a.asset_tag
-          %td.left= a.description
-          %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
-
-          %td.center= a.age
-          %td.center= format_as_boolean(a.in_backlog)
-          %td.right= format_as_integer(a.reported_mileage)
-          %td.center= format_as_decimal(a.reported_condition_rating, 1)
-
-          %td.center= format_as_fiscal_year(a.policy_replacement_year)
-          %td.right= format_as_currency(a.cost)
-          %td.right= format_as_currency(a.book_value)
-          - if ali.rehabilitation_ali?
-            %td.right= format_as_currency(a.estimated_rehabilitation_cost)
-          - else
-            %td.right= format_as_currency(a.scheduled_replacement_cost)
+      %tfoot
+        %tr
+          %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+          %td.right= format_as_currency(@cost)
+          %td.right= format_as_currency(@book_value)
+          %td.right= format_as_currency(@scheduled_cost)
           - if popup == '1'
-            %td.center
-              %a{:tabindex => 0, :class => 'transam-popover', :id => "#{a.object_key}", :href => get_asset_summary_capital_project_activity_line_item_path(ali.capital_project, ali), :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => ""}}
-                %i.fa.fa-info-circle.fa-1-25x.text-info
-              / Pivotal: #117096513
-              / - if can? :update, @activity_line_item
-              /   = link_to remove_asset_capital_project_activity_line_item_path(@project, ali, :asset => a.object_key), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
-              /     %i.fa.fa-times-circle.action-icon.text-danger
-
-          - if a.is_early_replacement?
-            %td.center
-              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "Early Replacement",  :content => "<p>#{a.formatted_early_replacement_reason}</p>"}}
-                %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
-
-    %tfoot
-      %tr
-        %td{:colspan => 9}
-        %td.right= format_as_currency(cost)
-        %td.right= format_as_currency(book_value)
-        %td.right= format_as_currency(scheduled_cost)
+            %td
+          - if ali.has_early_replacement_assets?
+            %td
 
 
 :javascript
@@ -113,21 +91,29 @@
     // Disable the package actions
     enable_disable_asset_actions();
 
-    $('#assets-popup-table').bootstrapTable();
+    function row_style(row, index) {
+      return {
+        classes: 'policy-replacement-year'
+      };
+    };
 
-    $('.transam-popover').popover({
-      trigger: 'hover',
-      container: 'body',
-      placement: 'left',
-      content: function(){
-        var div_id =  $(this).attr('id');
-        return details_in_popup($(this).attr('href'), div_id);
-      }
+    $("##{table_dom_id}").bootstrapTable();
+
+    $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+      $('.transam-popover').popover({
+        trigger: 'hover',
+        container: 'body',
+        placement: 'left',
+        content: function(){
+          var div_id =  $(this).attr('id');
+          return details_in_popup($(this).attr('href'), div_id);
+        }
+      });
     });
 
     function details_in_popup(link, div_id){
       $.ajax({
-        url: link,
+        url: "#{get_asset_summary_capital_project_activity_line_item_path(ali.capital_project, ali)}",
         type: 'GET',
         dataType: 'json',
         data: { asset_object_key : div_id },
@@ -142,14 +128,16 @@
     // get the policy years of selected assets
     function get_asset_policy_years() {
       var years = [];
-      $('#assets-popup-table td.bs-checkbox input[type=checkbox]:checked').each(function() {
-        var year = $(this).closest('tr').data('policy-replacement-year');
+      $("##{table_dom_id} td.bs-checkbox input[type=checkbox]:checked").each(function() {
+        var year = parseInt($(this).closest('td.policy-year').html());
+        //console.log(year);
         if($.isNumeric(year) && years.indexOf(year) < 0) {
           years.push(year);
         }
       });
       return years;
     }
+
 
     // check if has early_replacement asset by comparing move_year to asset policy replacement year
     function is_early_replacement(move_year) {
@@ -211,7 +199,7 @@
     });
   });
 
-  $('#assets-popup-table').on('check.bs.table', function(e, row) {
+  $("##{table_dom_id}").on('check.bs.table', function(e, row) {
     update_selected();
   }).on('uncheck.bs.table', function(e, row) {
     update_selected();
@@ -233,11 +221,11 @@
 
   // Updates the selected rows in the table
   function update_selected() {
-    var selected = $('#assets-popup-table').bootstrapTable('getSelections');
+    var selected = $("##{table_dom_id}").bootstrapTable('getSelections');
     //console.log(selected);
     selected_assets = [];
     for (i = 0; i < selected.length; i++) {
-      var selected_key = selected[i][1];
+      var selected_key = selected[i].object_key;
       if(selected_assets.indexOf(selected_key) < 0) {
         selected_assets.push(selected_key);
       }
@@ -254,3 +242,46 @@
     }
     enable_disable_asset_actions();
   };
+
+  var formatMoney = function(n, c, d, t) {
+    var c = isNaN(c = Math.abs(c)) ? 0 : c,
+    d = d == undefined ? "." : d,
+    t = t == undefined ? "," : t,
+    s = n < 0 ? "-" : "",
+    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+    j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+  }
+
+  function boolean_formatter(value) {
+    if (value) {
+      // add hidden div for exporting
+      return '<i class="fa fa-check"></i><div style = "visibility: hidden;">Yes</div>';
+    } else {
+      return '<div style = "visibility: hidden;">No</div>';
+    }
+  }
+
+  function integer_formatter(value) {
+    if (value) {
+      return format("###,##0.", value);
+    } else {
+      return value;
+    }
+  };
+
+  function currency_formatter(value) {
+    return "$" + formatMoney(value);
+  }
+
+  function popup_formatter(value, data) {
+    return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
+  function early_replacement_flag_formatter(value, data) {
+    if((value) && (data)) {
+      return '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-placement="left" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }

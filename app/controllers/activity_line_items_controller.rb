@@ -1,5 +1,8 @@
 class ActivityLineItemsController < OrganizationAwareController
 
+  # Include the fiscal year mixin
+  include FiscalYear
+
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
@@ -117,6 +120,38 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb "Assets"
 
     @fiscal_years = @activity_line_item.get_fiscal_years
+
+    @cost = @activity_line_item.assets.sum(:purchase_cost)
+    @book_value = @activity_line_item.assets.sum(:book_value)
+    if @activity_line_item.rehabilitation_ali?
+      @scheduled_cost = @activity_line_item.assets.sum(:estimated_rehabilitation_cost)
+    else
+      @scheduled_cost = @activity_line_item.assets.sum(:scheduled_replacement_cost)
+    end
+
+    respond_to do |format|
+      format.js
+      format.json {
+        assets_json = @activity_line_item.assets.limit(params[:limit]).offset(params[:offset]).collect{ |p|
+          p.as_json.merge!({
+            fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
+            age: p.age,
+            in_backlog: p.in_backlog,
+            reported_mileage: p.reported_mileage,
+            policy_replacement_year: p.policy_replacement_year,
+            policy_replacement_fiscal_year: fiscal_year(p.policy_replacement_year),
+            scheduled_replacement_cost: p.scheduled_replacement_cost,
+            popup_content: 'show',
+            is_early_replacement: p.is_early_replacement?
+
+          })
+        }
+        render :json => {
+            :total => @activity_line_item.assets.count,
+            :rows =>  assets_json
+        }
+      }
+    end
 
   end
 
