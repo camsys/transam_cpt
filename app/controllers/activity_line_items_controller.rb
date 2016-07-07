@@ -120,6 +120,15 @@ class ActivityLineItemsController < OrganizationAwareController
 
   end
 
+  def get_asset_summary
+    a = Asset.find_by(object_key: params[:asset_object_key])
+
+    respond_to do |format|
+      #format.json { render json: {'html' => render_to_string(partial: 'assets/summary', locals: { :asset => a } ) } }
+      format.js { render :partial => "assets/summary", locals: { :asset => a } }
+    end
+  end
+
   # GET /activity_line_items/1/edit_cost
   def edit_cost
 

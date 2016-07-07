@@ -84,7 +84,7 @@
             %td.right= format_as_currency(a.scheduled_replacement_cost)
           - if popup == '1'
             %td.center
-              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => "#{raw render :partial => 'assets/summary', :locals => {:asset => a}}"}}
+              %a{:tabindex => 0, :class => 'transam-popover', :id => "#{a.object_key}", :href => get_asset_summary_capital_project_activity_line_item_path(ali.capital_project, ali), :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => ""}}
                 %i.fa.fa-info-circle.fa-1-25x.text-info
               / Pivotal: #117096513
               / - if can? :update, @activity_line_item
@@ -118,8 +118,26 @@
     $('.transam-popover').popover({
       trigger: 'hover',
       container: 'body',
-      placement: 'left'
+      placement: 'left',
+      content: function(){
+        var div_id =  $(this).attr('id');
+        return details_in_popup($(this).attr('href'), div_id);
+      }
     });
+
+    function details_in_popup(link, div_id){
+      $.ajax({
+        url: link,
+        type: 'GET',
+        dataType: 'json',
+        data: { asset_object_key : div_id },
+        complete: function(response, status) {
+            $('#popup-'+div_id).html(response.responseText);
+        }
+      });
+      return '<div id="popup-'+ div_id +'">Loading...</div>';
+    }
+
 
     // get the policy years of selected assets
     function get_asset_policy_years() {

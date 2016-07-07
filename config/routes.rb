@@ -68,6 +68,7 @@ Rails.application.routes.draw do
       # resources :funding_plans, :only => [:create, :destroy]
       member do
         get 'assets'
+        get 'get_asset_summary'
         get 'edit_cost'
         get 'restore_cost'
         post 'set_cost'
