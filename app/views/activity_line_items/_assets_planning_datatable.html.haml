@@ -36,7 +36,6 @@
         - if move_assets_action == '1'
           %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
-        %th.policy-year.center{:data => {:field => 'policy_replacement_year', :visible => 'false'}} Policy Replacement Year
         %th.left{data: {field: 'asset_tag'}} Tag
         %th.left{data: {field: 'description'}} Description
         %th.center{data: {field: 'fuel_type'}} Fuel
@@ -110,16 +109,18 @@
     // get the policy years of selected assets
     function get_asset_policy_years() {
       var years = [];
-      $("##{table_dom_id} td.bs-checkbox input[type=checkbox]:checked").each(function() {
-        var year = parseInt($(this).closest('td.policy-year').html());
-        //console.log(year);
+
+      var selected = $("##{table_dom_id}").bootstrapTable('getSelections');
+      //console.log(selected);
+      for (i = 0; i < selected.length; i++) {
+        var year = selected[i].policy_replacement_year;
         if($.isNumeric(year) && years.indexOf(year) < 0) {
           years.push(year);
         }
-      });
+      }
+      console.log(years);
       return years;
     }
-
 
     // check if has early_replacement asset by comparing move_year to asset policy replacement year
     function is_early_replacement(move_year) {
@@ -134,6 +135,8 @@
           }
         }
       }
+      console.log("IS EARLY");
+      console.log(is_early);
       return is_early;
     }
 
