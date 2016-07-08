@@ -121,14 +121,6 @@ class ActivityLineItemsController < OrganizationAwareController
 
     @fiscal_years = @activity_line_item.get_fiscal_years
 
-    @cost = @activity_line_item.assets.sum(:purchase_cost)
-    @book_value = @activity_line_item.assets.sum(:book_value)
-    if @activity_line_item.rehabilitation_ali?
-      @scheduled_cost = @activity_line_item.assets.sum(:estimated_rehabilitation_cost)
-    else
-      @scheduled_cost = @activity_line_item.assets.sum(:scheduled_replacement_cost)
-    end
-
     respond_to do |format|
       format.js
       format.json {
@@ -140,10 +132,10 @@ class ActivityLineItemsController < OrganizationAwareController
             reported_mileage: p.reported_mileage,
             policy_replacement_year: p.policy_replacement_year,
             policy_replacement_fiscal_year: fiscal_year(p.policy_replacement_year),
-            scheduled_replacement_cost: p.scheduled_replacement_cost,
-            popup_content: 'show',
-            is_early_replacement: p.is_early_replacement?
-
+            scheduled_cost: @activity_line_item.rehabilitation_ali? ? p.estimated_rehabilitation_cost : p.scheduled_replacement_cost,
+            estimated_cost: @activity_line_item.rehabilitation_ali? ? (@activity_line_item.rehabilitation_cost p) : (@activity_line_item.replacement_cost p),
+            is_early_replacement: p.is_early_replacement?,
+            min_service_life: p.policy_analyzer.get_min_service_life_months / 12
           })
         }
         render :json => {

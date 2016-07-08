@@ -47,7 +47,7 @@
 
           - if popup == '1' and ali.assets.present?
             %td.center
-              - popup_partial = ali.notional? ? 'activity_line_items/assets_notional_datatable' : 'activity_line_items/assets_datatable'
+              - popup_partial = ali.notional? ? 'activity_line_items/assets_notional_datatable' : 'activity_line_items/assets_planning_datatable'
               %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => popup_partial, :locals => {:ali => ali, :popup => '0'}}"}}
                 %i.fa.fa-info-circle.text-info.fa-1-25x
           - if ali.has_early_replacement_assets?

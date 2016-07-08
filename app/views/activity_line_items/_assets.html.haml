@@ -10,7 +10,7 @@
       - if @activity_line_item.notional?
         = render :partial => 'assets_notional_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
       - else
-        = render :partial => 'assets_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
+        = render :partial => 'assets_planning_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
 
 :javascript
   $('.popup-details').popover({

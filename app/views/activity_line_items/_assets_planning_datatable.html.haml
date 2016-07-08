@@ -1,28 +1,12 @@
 :ruby
   table_dom_id = SecureRandom.hex
   popup ||= '0'
+  move_assets_action ||= '0'
 
 :css
-  .popover {
-    width: 500px;
-  }
   .modal-lg {
     width: 80%;
   }
-
-#asset-actions.btn-toolbar
-  .btn-group{:role => 'group'}
-    %button.btn.btn-info.move-assets-button{:type => 'button'}
-      %i.fa.fa-tasks
-      %span#button-text Move selected to FY
-    %button.btn.btn-info.move-assets-button.dropdown-toggle{:type => 'button', :data => {:toggle => 'dropdown'}, :aria => {:haspopup => 'true', :expanded => 'false'}}
-      %span.caret
-      %span.sr-only Toggle Dropdown
-    %ul.dropdown-menu
-      - @fiscal_years.each do |fy|
-        - unless fy[1] == @project.fy_year
-          %li
-            = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
 
 .table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
@@ -37,7 +21,7 @@
     :search => 'false',
     :striped => 'true',
     :single_select => 'false',
-    :show_columns => 'true',
+    :show_columns => 'false',
     :toolbar => "#asset-actions",
     :row_style => 'row_style',
     :click_to_select => 'false',
@@ -49,7 +33,8 @@
     :classes => 'table-no-bordered'}}
     %thead
       %tr
-        %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+        - if move_assets_action == '1'
+          %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
         %th.policy-year.center{:data => {:field => 'policy_replacement_year', :visible => 'false'}} Policy Replacement Year
         %th.left{data: {field: 'asset_tag'}} Tag
@@ -64,18 +49,21 @@
         %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy FY
         %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter'}} Orig. Cost
         %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
-        %th.right{data: {field: 'scheduled_replacement_cost', formatter: 'currency_formatter'}} Sch. Cost
+        %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
-          %th.center{data: {field: 'popup_content', formatter: 'popup_formatter'}}
+          %th.center{data: {formatter: 'popup_formatter'}}
         - if ali.has_early_replacement_assets?
           %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
 
       %tfoot
         %tr
-          %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
-          %td.right= format_as_currency(@cost)
-          %td.right= format_as_currency(@book_value)
-          %td.right= format_as_currency(@scheduled_cost)
+          - if move_assets_action == '1'
+            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+          - else
+            %td{:colspan => 8}= "Totals for #{ali.assets.count} assets"
+          %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
+          %td.right= format_as_currency(ali.assets.sum(:book_value))
+          %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:estimated_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
           - if popup == '1'
             %td
           - if ali.has_early_replacement_assets?
@@ -90,12 +78,6 @@
 
     // Disable the package actions
     enable_disable_asset_actions();
-
-    function row_style(row, index) {
-      return {
-        classes: 'policy-replacement-year'
-      };
-    };
 
     $("##{table_dom_id}").bootstrapTable();
 
@@ -172,7 +154,7 @@
 
       var is_early = is_early_replacement(move_year);
       if(is_early) {
-        var msg = "You are moving assets from " + getFiscalYear(#{@activity_line_item.fy_year}) + " to " + getFiscalYear(move_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
+        var msg = "You are moving assets from " + getFiscalYear(#{ali.fy_year}) + " to " + getFiscalYear(move_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
         transam.bootbox_comment_dialog(msg, function(reason) {
           if(reason == null) {
               return true;

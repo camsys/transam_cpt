@@ -58,7 +58,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   end
   it 'GET assets' do
     allow_any_instance_of(ActivityLineItemsController).to receive(:render).and_return ""
-    get :assets, :capital_project_id => test_project.object_key, :id => test_ali.object_key
+    get :assets, :capital_project_id => test_project.object_key, :id => test_ali.object_key, :format => :json
 
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:activity_line_item)).to eq(test_ali)

@@ -1,87 +1,83 @@
 :ruby
+  table_dom_id = SecureRandom.hex
   popup ||= '0'
 
 :css
-  .popover {
-    width: 500px;
-  }
   .modal-lg {
     width: 80%;
   }
 .table-responsive
-  %table.table.table-condensed.table-hover{:id => "assets-popup-table",
-    :data => {:toggle => 'table',
-    :classes => 'table-no-bordered',
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
+    :card_view => "false",
+    :pagination => 'true',
+    :side_pagination => 'server',
+    :show_pagination_switch => 'true',
+    :page_number => '1',
+    :page_list => "[10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
     :search => 'false',
     :striped => 'true',
-    :single_select => 'false'}}
+    :single_select => 'false',
+    :show_columns => 'false',
+    :toolbar => "#asset-actions",
+    :row_style => 'row_style',
+    :click_to_select => 'false',
+    :show_export => 'false',
+    :id_field => 'object_key',
+    :state_save => 'true',
+    :state_save_id_table => "assets_id",
+    :state_save_expire => "1y",
+    :classes => 'table-no-bordered'}}
     %thead
       %tr
-        %th.left Description
-        %th.center Fuel
+        %th.left{data: {field: 'description', formatter: 'description_formatter'}} Description
+        %th.center{data: {field: 'fuel_type'}} Fuel
 
-        %th.center Age
+        %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
 
-        %th.center Policy FY
-        %th.right Est. Cost
+        %th.center{data: {formatter: 'ali_fiscal_year_formatter'}} Policy FY
+        %th.right{data: {field: 'estimated_cost', formatter: 'currency_formatter'}} Est. Cost
         - if popup == '1'
-          %th
-
-    %tbody
-      - estimated_cost = 0
-      - cost_date = start_of_fiscal_year(ali.capital_project.fy_year)
-      - ali.assets.each do |a|
-        - if ali.rehabilitation_ali?
-          - asset_cost = ali.rehabilitation_cost a
-        - else
-          - asset_cost = ali.replacement_cost a
-
-        - estimated_cost += asset_cost
-
-        %tr
-          %td.left
-            - if ali.rehabilitation_ali?
-              = "Rehabilitation for #{a.description} replaced in #{format_as_fiscal_year(a.scheduled_replacement_year)}"
-            - else
-              = "Replacement for #{a.description} replaced in #{format_as_fiscal_year(a.scheduled_replacement_year)}"
-
-          %td.center= FuelType.find(a.fuel_type_id).code unless a.fuel_type_id.nil?
-
-          %td.center= format_as_integer(a.policy_analyzer.get_min_service_life_months / 12)
-
-          %td.center= format_as_fiscal_year(ali.fy_year)
-          %td.right= format_as_currency(asset_cost)
-          - if popup == '1'
-            %td.center
-              %a{:tabindex => 0, :class => 'transam-popover', :id => "#{a.object_key}", :href => get_asset_summary_capital_project_activity_line_item_path(ali.capital_project, ali), :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{a.name}",  :content => ""}}
-                %i.fa.fa-info-circle.fa-1-25x.text-info
+          %th{data: {formatter: 'popup_formatter'}}
 
     %tfoot
       %tr
-        %td{:colspan => 4}
-        %td.right= format_as_currency(estimated_cost)
+        %td{:colspan => 4}= "Totals for #{ali.assets.count} assets"
+        %td.right= format_as_currency(ali.estimated_cost)
+        - if popup == '1'
+          %td
 
 :javascript
 
+  var is_rehabilitation;
+  if ("#{ali.rehabilitation_ali?}" == "true") {
+    is_rehabilitation = true;
+  } else {
+    is_rehabilitation = false;
+  }
+
   $(document).ready(function() {
 
-    $('#assets-popup-table').bootstrapTable();
+    $("##{table_dom_id}").bootstrapTable();
 
-    $('.transam-popover').popover({
-      trigger: 'hover',
-      container: 'body',
-      placement: 'left',
-      content: function(){
-        var div_id =  $(this).attr('id');
-        return details_in_popup($(this).attr('href'), div_id);
-      }
+    $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+      $('.transam-popover').popover({
+        trigger: 'hover',
+        container: 'body',
+        placement: 'left',
+        content: function(){
+          var div_id =  $(this).attr('id');
+          return details_in_popup($(this).attr('href'), div_id);
+        }
+      });
     });
 
   });
 
   function details_in_popup(link, div_id){
     $.ajax({
-      url: link,
+      url: "#{get_asset_summary_capital_project_activity_line_item_path(ali.capital_project, ali)}",
       type: 'GET',
       dataType: 'json',
       data: { asset_object_key : div_id },
@@ -91,3 +87,49 @@
     });
     return '<div id="popup-'+ div_id +'">Loading...</div>';
   }
+
+  var formatMoney = function(n, c, d, t) {
+    var c = isNaN(c = Math.abs(c)) ? 0 : c,
+    d = d == undefined ? "." : d,
+    t = t == undefined ? "," : t,
+    s = n < 0 ? "-" : "",
+    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+    j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+  }
+
+  function description_formatter(value, data) {
+    if (value) {
+      if (is_rehabilitation) {
+        str = "Rehabilitation";
+      } else {
+        str = "Replacement";
+      }
+      return str + " for " + value + " replaced in " + data.scheduled_replacement_year;
+    } else {
+      return "";
+    }
+  };
+
+  function integer_formatter(value) {
+    if (value) {
+      return format("###,##0.", value);
+    } else {
+      return value;
+    }
+  };
+
+  function ali_fiscal_year_formatter(value) {
+    return "#{format_as_fiscal_year(ali.fy_year)}";
+  };
+
+  function currency_formatter(value) {
+    return "$" + formatMoney(value);
+  }
+
+  function popup_formatter(value, data) {
+    return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
+
+
