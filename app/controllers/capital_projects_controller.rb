@@ -81,33 +81,19 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     @builder_proxy = BuilderProxy.new(params[:builder_proxy])
     if @builder_proxy.valid?
-      # Sleep for a couple of seconds so that the screen can display the waiting
-      # message and the user can read it.
-      sleep 2
 
-      # Run the builder
-      options = {}
-      options[:asset_type_ids] = @builder_proxy.asset_types
-      options[:start_fy] = @builder_proxy.start_fy
-
-      #puts options.inspect
-      builder = CapitalProjectBuilder.new
       if @builder_proxy.organization_id.blank?
-        num_created = builder.build(@organization, options)
+        org = @organization
       else
         org = Organization.get_typed_organization(Organization.find(@builder_proxy.organization_id))
-        num_created = builder.build(org, options)
       end
 
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.asset_types, @builder_proxy.start_fy, current_user), :priority => 0
+
       # Let the user know the results
-      if num_created > 0
-        msg = "SOGR Capital Project Analyzer completed. #{num_created} SOGR capital projects were added to your capital needs list."
-        notify_user(:notice, msg)
-        # Add a row into the activity table
-        ActivityLog.create({:organization_id => @organization.id, :user_id => current_user.id, :item_type => "CapitalProjectBuilder", :activity => msg, :activity_time => Time.now})
-      else
-        notify_user(:notice, "No capital projects were created.")
-      end
+      msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."
+      notify_user(:notice, msg)
+
       redirect_to capital_projects_url
       return
     else
