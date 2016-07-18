@@ -2,7 +2,7 @@
 #
 # CapitalProjectBuilderJob
 #
-# Performs all updates on an asset
+# Build SOGR projects
 #
 #------------------------------------------------------------------------------
 class CapitalProjectBuilderJob < Job

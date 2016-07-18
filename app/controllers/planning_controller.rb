@@ -103,39 +103,30 @@ class PlanningController < AbstractCapitalProjectsController
   #-----------------------------------------------------------------------------
   def move_assets
 
+    @job_finished = false
+
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
     @fy_year = params[:year].to_i
     if @activity_line_item.present? and @fy_year > 0
-      service = CapitalProjectBuilder.new
-      assets = @activity_line_item.assets.where(:object_key => params[:targets].split(','))
-      assets_count = assets.count
-      Rails.logger.debug "Found #{assets.count} assets to process"
-      early_replacement_reason = params[:early_replacement_reason]
-      assets.each do |a|
-        # Replace or Rehab?
-        if @activity_line_item.rehabilitation_ali?
-          a.scheduled_rehabilitation_year = @fy_year
-        else
-          a.scheduled_replacement_year = @fy_year
-          a.update_early_replacement_reason(early_replacement_reason)
-        end
+      Delayed::Job.enqueue AssetScheduleJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
 
-        a.save(:validate => false)
-        a.reload
-        service.update_asset_schedule(a)
-        a.reload
+      sleep 2 # pause action to let job finish if its small
 
-        # update the original ALI's estimated cost for its assets
-        @activity_line_item.reload
-        @activity_line_item.update_estimated_cost
-        Rails.logger.debug("NEW COST::: #{@activity_line_item.estimated_cost}")
+      # if job finishes run JS and reload project planner with moved assets
+      # otherwise notify user that background job is running
+      job_notification = Notification.find_by(notifiable_type: 'ActivityLineItem', notifiable_id: @activity_line_item.id)
+      if job_notification.nil?
+        notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
+      else
+        notify_user :notice, job_notification.text
+        job_notification.update(active: false)
+        @job_finished = true
+        prepare_projects_display
       end
-      notify_user :notice,  "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
+
     else
       notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
     end
-
-    prepare_projects_display
 
   end
 

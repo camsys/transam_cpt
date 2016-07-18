@@ -1,4 +1,5 @@
-= render 'ajax_view_update'
+- if @job_finished
+  = render 'ajax_view_update'
 $('#spinner').hide();
 $(".modal-backdrop").remove();  
 - if @message.present?
