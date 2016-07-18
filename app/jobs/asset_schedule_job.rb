@@ -37,15 +37,17 @@ class AssetScheduleJob < Job
       a.reload
 
       # update the original ALI's estimated cost for its assets
-      notifiable_id = activity_line_item.id
-      activity_line_item.reload
-      activity_line_item.update_estimated_cost
-      Rails.logger.debug("NEW COST::: #{activity_line_item.estimated_cost}")
+      updated_ali = ActivityLineItem.find_by(id: activity_line_item.id)
+      if updated_ali.present?
+        updated_ali.update_estimated_cost
+        Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
+      end
+
     end
 
     event_url = Rails.application.routes.url_helpers.planning_index_path
-    move_assets_notification = Notification.create(text: "Moved #{assets_count} assets to #{fiscal_year(fy_year)}", link: event_url, notifiable_type: 'ActivityLineItem', notifiable_id: notifiable_id)
-    UserNotification.create(user: creator, notification: move_assets_notification)
+    move_assets_notification = Notification.create!(text: "Moved #{assets_count} assets to #{fiscal_year(fy_year)}", link: event_url, notifiable_type: 'ActivityLineItem', notifiable_id: activity_line_item.id)
+    UserNotification.create!(user: creator, notification: move_assets_notification)
 
   end
 
