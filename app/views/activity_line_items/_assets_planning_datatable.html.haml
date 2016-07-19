@@ -190,15 +190,22 @@
     update_selected();
   }).on('uncheck-all.bs.table', function(e, row) {
     update_selected();
+  }).on('page-change.bs.table', function(e, row) {
+    update_selected();
   });
 
   // Enables or disables the package actions depending on how many are selected
   function enable_disable_asset_actions() {
     if (selected_assets.length > 0) {
       $('.move-assets-button').removeClass('disabled');
-      $('#button-text').html("Move " + selected_assets.length + " assets to fiscal year")
+      if (selected_assets.length == 1) {
+        $('#button-text').html("Move 1 asset to fiscal year");
+      } else {
+        $('#button-text').html("Move " + selected_assets.length + " assets to fiscal year");
+      }
     } else {
       $('.move-assets-button').addClass('disabled');
+      $('#button-text').html("Move selected to fiscal year");
     }
   };
 
