@@ -564,11 +564,11 @@ class CapitalProjectBuilder
       # create this project
       project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
       project = create_capital_project(organization, year, scope, project_title, project_type, sogr, notional)
-      @project_count += 1
       Rails.logger.debug "Created new project #{project.object_key}"
     else
       Rails.logger.debug "Using existing project #{project.object_key}"
     end
+    @project_count += 1
     ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
     # if there is an exisiting ALI, see if the asset is in it
     if ali
