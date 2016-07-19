@@ -15,7 +15,7 @@
     .col-md-6
       = f.input :asset_types, :required => true,   :collection => @asset_types.map{|type| [type[:name], type[:id]]}, :multiple => true, :as => :check_boxes
     .col-md-6
-      = f.input :start_fy, :required => true,      :collection => @fiscal_years, :include_blank => false, :label => "Starting Fiscal Year"
+      = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting Fiscal Year"
 
   - builder_warning_style = "display: none;"
   - builder_warning_style = "" if @organization_list.count == 1 && @organization.has_sogr_projects?
