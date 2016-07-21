@@ -130,6 +130,7 @@
   var confirm_result = false;
   function configure_droppable() {
     $(".drop-target").droppable({
+        tolerance: "pointer",
   		hoverClass : 'drop-zone-active',
   		drop : function(ev, ui) {
         var drop_year = $(this).data('year');
