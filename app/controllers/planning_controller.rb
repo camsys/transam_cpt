@@ -110,8 +110,8 @@ class PlanningController < AbstractCapitalProjectsController
     if @activity_line_item.present? and @fy_year > 0
       Delayed::Job.enqueue AssetScheduleJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
 
-      # check for 20 seconds if job is finished
-      sleep 20
+      # check for 5 seconds if job is finished
+      sleep 5
 
       # if job finishes run JS and reload project planner with moved assets
       # otherwise notify user that background job is running
