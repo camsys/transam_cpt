@@ -1,11 +1,11 @@
 #------------------------------------------------------------------------------
 #
-# AssetScheduleJob
+# MoveAssetYearJob
 #
 # Uses the CapitalProjectBulider to move assets in ALIs from one FY to another updating its schedule
 #
 #------------------------------------------------------------------------------
-class AssetScheduleJob < Job
+class MoveAssetYearJob < Job
 
   # Include the fiscal year mixin
   include FiscalYear
@@ -52,7 +52,7 @@ class AssetScheduleJob < Job
   end
 
   def prepare
-    Rails.logger.debug "Executing AssetScheduleJob at #{Time.now.to_s} for SOGR projects"
+    Rails.logger.debug "Executing MoveAssetYearJob at #{Time.now.to_s} for SOGR projects"
   end
 
   def check

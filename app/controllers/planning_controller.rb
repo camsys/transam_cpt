@@ -108,7 +108,7 @@ class PlanningController < AbstractCapitalProjectsController
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
     @fy_year = params[:year].to_i
     if @activity_line_item.present? and @fy_year > 0
-      Delayed::Job.enqueue AssetScheduleJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
+      Delayed::Job.enqueue MoveAssetYearJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
 
       # check for 5 seconds if job is finished
       sleep 5
@@ -197,11 +197,11 @@ class PlanningController < AbstractCapitalProjectsController
 
     case action
     when ALI_MOVE_YEAR_ACTION
-      new_fy_year = params[:year]
-      Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
-      CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
-      notify_user :notice, "The ALI was successfully moved to #{new_fy_year}."
 
+      new_fy_year = params[:year]
+      Delayed::Job.enqueue MoveAliYearJob.new(@activity_line_item, new_fy_year, current_user, params[:early_replacement_reason]), :priority => 0
+      notify_user :notice, "Moving ali #{@activity_line_item} to new FY #{new_fy_year}. You will be notified when the process is complete."
+        
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
       Rails.logger.debug "Updating anticipated cost for ali #{@activity_line_item} to  #{params[:activity_line_item][:anticipated_cost]}"
