@@ -365,11 +365,11 @@ class CapitalProjectBuilder
       end
 
       # save notional ALIs from replacement ALI's before the start fy
-      if asset.activity_line_items.where('fy_year < ?', [start_year, start_fy_year].min).count > 0
-        untouched_notional_alis = asset.activity_line_items.ids
-      end
+      # if asset.activity_line_items.where('fy_year < ?', [start_year, start_fy_year].min).count > 0
+      #   untouched_notional_alis = asset.activity_line_items.ids
+      # end
 
-      asset.activity_line_items.where('fy_year >= ? AND activity_line_items.id NOT IN (?)', [start_year, start_fy_year].min, untouched_notional_alis).each do |ali|
+      asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
         if ali.capital_project.sogr?
           Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
           ali.assets.delete asset

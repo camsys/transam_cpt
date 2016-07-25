@@ -135,6 +135,7 @@ class ActivityLineItemsController < OrganizationAwareController
             scheduled_cost: @activity_line_item.rehabilitation_ali? ? p.estimated_rehabilitation_cost : p.scheduled_replacement_cost,
             estimated_cost: @activity_line_item.rehabilitation_ali? ? (@activity_line_item.rehabilitation_cost p) : (@activity_line_item.replacement_cost p),
             is_early_replacement: p.is_early_replacement?,
+            formatted_early_replacement_reason: p.formatted_early_replacement_reason,
             min_service_life: p.policy_analyzer.get_min_service_life_months / 12
           })
         }
