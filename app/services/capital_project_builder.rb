@@ -144,10 +144,6 @@ class CapitalProjectBuilder
           projects_and_alis = process_asset(asset, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
         end
         ali.reload
-        # We can clean up any ALIs we created
-        if project.sogr? and ali.assets.empty?
-          project.activity_line_items.destroy ali
-        end
         project.reload
       else
         # There are no assets so we can move the ALI. First we need to see
@@ -241,6 +237,7 @@ class CapitalProjectBuilder
         cp.destroy
       end
     end
+
   end
 
   def build_bottom_up(organization, options)
@@ -303,7 +300,7 @@ class CapitalProjectBuilder
 
       # Process each asset in turn...
       assets.each do |a|
-        # reset scheduled replacment year
+        # reset scheduled replacement year
         a.scheduled_replacement_year = nil
         a.update_early_replacement_reason
 
@@ -315,13 +312,7 @@ class CapitalProjectBuilder
       # Get the next asset type id
     end
 
-    # Clean up any degenerate SOGR projects
-    projects = organization.capital_projects.where(:sogr => true)
-    projects.each do |p|
-      if p.activity_line_items.blank?
-        p.destroy
-      end
-    end
+
 
   end
 
@@ -373,7 +364,12 @@ class CapitalProjectBuilder
         start_fy_year = 9999
       end
 
-      asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
+      # save notional ALIs from replacement ALI's before the start fy
+      if asset.activity_line_items.where('fy_year < ?', [start_year, start_fy_year].min).count > 0
+        untouched_notional_alis = asset.activity_line_items.ids
+      end
+
+      asset.activity_line_items.where('fy_year >= ? AND activity_line_items.id NOT IN (?)', [start_year, start_fy_year].min, untouched_notional_alis).each do |ali|
         if ali.capital_project.sogr?
           Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
           ali.assets.delete asset
