@@ -242,6 +242,8 @@ class PlanningController < AbstractCapitalProjectsController
         new_proj_and_alis = CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
         @new_alis = new_proj_and_alis.map{|x| x[1]}
 
+        notify_user :notice, "ALI was successfully moved to #{new_fy_year}."
+
       end
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]

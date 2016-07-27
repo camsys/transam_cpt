@@ -6,12 +6,36 @@
     :plain
       var ali_box = $('div[data-ali="#{ali.object_key}"]');
       if( ali_box.length ) {
-        ali_box.html("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
-      } else if ( $("tr##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
+        ali_box.html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: ali.capital_project, ali: ali })}</div>");
+      } else if ( $("td##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
         $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
       } else {
-        $('#plan-table').append("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
+
+        var year = parseInt("#{ali.capital_project.fy_year}");
+        var type = parseInt("#{ali.capital_project.capital_project_type_id}");
+        var temp_type = type;
+        var obj_class = "." + year + "-" + type;
+        var start_year = parseInt("#{current_planning_year_year}");
+
+        while (($(obj_class).length == 0) && (year >= start_year)) {
+          if (temp_type > 1) {
+            temp_type = temp_type - 1;
+          } else {
+            temp_type = type;
+            year = year - 1;
+          }
+
+          obj_class = "." + year + "-" + type;
+        }
+
+        if ($(obj_class).length > 0) {
+          $("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}").insertAfter($(obj_class).last());
+        } else {
+          $('#plan-table').append("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
+        }
       }
+
+  configure_event_listeners();
 
 - if @message.present?
   transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
