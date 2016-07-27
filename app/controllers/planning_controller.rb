@@ -106,23 +106,58 @@ class PlanningController < AbstractCapitalProjectsController
     @job_finished = false
 
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
+    @capital_project = @activity_line_item.capital_project
     @fy_year = params[:year].to_i
     if @activity_line_item.present? and @fy_year > 0
-      Delayed::Job.enqueue MoveAssetYearJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
+      assets = @activity_line_item.assets.where(object_key: params[:targets].split(','))
 
-      # check for 5 seconds if job is finished
-      sleep 5
+      if assets.count > 10
+        Delayed::Job.enqueue MoveAssetYearJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
 
-      # if job finishes run JS and reload project planner with moved assets
-      # otherwise notify user that background job is running
-      job_notification = Notification.find_by(notifiable_type: 'ActivityLineItem', notifiable_id: @activity_line_item.id)
-      if job_notification.nil?
         notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
       else
-        notify_user :notice, job_notification.text
-        job_notification.update(active: false)
-        @job_finished = true
-        prepare_projects_display
+        asset_types = assets.map(&:asset_type).uniq
+        assets_touched = @activity_line_item.assets.where(object_key: params[:targets].split(',')).pluck(:object_key)
+
+        service = CapitalProjectBuilder.new
+        assets_count = assets.count
+        Rails.logger.debug "Found #{assets_count} assets to process"
+        assets.each do |a|
+          # Replace or Rehab?
+          if @activity_line_item.rehabilitation_ali?
+            a.scheduled_rehabilitation_year = @fy_year
+          else
+            a.scheduled_replacement_year = @fy_year
+            a.update_early_replacement_reason(params[:early_replacement_reason])
+          end
+
+          a.save(:validate => false)
+          a.reload
+          service.update_asset_schedule(a)
+          a.reload
+
+          # update the original ALI's estimated cost for its assets
+          updated_ali = ActivityLineItem.find_by(id: @activity_line_item.id)
+          if updated_ali.present?
+            updated_ali.update_estimated_cost
+            Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
+          end
+
+          @alis_touched = []
+          asset_types.each do |type|
+            @alis_touched += type.class_name.constantize.where(object_key: assets_touched).map(&:activity_line_items).flatten!.uniq
+          end
+
+          # This is the first year that the user can plan for
+          @first_year = current_planning_year_year
+          # This is the last year  the user can plan for
+          @last_year = last_fiscal_year_year
+          # This is an array of years that the user can plan for
+          @years = (@first_year..@last_year).to_a
+
+          @job_finished = true
+          notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
+        end
       end
 
     else

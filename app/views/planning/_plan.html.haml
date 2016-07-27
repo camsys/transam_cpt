@@ -30,7 +30,7 @@
             = render :partial => 'plan_project_detail', :locals => {:project => project}
 
           - @years.each do |year|
-            %td.striped.drop-target{:data => {:year => year}}
+            %td.striped.drop-target{:data => {:year => year}, :id => project.object_key + '-' + year.to_s}
               - next if @display_fy_year != year if !project.multi_year && @display_fy_year
               - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
                 - project_has_early_replacement_assets = true if !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?

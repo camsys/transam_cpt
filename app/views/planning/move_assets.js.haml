@@ -1,6 +1,24 @@
 - if @job_finished
-  = render 'ajax_view_update'
+  - if ActivityLineItem.find_by(id:@activity_line_item.id).nil?
+    - if CapitalProject.find_by(id: @capital_project.id).nil?
+      $('tr[data-project="#{@capital_project.object_key}"]').hide();
+    - else
+      $('div[data-ali="#{@activity_line_item.object_key}"]').hide();
+  - else
+    $("##{@activity_line_item.object_key}.ali-assets-count").html("#{@activity_line_item.assets.count} assets");
+
+  - @alis_touched.each do |ali|
+    :plain
+      var ali_counter = $("##{ali.object_key}.ali-assets-count");
+      if( ali_counter.length ) {
+        ali_counter.html("#{ali.assets.count} assets");
+      } else if ( $("tr##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
+        $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
+      } else {
+        $('#plan-table').append("#{escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
+      }
+
 $('#spinner').hide();
-$(".modal-backdrop").remove();  
+$(".modal-backdrop").remove();
 - if @message.present?
   transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");

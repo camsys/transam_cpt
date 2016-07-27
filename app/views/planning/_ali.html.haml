@@ -1,7 +1,7 @@
 - is_sogr = false if local_assigns[:is_sogr].nil?
 %p.text-center.bold= ali.name
 %p.text-center= ali.team_ali_code
-%p.text-center
+%p.text-center.ali-assets-count{:id => "#{ali.object_key}"}
   = format_as_integer(ali.assets.count)
   assets
   - if is_sogr && ali.has_early_replacement_assets?
