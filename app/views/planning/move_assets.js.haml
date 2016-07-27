@@ -5,13 +5,14 @@
     - else
       $('div[data-ali="#{@activity_line_item.object_key}"]').hide();
   - else
-    $("##{@activity_line_item.object_key}.ali-assets-count").html("#{@activity_line_item.assets.count} assets");
+    - @activity_line_item.reload
+    $('div[data-ali="#{@activity_line_item.object_key}"]').html("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item })}");
 
   - @alis_touched.each do |ali|
     :plain
-      var ali_counter = $("##{ali.object_key}.ali-assets-count");
-      if( ali_counter.length ) {
-        ali_counter.html("#{ali.assets.count} assets");
+      var ali_box = $('div[data-ali="#{ali.object_key}"]');
+      if( ali_box.length ) {
+        ali_box.html("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
       } else if ( $("tr##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
         $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
       } else {

@@ -111,7 +111,7 @@ class PlanningController < AbstractCapitalProjectsController
     if @activity_line_item.present? and @fy_year > 0
       assets = @activity_line_item.assets.where(object_key: params[:targets].split(','))
 
-      if assets.count > 10
+      if assets.count > 25
         Delayed::Job.enqueue MoveAssetYearJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
 
         notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
