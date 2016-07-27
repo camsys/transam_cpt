@@ -1,4 +1,18 @@
-= render 'ajax_view_update'
+- if @status == 'render_all'
+  = render 'ajax_view_update'
+-elsif @status == 'js_update'
+  $('div[data-ali="#{@activity_line_item.object_key}"]').hide();
+  - @new_alis.each do |ali|
+    :plain
+      var ali_box = $('div[data-ali="#{ali.object_key}"]');
+      if( ali_box.length ) {
+        ali_box.html("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
+      } else if ( $("tr##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
+        $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
+      } else {
+        $('#plan-table').append("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
+      }
+
 - if @message.present?
   transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
   

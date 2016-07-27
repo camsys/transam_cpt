@@ -6,17 +6,17 @@
       $('div[data-ali="#{@activity_line_item.object_key}"]').hide();
   - else
     - @activity_line_item.reload
-    $('div[data-ali="#{@activity_line_item.object_key}"]').html("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item })}");
+    $('div[data-ali="#{@activity_line_item.object_key}"]').html("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item })}");
 
   - @alis_touched.each do |ali|
     :plain
       var ali_box = $('div[data-ali="#{ali.object_key}"]');
       if( ali_box.length ) {
-        ali_box.html("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
+        ali_box.html("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
       } else if ( $("tr##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
-        $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
+        $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
       } else {
-        $('#plan-table').append("#{escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
+        $('#plan-table').append("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
       }
 
 $('#spinner').hide();

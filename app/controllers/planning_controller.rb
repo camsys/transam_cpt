@@ -148,13 +148,6 @@ class PlanningController < AbstractCapitalProjectsController
             @alis_touched += type.class_name.constantize.where(object_key: assets_touched).map(&:activity_line_items).flatten!.uniq
           end
 
-          # This is the first year that the user can plan for
-          @first_year = current_planning_year_year
-          # This is the last year  the user can plan for
-          @last_year = last_fiscal_year_year
-          # This is an array of years that the user can plan for
-          @years = (@first_year..@last_year).to_a
-
           @job_finished = true
           notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
         end
@@ -227,6 +220,9 @@ class PlanningController < AbstractCapitalProjectsController
   #-----------------------------------------------------------------------------
   def ali_action
 
+    # for most actions re-render the whole project planner (TODO: improve this for other actions but move ALI)
+    @status = 'render_all'
+
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
     action = params[:invoke]
 
@@ -234,9 +230,19 @@ class PlanningController < AbstractCapitalProjectsController
     when ALI_MOVE_YEAR_ACTION
 
       new_fy_year = params[:year]
-      Delayed::Job.enqueue MoveAliYearJob.new(@activity_line_item, new_fy_year, current_user, params[:early_replacement_reason]), :priority => 0
-      notify_user :notice, "Moving ali #{@activity_line_item} to new FY #{new_fy_year}. You will be notified when the process is complete."
-        
+      if @activity_line_item.assets.count > 25
+        @status = 'job'
+        Delayed::Job.enqueue MoveAliYearJob.new(@activity_line_item, new_fy_year, current_user, params[:early_replacement_reason]), :priority => 0
+        notify_user :notice, "Moving ali #{@activity_line_item} to new FY #{new_fy_year}. You will be notified when the process is complete."
+      else
+        # update project planner by JS for just the single ALI moved
+        @status = 'js_update'
+
+        Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
+        new_proj_and_alis = CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
+        @new_alis = new_proj_and_alis.map{|x| x[1]}
+
+      end
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
       Rails.logger.debug "Updating anticipated cost for ali #{@activity_line_item} to  #{params[:activity_line_item][:anticipated_cost]}"
@@ -266,8 +272,11 @@ class PlanningController < AbstractCapitalProjectsController
       notify_user :notice,  "The ALI was successfully updated."
     end
 
-    prepare_projects_display
+    prepare_projects_display unless action == ALI_MOVE_YEAR_ACTION
 
+    respond_to do |format|
+      format.js
+    end
   end
 
   #-----------------------------------------------------------------------------
