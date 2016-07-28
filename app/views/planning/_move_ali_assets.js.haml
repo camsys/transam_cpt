@@ -1,8 +1,37 @@
+:plain
+  function number_to_currency(number, options) {
+    var options   = options || {};
+    var precision = options["precision"] || 0;
+    var unit      = options["unit"] || "$";
+    var separator = precision > 0 ? options["separator"] || "." : "";
+    var delimiter = options["delimiter"] || ",";
+
+    var parts = parseFloat(number).toFixed(precision).split('.');
+    if (parts[1]) {
+      return unit + number_with_delimiter(parts[0], delimiter) + separator + parts[1].toString();
+    } else {
+      return unit + number_with_delimiter(parts[0], delimiter)
+    }
+  }
+
+  function number_with_delimiter(number, delimiter, separator) {
+    var delimiter = delimiter || ",";
+    var separator = separator || ".";
+
+    var parts = number.toString().split('.');
+    parts[0] = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + delimiter);
+    return parts.join(separator);
+  }
+
 - alis.each do |ali|
   :plain
+    // update fiscal year sum
+    var old_fy_sum = parseInt($("#fy-sum-#{ali.fy_year}").data('cost'));
+    $("#fy-sum-#{ali.fy_year}").html(number_to_currency(old_fy_sum+parseInt("#{ali.cost}")));
+
     var ali_box = $('div[data-ali="#{ali.object_key}"]');
     if( ali_box.length ) {
-      ali_box.html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: ali.capital_project, ali: ali })}</div>");
+      ali_box.html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: ali.capital_project, ali: ali, is_sogr: true })}</div>");
     } else if ( $("td##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
       $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
     } else {
@@ -26,7 +55,7 @@
       if ($(obj_class).length > 0) {
         $("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}").insertAfter($(obj_class).last());
       } else {
-        $('#plan-table').append("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
+        $('#plan-table').prepend("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
       }
     }
 

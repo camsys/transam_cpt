@@ -106,7 +106,7 @@ class PlanningController < AbstractCapitalProjectsController
     @job_finished = false
 
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
-    @capital_project = @activity_line_item.capital_project
+
     @fy_year = params[:year].to_i
     if @activity_line_item.present? and @fy_year > 0
       assets = @activity_line_item.assets.where(object_key: params[:targets].split(','))
@@ -116,6 +116,9 @@ class PlanningController < AbstractCapitalProjectsController
 
         notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
       else
+        @capital_project = @activity_line_item.capital_project
+        @ali_cost = @activity_line_item.cost
+
         asset_types = assets.map(&:asset_type).uniq
         assets_touched = @activity_line_item.assets.where(object_key: params[:targets].split(',')).pluck(:object_key)
 
@@ -237,6 +240,8 @@ class PlanningController < AbstractCapitalProjectsController
       else
         # update project planner by JS for just the single ALI moved
         @status = 'js_update'
+        @capital_project = @activity_line_item.capital_project
+        @ali_cost = @activity_line_item.cost
 
         Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
         new_proj_and_alis = CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])

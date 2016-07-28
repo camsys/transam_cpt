@@ -6,7 +6,11 @@
       $('div[data-ali="#{@activity_line_item.object_key}"]').hide();
   - else
     - @activity_line_item.reload
-    $('div[data-ali="#{@activity_line_item.object_key}"]').html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item })}</div>");
+    $('div[data-ali="#{@activity_line_item.object_key}"]').html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true })}</div>");
+
+  // update fiscal year sum
+  var old_fy_sum = parseInt($("#fy-sum-#{@activity_line_item.fy_year}").data('cost'));
+  $("#fy-sum-#{@activity_line_item.fy_year}").html(number_to_currency(old_fy_sum - parseInt("#{@ali_cost}")));
 
   = render :partial => 'move_ali_assets', locals: { alis: @alis_touched }
 

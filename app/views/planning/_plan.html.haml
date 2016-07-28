@@ -21,7 +21,7 @@
               = format_as_fiscal_year(year)
             
             %br
-            .well.well-sm.bold= format_as_currency(cost_by_year[year])
+            .well.well-sm.bold{:id => 'fy-sum-'+year.to_s, :data => {:cost => cost_by_year[year].nil? ? '0' : cost_by_year[year]} }= format_as_currency(cost_by_year[year])
     %tbody
       - @display_projects.each do |project|
         %tr{:data => {:project => project.object_key}, :class => project.fy_year.to_s+'-'+project.capital_project_type_id.to_s}

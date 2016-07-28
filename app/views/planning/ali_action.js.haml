@@ -2,8 +2,15 @@
   = render 'ajax_view_update'
 -elsif @status == 'js_update'
   $('div[data-ali="#{@activity_line_item.object_key}"]').hide();
+  - if CapitalProject.find_by(id: @capital_project.id).nil?
+    $('tr[data-project="#{@capital_project.object_key}"]').hide();
+
+  // update fiscal year sum
+  var old_fy_sum = parseInt($("#fy-sum-#{@activity_line_item.fy_year}").data('cost'));
+  new_val = number_to_currency(old_fy_sum - parseInt("#{@ali_cost}"));
+  $("#fy-sum-#{@activity_line_item.fy_year}").html(new_val);
+
   = render :partial => 'move_ali_assets', locals: { alis: @new_alis }
 
 - if @message.present?
   transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
-  
