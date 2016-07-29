@@ -8,11 +8,22 @@
     - @activity_line_item.reload
     $('div[data-ali="#{@activity_line_item.object_key}"]').html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true })}</div>");
 
+    - if !@activity_line_item.has_early_replacement_assets?
+    $('tr[data-project="#{ali.capital_project.object_key}"] .project-early-replacement-warning').html(
+      '<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' +
+      '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
+
   // update fiscal year sum
   var old_fy_sum = parseInt($("#fy-sum-#{@activity_line_item.fy_year}").data('cost'));
-  $("#fy-sum-#{@activity_line_item.fy_year}").html(number_to_currency(old_fy_sum - parseInt("#{@ali_cost}")));
+  var new_val = old_fy_sum - parseInt("#{@ali_cost}");
+  $("#fy-sum-#{@activity_line_item.fy_year}").html(number_to_currency(new_val));
+  $("#fy-sum-#{@activity_line_item.fy_year}").data('cost', new_val);
 
   = render :partial => 'move_ali_assets', locals: { alis: @alis_touched }
+- else
+  $(".draggable").draggable({ disabled: true });
+  $(".drop-target").droppable({ disabled: true });
+  $(".ali_actions").attr('disabled','disabled');
 
 
 $('#spinner').hide();

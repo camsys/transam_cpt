@@ -9,17 +9,19 @@
       - if @activity_line_item.notional?
         = render :partial => 'assets_notional_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
       - else
-        #asset-actions.btn-toolbar
-          .btn-group{:role => 'group'}
-            %button.btn.btn-info.move-assets-button{:type => 'button'}
-              %i.fa.fa-tasks
-              %span#button-text Move selected to fiscal year
-            %button.btn.btn-info.move-assets-button.dropdown-toggle{:type => 'button', :data => {:toggle => 'dropdown'}, :aria => {:haspopup => 'true', :expanded => 'false'}}
-              %span.caret
-              %span.sr-only Toggle Dropdown
-            %ul.dropdown-menu
-              - @fiscal_years.each do |fy|
-                - unless fy[1] == @project.fy_year
-                  %li
-                    = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
-        = render :partial => 'assets_planning_datatable', :locals => {:ali => @activity_line_item, :popup => '1', :move_assets_action => '1'}
+        - if @drag_drop_enabled
+          #asset-actions.btn-toolbar
+            .btn-group{:role => 'group'}
+              %button.btn.btn-info.move-assets-button{:type => 'button'}
+                %i.fa.fa-tasks
+                %span#button-text Move selected to fiscal year
+              %button.btn.btn-info.move-assets-button.dropdown-toggle{:type => 'button', :data => {:toggle => 'dropdown'}, :aria => {:haspopup => 'true', :expanded => 'false'}}
+                %span.caret
+                %span.sr-only Toggle Dropdown
+              %ul.dropdown-menu
+                - @fiscal_years.each do |fy|
+                  - unless fy[1] == @project.fy_year
+                    %li
+                      = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
+
+        = render :partial => 'assets_planning_datatable', :locals => {:ali => @activity_line_item, :popup => '1', :move_assets_action => @drag_drop_enabled ? '1': '0'}

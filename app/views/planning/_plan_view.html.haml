@@ -82,6 +82,10 @@
     border-radius:5px;
   }
 
+  .ui-state-disabled {
+    opacity: 1;
+  }
+
 #spinner= loader_panel_tag({:message => "Updating capital projects and ALIs...", :size => 3, :spinner => "cog"})
 
 #plan
@@ -91,7 +95,11 @@
 
   $(document).ready(function() {
     // Set up the event listeners
-    configure_event_listeners();
+    if ("#{@drag_drop_enabled}" == "true") {
+      configure_event_listeners();
+    } else {
+      $(".ali_actions").attr('disabled','disabled');
+    }
     $("#spinner").hide();
   });
 

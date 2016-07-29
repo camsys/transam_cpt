@@ -117,10 +117,10 @@ class PlanningController < AbstractCapitalProjectsController
         notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
       else
         @capital_project = @activity_line_item.capital_project
-        @ali_cost = @activity_line_item.cost
+        @ali_cost = assets.sum(:scheduled_replacement_cost)
 
         asset_types = assets.map(&:asset_type).uniq
-        assets_touched = @activity_line_item.assets.where(object_key: params[:targets].split(',')).pluck(:object_key)
+        assets_touched = assets.pluck(:object_key)
 
         service = CapitalProjectBuilder.new
         assets_count = assets.count
@@ -293,6 +293,9 @@ class PlanningController < AbstractCapitalProjectsController
   def prepare_projects_display
     # query projects
     get_projects
+
+    # enable dragging/dropping only if no background jobs
+    @drag_drop_enabled = (Delayed::Job.where("handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{current_user.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
 
     # check if reaches threshold
     @project_display_threshold_reached = @projects.count > max_projects_display_threshold
