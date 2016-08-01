@@ -27,7 +27,7 @@
   :plain
     // update fiscal year sum
     var old_fy_sum = parseInt($("#fy-sum-#{ali.fy_year}").data('cost'));
-    var new_fy_sum = old_fy_sum + parseInt("#{@ali_cost}");
+    var new_fy_sum = old_fy_sum + parseInt("#{ali.cost}");
     $("#fy-sum-#{ali.fy_year}").html(number_to_currency(new_fy_sum));
     $("#fy-sum-#{ali.fy_year}").data('cost',new_fy_sum);
 
