@@ -265,7 +265,14 @@ class ActivityLineItemsController < OrganizationAwareController
       }
       format.html {
         notify_user(:notice, msg)
-        redirect_to :back
+
+        # check where to redirect to
+        if URI(request.referer || '').path.include? 'planning'
+          redirect_to :back
+        else
+          redirect_to capital_project_path(@project)
+        end
+
       }
     end
   end
