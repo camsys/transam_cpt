@@ -295,8 +295,9 @@ class CapitalProjectBuilder
       end
 
       # Find all the matching assets for this organization. This logic returns a strongly typed set of assets
+      # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
       klass = asset_type.class_name.constantize
-      assets = klass.where('organization_id = ? AND asset_type_id = ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, asset_type_id)
+      assets = klass.where('organization_id = ? AND asset_type_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, asset_type_id, @start_year)
 
       # Process each asset in turn...
       assets.each do |a|
