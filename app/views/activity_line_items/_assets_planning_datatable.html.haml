@@ -62,7 +62,7 @@
             %td{:colspan => 8}= "Totals for #{ali.assets.count} assets"
           %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
           %td.right= format_as_currency(ali.assets.sum(:book_value))
-          %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:estimated_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
+          %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
           - if popup == '1'
             %td
           - if ali.has_early_replacement_assets?
