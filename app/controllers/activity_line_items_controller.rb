@@ -122,7 +122,7 @@ class ActivityLineItemsController < OrganizationAwareController
     @fiscal_years = @activity_line_item.get_fiscal_years
 
     # enable dragging/dropping only if no background jobs
-    @drag_drop_enabled = (Delayed::Job.where("handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{current_user.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
+    @drag_drop_enabled = (Delayed::Job.where("failed_at IS NULL AND handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{@project.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
 
 
     respond_to do |format|

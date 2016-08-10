@@ -294,8 +294,14 @@ class PlanningController < AbstractCapitalProjectsController
     # query projects
     get_projects
 
+    drag_drop_conditions = []
+    drag_drop_values = []
     # enable dragging/dropping only if no background jobs
-    @drag_drop_enabled = (Delayed::Job.where("handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{current_user.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
+    @projects.each do |project|
+      drag_drop_conditions << "handler LIKE ?"
+      drag_drop_values << "%organization_id: #{project.organization_id}%"
+    end
+    @drag_drop_enabled = (Delayed::Job.where(drag_drop_conditions.join(' OR '), *drag_drop_values).where("failed_at IS NULL AND (handler LIKE ? OR handler LIKE ?)","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
 
     # check if reaches threshold
     @project_display_threshold_reached = @projects.count > max_projects_display_threshold
