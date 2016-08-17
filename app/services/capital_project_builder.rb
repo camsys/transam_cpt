@@ -230,6 +230,8 @@ class CapitalProjectBuilder
         if ali.assets.empty?
           Rails.logger.debug "Removing empty ALI #{ali}"
           cp.activity_line_items.destroy ali
+        else
+          ali.update_estimated_cost
         end
       end
       if cp.activity_line_items.empty?
