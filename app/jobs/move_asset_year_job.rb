@@ -46,7 +46,7 @@ class MoveAssetYearJob < Job
     end
 
     event_url = Rails.application.routes.url_helpers.planning_index_path
-    move_assets_notification = Notification.create!(text: "Moved #{assets_count} assets to #{fiscal_year(fy_year)}", link: event_url, notifiable_type: 'ActivityLineItem', notifiable_id: activity_line_item.id)
+    move_assets_notification = Notification.create!(text: "Moved #{assets_count} assets to #{fiscal_year(fy_year)}. Click here to see the updated Project Planner.", link: event_url, notifiable_type: 'ActivityLineItem', notifiable_id: activity_line_item.id)
     UserNotification.create!(user: creator, notification: move_assets_notification)
 
   end
