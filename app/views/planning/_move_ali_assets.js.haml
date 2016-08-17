@@ -28,13 +28,15 @@
     // update fiscal year sum
     var old_fy_sum = parseInt($("#fy-sum-#{ali.fy_year}").data('cost'));
     var new_fy_sum = old_fy_sum + parseInt("#{ali.cost}");
-    $("#fy-sum-#{ali.fy_year}").html(number_to_currency(new_fy_sum));
-    $("#fy-sum-#{ali.fy_year}").data('cost',new_fy_sum);
-
 
     var ali_box = $('div[data-ali="#{ali.object_key}"]');
     if( ali_box.length ) {
+
+      new_fy_sum = new_fy_sum - parseInt($("##{ali.object_key}-ali-cost").data('cost'));
+
       ali_box.html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: ali.capital_project, ali: ali, is_sogr: true })}</div>");
+
+
     } else if ( $("td##{ali.capital_project.object_key}-#{ali.fy_year}").length ) {
       $("td##{ali.capital_project.object_key}-#{ali.fy_year}").append("#{raw escape_javascript(render :partial => 'ali_render_adaptor', locals: { project: ali.capital_project, ali: ali })}");
     } else {
@@ -61,6 +63,9 @@
         $('#plan-table').prepend("#{raw escape_javascript(render :partial => 'plan_project_row', locals: { project: ali.capital_project})}");
       }
     }
+
+    $("#fy-sum-#{ali.fy_year}").html(number_to_currency(new_fy_sum));
+    $("#fy-sum-#{ali.fy_year}").data('cost',new_fy_sum);
 
   - if ali.has_early_replacement_assets?
     $('tr[data-project="#{ali.capital_project.object_key}"] .project-early-replacement-warning').html('<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' + '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
