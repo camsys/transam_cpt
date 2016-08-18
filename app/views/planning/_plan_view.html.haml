@@ -108,7 +108,9 @@
     $(".draggable").draggable({
       cursor: "crosshair",
       opacity: "0.75",
-  		helper : 'clone',
+  		helper : function() {
+          return $(this).clone().css('width', '110px');
+        },
   		revert : 'invalid',
       create: function(event, ui) {
         var project = $(this).data('project');
