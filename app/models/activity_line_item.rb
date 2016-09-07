@@ -29,11 +29,6 @@ class ActivityLineItem < ActiveRecord::Base
   before_destroy { assets.clear }
 
   after_update :after_update_callback
-  
-  #------------------------------------------------------------------------------
-  # Transients
-  #------------------------------------------------------------------------------
-  attr_accessor :category_team_ali_code
 
   #------------------------------------------------------------------------------
   # Associations
@@ -42,11 +37,13 @@ class ActivityLineItem < ActiveRecord::Base
   # Every ali belongs to a capital project
   belongs_to  :capital_project
 
+  delegate :organization, :to => :capital_project
+
   # Every ALI has a single TEAM sub catagory code
   belongs_to  :team_ali_code
 
   # Has 0 or more assets
-  has_and_belongs_to_many    :assets, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
+  has_and_belongs_to_many    :assets #, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
 
   # Has 0 or more milestones
   has_many    :milestones, :dependent => :destroy
@@ -95,7 +92,6 @@ class ActivityLineItem < ActiveRecord::Base
     :cost,
     :cost_justification,
     :active,
-    :category_team_ali_code,
     :asset_ids => [],
     :milestones_attributes => [Milestone.allowable_params]
   ]
@@ -142,6 +138,10 @@ class ActivityLineItem < ActiveRecord::Base
 
   def to_s
     name
+  end
+
+  def category_team_ali_code
+    team_ali_code_id.present? ? team_ali_code.parent.code : ''
   end
 
   # Returns the total amount of funding planned for this ali
@@ -225,15 +225,31 @@ class ActivityLineItem < ActiveRecord::Base
   # Returns the total replacment or rehabilitation costs of the assets in this ALI
   def total_asset_cost
     val = 0
-    assets.each do |a|
-      # Check to see if this is rehab or replacement ALI
-      if rehabilitation_ali?
-        cost = rehabilitation_cost(a)
-      else
-        cost = replacement_cost(a)
+    if assets.count > 0
+      policy = Policy.find_by(organization_id: assets.first.organization_id)
+
+      # this is to calculate the total ALI cost for a rehabilitation ALI
+      # right now rehabilitation cost is taken from the policy
+      # though a calculator should be used this is a TODO for a later time
+      # reference .calculate_estimated_rehabilitation_cost in Asset model for same TODO
+      if assets.where('disposition_date IS NOT NULL').count == 0
+
+        if rehabilitation_ali?
+          val = PolicyAssetSubtypeRule.find_by(policy_id: policy.id, asset_subtype_id: assets.first.asset_subtype_id).total_rehabilitation_cost * assets.count
+        else
+          if self.notional?
+            policy_rule = PolicyAssetTypeRule.includes(:replacement_cost_calculation_type).find_by(policy_id: policy.id, asset_type_id: assets.first.asset_type_id)
+            assets.each do |a|
+              cost = replacement_cost(a, policy_rule.replacement_cost_calculation_type)
+              val += cost.to_i
+            end
+          else
+            val = assets.sum(:scheduled_replacement_cost)
+          end
+        end
       end
-      val += cost.to_i
     end
+
     val
   end
 
@@ -247,11 +263,14 @@ class ActivityLineItem < ActiveRecord::Base
     end
   end
 
-  def replacement_cost asset
+  def replacement_cost asset, replacement_cost_calculation_type=nil
+
+    if replacement_cost_calculation_type.nil?
+      replacement_cost_calculation_type = asset.policy_analyzer.get_replacement_cost_calculation_type
+    end
+
     if self.notional?
-      (asset.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))+0.5).to_i
-    elsif asset.scheduled_replacement_cost.blank?
-      (asset.calculate_estimated_replacement_cost(start_of_fiscal_year(capital_project.fy_year))+0.5).to_i
+      calculate_estimated_replacement_cost(asset, replacement_cost_calculation_type, start_of_fiscal_year(capital_project.fy_year))
     else
       asset.scheduled_replacement_cost
     end
@@ -295,6 +314,19 @@ class ActivityLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   protected
 
+  def calculate_estimated_replacement_cost(asset,replacement_cost_calculation_type,on_date=nil)
+
+    return if asset.disposed?
+
+    # Make sure we are working with a concrete asset class
+    typed_asset = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
+
+    # create an instance of the calculator class and call the method
+    calculator_instance = replacement_cost_calculation_type.class_name.constantize.new
+    (calculator_instance.calculate_on_date(typed_asset, on_date)+0.5).to_i #round
+
+  end
+
   # Callback to update the estimated costs when another asset is added
   def after_add_asset_callback(asset)
     # Check to see if this is rehab or replacement ALI
@@ -329,7 +361,6 @@ class ActivityLineItem < ActiveRecord::Base
     self.active = self.active.nil? ? true : self.active
     self.estimated_cost ||= 0
     self.anticipated_cost ||= 0
-    self.category_team_ali_code ||= team_ali_code.present? ? team_ali_code.parent.code : ''
   end
 
 end

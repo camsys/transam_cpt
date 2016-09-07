@@ -30,7 +30,8 @@
     var new_fy_sum = old_fy_sum + parseInt("#{ali.cost}");
 
     var ali_box = $('div[data-ali="#{ali.object_key}"]');
-    if( ali_box.length ) {
+    var is_sogr_ali = "#{ali.sogr?}";
+    if (( ali_box.length ) && (is_sogr_ali == "true" )) {
 
       new_fy_sum = new_fy_sum - parseInt($("##{ali.object_key}-ali-cost").data('cost'));
 

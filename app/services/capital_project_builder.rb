@@ -29,18 +29,6 @@ class CapitalProjectBuilder
   #
   #-----------------------------------------------------------------------------
 
-  # Returns the set of asset types for an organization that are eligible for
-  # SOGR building
-  def eligible_asset_types(org)
-    # Select the asset types that they are allowed to build. This is narrowed down to only
-    # asset types they own and those which are fta vehicles
-    asset_types = []
-    org.asset_type_counts.each do |type, count|
-      asset_type = AssetType.find(type)
-      asset_types << asset_type
-    end
-    asset_types
-  end
 
   # Main entry point for the builder. This invokes the bottom-up builder
   def build(organization, options = {})
@@ -57,7 +45,6 @@ class CapitalProjectBuilder
     return @project_count
   end
 
-  # Schedules replacement and rehabilitation projects for an individual asset
   def update_asset_schedule(asset)
 
     # Make sure the asset is strongly typed
@@ -117,7 +104,7 @@ class CapitalProjectBuilder
         project.update_project_number
         project.save(:validate => false)
       end
-      projects_and_alis = [project, ali]
+      projects_and_alis = [[project, ali]]
     elsif project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE or project.capital_project_type_id == IMPROVEMENT_PROJECT_TYPE
       Rails.logger.debug "Replacement or Rehabilitation project"
       # These are replacement or improvement projects and may have assets
@@ -130,7 +117,7 @@ class CapitalProjectBuilder
         # internally managed while non-SOGR projects are not.
         # Take each asset, update the scheduled activity year and re-run it
         ali.assets.each do |x|
-          asset = Asset.get_typed_asset x
+          asset = Asset.get_typed_asset(x)
           Rails.logger.debug "Processing #{asset}"
           if project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE
             # Set the scheduled replacement year
@@ -166,7 +153,7 @@ class CapitalProjectBuilder
         ali.reload
         new_project.reload
         project.reload
-        projects_and_alis = [new_project, ali]
+        projects_and_alis = [[new_project, ali]]
       end
 
     elsif project.capital_project_type_id == EXPANSION_PROJECT_TYPE
@@ -190,7 +177,7 @@ class CapitalProjectBuilder
       new_project.activity_line_items << ali
       new_project.save(:validate => false)
       new_project.reload
-      projects_and_alis = [new_project, ali]
+      projects_and_alis = [[new_project, ali]]
     end
 
     # Cleanup any empty projects and ALIs
@@ -224,21 +211,14 @@ class CapitalProjectBuilder
   protected
 
   def post_build_clean_up organization
-    # Check for empty projects and ALIs
-    CapitalProject.where(:organization_id => organization.id, :sogr => true).each do |cp|
-      cp.activity_line_items.each do |ali|
-        if ali.assets.empty?
-          Rails.logger.debug "Removing empty ALI #{ali}"
-          cp.activity_line_items.destroy ali
-        else
-          ali.update_estimated_cost
-        end
-      end
-      if cp.activity_line_items.empty?
-        Rails.logger.debug "Removing empty SOGR proejct #{cp}"
-        cp.destroy
-      end
-    end
+    # destroy all empty ALIs
+    ActivityLineItem.joins('LEFT OUTER JOIN activity_line_items_assets ON activity_line_items.id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.activity_line_item_id IS NULL').joins(:capital_project).where('capital_projects.sogr = true').destroy_all
+
+    # update cost of all other ALIs
+    ActivityLineItem.joins(:assets).where("assets.organization_id = ?",organization.id).group("activity_line_items.id").each{ |ali| ali.update_estimated_cost}
+
+    # destroy all empty capital projects
+    CapitalProject.where(:organization_id => organization.id, :sogr => true).joins('LEFT OUTER JOIN activity_line_items ON capital_projects.id = activity_line_items.capital_project_id').where('activity_line_items.capital_project_id IS NULL').destroy_all
 
   end
 
@@ -247,11 +227,7 @@ class CapitalProjectBuilder
     Rails.logger.debug "options = #{options.inspect}"
 
     # Get the options. There must be at least one type of asset to process
-    asset_type_ids = options[:asset_type_ids]
-    if asset_type_ids.blank?
-      asset_type_ids = []
-      eligible_asset_types(organization).each{|x| asset_type_ids << x.id}
-    end
+    asset_type_ids = options[:asset_type_ids].blank? ? organization.asset_type_counts.keys : options[:asset_type_ids]
     # User must set the start fy year as well otherwise we use the first planning year
     if options[:start_fy].to_i > 0
       @start_year = options[:start_fy].to_i
@@ -284,35 +260,32 @@ class CapitalProjectBuilder
     Rails.logger.info  "start_year = #{@start_year}, last_year  #{@last_year}"
 
     # Loop through the list of asset type ids
-    asset_type_ids.each do |asset_type_id|
+    policy = Policy.find_by(organization_id: organization.id)
+    policy_type_rules = Hash[*PolicyAssetTypeRule.where(policy_id: policy.id, asset_type_id: asset_type_ids).map{ |p| [p.asset_type_id, p] }.flatten]
+    policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| [p.asset_subtype_id, p] }.flatten]
 
-      if asset_type_id.blank?
-        next
-      end
+    # store policy rules in a hash for referc later
 
-      asset_type = AssetType.find(asset_type_id)
-      if asset_type.nil?
-        Rails.logger.info "Can't process asset type where id = #{asset_type_id}"
-        next
-      end
+    AssetType.where(id: asset_type_ids).each do |asset_type|
 
-      # Find all the matching assets for this organization. This logic returns a strongly typed set of assets
+      # Find all the matching assets for this organization.
       # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-      klass = asset_type.class_name.constantize
-      assets = klass.where('organization_id = ? AND asset_type_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, asset_type_id, @start_year)
+      assets = asset_type.class_name.constantize.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+
 
       # Process each asset in turn...
       assets.each do |a|
+        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules[a.asset_subtype_id].attributes)
         # reset scheduled replacement year
         a.scheduled_replacement_year = nil
         a.update_early_replacement_reason
 
         # do the work...
-        process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
-        a.reload
+        process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type, policy_analyzer)
+        #a.reload
       end
 
-      # Get the next asset type id
+      # Get the next asset type
     end
 
 
@@ -324,7 +297,7 @@ class CapitalProjectBuilder
   # needed. Projects are created if they don't already exists otherwise the
   # asset is added to existing projects
   #-----------------------------------------------------------------------------
-  def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type, target_year=nil, current_ali=nil)
+  def process_asset(asset, start_year, last_year, replacement_project_type, rehabilitation_project_type, policy_analyzer=nil, target_year=nil, current_ali=nil)
 
     Rails.logger.debug "Processing asset #{asset.object_key}, start_year = #{start_year}, last_year = #{last_year}, #{replacement_project_type}, #{rehabilitation_project_type}, target_year=#{target_year}"
 
@@ -334,12 +307,9 @@ class CapitalProjectBuilder
     # Get the policy analyzer for this asset. If the policy is not configured
     # correctly we may miss a rule so we check first to avoid nastiness
     #---------------------------------------------------------------------------
-    policy_analyzer = asset.policy_analyzer
-    # Whine if we dont have a valid policy for this asset type
-    if policy_analyzer.warnings?
-      #Rails.logger.info "No valid policy found for asset #{asset.object_key}. #{policy_analyzer.warnings.join('\n')}."
-      Rails.logger.info "No valid policy found for asset #{asset.object_key}."
-      return
+    if policy_analyzer.nil?
+      asset_policy_analyzer = asset.policy_analyzer
+      policy_analyzer = asset_policy_analyzer.asset_type_rule.attributes.merge(asset_policy_analyzer.asset_subtype_rule.attributes)
     end
 
     #---------------------------------------------------------------------------
@@ -392,7 +362,10 @@ class CapitalProjectBuilder
     #---------------------------------------------------------------------------
     # Step 1: Data consistency check
     #---------------------------------------------------------------------------
-    asset_data_consistency_check(asset, start_year)
+    unless asset_data_consistency_check(asset, start_year)
+      Rails.logger.info "Asset #{asset.object_key} did not pass data consistency check."
+      return
+    end
 
     #---------------------------------------------------------------------------
     # Step 2: Process initial rehabilitation (this happens here only if
@@ -402,18 +375,17 @@ class CapitalProjectBuilder
 
     # Get the replacement and rehab ALI codes for this asset. If the policy rule
     # specifies leased we need the lease
-    if policy_analyzer.get_replace_with_leased
-      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_lease_replacement_code)
+    if policy_analyzer['replace_with_leased']
+      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer['lease_replacement_code'])
     else
-      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_purchase_replacement_code)
+      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer['purchase_replacement_code'])
     end
-    rehab_ali_code = TeamAliCode.find_by(:code => policy_analyzer.get_rehabilitation_code)
+    rehab_ali_code = TeamAliCode.find_by(:code => policy_analyzer['rehabilitation_code'])
 
     # See if the policy requires scheduling rehabilitations.
-    rehab_month = asset.policy_analyzer.get_rehabilitation_service_month.to_i
+    rehab_month = policy_analyzer['rehabilitation_service_month'].to_i
     process_rehabs = (rehab_month.to_i > 0)
-    # Get the number of additional years to add
-    extended_years = asset.policy_analyzer.get_extended_service_life_months.to_i / 12
+    extended_years = policy_analyzer['extended_service_life_months'].to_i / 12
 
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
@@ -424,11 +396,11 @@ class CapitalProjectBuilder
     end
 
     # Initial replacement
-    min_service_life_years = asset.policy_analyzer.get_min_service_life_months / 12
+    min_service_life_years = policy_analyzer['min_service_life_months'].to_i / 12
     # Factor in any additional years based on a rehab
     min_service_life_years += extended_years
 
-    Rails.logger.debug "Replacement year = #{year}, min_service_life_years = #{min_service_life_years}"
+    Rails.logger.debug "Replacement year = #{year}, min_service_life_years = #{min_service_life_years} for asset #{asset.object_key}"
     unless year < start_year or year > last_year
 
       #-------------------------------------------------------------------------
@@ -477,6 +449,7 @@ class CapitalProjectBuilder
     end
 
     projects_and_alis
+
   end
 
   #-----------------------------------------------------------------------------
@@ -490,54 +463,31 @@ class CapitalProjectBuilder
   #
   #-----------------------------------------------------------------------------
   def asset_data_consistency_check(asset, start_year)
-
-    if asset.in_service_date.nil?
-      asset.in_service_date = asset.purchase_date
-    end
-
-    # Ensure that the asset has a valid policy replacement year
-    if asset.policy_replacement_year.blank?
-      asset.policy_replacement_year = asset.calculate_replacement_year
-    end
-
     # Set the schedule replacement year to the policy year if it is not already
     # set
     if asset.scheduled_replacement_year.blank?
       # if no scheduled replacement year is set then use the default. If the
       # asset is in backlog set the to start year
-      asset.scheduled_replacement_year = asset.policy_replacement_year
+      asset.update_column(:scheduled_replacement_year, asset.policy_replacement_year < current_planning_year_year ? current_planning_year_year : asset.policy_replacement_year)
+    elsif asset.scheduled_replacement_year < current_planning_year_year
+      asset.update_column(:scheduled_replacement_year, current_planning_year_year)
     end
-    asset.scheduled_replacement_year = current_planning_year_year if asset.scheduled_replacement_year < current_planning_year_year
 
+    !([asset.in_service_date, asset.policy_replacement_year, asset.scheduled_replacement_year, asset.scheduled_replace_with_new, asset.scheduled_replacement_cost].include? nil)
 
+    # COMMENT OUT FOR NOW
     # Check to see if the asset has a scheduled rehabilitation year and if so
     # make sure it is rational ie. must be before the replacement year
-    if asset.scheduled_rehabilitation_year.present?
-      # is it scheduled in the replacement year
-      if asset.scheduled_rehabilitation_year == asset.scheduled_replacement_year
-        # Clear the rehab year and let the system recalculate it as needed
-        asset.scheduled_rehabilitation_year = nil
-      elsif asset.scheduled_rehabilitation_year < start_year
-        # it is scheduled before the start year so it is in backlog
-        asset.scheduled_rehabilitation_year = start_year
-      end
-    end
-
-    # Check to see if the policy requries replacing with new or used assets
-    if asset.scheduled_replace_with_new.blank?
-      asset.scheduled_replace_with_new = asset.policy_analyzer.get_replace_with_new
-    end
-
-    # See if the asset has any scheduled replacement or rehabilitation costs, if not
-    # use the estimated costs
-    if asset.scheduled_replacement_cost.blank?
-      asset.scheduled_replacement_cost = asset.calculate_estimated_replacement_cost(start_of_fiscal_year(asset.scheduled_replacement_year))
-      Rails.logger.debug "asset scheduled_replacement_cost is blank, setting to est: #{asset.scheduled_replacement_cost}"
-    end
-
-    if asset.changed?
-      asset.save(:validate => false)
-    end
+    # if asset.scheduled_rehabilitation_year.present?
+    #   # is it scheduled in the replacement year
+    #   if asset.scheduled_rehabilitation_year == asset.scheduled_replacement_year
+    #     # Clear the rehab year and let the system recalculate it as needed
+    #     asset.scheduled_rehabilitation_year = nil
+    #   elsif asset.scheduled_rehabilitation_year < start_year
+    #     # it is scheduled before the start year so it is in backlog
+    #     asset.scheduled_rehabilitation_year = start_year
+    #   end
+    # end
 
   end
 
@@ -548,7 +498,6 @@ class CapitalProjectBuilder
   # on the first event happening so are kept seperate and are not editab;e
   #-----------------------------------------------------------------------------
   def add_to_project(organization, asset, ali_code, year, project_type, sogr=true, notional=false)
-
     Rails.logger.debug "add_to_project: asset=#{asset} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
     # The ALI project scope is the parent of the ali code so if the ALI code is 11.11.01 (replace 40 ft bus)
     # the scope becomes 11.11.XX (bus replacement project)
@@ -573,7 +522,7 @@ class CapitalProjectBuilder
     if ali
       Rails.logger.debug "Using existing ALI #{ali.object_key}"
       if asset.present?
-        unless ali.assets.exists?(asset)
+        unless asset.activity_line_items.exists?(ali)
           Rails.logger.debug "asset not in ALI, adding it"
           ali.assets << asset
         else
@@ -592,6 +541,7 @@ class CapitalProjectBuilder
     end
 
     [project, ali]
+
   end
 
   #-----------------------------------------------------------------------------

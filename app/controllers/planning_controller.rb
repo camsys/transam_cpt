@@ -116,11 +116,10 @@ class PlanningController < AbstractCapitalProjectsController
 
         notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
       else
+        assets_touched = @activity_line_item.assets.pluck(:object_key)
+
         @capital_project = @activity_line_item.capital_project
         @ali_cost = assets.sum(:scheduled_replacement_cost)
-
-        asset_types = assets.map(&:asset_type).uniq
-        assets_touched = assets.pluck(:object_key)
 
         service = CapitalProjectBuilder.new
         assets_count = assets.count
@@ -138,22 +137,19 @@ class PlanningController < AbstractCapitalProjectsController
           a.reload
           service.update_asset_schedule(a)
           a.reload
-
-          # update the original ALI's estimated cost for its assets
-          updated_ali = ActivityLineItem.find_by(id: @activity_line_item.id)
-          if updated_ali.present?
-            updated_ali.update_estimated_cost
-            Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
-          end
-
-          @alis_touched = []
-          asset_types.each do |type|
-            @alis_touched += type.class_name.constantize.where(object_key: assets_touched).map(&:activity_line_items).flatten!.uniq
-          end
-
-          @job_finished = true
-          notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
         end
+
+        # update the original ALI's estimated cost for its assets
+        updated_ali = ActivityLineItem.find_by(id: @activity_line_item.id)
+        if updated_ali.present?
+          updated_ali.update_estimated_cost
+          Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
+        end
+
+        @alis_touched = assets.first.asset_type.class_name.constantize.where(object_key: assets_touched).map(&:activity_line_items).flatten!.uniq
+
+        @job_finished = true
+        notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
       end
 
     else

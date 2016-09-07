@@ -14,7 +14,9 @@
       = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => "Fiscal Year", :disabled => ! @project.multi_year?
   .row
     .col-sm-6
-      = f.input :category_team_ali_code, :collection => @project.team_ali_code.children.map{|x| [x.full_name, x.code]}, :label => 'Category', :required => true
+      %label.control-label.string.required
+        * Category
+      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}), :class => 'form-control', :required => true, :include_blank => true
     .col-sm-6
       = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true
 
@@ -32,7 +34,7 @@
   update_selector(team_code_lookup_url, "#activity_line_item_team_ali_code_id", "Select...", category_code, '#{@activity_line_item.team_ali_code}');
 
   // Detect changes in the category selected
-  $('#activity_line_item_category_team_ali_code').on('change', function(event) {
+  $('#category_team_ali_code').on('change', function(event) {
     var id = $(this).val();
     //console.log(id);
     if (id != category_code) {
