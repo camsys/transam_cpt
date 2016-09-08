@@ -6,10 +6,10 @@
     $('tr[data-project="#{@capital_project.object_key}"]').hide();
 
   // update fiscal year sum
-  var old_fy_sum = parseInt($("#fy-sum-#{@activity_line_item.fy_year}").data('cost'));
+  var old_fy_sum = parseInt($("#fy-sum-#{@old_ali_fy}").data('cost'));
   var new_val = old_fy_sum - parseInt("#{@ali_cost}");
-  $("#fy-sum-#{@activity_line_item.fy_year}").html(number_to_currency(new_val));
-  $("#fy-sum-#{@activity_line_item.fy_year}").data('cost', new_val);
+  $("#fy-sum-#{@old_ali_fy}").html(number_to_currency(new_val));
+  $("#fy-sum-#{@old_ali_fy}").data('cost', new_val);
 
   = render :partial => 'move_ali_assets', locals: { alis: @new_alis }
 - elsif @status == 'job'

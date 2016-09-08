@@ -42,6 +42,9 @@ class ActivityLineItem < ActiveRecord::Base
   # Every ALI has a single TEAM sub catagory code
   belongs_to  :team_ali_code
 
+  # an ALI can belong to a fuel type
+  belongs_to  :fuel_type
+
   # Has 0 or more assets
   has_and_belongs_to_many    :assets #, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
 

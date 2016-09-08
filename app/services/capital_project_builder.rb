@@ -517,27 +517,36 @@ class CapitalProjectBuilder
       Rails.logger.debug "Using existing project #{project.object_key}"
     end
     @project_count += 1
-    ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
-    # if there is an exisiting ALI, see if the asset is in it
-    if ali
-      Rails.logger.debug "Using existing ALI #{ali.object_key}"
-      if asset.present?
+
+    if asset.present?
+      if asset.fuel_type_id.present?
+        ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ? AND fuel_type_id = ?', project.id, ali_code.id, asset.fuel_type_id)
+      else
+        ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
+      end
+      # if there is an exisiting ALI, see if the asset is in it
+      if ali
+        Rails.logger.debug "Using existing ALI #{ali.object_key}"
         unless asset.activity_line_items.exists?(ali)
           Rails.logger.debug "asset not in ALI, adding it"
           ali.assets << asset
         else
           Rails.logger.debug "asset already in ALI, not adding it"
         end
-      end
-    else
-      # Create the ALI and add it to the project
-      ali_name = "#{scope.name} #{ali_code.name} assets."
-      ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
-      ali.save
+      else
+        # Create the ALI and add it to the project
+        ali_name = "#{scope.name} #{ali_code.name} assets."
+        if asset.fuel_type_id.present?
+          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => asset.fuel_type_id})
+        else
+          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
+        end
+        ali.save
 
-      # Now add the asset to it if there is one
-      ali.assets << asset unless asset.blank?
-      Rails.logger.debug "Created new ALI #{ali.object_key}"
+        # Now add the asset to it if there is one
+        ali.assets << asset
+        Rails.logger.debug "Created new ALI #{ali.object_key}"
+      end
     end
 
     [project, ali]

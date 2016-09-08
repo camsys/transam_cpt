@@ -238,6 +238,7 @@ class PlanningController < AbstractCapitalProjectsController
         @status = 'js_update'
         @capital_project = @activity_line_item.capital_project
         @ali_cost = @activity_line_item.cost
+        @old_ali_fy = @activity_line_item.fy_year
 
         Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
         new_proj_and_alis = CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
