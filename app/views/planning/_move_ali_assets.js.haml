@@ -24,6 +24,8 @@
   }
 
 - alis.each do |ali|
+  :ruby
+    ali.reload
   :plain
     // update fiscal year sum
     var old_fy_sum = parseInt($("#fy-sum-#{ali.fy_year}").data('cost'));
