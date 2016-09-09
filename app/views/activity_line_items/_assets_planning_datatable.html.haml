@@ -36,6 +36,7 @@
         - if move_assets_action == '1'
           %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
+        %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
         %th.left{data: {field: 'asset_tag'}} Tag
         %th.left{data: {field: 'description'}} Description
         %th.center{data: {field: 'fuel_type'}} Fuel
@@ -57,9 +58,9 @@
       %tfoot
         %tr
           - if move_assets_action == '1'
-            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+            %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
           - else
-            %td{:colspan => 8}= "Totals for #{ali.assets.count} assets"
+            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
           %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
           %td.right= format_as_currency(ali.assets.sum(:book_value))
           %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))

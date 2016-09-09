@@ -31,6 +31,8 @@
     :classes => 'table-no-bordered'}}
     %thead
       %tr
+        %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
+
         %th.left{data: {field: 'description', formatter: 'description_formatter'}} Description
         %th.center{data: {field: 'fuel_type'}} Fuel
 
@@ -43,7 +45,7 @@
 
     %tfoot
       %tr
-        %td{:colspan => 4}= "Totals for #{ali.assets.count} assets"
+        %td{:colspan => 5}= "Totals for #{ali.assets.count} assets"
         %td.right= format_as_currency(ali.estimated_cost)
         - if popup == '1'
           %td

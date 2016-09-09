@@ -1,8 +1,6 @@
 - is_sogr = false if local_assigns[:is_sogr].nil?
 %p.text-center.bold= ali.name
 %p.text-center= ali.team_ali_code
-- if ali.fuel_type.present?
-  %p.text-center= ali.fuel_type
 %p.text-center
   = format_as_integer(ali.assets.count)
   assets

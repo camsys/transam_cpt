@@ -272,7 +272,6 @@ class CapitalProjectBuilder
       # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
       assets = asset_type.class_name.constantize.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
 
-
       # Process each asset in turn...
       assets.each do |a|
         policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules[a.asset_subtype_id].attributes)
@@ -535,7 +534,7 @@ class CapitalProjectBuilder
         end
       else
         # Create the ALI and add it to the project
-        ali_name = "#{scope.name} #{ali_code.name} assets."
+        ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? asset.fuel_type.to_s : ''} assets."
         if asset.fuel_type_id.present?
           ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => asset.fuel_type_id})
         else
