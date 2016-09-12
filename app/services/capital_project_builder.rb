@@ -422,7 +422,7 @@ class CapitalProjectBuilder
       #-------------------------------------------------------------------------
 
       # Add the initial replacement. If the project does not exist it is created
-      projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false)
+      projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false, policy_analyzer['replace_fuel_type_id'])
 
       if process_rehabs
         rehab_year = year + (rehab_month / 12)
@@ -439,7 +439,7 @@ class CapitalProjectBuilder
 
       while year <= last_year
         # Add a future re-replacement project for the asset
-        projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, true)
+        projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, true, policy_analyzer['replace_fuel_type_id'])
 
         if process_rehabs
           rehab_year = year + (rehab_month / 12)
@@ -501,7 +501,7 @@ class CapitalProjectBuilder
   # replacement of a replacement or rehab of a replacement -- these are dependent
   # on the first event happening so are kept seperate and are not editab;e
   #-----------------------------------------------------------------------------
-  def add_to_project(organization, asset, ali_code, year, project_type, sogr=true, notional=false)
+  def add_to_project(organization, asset, ali_code, year, project_type, sogr=true, notional=false, fuel_type_id=nil)
     Rails.logger.debug "add_to_project: asset=#{asset} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
     # The ALI project scope is the parent of the ali code so if the ALI code is 11.11.01 (replace 40 ft bus)
     # the scope becomes 11.11.XX (bus replacement project)
@@ -524,7 +524,7 @@ class CapitalProjectBuilder
 
     if asset.present?
       if asset.fuel_type_id.present?
-        ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ? AND fuel_type_id = ?', project.id, ali_code.id, asset.fuel_type_id)
+        ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ? AND fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
       else
         ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
       end
@@ -541,7 +541,7 @@ class CapitalProjectBuilder
         # Create the ALI and add it to the project
         ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? asset.fuel_type.to_s : ''} assets."
         if asset.fuel_type_id.present?
-          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => asset.fuel_type_id})
+          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => (fuel_type_id || asset.fuel_type_id)})
         else
           ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
         end
