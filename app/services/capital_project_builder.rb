@@ -262,7 +262,7 @@ class CapitalProjectBuilder
     # Loop through the list of asset type ids
     policy = Policy.find_by(organization_id: organization.id)
     policy_type_rules = Hash[*PolicyAssetTypeRule.where(policy_id: policy.id, asset_type_id: asset_type_ids).map{ |p| [p.asset_type_id, p] }.flatten]
-    policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| [p.asset_subtype_id, p] }.flatten]
+    policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| ["#{p.asset_subtype_id}, #{p.fuel_type_id}", p] }.flatten]
 
     # store policy rules in a hash for referc later
 
@@ -274,7 +274,7 @@ class CapitalProjectBuilder
 
       # Process each asset in turn...
       assets.each do |a|
-        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules[a.asset_subtype_id].attributes)
+        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
         # reset scheduled replacement year
         a.scheduled_replacement_year = nil
         a.update_early_replacement_reason
@@ -374,12 +374,24 @@ class CapitalProjectBuilder
 
     # Get the replacement and rehab ALI codes for this asset. If the policy rule
     # specifies leased we need the lease
-    if policy_analyzer['replace_with_leased']
-      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer['lease_replacement_code'])
+
+    # check if replacing with a different asset subtype and fuel type
+    if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
+      if asset.fuel_type_id.present?
+        current_policy_analyzer = PolicyAssetSubtypeRule.find_by(policy_id: Policy.find_by(organization_id: asset.organization_id).id, asset_subtype_id: (policy_analyzer['replace_asset_subtype_id'] || asset.asset_subtype_id), fuel_type_id: (policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id))
+      else
+        current_policy_analyzer = PolicyAssetSubtypeRule.find_by(policy_id: Policy.find_by(organization_id: asset.organization_id).id, asset_subtype_id: (policy_analyzer['replace_asset_subtype_id'] || asset.asset_subtype_id))
+      end
     else
-      replace_ali_code = TeamAliCode.find_by(:code => policy_analyzer['purchase_replacement_code'])
+      current_policy_analyzer = policy_analyzer
     end
-    rehab_ali_code = TeamAliCode.find_by(:code => policy_analyzer['rehabilitation_code'])
+
+    if policy_analyzer['replace_with_leased']
+      replace_ali_code = TeamAliCode.find_by(:code => current_policy_analyzer['lease_replacement_code'])
+    else
+      replace_ali_code = TeamAliCode.find_by(:code => current_policy_analyzer['purchase_replacement_code'])
+    end
+    rehab_ali_code = TeamAliCode.find_by(:code => current_policy_analyzer['rehabilitation_code'])
 
     # See if the policy requires scheduling rehabilitations.
     rehab_month = policy_analyzer['rehabilitation_service_month'].to_i
@@ -394,8 +406,8 @@ class CapitalProjectBuilder
       year = asset.scheduled_replacement_year
     end
 
-    # Initial replacement
-    min_service_life_years = policy_analyzer['min_service_life_months'].to_i / 12
+    # get interval for notional projects
+    min_service_life_years = (policy_analyzer['replace_with_new'] ? current_policy_analyzer['min_service_life_months'].to_i : current_policy_analyzer['min_used_purchase_service_life_months'].to_i) / 12
     # Factor in any additional years based on a rehab
     min_service_life_years += extended_years
 

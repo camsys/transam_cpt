@@ -241,10 +241,22 @@ class ActivityLineItem < ActiveRecord::Base
           val = PolicyAssetSubtypeRule.find_by(policy_id: policy.id, asset_subtype_id: assets.first.asset_subtype_id).total_rehabilitation_cost * assets.count
         else
           if self.notional?
-            policy_rule = PolicyAssetTypeRule.includes(:replacement_cost_calculation_type).find_by(policy_id: policy.id, asset_type_id: assets.first.asset_type_id)
-            assets.each do |a|
-              cost = replacement_cost(a, policy_rule.replacement_cost_calculation_type)
-              val += cost.to_i
+            policy_type_rule = PolicyAssetTypeRule.includes(:replacement_cost_calculation_type).find_by(policy_id: policy.id, asset_type_id: assets.first.asset_type_id)
+
+            subtypes = assets.pluck(:asset_subtype_id).uniq
+
+            subtypes.each do |subtype_id|
+
+              assets.where(asset_subtype_id: subtype_id).each do |a|
+                policy_subtype_rule = PolicyAssetSubtypeRule.find_by(policy_id: policy.id, asset_subtype_id: subtype_id, fuel_type_id: assets.first.fuel_type_id)
+                if policy_subtype_rule.purchase_replacement_code  != self.team_ali_code
+                  replacement_cost_calculation_type = CostCalculationType.find_by(class_name:'ReplacementCostPlusInterestCalculator')
+                else
+                  replacement_cost_calculation_type = policy_type_rule.replacement_cost_calculation_type
+                end
+                cost = replacement_cost(a, replacement_cost_calculation_type)
+                val += cost.to_i
+              end
             end
           else
             val = assets.sum(:scheduled_replacement_cost)
@@ -269,7 +281,12 @@ class ActivityLineItem < ActiveRecord::Base
   def replacement_cost asset, replacement_cost_calculation_type=nil
 
     if replacement_cost_calculation_type.nil?
-      replacement_cost_calculation_type = asset.policy_analyzer.get_replacement_cost_calculation_type
+      analyzer = asset.policy_analyzer
+      if analyzer.get_purchase_replacement_code != self.team_ali_code
+        replacement_cost_calculation_type = CostCalculationType.find_by(class_name: 'ReplacementCostPlusInterestCalculator')
+      else
+        replacement_cost_calculation_type = analyzer.get_replacement_cost_calculation_type
+      end
     end
 
     if self.notional?
