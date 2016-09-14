@@ -1,3 +1,2 @@
-.panel.panel-notional{:data => {:year => ali.fy_year, :ali => ali.object_key, :project => ali.capital_project.object_key}}
-  .panel-body
-    = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}
+.panel.panel-notional.transam-tooltip{:data => {:year => ali.fy_year, :ali => ali.object_key, :project => ali.capital_project.object_key, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
+  = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}

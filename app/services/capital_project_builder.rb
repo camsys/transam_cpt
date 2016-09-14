@@ -319,7 +319,7 @@ class CapitalProjectBuilder
     if policy_analyzer.nil?
       asset_policy_analyzer = asset.policy_analyzer
 
-      if asset_policy_analyzer.get_replace_asset_subtype_id.present? || asset_policy_analyzer.get_fuel_type_id.present?
+      if asset_policy_analyzer.get_replace_asset_subtype_id.present? || asset_policy_analyzer.get_replace_fuel_type_id.present?
         policy_analyzer = asset_policy_analyzer.asset_type_rule.attributes.merge(asset_policy_analyzer.asset_subtype_rule.attributes.select{|k,v| k.starts_with?("replace_")}).merge(asset_policy_analyzer.replace_asset_subtype_rule.attributes.select{|k,v| !k.starts_with?("replace_")})
       else
         policy_analyzer = asset_policy_analyzer.asset_type_rule.attributes.merge(asset_policy_analyzer.asset_subtype_rule.attributes)
@@ -539,7 +539,7 @@ class CapitalProjectBuilder
         end
       else
         # Create the ALI and add it to the project
-        ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? asset.fuel_type.to_s : ''} assets."
+        ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? (FuelType.find_by(id: fuel_type_id) || asset.fuel_type).to_s : ''} assets."
         if asset.fuel_type_id.present?
           ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => (fuel_type_id || asset.fuel_type_id)})
         else

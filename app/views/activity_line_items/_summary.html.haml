@@ -4,6 +4,7 @@
   = format_field("Scope", ali.team_ali_code)
   = format_field("SOGR", format_as_yes_no(ali.capital_project.sogr?))
   = format_field("Type", ali.capital_project.capital_project_type)
+  = format_field("Fuel Type", ali.fuel_type) if ali.fuel_type.present?
   %hr
 
   = format_field("Asset Count", format_as_integer(ali.assets.count))
@@ -26,6 +27,7 @@
     = format_field("Scope", ali.team_ali_code)
     = format_field("SOGR", format_as_yes_no(ali.capital_project.sogr?))
     = format_field("Type", ali.capital_project.capital_project_type)
+    = format_field("Fuel Type", ali.fuel_type) if ali.fuel_type.present?
 
   .col-sm-4
     = format_field("Asset Count", format_as_integer(ali.assets.count))

@@ -31,10 +31,9 @@
     :classes => 'table-no-bordered'}}
     %thead
       %tr
-        %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
-
+        %th.left{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}} Asset Subtype
+        %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}} Fuel
         %th.left{data: {field: 'description', formatter: 'description_formatter'}} Description
-        %th.center{data: {field: 'fuel_type'}} Fuel
 
         %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
 
@@ -107,7 +106,7 @@
       } else {
         str = "Replacement";
       }
-      return str + " for " + value + " replaced in " + data.scheduled_replacement_year;
+      return str + " for " + data.asset_subtype_id + " " + data.fuel_type + " " + value + " replaced in " + data.scheduled_replacement_year;
     } else {
       return "";
     }
@@ -131,6 +130,26 @@
 
   function popup_formatter(value, data) {
     return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
+  function replace_with_subtype_formatter(value, data) {
+    if (value) {
+      return value;
+    } else if (data) {
+      return data.asset_subtype_id
+    } else {
+      return "";
+    }
+  }
+
+  function replace_with_fuel_type_formatter(value, data) {
+    if (value) {
+      return value;
+    } else if (data) {
+      return data.fuel_type
+    } else {
+      return "";
+    }
   }
 
 

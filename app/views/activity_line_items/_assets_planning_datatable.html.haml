@@ -36,10 +36,11 @@
         - if move_assets_action == '1'
           %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
-        %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
         %th.left{data: {field: 'asset_tag'}} Tag
-        %th.left{data: {field: 'description'}} Description
+        %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
         %th.center{data: {field: 'fuel_type'}} Fuel
+        %th.left{data: {field: 'description'}} Description
+
 
         %th.center{data: {field: 'age'}} Age
         %th.center{data: {field: 'in_backlog', formatter: 'boolean_formatter'}} Bcklg
@@ -54,6 +55,8 @@
           %th.center{data: {formatter: 'popup_formatter'}}
         - if ali.has_early_replacement_assets?
           %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
+        %th.center{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}}
+        %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}}
 
       %tfoot
         %tr
@@ -68,6 +71,8 @@
             %td
           - if ali.has_early_replacement_assets?
             %td
+          %td
+          %td
 
 
 :javascript
@@ -91,6 +96,7 @@
           return details_in_popup($(this).attr('href'), div_id);
         }
       });
+      $('.transam-tooltip').tooltip();
     });
 
     function details_in_popup(link, div_id){
@@ -272,6 +278,22 @@
   function early_replacement_flag_formatter(value, data) {
     if((value) && (data)) {
       return '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-placement="left" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }
+
+  function replace_with_subtype_formatter(value, data) {
+    if((value) && (data)) {
+      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }
+
+  function replace_with_fuel_type_formatter(value, data) {
+    if((value) && (data)) {
+      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
     } else {
       return "";
     }

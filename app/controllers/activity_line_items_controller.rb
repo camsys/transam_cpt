@@ -129,6 +129,7 @@ class ActivityLineItemsController < OrganizationAwareController
       format.js
       format.json {
         assets_json = @activity_line_item.assets.limit(params[:limit]).offset(params[:offset]).collect{ |p|
+          asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
             fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
             age: p.age,
@@ -140,7 +141,10 @@ class ActivityLineItemsController < OrganizationAwareController
             estimated_cost: @activity_line_item.rehabilitation_ali? ? (@activity_line_item.rehabilitation_cost p) : (@activity_line_item.replacement_cost p),
             is_early_replacement: p.is_early_replacement?,
             formatted_early_replacement_reason: p.formatted_early_replacement_reason,
-            min_service_life: p.policy_analyzer.get_min_service_life_months / 12
+            min_service_life: asset_policy_analyzer.get_min_service_life_months / 12,
+            replace_with_subtype: asset_policy_analyzer.get_replace_asset_subtype_id.present? ? AssetSubtype.find_by(id: asset_policy_analyzer.get_replace_asset_subtype_id).to_s : false,
+            replace_with_fuel_type: p.fuel_type_id != @activity_line_item.fuel_type_id ? @activity_line_item.fuel_type.code : false
+
           })
         }
         render :json => {
