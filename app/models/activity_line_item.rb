@@ -241,9 +241,9 @@ class ActivityLineItem < ActiveRecord::Base
           val = PolicyAssetSubtypeRule.find_by(policy_id: policy.id, asset_subtype_id: assets.first.asset_subtype_id).total_rehabilitation_cost * assets.count
         else
           if self.notional?
-            policy_rule = PolicyAssetTypeRule.includes(:replacement_cost_calculation_type).find_by(policy_id: policy.id, asset_type_id: assets.first.asset_type_id)
+            policy_replacement_calculator = assets.first.policy_analyzer.get_replacement_cost_calculation_type
             assets.each do |a|
-              cost = replacement_cost(a, policy_rule.replacement_cost_calculation_type)
+              cost = replacement_cost(a, policy_replacement_calculator)
               val += cost.to_i
             end
           else
@@ -269,7 +269,8 @@ class ActivityLineItem < ActiveRecord::Base
   def replacement_cost asset, replacement_cost_calculation_type=nil
 
     if replacement_cost_calculation_type.nil?
-      replacement_cost_calculation_type = asset.policy_analyzer.get_replacement_cost_calculation_type
+      analyzer = asset.policy_analyzer
+      replacement_cost_calculation_type = analyzer.get_replacement_cost_calculation_type
     end
 
     if self.notional?

@@ -1,4 +1,4 @@
 - draggable_class = can?(:update, ali) || can?(:update_cost, ali)  ? "draggable" : ""
-.panel.panel-other{:class => draggable_class, :data => {:url => ali_action_planning_index_path, :year => ali.fy_year, :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key}}
-  .panel-body
-    = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}
+.panel.panel-other.transam-tooltip{:class => draggable_class, :data => {:url => ali_action_planning_index_path, :year => ali.fy_year, :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
+
+  = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}

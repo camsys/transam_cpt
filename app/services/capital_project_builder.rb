@@ -262,7 +262,7 @@ class CapitalProjectBuilder
     # Loop through the list of asset type ids
     policy = Policy.find_by(organization_id: organization.id)
     policy_type_rules = Hash[*PolicyAssetTypeRule.where(policy_id: policy.id, asset_type_id: asset_type_ids).map{ |p| [p.asset_type_id, p] }.flatten]
-    policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| [p.asset_subtype_id, p] }.flatten]
+    policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| ["#{p.asset_subtype_id}, #{p.fuel_type_id}", p] }.flatten]
 
     # store policy rules in a hash for referc later
 
@@ -274,7 +274,17 @@ class CapitalProjectBuilder
 
       # Process each asset in turn...
       assets.each do |a|
-        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules[a.asset_subtype_id].attributes)
+        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
+        if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
+          policy_analyzer =
+              policy_type_rules[asset_type.id].attributes
+                .merge(
+                  policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
+                )
+                .merge(
+                  policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
+                )
+        end
         # reset scheduled replacement year
         a.scheduled_replacement_year = nil
         a.update_early_replacement_reason
@@ -308,7 +318,12 @@ class CapitalProjectBuilder
     #---------------------------------------------------------------------------
     if policy_analyzer.nil?
       asset_policy_analyzer = asset.policy_analyzer
-      policy_analyzer = asset_policy_analyzer.asset_type_rule.attributes.merge(asset_policy_analyzer.asset_subtype_rule.attributes)
+
+      if asset_policy_analyzer.get_replace_asset_subtype_id.present? || asset_policy_analyzer.get_replace_fuel_type_id.present?
+        policy_analyzer = asset_policy_analyzer.asset_type_rule.attributes.merge(asset_policy_analyzer.asset_subtype_rule.attributes.select{|k,v| k.starts_with?("replace_")}).merge(asset_policy_analyzer.replace_asset_subtype_rule.attributes.select{|k,v| !k.starts_with?("replace_")})
+      else
+        policy_analyzer = asset_policy_analyzer.asset_type_rule.attributes.merge(asset_policy_analyzer.asset_subtype_rule.attributes)
+      end
     end
 
     #---------------------------------------------------------------------------
@@ -394,8 +409,8 @@ class CapitalProjectBuilder
       year = asset.scheduled_replacement_year
     end
 
-    # Initial replacement
-    min_service_life_years = policy_analyzer['min_service_life_months'].to_i / 12
+    # get interval for notional projects
+    min_service_life_years = (policy_analyzer['replace_with_new'] ? policy_analyzer['min_service_life_months'].to_i : policy_analyzer['min_used_purchase_service_life_months'].to_i) / 12
     # Factor in any additional years based on a rehab
     min_service_life_years += extended_years
 
@@ -406,18 +421,8 @@ class CapitalProjectBuilder
       # Step 3: Process initial replacement and rehab
       #-------------------------------------------------------------------------
 
-      # See if there is a technology change
-      # new_subtype_id = asset.policy_analyzer.get_replace_asset_subtype_id
-      # if new_subtype_id.present and asset.asset_subtype_id != new_subtype_id
-      #   asset.asset_subtype_id = new_subtype_id
-      # end
-      # new_fuel_type_id = asset.policy_analyzer.get_replace_asset_fuel_type_id
-      # if new_fuel_type_id.present and asset.fuel_type_id != new_fuel_type_id
-      #   asset.fuel_type_id = new_fuel_type_id
-      # end
-
       # Add the initial replacement. If the project does not exist it is created
-      projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false)
+      projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false, policy_analyzer['replace_fuel_type_id'])
 
       if process_rehabs
         rehab_year = year + (rehab_month / 12)
@@ -434,7 +439,7 @@ class CapitalProjectBuilder
 
       while year <= last_year
         # Add a future re-replacement project for the asset
-        projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, true)
+        projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, true, policy_analyzer['replace_fuel_type_id'])
 
         if process_rehabs
           rehab_year = year + (rehab_month / 12)
@@ -496,7 +501,7 @@ class CapitalProjectBuilder
   # replacement of a replacement or rehab of a replacement -- these are dependent
   # on the first event happening so are kept seperate and are not editab;e
   #-----------------------------------------------------------------------------
-  def add_to_project(organization, asset, ali_code, year, project_type, sogr=true, notional=false)
+  def add_to_project(organization, asset, ali_code, year, project_type, sogr=true, notional=false, fuel_type_id=nil)
     Rails.logger.debug "add_to_project: asset=#{asset} ali_code=#{ali_code} year=#{year} project_type=#{project_type}"
     # The ALI project scope is the parent of the ali code so if the ALI code is 11.11.01 (replace 40 ft bus)
     # the scope becomes 11.11.XX (bus replacement project)
@@ -519,7 +524,7 @@ class CapitalProjectBuilder
 
     if asset.present?
       if asset.fuel_type_id.present?
-        ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ? AND fuel_type_id = ?', project.id, ali_code.id, asset.fuel_type_id)
+        ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ? AND fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
       else
         ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
       end
@@ -534,9 +539,9 @@ class CapitalProjectBuilder
         end
       else
         # Create the ALI and add it to the project
-        ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? asset.fuel_type.to_s : ''} assets."
+        ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? (FuelType.find_by(id: fuel_type_id) || asset.fuel_type).to_s : ''} assets."
         if asset.fuel_type_id.present?
-          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => asset.fuel_type_id})
+          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => (fuel_type_id || asset.fuel_type_id)})
         else
           ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
         end
