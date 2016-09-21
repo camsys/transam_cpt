@@ -32,4 +32,5 @@
 
 TAGS
 
-coverage
+coverage/
+.idea/

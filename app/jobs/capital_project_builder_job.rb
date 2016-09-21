@@ -23,11 +23,11 @@ class CapitalProjectBuilderJob < Job
 
     # Let the user know the results
     if num_created > 0
-      msg = "SOGR Capital Project Analyzer completed. #{num_created} SOGR capital projects were added to your capital needs list."
+      msg = "SOGR Capital Project Analyzer completed. #{num_created} SOGR capital projects were added to #{organization.short_name}'s capital needs list."
       # Add a row into the activity table
       ActivityLog.create({:organization_id => organization.id, :user_id => creator.id, :item_type => "CapitalProjectBuilder", :activity => msg, :activity_time => Time.now})
     else
-      msg = "No capital projects were created."
+      msg = "No capital projects were created. #{organization.short_name} has #{CapitalProject.where(organization_id: organization.id).count} existing projects."
     end
 
     event_url = Rails.application.routes.url_helpers.capital_projects_path

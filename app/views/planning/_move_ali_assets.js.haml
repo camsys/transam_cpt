@@ -23,6 +23,13 @@
     return parts.join(separator);
   }
 
+- if @deleted_alis
+  - @deleted_alis.each do |d_ali|
+    - if CapitalProject.find_by(id: d_ali[0].id).nil?
+      $('tr[data-project="#{d_ali[0].object_key}"]').hide();
+    - else
+      $('div[data-ali="#{d_ali[1].object_key}"]').hide();
+
 - alis.each do |ali|
   :ruby
     ali.reload

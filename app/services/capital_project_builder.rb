@@ -54,7 +54,7 @@ class CapitalProjectBuilder
     process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
 
     # Cleanup any empty projects and ALIs
-    post_build_clean_up asset.organization
+    {:deleted_alis => post_build_clean_up(asset.organization)}
 
   end
 
@@ -116,6 +116,7 @@ class CapitalProjectBuilder
         # Need to figure out if it is a SOGR project or not. SOGR projects are
         # internally managed while non-SOGR projects are not.
         # Take each asset, update the scheduled activity year and re-run it
+        projects_and_alis = []
         ali.assets.each do |x|
           asset = Asset.get_typed_asset(x)
           Rails.logger.debug "Processing #{asset}"
@@ -128,7 +129,7 @@ class CapitalProjectBuilder
             asset.scheduled_rehabilitation_year = fy_year
           end
           asset.save(:validate => false)
-          projects_and_alis = process_asset(asset, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
+          projects_and_alis += process_asset(asset, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
         end
         ali.reload
         project.reload
@@ -181,9 +182,9 @@ class CapitalProjectBuilder
     end
 
     # Cleanup any empty projects and ALIs
-    post_build_clean_up project.organization
+    {:deleted_alis => post_build_clean_up(project.organization), :touched_alis => projects_and_alis}
 
-    projects_and_alis
+
   end
 
   # Set resonable defaults for the builder
@@ -212,7 +213,10 @@ class CapitalProjectBuilder
 
   def post_build_clean_up organization
     # destroy all empty ALIs
-    ActivityLineItem.joins('LEFT OUTER JOIN activity_line_items_assets ON activity_line_items.id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.activity_line_item_id IS NULL').joins(:capital_project).where('capital_projects.sogr = true').destroy_all
+   deleted_alis =  ActivityLineItem.joins('LEFT OUTER JOIN activity_line_items_assets ON activity_line_items.id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.activity_line_item_id IS NULL').joins(:capital_project).where('capital_projects.sogr = true')
+   deleted_projs_alis = deleted_alis.map{|x| [x.capital_project, x]}
+
+    deleted_alis.destroy_all
 
     # update cost of all other ALIs
     ActivityLineItem.joins(:assets).where("assets.organization_id = ?",organization.id).group("activity_line_items.id").each{ |ali| ali.update_estimated_cost}
@@ -220,6 +224,7 @@ class CapitalProjectBuilder
     # destroy all empty capital projects
     CapitalProject.where(:organization_id => organization.id, :sogr => true).joins('LEFT OUTER JOIN activity_line_items ON capital_projects.id = activity_line_items.capital_project_id').where('activity_line_items.capital_project_id IS NULL').destroy_all
 
+   deleted_projs_alis
   end
 
   def build_bottom_up(organization, options)
@@ -264,7 +269,7 @@ class CapitalProjectBuilder
     policy_type_rules = Hash[*PolicyAssetTypeRule.where(policy_id: policy.id, asset_type_id: asset_type_ids).map{ |p| [p.asset_type_id, p] }.flatten]
     policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| ["#{p.asset_subtype_id}, #{p.fuel_type_id}", p] }.flatten]
 
-    # store policy rules in a hash for referc later
+    # store policy rules in a hash for reference later
 
     AssetType.where(id: asset_type_ids).each do |asset_type|
 
@@ -517,10 +522,11 @@ class CapitalProjectBuilder
       project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
       project = create_capital_project(organization, year, scope, project_title, project_type, sogr, notional)
       Rails.logger.debug "Created new project #{project.object_key}"
+      @project_count += 1
     else
       Rails.logger.debug "Using existing project #{project.object_key}"
     end
-    @project_count += 1
+
 
     if asset.present?
       if asset.fuel_type_id.present?

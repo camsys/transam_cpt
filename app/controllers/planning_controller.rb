@@ -124,6 +124,7 @@ class PlanningController < AbstractCapitalProjectsController
         service = CapitalProjectBuilder.new
         assets_count = assets.count
         Rails.logger.debug "Found #{assets_count} assets to process"
+        @deleted_alis = []
         assets.each do |a|
           # Replace or Rehab?
           if @activity_line_item.rehabilitation_ali?
@@ -135,7 +136,7 @@ class PlanningController < AbstractCapitalProjectsController
 
           a.save(:validate => false)
           a.reload
-          service.update_asset_schedule(a)
+          @deleted_alis += service.update_asset_schedule(a)[:deleted_alis]
           a.reload
         end
 
@@ -241,8 +242,9 @@ class PlanningController < AbstractCapitalProjectsController
         @old_ali_fy = @activity_line_item.fy_year
 
         Rails.logger.debug "Moving ali #{@activity_line_item} to new FY #{new_fy_year}"
-        new_proj_and_alis = CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
-        @new_alis = new_proj_and_alis.map{|x| x[1]}
+        proj_and_alis = CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year, params[:early_replacement_reason])
+        @new_alis = proj_and_alis[:touched_alis].map{|x| x[1]}
+        @deleted_alis = proj_and_alis[:deleted_alis]
 
         notify_user :notice, "ALI was successfully moved to #{new_fy_year}."
 
