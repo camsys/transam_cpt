@@ -381,7 +381,7 @@ class CapitalProjectBuilder
     #---------------------------------------------------------------------------
     # Step 1: Data consistency check
     #---------------------------------------------------------------------------
-    unless asset_data_consistency_check(asset, start_year)
+    unless asset_data_consistency_check(asset, start_year, policy_analyzer['replace_with_new'])
       Rails.logger.info "Asset #{asset.object_key} did not pass data consistency check."
       return
     end
@@ -471,7 +471,7 @@ class CapitalProjectBuilder
   # start year is the first planning year
   #
   #-----------------------------------------------------------------------------
-  def asset_data_consistency_check(asset, start_year)
+  def asset_data_consistency_check(asset, start_year, asset_replace_with_new)
     # Set the schedule replacement year to the policy year if it is not already
     # set
     if asset.scheduled_replacement_year.blank?
@@ -481,6 +481,8 @@ class CapitalProjectBuilder
     elsif asset.scheduled_replacement_year < current_planning_year_year
       asset.update_column(:scheduled_replacement_year, current_planning_year_year)
     end
+
+    asset.update_column(:scheduled_replace_with_new, asset_replace_with_new) if asset.scheduled_replace_with_new.blank?
 
     !([asset.in_service_date, asset.policy_replacement_year, asset.scheduled_replacement_year, asset.scheduled_replace_with_new, asset.scheduled_replacement_cost].include? nil)
 
