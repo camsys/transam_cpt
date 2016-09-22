@@ -25,7 +25,6 @@ RSpec.describe AssetDispositionUpdateJob, :type => :job do
     test_asset.save!
     test_line_item.save!
     test_line_item.assets << test_asset
-    expect(test_line_item.estimated_cost).to eq(123)
 
     allow(Time).to receive(:now).and_return(Time.utc(2000,"jan",1,20,15,1))
     expect(Rails.logger).to receive(:debug).with("Executing AssetDispositionUpdateJob at #{Time.now.to_s} for Asset #{test_asset.object_key}")

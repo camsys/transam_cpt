@@ -12,7 +12,7 @@ FactoryGirl.define do
   factory :disposition_update_event do
     basic_event_traits
     asset_event_type { AssetEventType.find_by(:class_name => 'DispositionUpdateEvent') }
-    disposition_type_id 2
+    disposition_type_id 1
     sales_proceeds 25000
     event_date Date.today
   end

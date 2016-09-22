@@ -1,5 +1,6 @@
 TransamCore::Engine.load_seed
 TransamTransit::Engine.load_seed
+TransamAccounting::Engine.load_seed
 TransamSpatial::Engine.load_seed
 TransamCpt::Engine.load_seed
 

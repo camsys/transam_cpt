@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "activity_line_items/_funding_plans_table.html.haml", :type => :view do
+describe "activity_line_items/_funding_plans_table.html.haml", :skip, :type => :view do
   before(:each) do
     assign(:project, create(:capital_project))
   end

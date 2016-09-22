@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe FundingPlan, :type => :model do
+RSpec.describe FundingPlan, :skip, :type => :model do
 
   let(:test_plan) { create(:funding_plan) }
 
