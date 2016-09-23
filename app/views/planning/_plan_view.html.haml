@@ -109,7 +109,7 @@
       cursor: "crosshair",
       opacity: "0.75",
   		helper : function() {
-          return $(this).clone().css('width', '110px');
+          return $(this).clone().css('width', '120px');
         },
   		revert : 'invalid',
       create: function(event, ui) {
@@ -142,6 +142,10 @@
     $(".drop-target").droppable({
         tolerance: "pointer",
   		hoverClass : 'drop-zone-active',
+  		over: function(ev,ui) {
+  		  var drop_year = parseInt($(this).data('year'));
+  		  $(ui.helper).text("Move to FY " + (drop_year-2000) + "-" + (drop_year-1999));
+        },
   		drop : function(ev, ui) {
         var drop_year = $(this).data('year');
         var ali_year = ui.draggable.data('year');
