@@ -9,7 +9,7 @@
     = " Update the expected cost"
 - if ali.sogr? && ali.anticipated_cost && ali.anticipated_cost > 0
   %li
-    = link_to restore_cost_capital_project_activity_line_item_path(project, ali) do
+    = link_to restore_cost_capital_project_activity_line_item_path(project, ali), :remote => true, :id => 'restore_cost_ali' do
       %i.fa.fa-usd.fa-fw
       = " Restore SOGR Estimated Cost"
 - if !ali.sogr? && can?(:update, ali)
@@ -23,3 +23,11 @@
     = link_to capital_project_activity_line_item_path(project, ali), :method => :delete, :data => {:confirm => "Are you sure you want to remove this ALI? The action cannot be undone."}  do
       %i.fa.fa-trash-o.fa-fw
       = " Remove this ALI"
+
+:javascript
+
+  $("#restore_cost_ali").click(function(){
+    $('#spinner').show();
+  });
+
+
