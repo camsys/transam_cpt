@@ -146,7 +146,11 @@
   		hoverClass : 'drop-zone-active',
   		over: function(ev,ui) {
   		  var drop_year = parseInt($(this).data('year'));
-  		  $(ui.helper).text("Move to FY " + (drop_year-2000) + "-" + (drop_year-1999));
+  		  if ( $('#move').length ) {
+  		    $('#move').html("Move to FY " + (drop_year-2000) + "-" + (drop_year-1999));
+          } else {
+            $(ui.helper).first().append("<div id='move'>Move to FY " + (drop_year-2000) + "-" + (drop_year-1999)+"</div>");
+          }
         },
   		drop : function(ev, ui) {
         var drop_year = $(this).data('year');
