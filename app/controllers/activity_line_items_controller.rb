@@ -245,7 +245,8 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       if @activity_line_item.update(form_params)
         notify_user(:notice, "The ALI was successfully updated")
-        format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
+        #format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
+        format.html { redirect_to :back }
 
         text = "<div class='panel-body'>"+(render_to_string partial: 'planning/ali', formats: [:html], locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true }, layout: false )+"</div>"
 
