@@ -23,5 +23,8 @@
                   - unless fy[1] == @project.fy_year
                     %li
                       = link_to fy[0], move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
+            .btn-group
+              %button#deselect-all-assets-button.btn.btn-info{:type => 'button'}
+                %span Deselect all
 
         = render :partial => 'assets_planning_datatable', :locals => {:ali => @activity_line_item, :popup => '1', :move_assets_action => @drag_drop_enabled ? '1': '0'}
