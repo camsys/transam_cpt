@@ -31,7 +31,7 @@ class CapitalProjectBuilderJob < Job
     end
 
     event_url = Rails.application.routes.url_helpers.capital_projects_path
-    builder_notification = Notification.create(text: msg, link: event_url)
+    builder_notification = Notification.create(text: msg, link: event_url, notifiable_type: 'Organization', notifiable_id: organization.id)
     UserNotification.create(user: creator, notification: builder_notification)
 
   end

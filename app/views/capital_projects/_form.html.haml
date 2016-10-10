@@ -6,6 +6,11 @@
   :file => :vertical_file_input,
   :boolean => :vertical_boolean}) do |f|
 
+  - if @organization_list.count > 1
+    .row
+      .col-md-8
+        = f.input :organization_id, :required => true, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name'
+
   .row
     .col-md-8
       = f.input :title, :placeholder => "Enter a title for this project...", :required => true, :wrapper_html => {:class => 'text-limiter-wrapper'}, :input_html => {:class => 'text-limiter', :maxlength => 64}
