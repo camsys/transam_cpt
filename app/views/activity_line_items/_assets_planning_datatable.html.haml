@@ -77,7 +77,6 @@
           %td
           %td
 
-
 :javascript
 
   var selected_assets = [];
@@ -191,6 +190,11 @@
       return true;
     });
   });
+  
+  $('#deselect-all-assets-button').on('click', function(){
+    selected_assets = [];
+    enable_disable_asset_actions();
+  });
 
   $("##{table_dom_id}").on('check.bs.table', function(e, row) {
     update_selected();
@@ -200,8 +204,13 @@
     update_selected();
   }).on('uncheck-all.bs.table', function(e, row) {
     update_selected();
-  }).on('page-change.bs.table', function(e, row) {
-    update_selected();
+  }).on('post-body.bs.table', function(e, row) {
+    var i, checkbox, $table = $("##{table_dom_id}");
+    for(i=0; i<selected_assets.length; i++){
+      checkbox = $table.find('input[type=checkbox][value=' +selected_assets[i]+ ']');
+      checkbox.length && checkbox.prop('checked', true) && checkbox.parents('tr').addClass('selected');
+    }
+    
   });
 
   // Enables or disables the package actions depending on how many are selected
@@ -223,7 +232,6 @@
   function update_selected() {
     var selected = $("##{table_dom_id}").bootstrapTable('getSelections');
     //console.log(selected);
-    selected_assets = [];
     for (i = 0; i < selected.length; i++) {
       var selected_key = selected[i].object_key;
       if(selected_assets.indexOf(selected_key) < 0) {
