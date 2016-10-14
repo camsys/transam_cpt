@@ -8,6 +8,9 @@
     width: auto;
     max-width: none;
   }
+  table.floatThead-table{
+    background-color: white;
+  }
 
 .table-responsive
   %table.table.table-condensed#plan-table
@@ -63,4 +66,13 @@
   var capital_project_flag_filter = #{@capital_project_flag_filter};
   var asset_subtype_filter = #{@asset_subtype_filter};
 
+  $("#plan-table").floatThead({
+      responsiveContainer: function($table){
+          return $table.closest(".table-responsive");
+      },
+      top: function(){
+        // keep the floating head below the header
+        return $('nav.navbar.navbar-fixed-top').height();
+      }
+  });
 
