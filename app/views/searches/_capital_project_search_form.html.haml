@@ -5,7 +5,7 @@
         %legend.panel-legend Capital Project
         .col-sm-6
           = f.input :keyword, :placeholder => "Enter A Search Term"
-          = f.input :organization_id, :collection => current_user.organizations, :label_method => 'coded_name',  :include_blank => "Any..." unless current_user.organizations.count < 2
+          = f.input :organization_id, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name',  :include_blank => "Any..." unless current_user.organizations.count < 2
           = f.input :total_cost, :wrapper => :vertical_prepend, :label => "Total Anticipated Cost" do
             .input-group-btn
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}

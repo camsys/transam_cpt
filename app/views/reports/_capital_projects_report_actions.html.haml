@@ -1,7 +1,4 @@
 = form_tag report_path(@report), :class => "navbar-form navbar-right", :method => :get, :id => 'report_filter_form', :role => "form" do
-  - if @organization_list.count > 1
-    .form-group
-      = select_tag(:agency, options_for_select(Organization.where(id: @data.organization_ids)), :class => "form-control pull-right", :include_blank => "Jump to...")
   .form-group
     = select_tag(:fy_year, options_for_select(get_planning_fiscal_years_collection, :selected => @data.fy_year), :include_blank => 'Any FY...', :class => "form-control")
   .form-group
@@ -13,11 +10,3 @@
 
   = button_tag :class => 'btn btn-success', :type => 'submit' do
     %i.fa.fa-filter
-
-:javascript
-  $(document).ready(function() {
-    // Jump to agency
-    $('#agency').change(function() {
-      document.location = "#" + $(this).val();
-    })
-  });

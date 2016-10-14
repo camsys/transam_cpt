@@ -16,9 +16,6 @@
 
 = form_tag capital_projects_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   = hidden_field_tag :reset_filter_session, true
-  - if @organization_list.count > 1
-    .form-group
-      = select_tag(:org_filter, options_for_select(Organization.where('id IN (?)', @organization_list).collect{|a| [a.coded_name, a.id]}, :selected => @org_filter), :class => "form-control", :multiple => true)
   .form-group
     = select_tag(:fiscal_year_filter, options_for_select(@fiscal_years, :selected => @fiscal_year_filter), :class => "form-control", :multiple => true)
   -# .form-group
@@ -81,17 +78,6 @@
           return 'Fiscal years...';
         } else {
           return 'Fiscal years - ' + options.length + ' selected';
-        }
-      }
-    });
-    $('#org_filter').multiselect({
-      inheritClass: true,
-      maxHeight: 250,
-      buttonText: function(options, select) {
-        if (options.length === 0) {
-          return 'Organizations...';
-        } else {
-          return 'Organizations - ' + options.length + ' selected';
         }
       }
     });
