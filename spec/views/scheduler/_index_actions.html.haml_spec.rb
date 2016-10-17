@@ -6,6 +6,5 @@ describe "scheduler/_index_actions.html.haml", :type => :view do
     render
 
     expect(rendered).to have_link('Export this plan to Excel')
-    expect(rendered).to have_field('org_id')
   end
 end

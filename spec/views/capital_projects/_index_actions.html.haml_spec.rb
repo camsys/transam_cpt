@@ -11,7 +11,6 @@ describe "capital_projects/_index_actions.html.haml", :type => :view do
 
     expect(rendered).to have_link('New Capital Project')
     expect(rendered).to have_link('Export list to Excel')
-    expect(rendered).to have_field('org_filter')
     expect(rendered).to have_field('fiscal_year_filter')
     expect(rendered).to have_field('capital_project_flag_filter')
     expect(rendered).to have_field('capital_project_type_filter')

@@ -10,7 +10,6 @@ describe "reports/_capital_projects_report_actions.html.haml", :type => :view do
     assign(:data, data)
     render
 
-    expect(rendered).to have_field('agency')
     expect(rendered).to have_field('fy_year')
     expect(rendered).to have_field('emergency_flag')
     expect(rendered).to have_field('multi_year_flag')
