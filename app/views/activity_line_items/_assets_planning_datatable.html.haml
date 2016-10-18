@@ -206,6 +206,7 @@
     update_selected();
   }).on('post-body.bs.table', function(e, row) {
     var i, checkbox, $table = $("##{table_dom_id}");
+    //update the checkbox selections after the table body is rendered
     for(i=0; i<selected_assets.length; i++){
       checkbox = $table.find('input[type=checkbox][value=' +selected_assets[i]+ ']');
       checkbox.length && checkbox.prop('checked', true) && checkbox.parents('tr').addClass('selected');
@@ -215,6 +216,7 @@
 
   // Enables or disables the package actions depending on how many are selected
   function enable_disable_asset_actions() {
+    var $checkbox;
     if (selected_assets.length > 0) {
       $('.move-assets-button').removeClass('disabled');
       if (selected_assets.length == 1) {
@@ -225,13 +227,26 @@
     } else {
       $('.move-assets-button').addClass('disabled');
       $('#button-text').html("Move selected to fiscal year");
+      $checkbox = $('#' + '#{table_dom_id} input[type=checkbox]')
+      $checkbox.prop('checked', false) && $checkbox.parents('tr').removeClass('selected');
     }
   };
 
   // Updates the selected rows in the table
   function update_selected() {
-    var selected = $("##{table_dom_id}").bootstrapTable('getSelections');
+    var $table, selected, notSelected, removeKey, i;
+    $table = $("##{table_dom_id}");
+    selected = $table.bootstrapTable('getSelections');
+    notSelected = $table.find('input:unchecked').map(function(a,b){ return b.value; })
     //console.log(selected);
+    // remove unselected from the selected_assets
+    for(i = 0; i < notSelected.length; i++){
+      removeKey = selected_assets.indexOf( notSelected[i] );
+      if(removeKey > -1){
+        selected_assets.splice(removeKey, 1);
+      }
+    }
+    // add selected to selected_assets (if not already there)
     for (i = 0; i < selected.length; i++) {
       var selected_key = selected[i].object_key;
       if(selected_assets.indexOf(selected_key) < 0) {
