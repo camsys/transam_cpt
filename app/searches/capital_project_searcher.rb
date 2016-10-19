@@ -135,7 +135,7 @@ class CapitalProjectSearcher < BaseSearcher
 
   def organization_conditions
     if organization_id.blank?
-      CapitalProject.where(organization_id: get_id_list(user.organizations))
+      CapitalProject.where(organization_id:  user.user_organization_filter.get_organizations.map{|o| o.id})
     else
       CapitalProject.where(organization_id: organization_id)
     end

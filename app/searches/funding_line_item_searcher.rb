@@ -93,7 +93,7 @@ class FundingLineItemSearcher < BaseSearcher
 
   def organization_conditions
     if organization_id.blank?
-      FundingLineItem.where(organization_id: get_id_list(user.organizations))
+      FundingLineItem.where(organization_id:  user.user_organization_filter.get_organizations.map{|o| o.id})
     else
       FundingLineItem.where(organization_id: organization_id)
     end
