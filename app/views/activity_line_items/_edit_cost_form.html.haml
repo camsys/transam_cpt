@@ -1,5 +1,7 @@
+
 = simple_form_for([@project, @activity_line_item],
   :html => {:class => 'form-vertical', :id => 'edit_form'},
+  :remote => true,
   :wrapper => :vertical_form,
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 

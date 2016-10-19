@@ -1,4 +1,5 @@
 = simple_form_for([@project, @activity_line_item],
+    :remote => true,
     :wrapper => :vertical_form,
     :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
   .row
@@ -66,8 +67,4 @@
     });
   };
   // validate the form before submit
-  $('#new_activity_line_item').validate({
-    submitHandler: function(form) {
-      form.submit();
-    }
-  });
+  $('#new_activity_line_item').validate();
