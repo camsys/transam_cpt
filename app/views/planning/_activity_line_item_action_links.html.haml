@@ -20,7 +20,7 @@
       = " Modify this ALI"
   %li.divider
   %li
-    = link_to capital_project_activity_line_item_path(project, ali), :method => :delete, :data => {:confirm => "Are you sure you want to remove this ALI? The action cannot be undone."}  do
+    = link_to capital_project_activity_line_item_path(project, ali), :remote => true, :method => :delete, :data => {:confirm => "Are you sure you want to remove this ALI? The action cannot be undone."}  do
       %i.fa.fa-trash-o.fa-fw
       = " Remove this ALI"
 

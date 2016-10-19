@@ -1,3 +1,4 @@
 = render 'ajax_view_update'
+$('#form-modal').modal('hide');
 - if @message.present?
   transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
