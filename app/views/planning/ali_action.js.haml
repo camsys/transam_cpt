@@ -17,6 +17,5 @@
   $(".drop-target").droppable({ disabled: true });
   $(".ali_actions").attr('disabled','disabled');
 
-
 - if @message.present?
-  transam.show_popup_message("#{@title}", "#{@message}", "#{@alert_class}");
+  transam.show_flash_message("#{raw escape_javascript( @message )}", "#{raw escape_javascript( @alert_class )}");
