@@ -11,6 +11,15 @@
   table.floatThead-table{
     background-color: white;
   }
+  .table-responsive table thead th:first-of-type{
+      width:300px;
+  }
+  .table-responsive table thead th{
+      width: calc((100%-300px)/#{@years.size})
+  }
+  .table-responsive table .panel-body > p{
+    word-break: break-word;
+  }
 
 .table-responsive
   %table.table.table-condensed#plan-table
