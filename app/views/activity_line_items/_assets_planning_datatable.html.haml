@@ -310,7 +310,8 @@
   }
 
   function replace_with_subtype_formatter(value, data) {
-    if((value != data.asset_subtype_id) && (data)) {
+    console.log(value);
+    if((value) && (value != data.asset_subtype_id) && (data)) {
       return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
     } else {
       return "";
@@ -318,7 +319,7 @@
   }
 
   function replace_with_fuel_type_formatter(value, data) {
-    if((value != data.fuel_type) && (data)) {
+    if((value) && (value != data.fuel_type) && (data)) {
       return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
     } else {
       return "";
