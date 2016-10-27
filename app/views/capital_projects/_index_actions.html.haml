@@ -32,6 +32,10 @@
   = button_tag :class => 'btn btn-default', :type => 'submit' do
     %i.fa.fa-filter
 
+  = link_to capital_projects_path(reset_filter_session: 'true'), :class => "btn btn-default btn-sm", :style => 'margin-left: 2px;', :title => 'Reset form' do
+    %i.fa.fa-refresh
+
+
 :javascript
   $(document).ready(function() {
 
