@@ -315,7 +315,17 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   def get_capital_project
-    @project = CapitalProject.where('object_key = ?', params[:capital_project_id]).first unless params[:capital_project_id].blank?
+    @project = CapitalProject.find_by(object_key: params[:capital_project_id], organization_id: @organization_list) unless params[:capital_project_id].blank?
+
+    if @project.nil?
+      if CapitalProject.find_by(object_key: params[:capital_project_id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
+        redirect_to '/404'
+      else
+        notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
+        redirect_to capital_projects_path
+      end
+      return
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

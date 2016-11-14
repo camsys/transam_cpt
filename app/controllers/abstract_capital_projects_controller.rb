@@ -181,10 +181,15 @@ class AbstractCapitalProjectsController < OrganizationAwareController
   # Sets the @project view var
   #-----------------------------------------------------------------------------
   def get_project
-    @project = CapitalProject.find_by_object_key(params[:id]) unless params[:id].nil?
+    @project = CapitalProject.find_by(object_key: params[:id], organization_id: @organization_list) unless params[:id].nil?
     # if not found or the object does not belong to the users
     if @project.nil?
-      redirect_to '/404'
+      if CapitalProject.find_by(object_key: params[:id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
+        redirect_to '/404'
+      else
+        notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
+        redirect_to capital_projects_path
+      end
       return
     end
 
