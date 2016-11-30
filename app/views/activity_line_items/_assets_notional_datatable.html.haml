@@ -31,9 +31,9 @@
     :classes => 'table-no-bordered'}}
     %thead
       %tr
-        %th.left{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}} Asset Subtype
+        %th.left{data: {width: 100, field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}} Asset Subtype
         %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}} Fuel
-        %th.left{data: {field: 'description', formatter: 'description_formatter'}} Description
+        %th.left{data: {width: 400, field: 'description', formatter: 'description_formatter'}} Description
 
         %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
 
