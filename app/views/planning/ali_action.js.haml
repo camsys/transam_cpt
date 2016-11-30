@@ -12,6 +12,7 @@
   $("#fy-sum-#{@old_ali_fy}").data('cost', new_val);
 
   = render :partial => 'move_ali_assets', locals: { alis: @new_alis }
+  $('.transam-tooltip').tooltip();
 - elsif @status == 'job'
   $(".draggable").draggable({ disabled: true });
   $(".drop-target").droppable({ disabled: true });
