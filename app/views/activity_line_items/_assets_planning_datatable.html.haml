@@ -80,6 +80,13 @@
 :javascript
 
   var selected_assets = [];
+  var path = '#{inventory_path("x")}';
+
+  function row_style(row, index) {
+    return {
+      classes: 'action-path'
+    };
+  };
 
   $(document).ready(function() {
 
@@ -196,7 +203,10 @@
     enable_disable_asset_actions();
   });
 
-  $("##{table_dom_id}").on('check.bs.table', function(e, row) {
+  $("##{table_dom_id}").on('click-row.bs.table', function (e, row, $element) {
+    var url = path.replace("x", row['object_key']);
+    document.location.href = url;
+  }).on('check.bs.table', function(e, row) {
     update_selected();
   }).on('uncheck.bs.table', function(e, row) {
     update_selected();
@@ -265,6 +275,7 @@
     }
     enable_disable_asset_actions();
   };
+
 
   var formatMoney = function(n, c, d, t) {
     var c = isNaN(c = Math.abs(c)) ? 0 : c,
