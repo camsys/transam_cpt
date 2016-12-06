@@ -52,7 +52,7 @@ GIT
 PATH
   remote: .
   specs:
-    transam_cpt (0.4.88)
+    transam_cpt (0.5.4)
       jquery-ui-rails (~> 4.2.1)
       rails (>= 4.0.9)
       transam_spatial
