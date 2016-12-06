@@ -2,10 +2,11 @@ require 'rails_helper'
 
 RSpec.describe CapitalProjectsController, :type => :controller do
 
-  let(:test_project) { create(:capital_project) }
+  let(:test_user)    { create(:normal_user) }
+  let(:test_project) { create(:capital_project, :organization_id => test_user.organization_id) }
 
   before(:each) do
-    sign_in create(:normal_user)
+    sign_in test_user
   end
 
   it 'GET fire_workflow_event' do
@@ -39,6 +40,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
 
   it 'GET show' do
     get :show, :id => test_project.object_key
+
 
     expect(assigns(:project)).to eq(test_project)
   end

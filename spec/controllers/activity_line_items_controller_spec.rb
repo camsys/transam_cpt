@@ -2,18 +2,18 @@ require 'rails_helper'
 
 RSpec.describe ActivityLineItemsController, :type => :controller do
 
-  let(:test_project)  { create(:capital_project) }
+  let(:test_user)    { create(:normal_user) }
+  let(:test_project) { create(:capital_project, :organization_id => test_user.organization_id) }
   let(:test_ali)      { create(:activity_line_item, :capital_project => test_project) }
   let(:test_asset)    { create(:buslike_asset) }
 
   before(:each) do
-    sign_in create(:normal_user)
+    sign_in test_user
   end
 
   it 'GET show' do
     Organization.get_typed_organization(test_ali.capital_project.organization).service_provider_types << ServiceProviderType.find_by_name('Urban')
     test_ali.capital_project.organization.save!
-    test_funding = create(:funding_source, :urban_providers => true)
     test_policy = create(:policy, :organization => test_ali.capital_project.organization)
     test_rule = create(:policy_asset_subtype_rule, :policy => test_policy, :purchase_replacement_code => test_ali.team_ali_code.code)
     test_asset = create(:buslike_asset, :organization => test_ali.capital_project.organization, :asset_subtype => test_rule.asset_subtype, :scheduled_replacement_year => test_ali.capital_project.fy_year)
@@ -22,7 +22,6 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:activity_line_item)).to eq(test_ali)
     expect(assigns(:assets)).to include(test_asset)
-    expect(assigns(:funding_sources)).to include(test_funding)
 
   end
 

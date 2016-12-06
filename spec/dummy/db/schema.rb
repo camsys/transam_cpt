@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160919181213) do
+ActiveRecord::Schema.define(version: 20161102174139) do
 
   create_table "activities", force: true do |t|
     t.string   "object_key",           limit: 12
@@ -19,12 +19,12 @@ ActiveRecord::Schema.define(version: 20160919181213) do
     t.string   "name",                 limit: 64
     t.text     "description"
     t.boolean  "show_in_dashboard"
-    t.string   "start",                limit: 64
-    t.string   "due",                  limit: 64
-    t.string   "notify",               limit: 64
-    t.string   "warn",                 limit: 64
-    t.string   "alert",                limit: 64
-    t.string   "escalate",             limit: 64
+    t.boolean  "system_activity"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "frequency_quantity",              null: false
+    t.integer  "frequency_type_id",               null: false
+    t.string   "execution_time",       limit: 32, null: false
     t.string   "job_name",             limit: 64
     t.datetime "last_run"
     t.boolean  "active"
@@ -724,10 +724,31 @@ ActiveRecord::Schema.define(version: 20160919181213) do
   end
 
   create_table "fuel_types", force: true do |t|
-    t.string  "name",        limit: 64,  null: false
-    t.string  "code",        limit: 2,   null: false
-    t.string  "description", limit: 254, null: false
-    t.boolean "active",                  null: false
+    t.string  "name",        null: false
+    t.string  "code",        null: false
+    t.string  "description", null: false
+    t.boolean "active",      null: false
+  end
+
+  create_table "funding_bucket_types", force: true do |t|
+    t.string  "name",        null: false
+    t.string  "description", null: false
+    t.boolean "active",      null: false
+  end
+
+  create_table "funding_buckets", force: true do |t|
+    t.string   "object_key",          limit: 12,                          null: false
+    t.integer  "funding_template_id",                                     null: false
+    t.integer  "fiscal_year",                                             null: false
+    t.decimal  "budget_amount",                  precision: 15, scale: 2, null: false
+    t.decimal  "budget_committed",               precision: 15, scale: 2, null: false
+    t.integer  "owner_id"
+    t.string   "description"
+    t.boolean  "active",                                                  null: false
+    t.integer  "created_by_id",                                           null: false
+    t.datetime "created_on"
+    t.integer  "updated_by_id",                                           null: false
+    t.datetime "updated_on"
   end
 
   create_table "funding_plans", force: true do |t|
@@ -749,34 +770,23 @@ ActiveRecord::Schema.define(version: 20160919181213) do
   end
 
   create_table "funding_sources", force: true do |t|
-    t.string   "object_key",                      limit: 12,  null: false
-    t.string   "name",                            limit: 64,  null: false
-    t.string   "description",                     limit: 256, null: false
+    t.string   "object_key",             limit: 12,  null: false
+    t.string   "name",                   limit: 64,  null: false
+    t.string   "description",            limit: 256, null: false
     t.text     "details"
-    t.integer  "funding_source_type_id",                      null: false
-    t.string   "external_id",                     limit: 32
-    t.boolean  "state_administered_federal_fund"
-    t.boolean  "bond_fund"
+    t.integer  "funding_source_type_id",             null: false
+    t.string   "external_id",            limit: 32
     t.boolean  "formula_fund"
-    t.boolean  "non_committed_fund"
-    t.boolean  "contracted_fund"
     t.boolean  "discretionary_fund"
-    t.float    "state_match_required",            limit: 24
-    t.float    "match_required",                  limit: 24
-    t.float    "local_match_required",            limit: 24
+    t.float    "match_required",         limit: 24
     t.integer  "fy_start"
     t.integer  "fy_end"
-    t.boolean  "rural_providers"
-    t.boolean  "urban_providers"
-    t.boolean  "shared_ride_providers"
-    t.boolean  "inter_city_bus_providers"
-    t.boolean  "inter_city_rail_providers"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
     t.boolean  "active"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "inflation_rate",                  limit: 24
+    t.float    "inflation_rate",         limit: 24
     t.integer  "life_in_years"
   end
 
@@ -801,10 +811,10 @@ ActiveRecord::Schema.define(version: 20160919181213) do
     t.boolean  "recurring"
     t.boolean  "transfer_only"
     t.float    "match_required",    limit: 24
+    t.text     "query_string"
     t.boolean  "active",                       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "all_organizations"
     t.string   "external_id",       limit: 32
   end
 
@@ -919,12 +929,12 @@ ActiveRecord::Schema.define(version: 20160919181213) do
   end
 
   create_table "issues", force: true do |t|
-    t.string   "object_key",           limit: 12,             null: false
-    t.integer  "issue_type_id",                               null: false
-    t.integer  "web_browser_type_id",                         null: false
-    t.integer  "created_by_id",                               null: false
-    t.text     "comments",                                    null: false
-    t.integer  "issue_status_type_id",            default: 1
+    t.string   "object_key",           limit: 12, null: false
+    t.integer  "issue_type_id",                   null: false
+    t.integer  "web_browser_type_id",             null: false
+    t.integer  "created_by_id",                   null: false
+    t.text     "comments",                        null: false
+    t.integer  "issue_status_type_id"
     t.text     "resolution_comments"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1220,6 +1230,14 @@ ActiveRecord::Schema.define(version: 20160919181213) do
     t.boolean "active",                  null: false
   end
 
+  create_table "query_params", force: true do |t|
+    t.string  "name"
+    t.string  "description"
+    t.text    "query_string"
+    t.string  "class_name"
+    t.boolean "active"
+  end
+
   create_table "replacement_reason_types", force: true do |t|
     t.string  "name",        limit: 64,  null: false
     t.string  "description", limit: 254, null: false
@@ -1260,6 +1278,7 @@ ActiveRecord::Schema.define(version: 20160919181213) do
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
     t.boolean  "privilege",                default: false, null: false
+    t.string   "label"
   end
 
   add_index "roles", ["name"], name: "roles_idx1", using: :btree
@@ -1386,18 +1405,21 @@ ActiveRecord::Schema.define(version: 20160919181213) do
   add_index "user_notifications", ["user_id"], name: "index_user_notifications_on_user_id", using: :btree
 
   create_table "user_organization_filters", force: true do |t|
-    t.string   "object_key",  limit: 12,  null: false
-    t.integer  "user_id",                 null: false
-    t.string   "name",        limit: 64,  null: false
-    t.string   "description", limit: 254, null: false
-    t.boolean  "active",                  null: false
+    t.string   "object_key",         limit: 12,  null: false
+    t.string   "name",               limit: 64,  null: false
+    t.string   "description",        limit: 254, null: false
+    t.boolean  "active",                         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "sort_order"
+    t.integer  "created_by_user_id"
+    t.text     "query_string"
+    t.integer  "resource_id"
+    t.string   "resource_type"
   end
 
+  add_index "user_organization_filters", ["created_by_user_id"], name: "index_user_organization_filters_on_created_by_user_id", using: :btree
   add_index "user_organization_filters", ["object_key"], name: "user_organization_filters_idx1", using: :btree
-  add_index "user_organization_filters", ["user_id"], name: "user_organization_filters_idx2", using: :btree
 
   create_table "user_organization_filters_organizations", id: false, force: true do |t|
     t.integer "user_organization_filter_id", null: false
@@ -1468,6 +1490,14 @@ ActiveRecord::Schema.define(version: 20160919181213) do
 
   add_index "users_roles", ["active"], name: "users_roles_idx3", using: :btree
   add_index "users_roles", ["user_id", "role_id"], name: "users_roles_idx2", using: :btree
+
+  create_table "users_user_organization_filters", force: true do |t|
+    t.integer "user_id",                     null: false
+    t.integer "user_organization_filter_id", null: false
+  end
+
+  add_index "users_user_organization_filters", ["user_id"], name: "users_user_organization_filters_idx1", using: :btree
+  add_index "users_user_organization_filters", ["user_organization_filter_id"], name: "users_user_organization_filters_idx2", using: :btree
 
   create_table "vehicle_features", force: true do |t|
     t.string  "name",        limit: 64,  null: false

@@ -57,6 +57,14 @@ FactoryGirl.define do
         u.add_role :technical_contact
       end
     end
+
+    after(:create) do |u|
+      u.organizations = [u.organization]
+      test_filter = create(:user_organization_filter)
+      u.user_organization_filter = test_filter
+      u.user_organization_filters << test_filter
+      u.save!
+    end
   end
 
 end
