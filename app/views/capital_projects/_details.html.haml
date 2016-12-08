@@ -4,20 +4,23 @@
       = "Description "
   %li
     %a{:href => "#alis", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @project.activity_line_items.count
-      = "Activity Line Items "
+      %span{:style => 'white-space: nowrap !important;'}
+        = "Activity Line Items "
+        %span.badge= @project.activity_line_items.count
   -# %li
   -#   %a{:href => "#hist", :data =>{:toggle => 'tab'}}
   -#     %span.badge.pull-right= @project.history.count
   -#     = "History "
   %li
     %a{:href => "#docs", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @project.documents.count
-      = "Supporting Documents "
+      %span{:style => 'white-space: nowrap !important;'}
+        = "Supporting Documents "
+        %span.badge= @project.documents.count
   %li
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @project.comments.count
-      = "Comments "
+      %span{:style => 'white-space: nowrap !important;'}
+        = "Comments "
+        %span.badge= @project.comments.count
 
 .tab-content
   .tab-pane.fade#note
