@@ -5,6 +5,7 @@ branches:
   only:
   - master
 before_script:
+- bundle update transam_core transam_transit transam_accounting transam_spatial
 - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
 before_install:
 - mysql -e "create database IF NOT EXISTS transam_cpt_testing;" -uroot

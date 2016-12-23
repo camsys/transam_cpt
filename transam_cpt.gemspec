@@ -21,8 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", ">= 4.0.9"
   s.add_dependency 'jquery-ui-rails', '~> 4.2.1'
   s.add_dependency "wicked"
-  s.add_dependency 'transam_transit'
-  s.add_dependency 'transam_spatial'
 
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "factory_girl_rails"
