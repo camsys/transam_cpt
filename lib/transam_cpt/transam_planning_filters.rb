@@ -21,6 +21,7 @@ module TransamPlanningFilters
     # Call Backs
     # ----------------------------------------------------
 
+    after_create :update_user_activity_line_item_filters
 
     # ----------------------------------------------------
     # Associations
@@ -54,5 +55,24 @@ module TransamPlanningFilters
   #
   #------------------------------------------------------------------------------
 
+  protected
+
+  def update_activity_line_item_filters
+    UserActivityLineItemFilter.where('resource_type IS NOT NULL').each do |filter|
+      if self.respond_to? filter.resource_type.downcase.pluralize #check has many associations
+        if self.try(filter.resource_type.downcase.pluralize).include? filter.resource
+          self.user_activity_line_item_filters << filter
+        end
+      elsif self.respond_to? filter.resource_type.downcase # check single association
+        if self.try(filter.resource_type.downcase) == filter.resource
+          self.user_activity_line_item_filters << filter
+        end
+      end
+    end
+
+    self.user_activity_line_item_filter = self.user_activity_line_item_filters.system_filters.first
+
+    self.save!
+  end
 
 end

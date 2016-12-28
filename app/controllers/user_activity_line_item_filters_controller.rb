@@ -76,8 +76,10 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
     @user_activity_line_item_filter = UserActivityLineItemFilter.new(form_params)
     @user_activity_line_item_filter.creator = current_user
     if params[:share_filter]
-      @user_activity_line_item_filter.users = current_user.organization.users
-      @user_activity_line_item_filter.resource = current_user.organization
+      Organization.all.each do |org|
+        @user_activity_line_item_filter.users = org.users
+        @user_activity_line_item_filter.resource = org
+      end
     else
       @user_activity_line_item_filter.users = [current_user]
     end
@@ -107,8 +109,10 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
       if @user_activity_line_item_filter.update(form_params)
 
         if params[:share_filter]
-          @user_activity_line_item_filter.users = current_user.organization.users
-          @user_activity_line_item_filter.resource = current_user.organization
+          Organization.all.each do |org|
+            @user_activity_line_item_filter.users = org.users
+            @user_activity_line_item_filter.resource = org
+          end
         else
           @user_activity_line_item_filter.users = [current_user]
           @user_activity_line_item_filter.resource = nil
