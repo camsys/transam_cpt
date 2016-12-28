@@ -2,7 +2,9 @@ require 'rails_helper'
 
 describe "shared/_cpt_main_nav.html.haml", :type => :view do
   it 'menu' do
-    allow(controller).to receive(:current_ability).and_return(Ability.new(create(:admin)))
+    test_user = create(:admin)
+    allow(controller).to receive(:current_user).and_return(test_user)
+    allow(controller).to receive(:current_ability).and_return(Ability.new(test_user))
     render
 
     expect(rendered).to have_link('Capital Projects')

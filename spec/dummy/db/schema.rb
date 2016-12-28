@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161102174139) do
+ActiveRecord::Schema.define(version: 20161227200716) do
 
   create_table "activities", force: true do |t|
     t.string   "object_key",           limit: 12
@@ -740,6 +740,7 @@ ActiveRecord::Schema.define(version: 20161102174139) do
     t.string   "object_key",          limit: 12,                          null: false
     t.integer  "funding_template_id",                                     null: false
     t.integer  "fiscal_year",                                             null: false
+    t.string   "name",                                                    null: false
     t.decimal  "budget_amount",                  precision: 15, scale: 2, null: false
     t.decimal  "budget_committed",               precision: 15, scale: 2, null: false
     t.integer  "owner_id"
@@ -802,20 +803,22 @@ ActiveRecord::Schema.define(version: 20161102174139) do
   add_index "funding_template_types", ["funding_source_id"], name: "index_funding_template_types_on_funding_source_id", using: :btree
 
   create_table "funding_templates", force: true do |t|
-    t.string   "object_key",        limit: 12, null: false
+    t.string   "object_key",                              limit: 12, null: false
     t.integer  "funding_source_id"
-    t.string   "name",              limit: 64, null: false
+    t.string   "name",                                    limit: 64, null: false
     t.text     "description"
-    t.integer  "contributor_id",               null: false
-    t.integer  "owner_id",                     null: false
+    t.integer  "contributor_id",                                     null: false
+    t.integer  "owner_id",                                           null: false
     t.boolean  "recurring"
     t.boolean  "transfer_only"
-    t.float    "match_required",    limit: 24
+    t.boolean  "create_multiple_agencies",                           null: false
+    t.boolean  "create_multiple_buckets_for_agency_year",            null: false
+    t.float    "match_required",                          limit: 24
     t.text     "query_string"
-    t.boolean  "active",                       null: false
+    t.boolean  "active",                                             null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "external_id",       limit: 32
+    t.string   "external_id",                             limit: 32
   end
 
   add_index "funding_templates", ["contributor_id"], name: "index_funding_templates_on_contributor_id", using: :btree
@@ -1393,6 +1396,29 @@ ActiveRecord::Schema.define(version: 20161102174139) do
   add_index "uploads", ["organization_id"], name: "uploads_idx2", using: :btree
   add_index "uploads", ["user_id"], name: "uploads_idx3", using: :btree
 
+  create_table "user_activity_line_item_filters", force: true do |t|
+    t.string   "object_key",              limit: 12,  null: false
+    t.string   "name",                    limit: 64,  null: false
+    t.string   "description",             limit: 256, null: false
+    t.integer  "capital_project_type_id"
+    t.string   "sogr_type"
+    t.integer  "team_ali_code_id"
+    t.integer  "asset_type_id"
+    t.integer  "asset_subtype_id"
+    t.boolean  "in_backlog"
+    t.integer  "resource_id"
+    t.string   "resource_type"
+    t.integer  "created_by_user_id"
+    t.boolean  "active",                              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "user_activity_line_item_filters_organizations", force: true do |t|
+    t.integer "user_activity_line_item_filter_id", null: false
+    t.integer "organization_id",                   null: false
+  end
+
   create_table "user_notifications", force: true do |t|
     t.integer  "user_id",         null: false
     t.integer  "notification_id", null: false
@@ -1429,40 +1455,41 @@ ActiveRecord::Schema.define(version: 20161102174139) do
   add_index "user_organization_filters_organizations", ["user_organization_filter_id", "organization_id"], name: "user_organization_filters_idx1", using: :btree
 
   create_table "users", force: true do |t|
-    t.string   "object_key",                  limit: 12,  null: false
-    t.integer  "organization_id",                         null: false
-    t.string   "external_id",                 limit: 32
-    t.string   "first_name",                  limit: 64,  null: false
-    t.string   "last_name",                   limit: 64,  null: false
-    t.string   "title",                       limit: 64
-    t.string   "phone",                       limit: 12,  null: false
-    t.string   "phone_ext",                   limit: 6
-    t.string   "timezone",                    limit: 32,  null: false
-    t.string   "email",                       limit: 128, null: false
-    t.string   "address1",                    limit: 64
-    t.string   "address2",                    limit: 64
-    t.string   "city",                        limit: 32
-    t.string   "state",                       limit: 2
-    t.string   "zip",                         limit: 10
+    t.string   "object_key",                        limit: 12,  null: false
+    t.integer  "organization_id",                               null: false
+    t.string   "external_id",                       limit: 32
+    t.string   "first_name",                        limit: 64,  null: false
+    t.string   "last_name",                         limit: 64,  null: false
+    t.string   "title",                             limit: 64
+    t.string   "phone",                             limit: 12,  null: false
+    t.string   "phone_ext",                         limit: 6
+    t.string   "timezone",                          limit: 32,  null: false
+    t.string   "email",                             limit: 128, null: false
+    t.string   "address1",                          limit: 64
+    t.string   "address2",                          limit: 64
+    t.string   "city",                              limit: 32
+    t.string   "state",                             limit: 2
+    t.string   "zip",                               limit: 10
     t.integer  "num_table_rows"
     t.integer  "user_organization_filter_id"
-    t.string   "encrypted_password",          limit: 64,  null: false
-    t.string   "reset_password_token",        limit: 64
+    t.string   "encrypted_password",                limit: 64,  null: false
+    t.string   "reset_password_token",              limit: 64
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.integer  "sign_in_count"
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",          limit: 16
-    t.string   "last_sign_in_ip",             limit: 16
-    t.integer  "failed_attempts",                         null: false
-    t.string   "unlock_token",                limit: 128
+    t.string   "current_sign_in_ip",                limit: 16
+    t.string   "last_sign_in_ip",                   limit: 16
+    t.integer  "failed_attempts",                               null: false
+    t.string   "unlock_token",                      limit: 128
     t.datetime "locked_at"
-    t.boolean  "notify_via_email",                        null: false
+    t.boolean  "notify_via_email",                              null: false
     t.integer  "weather_code_id"
-    t.boolean  "active",                                  null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.boolean  "active",                                        null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.integer  "user_activity_line_item_filter_id"
   end
 
   add_index "users", ["email"], name: "users_idx3", using: :btree
@@ -1490,6 +1517,11 @@ ActiveRecord::Schema.define(version: 20161102174139) do
 
   add_index "users_roles", ["active"], name: "users_roles_idx3", using: :btree
   add_index "users_roles", ["user_id", "role_id"], name: "users_roles_idx2", using: :btree
+
+  create_table "users_user_activity_line_item_filters", force: true do |t|
+    t.integer "user_id",                           null: false
+    t.integer "user_activity_line_item_filter_id", null: false
+  end
 
   create_table "users_user_organization_filters", force: true do |t|
     t.integer "user_id",                     null: false
