@@ -15,7 +15,7 @@
 
         = f.input :capital_project_type_id, :collection => CapitalProjectType.active, :label => 'Type'
         = f.input :sogr_type, :collection => ['SOGR', 'Non-SOGR', 'All'], :label => 'SOGR'
-        = f.input :team_ali_code_id, :collection => TeamAliCode.active, :label => 'Scope'
+        = f.input :team_ali_code_id, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
         .row
           .col-md-6
             = f.input :asset_type_id, :collection => AssetType.active, :label => 'Asset Type'
