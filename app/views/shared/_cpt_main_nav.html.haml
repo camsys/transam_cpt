@@ -4,6 +4,12 @@
     %b.caret
   %ul.dropdown-menu
     %li.text-left
+      = link_to user_user_activity_line_item_filters_path(current_user) do
+        %i.fa.fa-filter.fa-fw
+        = " ALI Filters"
+
+    %li.divider
+    %li.text-left
       = link_to capital_projects_path do
         %i.fa.fa-cubes.fa-fw
         = " Capital Projects"
@@ -25,3 +31,4 @@
         = link_to builder_capital_projects_path do
           %i.fa.fa-cogs.fa-fw
           = " SOGR Capital Project Analyzer"
+

@@ -1,0 +1,25 @@
+- if current_user.user_activity_line_item_filter != @user_activity_line_item_filter || (@user_activity_line_item_filter.can_update? current_user) || (@user_activity_line_item_filter.can_destroy? current_user)
+  .btn-group.pull-right.panel-action
+    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+      %i.fa.fa-cog
+      = " Actions"
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu'}
+      %li
+        - unless current_user.user_activity_line_item_filter == @user_activity_line_item_filter
+          = link_to user_user_activity_line_item_filter_use_path(current_user, @user_activity_line_item_filter) do
+            %i.fa.fa-filter.fa-fw
+            = " Set as current filter"
+      - if (@user_activity_line_item_filter.can_update? current_user) && (can? :update, @user_activity_line_item_filter)
+        %li.divider
+        %li
+          = link_to edit_user_user_activity_line_item_filter_path(current_user, @user_activity_line_item_filter) do
+            %i.fa.fa-edit.fa-fw
+            = " Update this filter"
+
+      - if (@user_activity_line_item_filter.can_destroy? current_user) && (can? :destroy, @user_activity_line_item_filter)
+        %li.divider
+        %li
+          = link_to user_user_activity_line_item_filter_path(current_user, @user_activity_line_item_filter), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
+            %i.fa.fa-trash-o.fa-fw
+            = " Remove this filter"

@@ -1,0 +1,20 @@
+%ul.nav.nav-tabs
+  %li
+    %a{:href => "#orgs", :data =>{:toggle => 'tab'}}
+      = "Parameters"
+
+.tab-content{:style => 'max-height:400px;overflow-y: auto;'}
+  .tab-pane.fade#orgs
+    .tab-content
+      = format_field("Capital Project Type", CapitalProjectType.find_by(id: @user_activity_line_item_filter.capital_project_type_id))
+      = format_field("SOGR Type", @user_activity_line_item_filter.sogr_type)
+      = format_field("Scope", TeamAliCode.find_by(id: @user_activity_line_item_filter.team_ali_code_id))
+      = format_field("Asset Type", AssetType.find_by(id: @user_activity_line_item_filter.asset_type_id))
+      = format_field("Asset Subtype", AssetSubtype.find_by(id: @user_activity_line_item_filter.asset_subtype_id))
+
+      = format_field("In Backlog", format_as_boolean(@user_activity_line_item_filter.in_backlog))
+
+      - SystemConfig.transam_module_names.each do |mod|
+        - view_component = "#{mod}_user_activity_line_item_filter_detail_fields"
+        - if lookup_context.template_exists?(view_component, 'user_activity_line_item_filters', true)
+          = render :partial => "user_activity_line_item_filters/#{view_component}"

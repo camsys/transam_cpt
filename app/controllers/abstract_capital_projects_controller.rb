@@ -65,17 +65,13 @@ class AbstractCapitalProjectsController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def get_projects
 
+    #TODO redo this whole section
+
   # Start to set up the query
   conditions  = []
   values      = []
 
   #-----------------------------------------------------------------------------
-  # Parse common filters
-
-  clear_session_filters if params[:reset_filter_session] == 'true'
-
-  # parse session filters
-  parse_session_filters
 
    # Check to see if we got an organization to sub select on.
    conditions << 'organization_id IN (?)'
@@ -193,32 +189,6 @@ class AbstractCapitalProjectsController < OrganizationAwareController
       return
     end
 
-  end
-
-  #-----------------------------------------------------------------------------
-  # set common filters on projects and planner page
-  # share same set of filter values in sessions when navigate between pages
-  #-----------------------------------------------------------------------------
-  def parse_session_filters
-    @org_filter = params[:org_filter] || session[:org_filter]
-    @capital_project_type_filter = params[:capital_project_type_filter] || session[:capital_project_type_filter]
-    @capital_project_flag_filter = params[:capital_project_flag_filter] || session[:capital_project_flag_filter]
-    @asset_subtype_filter = params[:asset_subtype_filter] || session[:asset_subtype_filter]
-
-    session[:org_filter] = @org_filter 
-    session[:capital_project_type_filter] = @capital_project_type_filter 
-    session[:capital_project_flag_filter] = @capital_project_flag_filter 
-    session[:asset_subtype_filter] = @asset_subtype_filter 
-  end
-
-  #-----------------------------------------------------------------------------
-  # clear common filter sessions on projects and planner page
-  #-----------------------------------------------------------------------------
-  def clear_session_filters
-    session[:org_filter] = nil
-    session[:capital_project_type_filter] = nil
-    session[:capital_project_flag_filter] = nil
-    session[:asset_subtype_filter] = nil
   end
 
   #-----------------------------------------------------------------------------

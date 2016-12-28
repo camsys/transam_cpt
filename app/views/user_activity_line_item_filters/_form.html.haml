@@ -1,0 +1,45 @@
+.row
+  = simple_form_for([current_user, @user_activity_line_item_filter], :html => {:id => 'filter_form', :class => 'form-vertical' }, :wrapper => :vertical_form, :wrapper_mappings => {:boolean => :vertical_boolean}) do |f|
+    .col-md-6
+      = dialog_tag('Details', {:icon => 'fa fa-list', :class => "form-part"}) do
+        = f.input :name, :placeholder => "Enter a name for this filter", :required => true
+        = f.input :description, :as => :text, :placeholder => "Enter a description for this filter.", :rows => 3, :required => true
+
+        - if can? :share, @user_activity_line_item_filter
+          .form-group
+            = check_box_tag :share_filter, 1, @user_activity_line_item_filter.users.count > 1, style: 'margin-left: 10px;'
+            Share this filter?
+
+    .col-md-6
+      = dialog_tag('Parameters', {:icon => 'fa fa-list', :class => "form-part"}) do
+
+        = f.input :capital_project_type_id, :collection => CapitalProjectType.active, :label => 'Type'
+        = f.input :sogr_type, :collection => ['SOGR', 'Non-SOGR', 'All'], :label => 'SOGR'
+        = f.input :team_ali_code_id, :collection => TeamAliCode.active, :label => 'Scope'
+        .row
+          .col-md-6
+            = f.input :asset_type_id, :collection => AssetType.active, :label => 'Asset Type'
+          .col-md-6
+            = f.input :asset_subtype_id, :collection => AssetSubtype.active, :label => 'Asset Subtype'
+
+        = f.input :in_backlog
+
+        - SystemConfig.transam_module_names.each do |mod|
+          - view_component = "#{mod}_user_activity_line_item_filter_form_fields"
+          - if lookup_context.template_exists?(view_component, 'user_activity_line_item_filters', true)
+            = render :partial => "user_activity_line_item_filters/#{view_component}", :locals => {:f => f}
+
+    .col-md-12
+      - unless current_user.user_activity_line_item_filter == @user_activity_line_item_filter
+        = f.button :submit, "Update ALI Filter", :class => "btn btn-primary"
+      = f.button :submit, "Update and Select This Filter", :class => "btn btn-primary"
+
+= render 'form_scripts'
+
+:javascript
+
+  $('#filter_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });

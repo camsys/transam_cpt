@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
 
+  resources :users, only: [] do
+    # Add user organization filters
+    resources :user_activity_line_item_filters do
+      get 'use'
+    end
+  end
+
   # Budget Forcast
   # resources :budgets,   :only => [:index] do
   #   collection do
