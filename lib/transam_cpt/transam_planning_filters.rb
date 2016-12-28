@@ -57,7 +57,7 @@ module TransamPlanningFilters
 
   protected
 
-  def update_activity_line_item_filters
+  def update_user_activity_line_item_filters
     UserActivityLineItemFilter.where('resource_type IS NOT NULL').each do |filter|
       if self.respond_to? filter.resource_type.downcase.pluralize #check has many associations
         if self.try(filter.resource_type.downcase.pluralize).include? filter.resource
