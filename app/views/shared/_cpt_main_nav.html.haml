@@ -2,11 +2,29 @@
   = link_to "#", :class => "dropdown-toggle", :data => {"toggle" => "dropdown"}, :title => 'Capital Planning' do
     %i.fa.fa-cubes.fa-2x
     %b.caret
-  %ul.dropdown-menu
-    %li.text-left
+  %ul.dropdown-menu.multi-level
+    %li.text-left.dropdown-submenu
       = link_to user_user_activity_line_item_filters_path(current_user) do
         %i.fa.fa-filter.fa-fw
-        = " ALI Filters"
+        = current_user.user_activity_line_item_filter
+
+      %ul.dropdown-menu
+        - current_user.user_activity_line_item_filters.each do |filter|
+          %li.text-left
+            = link_to user_user_activity_line_item_filter_use_path(current_user, filter) do
+              %i.fa.fa-filter.fa-fw
+              = filter
+
+        %li.divider
+        %li.text-left
+          = link_to user_user_activity_line_item_filters_path(current_user) do
+            %i.fa.fa-list-alt.fa-fw
+            Manage Filters
+        %li.divider
+        %li.text-left
+          = link_to new_user_user_activity_line_item_filter_path(current_user) do
+            %i.fa.fa-plus.fa-fw
+            New Filter
 
     %li.divider
     %li.text-left

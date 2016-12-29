@@ -91,7 +91,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
           set_current_user_activity_line_item_filter
         end
 
-        notify_user(:notice, 'Filter was sucessfully created.')
+        notify_user(:notice, 'Filter was successfully created.')
         format.html { redirect_to [current_user, @user_activity_line_item_filter] }
         format.json { render action: 'show', status: :created, location: @user_activity_line_item_filter }
       else
@@ -121,11 +121,22 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
 
         if params[:commit] == "Update and Select This Filter"
           set_current_user_activity_line_item_filter
+
+          # if not managing filters go to last page
+          unless URI(request.referer).path =~ /\/users\/[[:alnum:]]{12}\/user_activity_line_item_filters\/[[:alnum:]]{12}/
+            redirect_to_back = true
+          end
         end
 
 
-        notify_user(:notice, 'Filter was sucessfully updated.')
-        format.html { redirect_to [current_user, @user_activity_line_item_filter] }
+        notify_user(:notice, 'Filter was successfully updated.')
+        format.html {
+          if redirect_to_back
+            redirect_to :back
+          else
+            redirect_to [current_user, @user_activity_line_item_filter]
+          end
+        }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }

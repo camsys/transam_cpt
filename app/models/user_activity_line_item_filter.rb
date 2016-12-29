@@ -71,6 +71,10 @@ class UserActivityLineItemFilter < ActiveRecord::Base
     !self.system_filter? && (self.users.include? user) && self != user.user_organization_filter
   end
 
+  def to_s
+    self.name
+  end
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods

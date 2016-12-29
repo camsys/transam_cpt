@@ -1,0 +1,34 @@
+.search-panel
+  .panel.panel-default{:style => 'margin-bottom: 5px;'}
+    .panel-heading
+      %h4.panel-title
+        = link_to "ALI Filter: #{@user_activity_line_item_filter}", '#ali-filter-form-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
+
+    #ali-filter-form-collapse.collapse
+      .panel-body
+        .row
+          .col-sm-4
+            .panel.panel-default{:style => 'margin-bottom: 5px;'}
+              .panel-heading
+                %h4.panel-title
+                  Choose Different Filter
+
+              .panel-body
+                %ul.list-group
+                  - current_user.user_activity_line_item_filters.each do |filter|
+                    %li.list-group-item
+                      - if @user_activity_line_item_filter == filter
+                        %i.fa.fa-filter.fa-fw
+                        = filter
+                      - else
+                        = link_to user_user_activity_line_item_filter_use_path(current_user, filter) do
+                          %i.fa.fa-filter.fa-fw
+                          = filter
+          .col-sm-8
+            .panel.panel-default{:style => 'margin-bottom: 5px;'}
+              .panel-heading
+                %h4.panel-title
+                  Update Current Filter
+
+              .panel-body
+                = render 'user_activity_line_item_filters/form'

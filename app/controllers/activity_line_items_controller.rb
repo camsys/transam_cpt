@@ -75,7 +75,7 @@ class ActivityLineItemsController < OrganizationAwareController
       return
     else
       @activity_line_item.assets << asset
-      notify_user(:notice, "Asset was sucessfully added to the ALI")
+      notify_user(:notice, "Asset was successfully added to the ALI")
     end
     redirect_to :back
   end
@@ -89,7 +89,7 @@ class ActivityLineItemsController < OrganizationAwareController
       @activity_line_item.assets.delete(asset)
       # force the ALI to update its estimated costs
       @activity_line_item.save
-      notify_user(:notice, "Asset was sucessfully removed from the ALI")
+      notify_user(:notice, "Asset was successfully removed from the ALI")
     end
     redirect_to :back
   end
