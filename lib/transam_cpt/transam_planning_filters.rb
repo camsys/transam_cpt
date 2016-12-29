@@ -70,9 +70,10 @@ module TransamPlanningFilters
       end
     end
 
-    self.user_activity_line_item_filter = self.user_activity_line_item_filters.system_filters.first
+    puts self.user_activity_line_item_filters
 
-    self.save!
+    self.update_columns(user_activity_line_item_filter_id: self.user_activity_line_item_filters.system_filters.ids.first)
+
   end
 
 end
