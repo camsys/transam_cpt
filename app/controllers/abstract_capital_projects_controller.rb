@@ -67,67 +67,135 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
     #TODO redo this whole section
 
-  # Start to set up the query
-  conditions  = []
-  values      = []
+    @user_activity_line_item_filter = current_user.user_activity_line_item_filter
 
-  #-----------------------------------------------------------------------------
+    # Start to set up the query
+    conditions  = []
+    values      = []
 
-   # Check to see if we got an organization to sub select on.
-   conditions << 'organization_id IN (?)'
-   if @org_filter.blank?
-     values << @organization_list
-     @org_filter = []
-   else
-     values << @org_filter
-   end
+    #-----------------------------------------------------------------------------
+    #
+    # Steps
+    #
+    #
+    # 1. parameters on assets within ALIs
+    # 2. parameters on ALIs within projects
+    # 3. parameters on projects
+    #
+    # 1. Search for assets that meet given parameters (type, subtype, etc.) Returns all ALIs with those assets.
+    # 2. Given ALIs from above, return subset that meet ALI parameters. Get projects from that subset.
+    # 3. Given projects from above return all projects that meet project parameters.
+    #
+    #-----------------------------------------------------------------------------
 
-   if @capital_project_type_filter.blank?
-     @capital_project_type_filter = []
-   else
-     conditions << 'capital_project_type_id IN (?)'
-     values << @capital_project_type_filter
-   end
 
-   if @capital_project_flag_filter.blank?
-     @capital_project_flag_filter = []
-   else
-     if @capital_project_flag_filter.include? EMERGENCY_FLAG
-       conditions << 'emergency = ?'
-       values << true
-     end
-     if @capital_project_flag_filter.include? SOGR_FLAG
-       conditions << 'sogr = ?'
-       values << true
-     end
-     if @capital_project_flag_filter.include? SHADOW_FLAG
-       conditions << 'notional = ?'
-       values << true
-     end
-     if @capital_project_flag_filter.include? MULTI_YEAR_FLAG
-       conditions << 'multi_year = ?'
-       values << true
-     end
-   end
+    #-----------------------------------------------------------------------------
+    # Project parameters
+    #-----------------------------------------------------------------------------
+    conditions << 'organization_id IN (?)'
+    values << @organization_list
 
-   # Filter by asset type. Requires joining across CP <- ALI <- ALI-Assets <- Assets
-   if @asset_subtype_filter.blank?
-     @asset_subtype_filter = []
-   else
-     capital_project_ids = []
-     # first get a list of matching asset ids for the selected organizations. This is better as a ruby query
-     asset_ids = Asset.where('asset_subtype_id IN (?) AND organization_id IN (?)', @asset_subtype_filter, values[0]).pluck(:id)
-     unless asset_ids.empty?
-       # now get CPs by subselecting on CP <- ALI <- ALI-Assets
-       query = "SELECT DISTINCT(id) FROM capital_projects WHERE capital_projects.id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE activity_line_items.id IN (SELECT DISTINCT(activity_line_item_id) FROM activity_line_items_assets WHERE asset_id IN (#{asset_ids.join(',')})))"
-       cps = CapitalProject.connection.execute(query, :skip_logging)
-       cps.each do |cp|
-         capital_project_ids << cp[0]
-       end
-     end
-     conditions << 'capital_projects.id IN (?)'
-     values << capital_project_ids.uniq  # make sure there are no duplicates
-   end
+    @capital_project_flag_filter = []
+
+    capital_project_types = (@user_activity_line_item_filter.try(:capital_project_type_id).blank? ? CapitalProjectType.ids : [@user_activity_line_item_filter.capital_project_type_id] )
+    if @user_activity_line_item_filter.try(:sogr_type) == 'SOGR'
+      sogr_types = CapitalProjectType.find_by(name: 'Replacement').id
+    elsif @user_activity_line_item_filter.try(:sogr_type) == 'Non-SOGR'
+      sogr_types = CapitalProjectType.where.not(name: 'Replacement').ids
+    else
+      sogr_types = CapitalProjectType.ids
+    end
+    @capital_project_type_filter = (capital_project_types & sogr_types)
+    conditions << 'capital_project_type_id IN (?)'
+    values << @capital_project_type_filter
+
+    #-----------------------------------------------------------------------------
+
+
+    #-----------------------------------------------------------------------------
+    # Asset parameters
+    #-----------------------------------------------------------------------------
+
+    # Filter by asset type and subtype. Requires joining across CP <- ALI <- ALI-Assets <- Assets
+    asset_conditions  = []
+    asset_values      = []
+    if @user_activity_line_item_filter.try(:asset_subtype_id).present?
+      @asset_subtype_filter = [@user_activity_line_item_filter.asset_subtype_id]
+      asset_conditions << 'asset_subtype_id IN (?)'
+      asset_values << @asset_subtype_filter
+    elsif @user_activity_line_item_filter.try(:asset_type_id).present?
+      @asset_subtype_filter = AssetType.find_by(id: @user_activity_line_item_filter.asset_type_id).asset_subtypes.ids
+      asset_conditions << 'asset_subtype_id IN (?)'
+      asset_values << @asset_subtype_filter
+    end
+
+    # filter by backlog
+    if @user_activity_line_item_filter.try(:in_backlog)
+      asset_conditions << 'in_backlog = ?'
+      asset_values << true
+    end
+
+    # always filter assets by org params
+    asset_conditions << 'organization_id IN (?)'
+    asset_values << values[0]
+
+    ali_asset_conditions = []
+    ali_asset_values = []
+    unless asset_conditions.empty?
+      ali_asset_conditions << 'activity_line_items_assets.asset_id IN (?)'
+      ali_asset_values << Asset.where(asset_conditions.join(' AND '), *asset_values).pluck(:id)
+    end
+
+    #-----------------------------------------------------------------------------
+
+
+    #-----------------------------------------------------------------------------
+    # ALI parameters
+    #-----------------------------------------------------------------------------
+
+    # TEAM ALI code
+    if @user_activity_line_item_filter.try(:team_ali_code_id).blank?
+      @team_ali_code_filter = []
+    else
+      @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_filter_id]
+
+      ali_asset_conditions << 'activity_line_items_assets.activity_line_item_id IN (?)'
+      ali_asset_values << ActivityLineItem.where(team_ali_code_id: @team_ali_code_filter).ids
+    end
+
+    unless ali_asset_conditions.empty?
+      conditions << 'capital_projects.id IN (?)'
+      values << ActivityLineItem.joins('INNER JOIN activity_line_items_assets ON activity_line_items_assets.activity_line_item_id = activity_line_items.id').where(ali_asset_conditions.join(' AND '), *ali_asset_values).pluck(:capital_project_id).uniq
+    end
+
+    # TODO: add params for below when we do tagging
+    # funding bucket
+
+    # Filter by Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
+    # @funding_source_filter = params[:funding_source_filter]
+    # if @funding_source_filter.blank?
+    #   @funding_source_filter = []
+    # else
+    #   capital_project_ids = []
+    #   funding_source_ids = FundingSource.where(:funding_source_id => @funding_source_filter).pluck(:id)
+    #   unless funding_source_ids.empty?
+    #     # Use a custom query to join across the five tables
+    #     query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE #{column_name} IN (SELECT id FROM funding_line_items WHERE funding_source_id IN (#{funding_source_ids.join(',')})))"
+    #     cps = CapitalProject.connection.execute(query, :skip_logging)
+    #     cps.each do |cp|
+    #       capital_project_ids << cp[0]
+    #     end
+    #     conditions << 'id IN (?)'
+    #     values << capital_project_ids.uniq  # make sure there are no duplicates
+    #   end
+    # end
+
+
+    # not fully funded
+
+    #-----------------------------------------------------------------------------
+
+
 
   #-----------------------------------------------------------------------------
   # Parse non-common filters
@@ -140,25 +208,6 @@ class AbstractCapitalProjectsController < OrganizationAwareController
    else
      conditions << 'capital_projects.fy_year IN (?)'
      values << @fiscal_year_filter
-   end
-
-   # Filter by Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
-   @funding_source_filter = params[:funding_source_filter]
-   if @funding_source_filter.blank?
-     @funding_source_filter = []
-   else
-     capital_project_ids = []
-     funding_source_ids = FundingSource.where(:funding_source_id => @funding_source_filter).pluck(:id)
-     unless funding_source_ids.empty?
-       # Use a custom query to join across the five tables
-       query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE #{column_name} IN (SELECT id FROM funding_line_items WHERE funding_source_id IN (#{funding_source_ids.join(',')})))"
-       cps = CapitalProject.connection.execute(query, :skip_logging)
-       cps.each do |cp|
-         capital_project_ids << cp[0]
-       end
-       conditions << 'id IN (?)'
-       values << capital_project_ids.uniq  # make sure there are no duplicates
-     end
    end
 
    # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter

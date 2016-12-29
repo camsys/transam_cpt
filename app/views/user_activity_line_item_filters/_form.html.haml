@@ -1,3 +1,4 @@
+- subtype_ids_by_type = AssetSubtype.pluck(:asset_type_id, :id).each_with_object({}) { |(f,l),h|  h.update(f=>[l]) {|_,ov,nv| ov+nv }}
 .row
   = simple_form_for([current_user, @user_activity_line_item_filter], :html => {:id => 'filter_form', :class => 'form-vertical' }, :wrapper => :vertical_form, :wrapper_mappings => {:boolean => :vertical_boolean}) do |f|
     .col-md-6
@@ -14,13 +15,13 @@
       = dialog_tag('Parameters', {:icon => 'fa fa-list', :class => "form-part"}) do
 
         = f.input :capital_project_type_id, :collection => CapitalProjectType.active, :label => 'Type'
-        = f.input :sogr_type, :collection => ['SOGR', 'Non-SOGR', 'All'], :label => 'SOGR'
+        = f.input :sogr_type, :collection => ['All', 'SOGR', 'Non-SOGR'], :label => 'SOGR', :include_blank => false
         = f.input :team_ali_code_id, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
         .row
           .col-md-6
             = f.input :asset_type_id, :collection => AssetType.active, :label => 'Asset Type'
           .col-md-6
-            = f.input :asset_subtype_id, :collection => AssetSubtype.active, :label => 'Asset Subtype'
+            = f.input :asset_subtype_id, :collection => AssetSubtype.active.map{|x| [x.to_s, x.id, {style: 'display:none;'}]}, :label => 'Asset Subtype'
 
         = f.input :in_backlog
 
@@ -41,5 +42,30 @@
   $('#filter_form').validate({
     submitHandler: function(form) {
       form.submit();
+    }
+  });
+
+  var subtype_ids_by_type = JSON.parse('#{subtype_ids_by_type.to_json}');
+
+  // update asset subtype list after picking type
+  $('#user_activity_line_item_filter_asset_type_id').on('change', function(event) {
+
+    asset_type_id = parseInt($(this).val());
+    console.log(asset_type_id);
+
+    if (asset_type_id > 0) {
+      var subtype_ids = subtype_ids_by_type[asset_type_id];
+      $('#user_activity_line_item_filter_asset_subtype_id option').each(function() {
+        var val = $(this).val();
+        if(val && subtype_ids != undefined && subtype_ids.indexOf(parseInt(val)) < 0) {
+          $(this).hide();
+        } else {
+          $(this).show();
+        }
+      });
+    } else {
+      $('#user_activity_line_item_filter_asset_subtype_id option').hide();
+      $('#user_activity_line_item_filter_asset_subtype_id option[value=""]').show();
+      $('#user_activity_line_item_filter_asset_subtype_id option[value=""]').attr('selected','selected');
     }
   });
