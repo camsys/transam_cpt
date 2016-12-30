@@ -97,17 +97,22 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
     @capital_project_flag_filter = []
 
-    capital_project_types = (@user_activity_line_item_filter.try(:capital_project_type_id).blank? ? CapitalProjectType.ids : [@user_activity_line_item_filter.capital_project_type_id] )
+    capital_project_types = (@user_activity_line_item_filter.try(:capital_project_type_id).blank? ? [] : [@user_activity_line_item_filter.capital_project_type_id] )
+    sogr_types = []
     if @user_activity_line_item_filter.try(:sogr_type) == 'SOGR'
-      sogr_types = CapitalProjectType.find_by(name: 'Replacement').id
+      sogr_types = [CapitalProjectType.find_by(name: 'Replacement').id]
+      conditions << 'sogr = ?'
+      values << true
     elsif @user_activity_line_item_filter.try(:sogr_type) == 'Non-SOGR'
-      sogr_types = CapitalProjectType.where.not(name: 'Replacement').ids
-    else
-      sogr_types = CapitalProjectType.ids
+      conditions << 'sogr = ?'
+      values << false
     end
+
     @capital_project_type_filter = (capital_project_types & sogr_types)
-    conditions << 'capital_project_type_id IN (?)'
-    values << @capital_project_type_filter
+    unless @capital_project_type_filter.empty?
+      conditions << 'capital_project_type_id IN (?)'
+      values << @capital_project_type_filter
+    end
 
     #-----------------------------------------------------------------------------
 
