@@ -12,6 +12,7 @@ describe "capital_projects/index.html.haml", :type => :view do
     assign(:report, Report.new(:id => 1))
     assign(:years, [])
     assign(:data, {:labels => ['test_label'], :data => []})
+    assign(:user_activity_line_item_filter, UserActivityLineItemFilter.new)
     render
 
     expect(rendered).to have_content('No matching capital projects found')

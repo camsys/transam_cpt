@@ -1,6 +1,0 @@
-#budgets
-  .row
-    - @organization.eligible_funding_sources.each do |fs|
-      = render :partial => 'fund_detail', :locals => {:fund => fs, :year => @fiscal_year}
-
-= render 'chart_scripts'

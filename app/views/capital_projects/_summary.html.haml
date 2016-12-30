@@ -13,14 +13,6 @@
   = format_field("Emergency", format_as_yes_no(@project.emergency))
   -#= format_field("Status", format_as_label(@project.state.humanize, 'primary'))
 
-  %hr
-
-  = format_field("State", format_as_currency(@project.state_funds))
-  = format_field("Federal", format_as_currency(@project.federal_funds))
-  = format_field("Local", format_as_currency(@project.local_funds))
-  = format_field("Total", format_as_currency(@project.total_funds))
-  -# = format_field("Funds Required", format_as_currency(@project.funding_difference))
-
 .hidden-lg
   .col-sm-4
     = format_field("Project Number", @project.project_number)
@@ -34,9 +26,3 @@
     = format_field("Multi year", format_as_yes_no(@project.multi_year?))
     = format_field("Emergency", format_as_yes_no(@project.emergency))
     -#= format_field("Status", format_as_label(@project.state.humanize, 'primary'))
-  .col-sm-4
-    = format_field("State", format_as_currency(@project.state_funds))
-    = format_field("Federal", format_as_currency(@project.federal_funds))
-    = format_field("Local", format_as_currency(@project.local_funds))
-    = format_field("Total", format_as_currency(@project.total_funds))
-    -# = format_field("Funds Required", format_as_currency(@project.funding_difference))

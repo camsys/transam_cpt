@@ -167,27 +167,7 @@ class CapitalProject < ActiveRecord::Base
     self.joins(:activity_line_items).sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
   end
 
-  def self.total_funds
-    self.joins(activity_line_items: :funding_plans).sum("funding_plans.amount")
-  end
 
-  def self.total_federal_funds
-    0
-
-    #TODO: revisit when funding_source is enabled, refer to instance method .federal_funds
-  end
-
-  def self.total_state_funds
-    0
-
-    #TODO: revisit when funding_source is enabled, refer to instance method .state_funds
-  end
-
-  def self.total_local_funds
-    0
-
-    #TODO: revisit when funding_source is enabled, refer to instance method .local_funds
-  end
 
   #------------------------------------------------------------------------------
   #
@@ -239,31 +219,6 @@ class CapitalProject < ActiveRecord::Base
     b
   end
 
-  def state_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.state_match_required / 100.0)")
-  end
-
-  def federal_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.federal_match_required / 100.0)")
-  end
-
-  def local_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.local_match_required / 100.0)")
-  end
-
-  def total_funds
-    activity_line_items.joins(:funding_plans).sum("funding_plans.amount")
-  end
-
   # Returns the total cost of the project. If a fiscal year is added the costs
   # are summarized for that fiscal year only. This is needed for multi-year
   # projects
@@ -277,11 +232,6 @@ class CapitalProject < ActiveRecord::Base
     end
     
     alis.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
-  end
-
-  # Returns the amount that is not yet funded
-  def funding_difference
-    total_cost - total_funds
   end
 
   # Override the mixin method and delegate to it
@@ -304,10 +254,6 @@ class CapitalProject < ActiveRecord::Base
       type: capital_project_type.try(:code),
       title: title,
       total_cost: total_cost,
-      state_funds: state_funds,
-      local_funds: local_funds,
-      federal_funds: federal_funds,
-      total_funds: total_funds,
       has_early_replacement_assets: has_early_replacement_assets?
     }
   end

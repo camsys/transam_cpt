@@ -10,14 +10,6 @@
         %th.center Sub Category
         %th.right Count
         %th.right Cost
-        %th.right Requested
-
-        %th.right Federal
-        %th.right %
-        %th.right State
-        %th.right %
-        %th.right Local
-        %th.right %
         - if popup
           %th.center
         - if project.has_early_replacement_assets?
@@ -34,16 +26,6 @@
           %td.center.nowrap= ali.team_ali_code
           %td.right.nowrap= format_as_integer(ali.assets.count)
           %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
-          %td.right.nowrap= format_as_currency(ali.total_funds)
-
-          %td.right.nowrap= format_as_currency(ali.federal_funds)
-          %td.right.nowrap= format_as_percentage(ali.federal_funds / ali.cost * 100.0) unless ali.federal_funds == 0
-
-          %td.right.nowrap= format_as_currency(ali.state_funds)
-          %td.right.nowrap= format_as_percentage(ali.state_funds / ali.cost * 100.0) unless ali.state_funds == 0
-
-          %td.right.nowrap= format_as_currency(ali.local_funds)
-          %td.right.nowrap= format_as_percentage(ali.local_funds / ali.cost * 100.0) unless ali.local_funds == 0
 
           - if popup == '1' and ali.assets.present?
             %td.center
@@ -62,14 +44,6 @@
         %td.right.nowrap= format_as_integer(sum_assets)
 
         %td.right.nowrap= format_as_currency(project.total_cost)
-        %td.right.nowrap= format_as_currency(project.total_funds)
-
-        %td.right.nowrap= format_as_currency(project.federal_funds)
-        %td
-        %td.right.nowrap= format_as_currency(project.state_funds)
-        %td
-        %td.right.nowrap= format_as_currency(project.local_funds)
-        %td
         - if popup
           %td.center
 

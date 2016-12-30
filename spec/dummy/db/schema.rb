@@ -402,20 +402,6 @@ ActiveRecord::Schema.define(version: 20161227200716) do
 
   add_index "assets_vehicle_usage_codes", ["asset_id", "vehicle_usage_code_id"], name: "assets_vehicle_usage_codes_idx1", using: :btree
 
-  create_table "budget_amounts", force: true do |t|
-    t.string   "object_key",        limit: 12, null: false
-    t.integer  "organization_id",              null: false
-    t.integer  "funding_source_id",            null: false
-    t.integer  "fy_year",                      null: false
-    t.integer  "amount",                       null: false
-    t.boolean  "estimated"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "budget_amounts", ["object_key"], name: "budget_amounts_idx1", using: :btree
-  add_index "budget_amounts", ["organization_id", "funding_source_id", "fy_year"], name: "budget_amounts_idx2", using: :btree
-
   create_table "capital_project_types", force: true do |t|
     t.string  "name",        limit: 64,  null: false
     t.string  "code",        limit: 4,   null: false
@@ -751,18 +737,6 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.integer  "updated_by_id",                                           null: false
     t.datetime "updated_on"
   end
-
-  create_table "funding_plans", force: true do |t|
-    t.string   "object_key",            limit: 12, null: false
-    t.integer  "activity_line_item_id",            null: false
-    t.integer  "funding_source_id",                null: false
-    t.integer  "amount",                           null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "funding_plans", ["activity_line_item_id", "funding_source_id"], name: "funding_plans_idx2", using: :btree
-  add_index "funding_plans", ["object_key"], name: "funding_plans_idx1", using: :btree
 
   create_table "funding_source_types", force: true do |t|
     t.string  "name",        limit: 64,  null: false

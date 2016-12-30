@@ -116,8 +116,6 @@ RSpec.describe CapitalProject, :type => :model do
     end
     it 'total cost > 0' do
       test_line_item = create(:activity_line_item, :anticipated_cost => 123)
-      test_line_item.funding_plans << create(:funding_plan, :amount => 100)
-      test_line_item.save!
 
       test_project.multi_year = true
       test_project.activity_line_items << test_line_item
@@ -129,23 +127,8 @@ RSpec.describe CapitalProject, :type => :model do
 
   describe 'finance' do
     before(:each) do
-      test_line_item.funding_plans << create(:funding_plan)
-      test_line_item.save!
       test_project.activity_line_items << test_line_item
       test_project.save!
-    end
-
-    it '#state_funds' do
-      expect(CapitalProject.where(id: test_project.id).total_state_funds).to eq(test_line_item.state_funds)
-    end
-    it '#federal_funds' do
-      expect(CapitalProject.where(id: test_project.id).total_federal_funds).to eq(test_line_item.federal_funds)
-    end
-    it '#local_funds' do
-      expect(CapitalProject.where(id: test_project.id).total_local_funds).to eq(test_line_item.local_funds)
-    end
-    it '#total_funds' do
-      expect(CapitalProject.where(id: test_project.id).total_funds).to eq(test_line_item.total_funds)
     end
 
     it '#total_cost' do 
@@ -163,19 +146,6 @@ RSpec.describe CapitalProject, :type => :model do
       ali_with_estimated_cost.save!
 
       expect(CapitalProject.where(id: [project_1.id, project_2.id]).total_cost).to eq(300)
-    end
-
-    it '.state_funds' do
-      expect(test_project.state_funds).to eq(test_line_item.state_funds)
-    end
-    it '.federal_funds' do
-      expect(test_project.federal_funds).to eq(test_line_item.federal_funds)
-    end
-    it '.local_funds' do
-      expect(test_project.local_funds).to eq(test_line_item.local_funds)
-    end
-    it '.total_funds' do
-      expect(test_project.total_funds).to eq(test_line_item.total_funds)
     end
 
     describe '.total_cost' do
@@ -198,10 +168,6 @@ RSpec.describe CapitalProject, :type => :model do
           expect(test_project.total_cost Date.today.year).to eq(test_line_item.cost)
         end
       end
-    end
-
-    it '.funding_difference' do
-      expect(test_project.funding_difference).to eq(test_project.total_cost - test_project.total_funds)
     end
   end
 

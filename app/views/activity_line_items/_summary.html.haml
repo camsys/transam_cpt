@@ -13,13 +13,6 @@
   = format_field("Cost Difference", format_as_currency(ali.cost_difference))
   -# = format_field("Funding Shortfall", format_as_currency(ali.funds_required))
 
-  %hr
-
-  = format_field("Federal", format_as_currency(ali.federal_funds))
-  = format_field("State",   format_as_currency(ali.state_funds))
-  = format_field("Local",   format_as_currency(ali.local_funds))
-  = format_field("Total",   format_as_currency(ali.total_funds))
-
 .hidden-lg
   .col-sm-4
     = format_field("Project",  link_to(ali.capital_project.project_number, ali.capital_project))
@@ -35,9 +28,3 @@
     = format_field("Expected Cost", format_as_currency(ali.cost))
     = format_field("Cost Difference", format_as_currency(ali.cost_difference))
     -# = format_field("Funding Shortfall", format_as_currency(ali.funds_required))
-
-  .col-sm-4
-    = format_field("Federal", format_as_currency(ali.federal_funds))
-    = format_field("State",   format_as_currency(ali.state_funds))
-    = format_field("Local",   format_as_currency(ali.local_funds))
-    = format_field("Total",   format_as_currency(ali.total_funds))
