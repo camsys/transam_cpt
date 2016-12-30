@@ -19,4 +19,9 @@ Rails.configuration.to_prepare do
   Organization.class_eval do
     include TransamPlanningOrganization
   end
+
+  User.class_eval do
+    include TransamPlanningFilters
+  end
+
 end

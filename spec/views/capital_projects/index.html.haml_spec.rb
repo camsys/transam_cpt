@@ -2,7 +2,9 @@ require 'rails_helper'
 
 describe "capital_projects/index.html.haml", :type => :view do
   it 'no projects' do
-    allow(controller).to receive(:current_ability).and_return(Ability.new(create(:admin)))
+    test_user = create(:admin)
+    allow(controller).to receive(:current_user).and_return(test_user)
+    allow(controller).to receive(:current_ability).and_return(Ability.new(test_user))
     assign(:organization_list, [])
     assign(:fiscal_years, [2010])
     assign(:fiscal_year_filter, 2010)
