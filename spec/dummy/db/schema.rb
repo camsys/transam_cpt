@@ -738,6 +738,52 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.datetime "updated_on"
   end
 
+  create_table "funding_line_item_types", force: true do |t|
+    t.string  "code",        limit: 2
+    t.string  "name",        limit: 64
+    t.string  "description"
+    t.boolean "active"
+  end
+
+  create_table "funding_line_items", force: true do |t|
+    t.string   "object_key",                limit: 12
+    t.integer  "organization_id"
+    t.integer  "fy_year"
+    t.integer  "funding_source_id"
+    t.integer  "funding_line_item_type_id"
+    t.string   "project_number",            limit: 64
+    t.boolean  "awarded"
+    t.integer  "amount"
+    t.integer  "spent"
+    t.integer  "pcnt_operating_assistance"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.boolean  "active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "funding_line_items", ["object_key"], name: "funding_line_items_idx1", using: :btree
+  add_index "funding_line_items", ["organization_id", "object_key"], name: "funding_line_items_idx2", using: :btree
+  add_index "funding_line_items", ["project_number"], name: "funding_line_items_idx3", using: :btree
+
+  create_table "funding_requests", force: true do |t|
+    t.string   "object_key",                   limit: 12
+    t.integer  "activity_line_item_id"
+    t.integer  "federal_funding_line_item_id"
+    t.integer  "state_funding_line_item_id"
+    t.integer  "federal_amount"
+    t.integer  "state_amount"
+    t.integer  "local_amount"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "funding_requests", ["activity_line_item_id", "federal_funding_line_item_id"], name: "available_funds_idx2", using: :btree
+  add_index "funding_requests", ["object_key"], name: "funding_requests_idx1", using: :btree
+
   create_table "funding_source_types", force: true do |t|
     t.string  "name",        limit: 64,  null: false
     t.string  "description", limit: 254, null: false
@@ -1060,6 +1106,13 @@ ActiveRecord::Schema.define(version: 20161227200716) do
 
   add_index "notifications", ["notifiable_id", "notifiable_type"], name: "index_notifications_on_notifiable_id_and_notifiable_type", using: :btree
 
+  create_table "organization_role_mappings", force: true do |t|
+    t.integer  "organization_id", null: false
+    t.integer  "role_id",         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "organization_types", force: true do |t|
     t.string  "name",              limit: 64,  null: false
     t.string  "class_name",        limit: 64,  null: false
@@ -1131,10 +1184,11 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.integer  "year",                                                                 null: false
     t.string   "name",                             limit: 64,                          null: false
     t.string   "description",                      limit: 254,                         null: false
-    t.integer  "depreciation_calculation_type_id",                                     null: false
     t.integer  "service_life_calculation_type_id",                                     null: false
     t.integer  "cost_calculation_type_id",                                             null: false
+    t.integer  "depreciation_calculation_type_id",                                     null: false
     t.integer  "condition_estimation_type_id",                                         null: false
+    t.integer  "depreciation_interval_type_id",                                        null: false
     t.decimal  "condition_threshold",                          precision: 9, scale: 2, null: false
     t.decimal  "interest_rate",                                precision: 9, scale: 2, null: false
     t.boolean  "current",                                                              null: false
@@ -1164,7 +1218,7 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.integer  "rehabilitation_parts_cost"
     t.integer  "extended_service_life_months"
     t.integer  "extended_service_life_miles"
-    t.integer  "min_used_purchase_service_life_months"
+    t.integer  "min_used_purchase_service_life_months",           null: false
     t.string   "purchase_replacement_code",             limit: 8, null: false
     t.string   "lease_replacement_code",                limit: 8
     t.string   "purchase_expansion_code",               limit: 8
@@ -1172,6 +1226,7 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.string   "rehabilitation_code",                   limit: 8, null: false
     t.string   "engineering_design_code",               limit: 8
     t.string   "construction_code",                     limit: 8
+    t.boolean  "default_rule"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
