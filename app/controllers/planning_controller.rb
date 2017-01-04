@@ -60,24 +60,6 @@ class PlanningController < AbstractCapitalProjectsController
   end
 
   #-----------------------------------------------------------------------------
-  # Render the partial for the asset edit modal.
-  #-----------------------------------------------------------------------------
-  def edit_asset
-
-    @asset = Asset.find_by_object_key(params[:id])
-    @actions = ACTIONS
-
-    @fiscal_years = []
-    (current_planning_year_year..last_fiscal_year_year).each do |yr|
-      @fiscal_years << [fiscal_year(yr), yr]
-    end
-    @proxy = SchedulerActionProxy.new
-    @proxy.set_defaults(@asset)
-
-    render :partial => 'edit_asset_modal_form'
-  end
-
-  #-----------------------------------------------------------------------------
   # Render the partial for the update cost modal.
   #-----------------------------------------------------------------------------
   def update_cost
