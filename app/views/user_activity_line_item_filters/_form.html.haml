@@ -8,10 +8,11 @@
 
         - if can? :share, @user_activity_line_item_filter
           .form-group
-            = check_box_tag :share_filter, 1, @user_activity_line_item_filter.users.count > 1, style: 'margin-left: 10px;'
-            Share this filter?
-
-    .col-md-6
+            = radio_button_tag :share_filter, 'private', @user_activity_line_item_filter.resource.nil? && @user_activity_line_item_filter.users.count == 1
+            = radio_button_tag :share_filter, 'main_org', @user_activity_line_item_filter.resource.present? && @user_activity_line_item_filter.users.count > 1
+            - if @organization_list.count > 1
+              = radio_button_tag :share_filter, 'all_orgs', @user_activity_line_item_filter.resource.nil? && @user_activity_line_item_filter.users.count > 1
+      .col-md-6
       = dialog_tag('Parameters', {:icon => 'fa fa-list', :class => "form-part"}) do
 
         = f.input :capital_project_type_id, :collection => CapitalProjectType.active, :label => 'Type'

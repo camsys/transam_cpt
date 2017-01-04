@@ -7,14 +7,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Budget Forcast
-  # resources :budgets,   :only => [:index] do
-  #   collection do
-  #     post  'set'
-  #     post  'alter'
-  #   end
-  # end
-
   # Asset replacement/rehabilitation
   resources :planning, :only => [:index] do
     collection do
@@ -34,23 +26,6 @@ Rails.application.routes.draw do
       get  'children'
     end
   end
-
-  # Asset replacement/rehabilitation
-  resources :scheduler, :only => [:index] do
-    collection do
-      post  'scheduler_action'
-      get   'scheduler_swimlane_action'
-      post  'scheduler_ali_action'
-      get   'scheduler_ali_action'
-      get   'loader'
-      post  'edit_asset_in_modal'
-      post  'update_cost_modal'
-      post  'add_funding_plan_modal'
-    end
-  end
-
-  # Funding Requests -- index only
-  # resources :funding_requests, :only => [:index]
 
   # Capital Project Controllers
   resources :capital_projects do

@@ -1,6 +1,0 @@
-.panel.panel-info{:id => 'budgets-panel', :data => {:spy => "affix", :offset_top => "200", :offset_bottom => "200"}}
-  .panel-heading
-    %h3.panel-title= "Funds #{format_as_fiscal_year(@active_year)}"
-  .panel-body
-    - @organization.eligible_funding_sources.each do |fs|
-      = render :partial => 'scheduler/fund_detail', :locals => {:fund => fs, :year => @active_year}
