@@ -18,7 +18,7 @@
   .row
     .col-md-3
       %h4.bg-default.text-left
-        = get_swimlane_activity_cost(ast, year)
+        = format_as_currency(get_swimlane_activity_cost(ast, year))
         
     .col-md-8
       %p.text-primary{:style => 'margin-bottom: 0px;'}

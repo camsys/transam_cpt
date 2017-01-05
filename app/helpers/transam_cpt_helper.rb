@@ -65,7 +65,7 @@ module TransamCptHelper
     else
       cost = 0
     end
-    format_as_currency(cost)
+    cost
   end
 
   # Returns the correct swimlane icon color for an asset
