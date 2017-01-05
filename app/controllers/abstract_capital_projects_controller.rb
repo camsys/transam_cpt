@@ -162,7 +162,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     if @user_activity_line_item_filter.try(:team_ali_code_id).blank?
       @team_ali_code_filter = []
     else
-      @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_filter_id]
+      @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_id]
 
       ali_asset_conditions << 'activity_line_items_assets.activity_line_item_id IN (?)'
       ali_asset_values << ActivityLineItem.where(team_ali_code_id: @team_ali_code_filter).ids
