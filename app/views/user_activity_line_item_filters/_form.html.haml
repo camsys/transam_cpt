@@ -51,22 +51,19 @@
   // update asset subtype list after picking type
   $('#user_activity_line_item_filter_asset_type_id').on('change', function(event) {
 
-    asset_type_id = parseInt($(this).val());
-    console.log(asset_type_id);
+    $('#user_activity_line_item_filter_asset_subtype_id').val('');
+    $('#user_activity_line_item_filter_asset_subtype_id option').hide();
+    $('#user_activity_line_item_filter_asset_subtype_id option[value=""]').show();
+    $('#user_activity_line_item_filter_asset_subtype_id option[value=""]').attr('selected','selected');
 
+    asset_type_id = parseInt($(this).val());
     if (asset_type_id > 0) {
       var subtype_ids = subtype_ids_by_type[asset_type_id];
       $('#user_activity_line_item_filter_asset_subtype_id option').each(function() {
         var val = $(this).val();
-        if(val && subtype_ids != undefined && subtype_ids.indexOf(parseInt(val)) < 0) {
-          $(this).hide();
-        } else {
+        if(val && subtype_ids != undefined && subtype_ids.indexOf(parseInt(val)) >= 0) {
           $(this).show();
         }
       });
-    } else {
-      $('#user_activity_line_item_filter_asset_subtype_id option').hide();
-      $('#user_activity_line_item_filter_asset_subtype_id option[value=""]').show();
-      $('#user_activity_line_item_filter_asset_subtype_id option[value=""]').attr('selected','selected');
     }
   });
