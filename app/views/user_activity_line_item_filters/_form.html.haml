@@ -1,7 +1,7 @@
 - subtype_ids_by_type = AssetSubtype.pluck(:asset_type_id, :id).each_with_object({}) { |(f,l),h|  h.update(f=>[l]) {|_,ov,nv| ov+nv }}
 .row
   = simple_form_for([current_user, @user_activity_line_item_filter], :html => {:id => 'filter_form', :class => 'form-vertical' }, :wrapper => :vertical_form, :wrapper_mappings => {:boolean => :vertical_boolean}) do |f|
-    .col-md-6
+    .col-sm-6
       = dialog_tag('Details', {:icon => 'fa fa-list', :class => "form-part"}) do
         = f.input :name, :placeholder => "Enter a name for this filter", :required => true
         = f.input :description, :as => :text, :placeholder => "Enter a description for this filter.", :rows => 3, :required => true
@@ -12,16 +12,16 @@
             = radio_button_tag :share_filter, 'main_org', @user_activity_line_item_filter.resource.present? && @user_activity_line_item_filter.users.count > 1
             - if @organization_list.count > 1
               = radio_button_tag :share_filter, 'all_orgs', @user_activity_line_item_filter.resource.nil? && @user_activity_line_item_filter.users.count > 1
-      .col-md-6
+    .col-sm-6
       = dialog_tag('Parameters', {:icon => 'fa fa-list', :class => "form-part"}) do
 
         = f.input :capital_project_type_id, :collection => CapitalProjectType.active, :label => 'Type'
         = f.input :sogr_type, :collection => ['All', 'SOGR', 'Non-SOGR'], :label => 'SOGR', :include_blank => false
         = f.input :team_ali_code_id, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
         .row
-          .col-md-6
+          .col-sm-6
             = f.input :asset_type_id, :collection => AssetType.active, :label => 'Asset Type'
-          .col-md-6
+          .col-sm-6
             = f.input :asset_subtype_id, :collection => AssetSubtype.active.map{|x| [x.to_s, x.id, {style: 'display:none;'}]}, :label => 'Asset Subtype'
 
         = f.input :in_backlog
@@ -31,7 +31,7 @@
           - if lookup_context.template_exists?(view_component, 'user_activity_line_item_filters', true)
             = render :partial => "user_activity_line_item_filters/#{view_component}", :locals => {:f => f}
 
-    .col-md-12
+    .col-sm-12
       - unless current_user.user_activity_line_item_filter == @user_activity_line_item_filter
         = f.button :submit, "Update ALI Filter", :class => "btn btn-primary"
       = f.button :submit, "Update and Select This Filter", :class => "btn btn-primary"
