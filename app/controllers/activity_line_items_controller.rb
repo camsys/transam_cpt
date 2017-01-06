@@ -128,7 +128,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.js
       format.json {
-        assets_json = @activity_line_item.assets.limit(params[:limit]).offset(params[:offset]).collect{ |p|
+        assets_json = Asset.where(id: @activity_line_item.assets.ids).limit(params[:limit]).offset(params[:offset]).order(params[:sort] ? "#{params[:sort]} #{params[:order]}": "").collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
             fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
