@@ -60,6 +60,8 @@ class ActivityLineItem < ActiveRecord::Base
   # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
   has_many    :documents,   :as => :documentable, :dependent => :destroy
 
+  has_many    :tasks,       :as => :taskable,     :dependent => :destroy
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------

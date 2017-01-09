@@ -22,6 +22,10 @@
     %a{:href => "#comm", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @activity_line_item.comments.count
       = "Comments"
+  %li
+    %a{:href => "#tasks", :data =>{:toggle => 'tab'}}
+      %span.badge.pull-right= @activity_line_item.tasks.count
+      = "Tasks"
 
 .tab-content
   .tab-pane.fade#asst
@@ -42,3 +46,6 @@
   .tab-pane.fade#comm
     .tab-content
       = render 'comments'
+  .tab-pane.fade#tasks
+    .tab-content
+      = render 'tasks'
