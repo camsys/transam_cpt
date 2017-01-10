@@ -92,8 +92,19 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     #-----------------------------------------------------------------------------
     # Project parameters
     #-----------------------------------------------------------------------------
-    conditions << 'organization_id IN (?)'
-    values << @organization_list
+
+    # org id is not tied to ALI filter
+    # org id is used in scheduler though not necessary but all links specify looking at a single org at a time
+    # other functionality like planning does not require
+    if params[:org_id].blank?
+      conditions << 'organization_id IN (?)'
+      values << @organization_list
+    else
+      @org_id = params[:org_id].to_i
+      conditions << 'organization_id = ?'
+      values << @org_id
+    end
+
 
     @capital_project_flag_filter = []
 
@@ -218,13 +229,15 @@ class AbstractCapitalProjectsController < OrganizationAwareController
    # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter
    @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
 
-   # This is the first year that the user can plan for
-   @first_year = current_planning_year_year
-   # This is the last year  the user can plan for
-   @last_year = last_fiscal_year_year
-   # This is an array of years that the user can plan for
-   @years = (@first_year..@last_year).to_a
+  end
 
+  def get_planning_years
+    # This is the first year that the user can plan for
+    @first_year = current_planning_year_year
+    # This is the last year  the user can plan for
+    @last_year = last_fiscal_year_year
+    # This is an array of years that the user can plan for
+    @years = (@first_year..@last_year).to_a
   end
 
   #-----------------------------------------------------------------------------

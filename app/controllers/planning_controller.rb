@@ -274,6 +274,7 @@ class PlanningController < AbstractCapitalProjectsController
   def prepare_projects_display
     # query projects
     get_projects
+    get_planning_years
 
     drag_drop_conditions = []
     drag_drop_values = []

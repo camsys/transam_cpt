@@ -116,6 +116,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     # Get the list of projects and set the view vars for filtering
     get_projects
+    get_planning_years
 
     unless params[:format] == 'xls'
       # cache the set of object keys in case we need them later
