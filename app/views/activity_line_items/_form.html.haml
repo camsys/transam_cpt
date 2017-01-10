@@ -19,7 +19,7 @@
         * Category
       = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}), :class => 'form-control', :required => true, :include_blank => true
     .col-sm-6
-      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true
+      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true, :label => "TEAM ALI Code"
 
   = f.submit :class => 'btn btn-primary'
   %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
