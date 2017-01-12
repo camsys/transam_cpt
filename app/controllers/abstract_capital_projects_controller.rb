@@ -65,8 +65,6 @@ class AbstractCapitalProjectsController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def get_projects
 
-    #TODO redo this whole section
-
     @user_activity_line_item_filter = current_user.user_activity_line_item_filter
 
     # Start to set up the query
