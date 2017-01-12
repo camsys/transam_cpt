@@ -8,7 +8,7 @@ describe "shared/_cpt_main_nav.html.haml", :type => :view do
     render
 
     expect(rendered).to have_link('Capital Projects')
-    expect(rendered).to have_link('Project planner')
+    expect(rendered).to have_link('Project Planner')
     expect(rendered).to have_link('New Capital Project')
     expect(rendered).to have_link('SOGR Capital Project Analyzer')
   end
