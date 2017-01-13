@@ -8,7 +8,7 @@
         - if show_sort == 1
           .pull-right
             .form-group
-              = select_tag(:sort, options_for_select([['Cost', 'cost'], ['Pcnt Funded', 'pcnt_funded'], ['# of assets', 'num_assets']], :selected => params[:sort]), :include_blank => true, :class => "form-control", :style => 'margin-top: -7px;')
+              = select_tag(:sort, options_for_select([['Cost', 'cost'], ['Pcnt Funded', 'pcnt_funded'], ['# of assets', 'num_assets']], :selected => params[:sort]), :prompt => 'Sort by...', :class => "form-control", :style => 'margin-top: -7px;')
     #ali-filter-form-collapse.collapse
       .panel-body
         .row
@@ -42,15 +42,14 @@
       var baseURL = tempArray[0];
       var aditionalURL = tempArray[1];
       var temp = "";
-      if(aditionalURL)
-      {
-      var tempArray = aditionalURL.split("&");
-      for ( var i in tempArray ){
-        if(tempArray[i].indexOf("sort") == -1){
-          newAdditionalURL += temvar finalURL = baseURL+"?"+newAdditionalURL+rows_txt;p+tempArray[i];
+      if (aditionalURL){
+        var tempArray = aditionalURL.split("&");
+        for ( var i in tempArray ){
+          if(tempArray[i].indexOf("sort") == -1){
+            newAdditionalURL += temp+tempArray[i];
             temp = "&";
           }
-      }
+        }
       }
       if ($(this).val().length > 1) {
         var rows_txt = temp+"sort="+$(this).val();

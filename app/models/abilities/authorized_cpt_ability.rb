@@ -7,7 +7,9 @@ module Abilities
       #-------------------------------------------------------------------------
       # ALI Filters
       #-------------------------------------------------------------------------
-      can :manage, UserActivityLineItemFilter
+      can :manage, UserActivityLineItemFilter do |f|
+        f.creator == user
+      end
 
       #-------------------------------------------------------------------------
       # Capital Projects
