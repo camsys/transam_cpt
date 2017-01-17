@@ -59,8 +59,16 @@ class UserActivityLineItemFilter < ActiveRecord::Base
     UserOrganizationFilter.system_filters.include? self
   end
 
-  def shared?
-    self.users.count > 1
+  def shared
+    if self.resource.nil? && self.users.count == 1
+      'No One'
+    elsif self.resource.present? && self.users.count > 1
+      self.resource.short_name
+    elsif self.resource.nil? && self.users.count > 1
+      'All Organizations'
+    else
+      'Unknown'
+    end
   end
 
   def can_update? user

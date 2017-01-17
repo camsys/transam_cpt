@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161227200716) do
+ActiveRecord::Schema.define(version: 20170103225100) do
 
   create_table "activities", force: true do |t|
     t.string   "object_key",           limit: 12
@@ -279,7 +279,6 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.date     "in_service_date"
     t.integer  "expected_useful_life"
     t.integer  "expected_useful_miles"
-    t.integer  "purchase_method_type_id"
     t.integer  "rebuild_year"
     t.string   "license_plate",                      limit: 32
     t.integer  "seating_capacity"
@@ -381,13 +380,6 @@ ActiveRecord::Schema.define(version: 20161227200716) do
 
   add_index "assets_general_ledger_accounts", ["asset_id", "general_ledger_account_id"], name: "assets_general_ledger_accounts_idx1", using: :btree
 
-  create_table "assets_usage_codes", id: false, force: true do |t|
-    t.integer "asset_id"
-    t.integer "usage_code_id"
-  end
-
-  add_index "assets_usage_codes", ["asset_id", "usage_code_id"], name: "assets_usage_codes_idx1", using: :btree
-
   create_table "assets_vehicle_features", id: false, force: true do |t|
     t.integer "asset_id"
     t.integer "vehicle_feature_id"
@@ -487,6 +479,13 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.boolean  "active",                     null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+  end
+
+  create_table "delayed_job_priorities", force: true do |t|
+    t.string   "class_name",             null: false
+    t.integer  "priority",   default: 0, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "delayed_jobs", force: true do |t|
@@ -1252,13 +1251,6 @@ ActiveRecord::Schema.define(version: 20161227200716) do
     t.string  "name",        limit: 64,  null: false
     t.string  "description", limit: 254, null: false
     t.boolean "is_default",              null: false
-    t.boolean "active",                  null: false
-  end
-
-  create_table "purchase_method_types", force: true do |t|
-    t.string  "name",        limit: 64,  null: false
-    t.string  "code",        limit: 2,   null: false
-    t.string  "description", limit: 254, null: false
     t.boolean "active",                  null: false
   end
 

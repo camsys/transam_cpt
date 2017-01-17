@@ -1,9 +1,14 @@
+- show_sort ||= 0
 .search-panel
   .panel.panel-default{:style => 'margin-bottom: 5px;'}
     .panel-heading
       %h4.panel-title
         = link_to "ALI Filter: #{@user_activity_line_item_filter}", '#ali-filter-form-collapse', :role => 'button', :data => {:toggle => 'collapse'}, :aria => {:expanded => true}
 
+        - if show_sort == 1
+          .pull-right
+            .form-group
+              = select_tag(:sort, options_for_select([['Cost', 'cost'], ['Pcnt Funded', 'pcnt_funded'], ['# of assets', 'num_assets']], :selected => params[:sort]), :prompt => 'Sort by...', :class => "form-control", :style => 'margin-top: -7px;')
     #ali-filter-form-collapse.collapse
       .panel-body
         .row
@@ -18,7 +23,7 @@
                       %i.fa.fa-filter.fa-fw
                       = filter
                     - else
-                      = link_to user_user_activity_line_item_filter_use_path(current_user, filter) do
+                      = link_to user_user_activity_line_item_filter_use_path(current_user, filter, show_sort == 1 ? {:sort => params[:sort]} : {}) do
                         %i.fa.fa-filter.fa-fw
                         = filter
           .col-sm-8
@@ -26,3 +31,32 @@
               %legend Update Current Filter
 
               = render 'user_activity_line_item_filters/form'
+
+- if show_sort == 1
+  :javascript
+
+    $('#sort').on('change', function(event) {
+      var url = document.location.href
+      var newAdditionalURL = "";
+      var tempArray = url.split("?");
+      var baseURL = tempArray[0];
+      var aditionalURL = tempArray[1];
+      var temp = "";
+      if (aditionalURL){
+        var tempArray = aditionalURL.split("&");
+        for ( var i in tempArray ){
+          if(tempArray[i].indexOf("sort") == -1){
+            newAdditionalURL += temp+tempArray[i];
+            temp = "&";
+          }
+        }
+      }
+      if ($(this).val().length > 1) {
+        var rows_txt = temp+"sort="+$(this).val();
+        var finalURL = baseURL+"?"+newAdditionalURL+rows_txt;
+      } else {
+        var finalURL = baseURL+"?"+newAdditionalURL;
+      }
+
+      document.location.href = finalURL;
+    });

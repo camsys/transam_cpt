@@ -69,10 +69,10 @@
 
 :javascript
 
-  var org_filter = #{@org_filter};
+  var org_filter = #{@org_filter || []};
   var capital_project_type_filter = #{@capital_project_type_filter};
   var capital_project_flag_filter = #{@capital_project_flag_filter};
-  var asset_subtype_filter = #{@asset_subtype_filter};
+  var asset_subtype_filter = #{@asset_subtype_filter || []};
 
   $("#plan-table").floatThead({
       responsiveContainer: function($table){

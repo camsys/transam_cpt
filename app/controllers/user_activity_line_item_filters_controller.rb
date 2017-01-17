@@ -75,11 +75,13 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
 
     @user_activity_line_item_filter = UserActivityLineItemFilter.new(form_params)
     @user_activity_line_item_filter.creator = current_user
-    if params[:share_filter] == 'all_org'
+    if params[:share_filter] == 'all_orgs'
+      users = []
       current_user.user_organization_filters.system_filters.first.get_organizations.each do |org|
-        @user_activity_line_item_filter.users = org.users
-        @user_activity_line_item_filter.resource = org
+        users << org.users
       end
+      @user_activity_line_item_filter.users = users.flatten
+      @user_activity_line_item_filter.resource = nil
     elsif params[:share_filter] == 'main_org'
       @user_activity_line_item_filter.users = current_user.organization.users
       @user_activity_line_item_filter.resource = current_user.organization
@@ -112,11 +114,13 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
     respond_to do |format|
       if @user_activity_line_item_filter.update(form_params)
 
-        if params[:share_filter] == 'all_org'
+        if params[:share_filter] == 'all_orgs'
+          users = []
           current_user.user_organization_filters.system_filters.first.get_organizations.each do |org|
-            @user_activity_line_item_filter.users = org.users
-            @user_activity_line_item_filter.resource = org
+            users << org.users
           end
+          @user_activity_line_item_filter.users = users.flatten
+          @user_activity_line_item_filter.resource = nil
         elsif params[:share_filter] == 'main_org'
           @user_activity_line_item_filter.users = current_user.organization.users
           @user_activity_line_item_filter.resource = current_user.organization
