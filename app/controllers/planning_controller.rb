@@ -46,20 +46,6 @@ class PlanningController < AbstractCapitalProjectsController
   end
 
   #-----------------------------------------------------------------------------
-  #-----------------------------------------------------------------------------
-  def load_chart
-
-    @funding_source = FundingSource.find_by_object_key(params[:fund])
-    report = BudgetBurndown.new
-    @data = report.get_data(@organization, {:funding_source => @funding_source})
-
-    respond_to do |format|
-      format.js
-      format.json { render :json => @data.to_json }
-    end
-  end
-
-  #-----------------------------------------------------------------------------
   # Render the partial for the update cost modal.
   #-----------------------------------------------------------------------------
   def update_cost
@@ -245,19 +231,6 @@ class PlanningController < AbstractCapitalProjectsController
       @activity_line_item.destroy
       Rails.logger.debug "Removing ali #{@activity_line_item} from project #{@project}"
       notify_user :notice,  "The ALI was successfully removed from project #{@project.project_number}."
-
-    when ALI_ADD_FUND_ACTION
-      budget_amount = BudgetAmount.find(params[:source])
-      amount = params[:amount].to_i
-
-      # Add a funding plan to this ALI
-      @activity_line_item.funding_plans.create({:budget_amount => budget_amount, :amount => amount})
-      notify_user :notice,  "The ALI was successfully updated."
-
-    when ALI_REMOVE_FUND_ACTION
-      fp = FundingPlan.find_by_object_key(params[:funding_plan])
-      @activity_line_item.funding_plans.delete fp
-      notify_user :notice,  "The ALI was successfully updated."
     end
 
     prepare_projects_display unless action == ALI_MOVE_YEAR_ACTION

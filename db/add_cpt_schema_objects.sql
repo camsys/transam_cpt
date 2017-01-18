@@ -102,21 +102,6 @@ CREATE INDEX milestones_idx1 USING BTREE
 CREATE INDEX milestones_idx2 USING BTREE
 	ON milestones(activity_line_item_id, milestone_date)
 ;
-CREATE TABLE funding_plans  (
-	id                   	int(11) AUTO_INCREMENT NOT NULL,
-	object_key           	varchar(12) NOT NULL,
-	activity_line_item_id	int(11) NOT NULL,
-	funding_source_id    	int(11) NOT NULL,
-	amount        			int(11) NOT NULL,
-	created_at           	datetime NULL,
-	updated_at           	datetime NULL,
-	PRIMARY KEY(id)
-)
-;
-CREATE INDEX funding_plans_idx1 ON funding_plans(object_key)
-;
-CREATE INDEX funding_plans_idx2 ON funding_plans(activity_line_item_id, funding_source_id)
-;
 INSERT INTO capital_project_types(active, name, code, description)
     VALUES(1, 'Replacement', 'R', 'Replacement Project')
 ;

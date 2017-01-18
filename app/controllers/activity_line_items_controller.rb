@@ -40,31 +40,6 @@ class ActivityLineItemsController < OrganizationAwareController
     @prev_record_path = @prev_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @prev_record_key)
     @next_record_path = @next_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @next_record_key)
 
-    # Load the eligibility service and use it to select funds which this ALI is eligible for
-    eligibility_service = EligibilityService.new
-    @funding_sources = eligibility_service.evaluate_organization_funding_sources(@organization)
-
-    #@available_federal_funds = []
-    #@available_state_funds   = []
-    # eligibilityService.evaluate(@activity_line_item, {:federal => true}).each do |fli|
-    #   amount = view_context.format_as_currency(fli.available)
-    #   if fli.project_number.blank?
-    #     name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
-    #   else
-    #     name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
-    #   end
-    #   @available_federal_funds << [name, fli.id]
-    # end
-    # eligibilityService.evaluate(@activity_line_item, {:state => true}).each do |fli|
-    #   amount = view_context.format_as_currency(fli.available)
-    #   if fli.project_number.blank?
-    #     name = "#{fli.funding_source} #{fli.fiscal_year} (#{amount})"
-    #   else
-    #     name = "#{fli.funding_source} #{fli.fiscal_year}: #{fli.project_number} (#{amount})"
-    #   end
-    #   @available_state_funds << [name, fli.id]
-    # end
-
   end
 
   # Add the specified asset to this ALI

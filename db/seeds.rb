@@ -95,20 +95,6 @@ reports = [
     :chart_options => "{is3D : false, seriesType: 'bars', series: {3: {type: 'line'}}, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
     },
   {
-    :active => 0,
-    :belongs_to => 'report_type',
-    :type => "Capital Needs Report",
-    :name => 'Budget Rollup',
-    :class_name => "BudgetRollup",
-    :view_name => "generic_chart",
-    :show_in_nav => 1,
-    :show_in_dashboard => 0,
-    :roles => 'guest,user,manager',
-    :description => 'Displays a chart showing the budget forecast for the current organization.',
-    :chart_type => "area",
-    :chart_options => "{is3D : false, isStacked: true, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$', minValue: 0}}"
-  },
-  {
     :active => 1,
     :belongs_to => 'report_type',
     :type => "Capital Needs Report",
