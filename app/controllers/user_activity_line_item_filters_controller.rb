@@ -80,7 +80,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
       current_user.user_organization_filters.system_filters.first.get_organizations.each do |org|
         users << org.users
       end
-      @user_activity_line_item_filter.users = users.flatten
+      @user_activity_line_item_filter.users = users.flatten.uniq
       @user_activity_line_item_filter.resource = nil
     elsif params[:share_filter] == 'main_org'
       @user_activity_line_item_filter.users = current_user.organization.users
@@ -119,7 +119,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
           current_user.user_organization_filters.system_filters.first.get_organizations.each do |org|
             users << org.users
           end
-          @user_activity_line_item_filter.users = users.flatten
+          @user_activity_line_item_filter.users = users.flatten.uniq
           @user_activity_line_item_filter.resource = nil
         elsif params[:share_filter] == 'main_org'
           @user_activity_line_item_filter.users = current_user.organization.users
