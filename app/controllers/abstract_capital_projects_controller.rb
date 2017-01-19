@@ -182,35 +182,6 @@ class AbstractCapitalProjectsController < OrganizationAwareController
       values << ActivityLineItem.joins('INNER JOIN activity_line_items_assets ON activity_line_items_assets.activity_line_item_id = activity_line_items.id').where(ali_asset_conditions.join(' AND '), *ali_asset_values).pluck(:capital_project_id).uniq
     end
 
-    # TODO: add params for below when we do tagging
-    # funding bucket
-
-    # Filter by Funding Source. Requires joining across CP <- ALI <- FR <- FA <- FS
-    # @funding_source_filter = params[:funding_source_filter]
-    # if @funding_source_filter.blank?
-    #   @funding_source_filter = []
-    # else
-    #   capital_project_ids = []
-    #   funding_source_ids = FundingSource.where(:funding_source_id => @funding_source_filter).pluck(:id)
-    #   unless funding_source_ids.empty?
-    #     # Use a custom query to join across the five tables
-    #     query = "SELECT DISTINCT(id) FROM capital_projects WHERE id IN (SELECT DISTINCT(capital_project_id) FROM activity_line_items WHERE id IN (SELECT activity_line_item_id FROM funding_requests WHERE #{column_name} IN (SELECT id FROM funding_line_items WHERE funding_source_id IN (#{funding_source_ids.join(',')})))"
-    #     cps = CapitalProject.connection.execute(query, :skip_logging)
-    #     cps.each do |cp|
-    #       capital_project_ids << cp[0]
-    #     end
-    #     conditions << 'id IN (?)'
-    #     values << capital_project_ids.uniq  # make sure there are no duplicates
-    #   end
-    # end
-
-
-    # not fully funded
-
-    #-----------------------------------------------------------------------------
-
-
-
   #-----------------------------------------------------------------------------
   # Parse non-common filters
   # filter values come from request params

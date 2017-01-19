@@ -23,6 +23,8 @@
 
 :javascript
 
+  console.log('IN edit cost form');
+
   $('#activity_line_item_cost_justification').simplyCountable({
     counter: '#counter',
     maxCount: $('#activity_line_item_cost_justification').attr('maxlength'),
@@ -30,6 +32,30 @@
     safeClass: 'text-muted',
     overClass: 'text-danger'
   });
+
+  function number_to_currency(number, options) {
+  var options   = options || {};
+  var precision = options["precision"] || 0;
+  var unit      = options["unit"] || "$";
+  var separator = precision > 0 ? options["separator"] || "." : "";
+  var delimiter = options["delimiter"] || ",";
+
+  var parts = parseFloat(number).toFixed(precision).split('.');
+  if (parts[1]) {
+    return unit + number_with_delimiter(parts[0], delimiter) + separator + parts[1].toString();
+  } else {
+    return unit + number_with_delimiter(parts[0], delimiter)
+  }
+  }
+
+  function number_with_delimiter(number, delimiter, separator) {
+    var delimiter = delimiter || ",";
+    var separator = separator || ".";
+
+    var parts = number.toString().split('.');
+    parts[0] = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + delimiter);
+    return parts.join(separator);
+  }
 
   // validate the form before submit
   $('.simple_form').validate({
@@ -53,27 +79,3 @@
 
     }
   });
-
-  function number_to_currency(number, options) {
-    var options   = options || {};
-    var precision = options["precision"] || 0;
-    var unit      = options["unit"] || "$";
-    var separator = precision > 0 ? options["separator"] || "." : "";
-    var delimiter = options["delimiter"] || ",";
-
-    var parts = parseFloat(number).toFixed(precision).split('.');
-    if (parts[1]) {
-      return unit + number_with_delimiter(parts[0], delimiter) + separator + parts[1].toString();
-    } else {
-      return unit + number_with_delimiter(parts[0], delimiter)
-    }
-  }
-
-  function number_with_delimiter(number, delimiter, separator) {
-    var delimiter = delimiter || ",";
-    var separator = separator || ".";
-
-    var parts = number.toString().split('.');
-    parts[0] = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + delimiter);
-    return parts.join(separator);
-  }
