@@ -56,7 +56,7 @@ class UserActivityLineItemFilter < ActiveRecord::Base
 
   # Returns true if this is a system filter
   def system_filter?
-    UserOrganizationFilter.system_filters.include? self
+    UserActivityLineItemFilter.system_filters.include? self
   end
 
   def shared
