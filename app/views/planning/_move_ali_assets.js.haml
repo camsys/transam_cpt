@@ -77,7 +77,7 @@
     $("#fy-sum-#{ali.fy_year}").html(number_to_currency(new_fy_sum));
     $("#fy-sum-#{ali.fy_year}").data('cost',new_fy_sum);
 
-  - if ali.capital_project.try(:has_early_replacement_assets?)
+  - if ali.sogr? && ali.capital_project.try(:has_early_replacement_assets?)
     $('tr[data-project="#{ali.capital_project.object_key}"] .project-early-replacement-warning').html('<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' + '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
   - else
     $('tr[data-project="#{ali.capital_project.object_key}"] .project-early-replacement-warning').html('')
