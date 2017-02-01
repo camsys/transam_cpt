@@ -99,11 +99,28 @@ class ActivityLineItemsController < OrganizationAwareController
     # enable dragging/dropping only if no background jobs
     @drag_drop_enabled = (Delayed::Job.where("failed_at IS NULL AND handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{@project.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
 
+    # map sorting to correct fields
+    sort_clause = ""
+    if params[:sort]
+      sort_clause =
+          case params[:sort]
+            when 'fuel_type'
+              "fuel_types.code #{params[:order]}"
+            when 'age'
+              "assets.in_service_date #{params[:order].downcase == 'asc' ? 'desc' : 'asc'}"
+            when 'policy_replacement_fiscal_year'
+              "assets.policy_replacement_year #{params[:order]}"
+            when 'scheduled_cost'
+              "#{@activity_line_item.rehabilitation_ali? ? 'assets.estimated_rehabilitation_cost' : 'assets.scheduled_replacement_cost'} #{params[:order]}"
+            else
+              "#{params[:sort]} #{params[:order]}"
+          end
+    end
 
     respond_to do |format|
       format.js
       format.json {
-        assets_json = Asset.where(id: @activity_line_item.assets.ids).limit(params[:limit]).offset(params[:offset]).order(params[:sort] ? "#{params[:sort]} #{params[:order]}": "").collect{ |p|
+        assets_json = Asset.where(id: @activity_line_item.assets.ids).joins('LEFT JOIN fuel_types ON assets.fuel_type_id = fuel_types.id').limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
             fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
