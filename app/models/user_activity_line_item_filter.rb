@@ -76,7 +76,7 @@ class UserActivityLineItemFilter < ActiveRecord::Base
   end
 
   def can_destroy? user
-    !self.system_filter? && (self.users.include? user) && self != user.user_organization_filter
+    !self.system_filter? && (self.users.include? user) && self != user.user_activity_line_item_filter
   end
 
   def to_s
