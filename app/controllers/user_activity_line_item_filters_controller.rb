@@ -77,7 +77,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
     @user_activity_line_item_filter.creator = current_user
     if params[:share_filter] == 'all_orgs'
       users = []
-      current_user.user_organization_filters.system_filters.first.get_organizations.each do |org|
+      current_user.user_activity_line_item_filters.system_filters.first.get_organizations.each do |org|
         users << org.users
       end
       @user_activity_line_item_filter.users = users.flatten.uniq
@@ -116,7 +116,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
 
         if params[:share_filter] == 'all_orgs'
           users = []
-          current_user.user_organization_filters.system_filters.first.get_organizations.each do |org|
+          current_user.user_activity_line_item_filters.system_filters.first.get_organizations.each do |org|
             users << org.users
           end
           @user_activity_line_item_filter.users = users.flatten.uniq
