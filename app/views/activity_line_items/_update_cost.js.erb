@@ -1,0 +1,36 @@
+$(".modal-backdrop").remove();
+$('#form-modal').modal('hide');
+
+var diff  = parseInt($('#activity_line_item_cost').val()) - parseInt($("#<%= @activity_line_item.object_key %>-ali-cost").data('cost'));
+console.log(diff);
+
+new_fy_sum = parseInt($("#fy-sum-<%= @activity_line_item.fy_year %>").data('cost'))+diff;
+$("#fy-sum-<%= @activity_line_item.fy_year %>").html(number_to_currency(new_fy_sum));
+$("#fy-sum-<%= @activity_line_item.fy_year %>").data('cost',new_fy_sum);
+
+// for project planner
+$('div[data-ali="<%= @activity_line_item.object_key %>"]').html("<%= escape_javascript( render partial: 'planning/ali', formats: [:html], locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true }, layout: false) %>");
+
+function number_to_currency(number, options) {
+  var options   = options || {};
+  var precision = options["precision"] || 0;
+  var unit      = options["unit"] || "$";
+  var separator = precision > 0 ? options["separator"] || "." : "";
+  var delimiter = options["delimiter"] || ",";
+
+  var parts = parseFloat(number).toFixed(precision).split('.');
+  if (parts[1]) {
+    return unit + number_with_delimiter(parts[0], delimiter) + separator + parts[1].toString();
+  } else {
+    return unit + number_with_delimiter(parts[0], delimiter)
+  }
+}
+
+function number_with_delimiter(number, delimiter, separator) {
+  var delimiter = delimiter || ",";
+  var separator = separator || ".";
+
+  var parts = number.toString().split('.');
+  parts[0] = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + delimiter);
+  return parts.join(separator);
+}
