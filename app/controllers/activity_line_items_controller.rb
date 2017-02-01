@@ -22,6 +22,7 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   # GET /activity_line_items/1
+  # GET /activity_line_items/1
   # GET /activity_line_items/1.json
   def show
 
@@ -236,13 +237,15 @@ class ActivityLineItemsController < OrganizationAwareController
 
     respond_to do |format|
       if @activity_line_item.update(form_params)
-        notify_user(:notice, "The ALI was successfully updated")
-        #format.html { redirect_to capital_project_activity_line_item_path(@project, @activity_line_item), notice: 'Activity line item was successfully updated.' }
-        format.html { redirect_to :back }
+        format.js {
+          notify_user(:notice, "The ALI was successfully updated")
 
-        text = "<div class='panel-body'>"+(render_to_string partial: 'planning/ali', formats: [:html], locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true }, layout: false )+"</div>"
-
-        format.json { render json: {:new_html => text} }
+          render(:partial => 'activity_line_items/update_cost', :formats => [:js] )
+        }
+        format.html {
+          notify_user(:notice, "The ALI was successfully updated")
+          redirect_to :back
+        }
 
       else
         if params[:activity_line_item][:cost]
