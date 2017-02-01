@@ -86,46 +86,9 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     #
     #-----------------------------------------------------------------------------
 
-
-    #-----------------------------------------------------------------------------
-    # Project parameters
-    #-----------------------------------------------------------------------------
-
-    # org id is not tied to ALI filter
-    # org id is used in scheduler though not necessary but all links specify looking at a single org at a time
-    # other functionality like planning does not require
-    if params[:org_id].blank?
-      conditions << 'organization_id IN (?)'
-      values << @organization_list
-    else
-      @org_id = params[:org_id].to_i
-      conditions << 'organization_id = ?'
-      values << @org_id
-    end
-
-
-    @capital_project_flag_filter = []
-
-    capital_project_types = (@user_activity_line_item_filter.try(:capital_project_type_id).blank? ? [] : [@user_activity_line_item_filter.capital_project_type_id] )
-    sogr_types = []
-    if @user_activity_line_item_filter.try(:sogr_type) == 'SOGR'
-      sogr_types = [CapitalProjectType.find_by(name: 'Replacement').id]
-      conditions << 'sogr = ?'
-      values << true
-    elsif @user_activity_line_item_filter.try(:sogr_type) == 'Non-SOGR'
-      conditions << 'sogr = ?'
-      values << false
-    end
-
-    @capital_project_type_filter = (capital_project_types & sogr_types)
-    unless @capital_project_type_filter.empty?
-      conditions << 'capital_project_type_id IN (?)'
-      values << @capital_project_type_filter
-    end
-
-    #-----------------------------------------------------------------------------
-
-
+    # Use ALI as the base relation to deal with asset & ALI filters
+    @alis = ActivityLineItem.distinct
+    
     #-----------------------------------------------------------------------------
     # Asset parameters
     #-----------------------------------------------------------------------------
@@ -135,37 +98,35 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     asset_values      = []
     if @user_activity_line_item_filter.try(:asset_subtype_id).present?
       @asset_subtype_filter = [@user_activity_line_item_filter.asset_subtype_id]
-      asset_conditions << 'asset_subtype_id IN (?)'
+      asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
     elsif @user_activity_line_item_filter.try(:asset_type_id).present?
-      @asset_subtype_filter = AssetType.find_by(id: @user_activity_line_item_filter.asset_type_id).asset_subtypes.ids
-      asset_conditions << 'asset_subtype_id IN (?)'
+      @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_type_id).pluck(:id)
+      asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
     end
 
     # filter by backlog
     if @user_activity_line_item_filter.try(:in_backlog)
-      asset_conditions << 'in_backlog = ?'
+      asset_conditions << 'assets.in_backlog = ?'
       asset_values << true
     end
 
     # always filter assets by org params
-    asset_conditions << 'organization_id IN (?)'
-    asset_values << values[0]
+    asset_conditions << 'assets.organization_id IN (?)'
+    asset_values << @organization_list
 
-    ali_asset_conditions = []
-    ali_asset_values = []
     unless asset_conditions.empty?
-      ali_asset_conditions << 'activity_line_items_assets.asset_id IN (?)'
-      ali_asset_values << Asset.where(asset_conditions.join(' AND '), *asset_values).pluck(:id)
+      @alis = @alis.joins(:assets).where(asset_conditions.join(' AND '), *asset_values)
     end
 
     #-----------------------------------------------------------------------------
 
-
     #-----------------------------------------------------------------------------
     # ALI parameters
     #-----------------------------------------------------------------------------
+    ali_asset_conditions = []
+    ali_asset_values = []
 
     # TEAM ALI code
     if @user_activity_line_item_filter.try(:team_ali_code_id).blank?
@@ -173,30 +134,69 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     else
       @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_id]
 
-      ali_asset_conditions << 'activity_line_items_assets.activity_line_item_id IN (?)'
-      ali_asset_values << ActivityLineItem.where(team_ali_code_id: @team_ali_code_filter).ids
+      ali_asset_conditions << 'activity_line_items.team_ali_code_id IN (?)'
+      ali_asset_values << @team_ali_code_filter
     end
 
     unless ali_asset_conditions.empty?
-      conditions << 'capital_projects.id IN (?)'
-      values << ActivityLineItem.joins('INNER JOIN activity_line_items_assets ON activity_line_items_assets.activity_line_item_id = activity_line_items.id').where(ali_asset_conditions.join(' AND '), *ali_asset_values).pluck(:capital_project_id).uniq
+      @alis = @alis.where(ali_asset_conditions.join(' AND '), *ali_asset_values)
+    end
+    #-----------------------------------------------------------------------------
+
+    #-----------------------------------------------------------------------------
+    # Project parameters
+    #-----------------------------------------------------------------------------
+    # get the projects based on filtered ALIs
+    @projects = CapitalProject.where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
+
+    # org id is not tied to ALI filter
+    # org id is used in scheduler though not necessary but all links specify looking at a single org at a time
+    # other functionality like planning does not require
+    if params[:org_id].blank?
+      conditions << 'capital_projects.organization_id IN (?)'
+      values << @organization_list
+    else
+      @org_id = params[:org_id].to_i
+      conditions << 'capital_projects.organization_id = ?'
+      values << @org_id
     end
 
-  #-----------------------------------------------------------------------------
-  # Parse non-common filters
-  # filter values come from request params
+    @capital_project_flag_filter = []
 
-   @fiscal_year_filter = params[:fiscal_year_filter]
-   
-   if @fiscal_year_filter.blank?
-     @fiscal_year_filter = []
-   else
-     conditions << 'capital_projects.fy_year IN (?)'
-     values << @fiscal_year_filter
-   end
+    capital_project_types = (@user_activity_line_item_filter.try(:capital_project_type_id).blank? ? [] : [@user_activity_line_item_filter.capital_project_type_id] )
+    sogr_types = []
+    if @user_activity_line_item_filter.try(:sogr_type) == 'SOGR'
+      sogr_types = [CapitalProjectType.find_by(name: 'Replacement').id]
+      conditions << 'capital_projects.sogr = ?'
+      values << true
+    elsif @user_activity_line_item_filter.try(:sogr_type) == 'Non-SOGR'
+      conditions << 'capital_projects.sogr = ?'
+      values << false
+    end
 
-   # Get the initial list of capital projects. These might need to be filtered further if the user specified a funding source filter
-   @projects = CapitalProject.where(conditions.join(' AND '), *values).order(:fy_year, :capital_project_type_id, :created_at)
+    @capital_project_type_filter = (capital_project_types & sogr_types)
+    unless @capital_project_type_filter.empty?
+      conditions << 'capital_projects.capital_project_type_id IN (?)'
+      values << @capital_project_type_filter
+    end
+    #-----------------------------------------------------------------------------
+
+    #-----------------------------------------------------------------------------
+    # Parse non-common filters
+    # filter values come from request params
+
+    @fiscal_year_filter = params[:fiscal_year_filter]
+
+    if @fiscal_year_filter.blank?
+      @fiscal_year_filter = []
+    else
+      conditions << 'capital_projects.fy_year IN (?)'
+      values << @fiscal_year_filter
+    end
+    #-----------------------------------------------------------------------------
+
+    # final results
+    @projects = @projects.where(conditions.join(' AND '), *values)
 
   end
 
