@@ -19,8 +19,7 @@
             = radio_button_tag :share_filter, 'main_org', shared == current_user.organization.short_name
             = current_user.organization.short_name
             %br
-            - if @organization_list.count > 1
-              = radio_button_tag :share_filter, 'all_orgs', shared == 'All Organizations'
+            = radio_button_tag :share_filter, 'all_orgs', shared == 'All Organizations'
             All Organizations
     .col-sm-6
       = dialog_tag('Parameters', {:icon => 'fa fa-list', :class => "form-part"}) do
