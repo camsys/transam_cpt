@@ -26,9 +26,7 @@ module Abilities
       end
 
       # Can add ALIs as long as it is not an SOGR project and it is in their organization
-      can [:add_alis, :remove_alis], CapitalProject do |cp|
-        cp.sogr? == false and cp.can_update?
-      end
+      can [:add_alis, :remove_alis], CapitalProject
 
       # Can manage any project, ALI, and funding line item in their organization
       can [:add_comment, :add_document], CapitalProject do |cp|

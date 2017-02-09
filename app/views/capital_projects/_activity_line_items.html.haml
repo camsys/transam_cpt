@@ -5,7 +5,7 @@
     - else
       = render :partial => 'activity_line_items_table', :locals => {:project => @project, :popup => '1'}
 
-- if can? :add_alis, @project
+- if (can? :add_alis, @project) and @project.sogr? == false and @project.can_update?
   = link_to load_view_capital_project_path(@project, :view => 'new_activity_line_item'), :remote => true, :role => 'button', :class => 'btn btn-primary', :role => 'button', :title => 'Add new ALI...' do
     %i.fa.fa-plus
     Add Line Item
