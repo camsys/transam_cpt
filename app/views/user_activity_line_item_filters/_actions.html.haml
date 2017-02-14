@@ -5,8 +5,8 @@
       = " Actions"
       %span.caret
     %ul.dropdown-menu{:role => 'menu'}
-      %li
-        - unless current_user.user_activity_line_item_filter == @user_activity_line_item_filter
+      - unless current_user.user_activity_line_item_filter == @user_activity_line_item_filter
+        %li
           = link_to user_user_activity_line_item_filter_use_path(current_user, @user_activity_line_item_filter) do
             %i.fa.fa-filter.fa-fw
             = " Set as current filter"

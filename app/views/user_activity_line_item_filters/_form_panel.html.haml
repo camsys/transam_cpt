@@ -27,10 +27,11 @@
                         %i.fa.fa-filter.fa-fw
                         = filter
           .col-sm-8
-            %fieldset
-              %legend Update Current Filter
+            - if (@user_activity_line_item_filter.can_update? current_user) && (can? :update, @user_activity_line_item_filter)
+              %fieldset
+                %legend Update Current Filter
 
-              = render 'user_activity_line_item_filters/form'
+                = render 'user_activity_line_item_filters/form'
 
 - if show_sort == 1
   :javascript
