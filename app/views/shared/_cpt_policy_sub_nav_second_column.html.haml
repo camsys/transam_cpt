@@ -1,0 +1,22 @@
+%li.text-left
+  = link_to capital_projects_path do
+    %i.fa.fa-cubes.fa-fw
+    = " Capital Projects"
+
+%li.divider
+%li
+  = link_to planning_index_path do
+    %i.fa.fa-tasks.fa-fw
+    = " Project Planner"
+
+- if can? :create, CapitalProject
+  %li.divider
+  %li.text-left
+    = link_to new_capital_project_path do
+      %i.fa.fa-plus.fa-fw
+      = " New Capital Project"
+  %li.divider
+  %li.text-left
+    = link_to builder_capital_projects_path do
+      %i.fa.fa-cogs.fa-fw
+      = " SOGR Capital Project Analyzer"
