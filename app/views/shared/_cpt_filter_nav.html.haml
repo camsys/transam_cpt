@@ -3,20 +3,23 @@
     %i.fa.fa-filter
     = current_user.user_activity_line_item_filter
     %b.caret
-  %ul.dropdown-menu
-    - current_user.user_activity_line_item_filters.each do |filter|
-      %li.text-left
-        = link_to user_user_activity_line_item_filter_use_path(current_user, filter) do
-          %i.fa.fa-filter.fa-fw
-          = filter
-
-    %li.divider
-    %li.text-left
-      = link_to user_user_activity_line_item_filters_path(current_user) do
-        %i.fa.fa-list-alt.fa-fw
-        Manage Filters
-    %li.divider
-    %li.text-left
-      = link_to new_user_user_activity_line_item_filter_path(current_user) do
-        %i.fa.fa-plus.fa-fw
-        New Filter
+  %ul.dropdown-menu.columns-2
+    .row
+      .col-sm-6
+        %ul.multi-column-dropdown
+          - current_user.user_activity_line_item_filters.each do |filter|
+            %li.text-left
+              = link_to user_user_activity_line_item_filter_use_path(current_user, filter) do
+                %i.fa.fa-filter.fa-fw
+                = filter
+      .col-sm-6
+        %ul.multi-column-dropdown
+          %li.text-left
+            = link_to user_user_activity_line_item_filters_path(current_user) do
+              %i.fa.fa-list-alt.fa-fw
+              Manage Filters
+          %li.divider
+          %li.text-left
+            = link_to new_user_user_activity_line_item_filter_path(current_user) do
+              %i.fa.fa-plus.fa-fw
+              New Filter
