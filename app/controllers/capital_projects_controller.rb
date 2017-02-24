@@ -9,10 +9,16 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder]
+  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
+
+  def get_dashboard_summary
+    respond_to do |format|
+      format.js { render partial: 'dashboards/capital_projects_widget_table', locals: {fy_year: params[:fy_year] }  }
+    end
+  end
 
   #-----------------------------------------------------------------------------
   # Generic AJAX method for displaying a regular or modal view

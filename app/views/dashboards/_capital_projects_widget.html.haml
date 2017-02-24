@@ -1,33 +1,28 @@
 .panel.panel-default.dashboard-panel
   .panel-heading
     Capital Projects
-  .panel-body
+    .pull-right
+      = select_tag(:capital_projects_fy, options_for_select(get_fiscal_years, :selected => params[:capital_projects_fy] || current_fiscal_year_year ), :class => "form-control", :style => 'margin-top: -5px;')
+  #capital-projects-widget.panel-body
 
-    - if current_user.has_role? :manager
-      %table.table.table-hover.table-condensed
-        %thead
-          %tr
-            %th.left Agency
-            %th.center Num. Projects
-            %th.center Cost
-        %tbody
-          - TransitOperator.where(id: @organization_list).each do |org|
-            %tr{:data => {:action_path => capital_projects_path(organizaton_id: org.id)}}
-              %td.left= org.to_s
-              %td.right= format_as_integer(org.capital_projects.count)
-              %td.right= format_as_currency(org.capital_projects.total_cost)
-    - else
-      %table.table.table-hover.table-condensed
-        %thead
-          %tr
-            %th.left Name
-            %th.center FY
-            %th.center Num. ALIs
-            %th.center Cost
-        %tbody
-          - CapitalProject.where(organization_id: @organization_list).each do |cp|
-            %tr{:data => {:action_path => capital_project_path(cp)}}
-              %td.left= cp.to_s
-              %td.center= format_as_fiscal_year(cp.fy_year)
-              %td.right= format_as_integer(cp.activity_line_items.count)
-              %td.right= format_as_currency(cp.total_cost)
+:javascript
+
+  $('#capital_projects_fy').change(function() {
+    update_capital_projects_widget();
+  });
+
+  function update_capital_projects_widget () {
+    $.ajax({
+      url: "/capital_projects/get_dashboard_summary",
+      type: 'GET',
+      dataType: 'json',
+      data: {fy_year: $('#capital_projects_fy').val()},
+      complete: function(response, status) {
+        if (response.status == 200) {
+          $('#capital-projects-widget').html(response.responseText);
+        } else {
+          $('#capital-projects-widget').html(response.statusText);
+        }
+      }
+    });
+  }

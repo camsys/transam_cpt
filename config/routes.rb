@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     collection do
       get   'builder'
       post  'runner'
+      get 'get_dashboard_summary'
     end
 
     member do
