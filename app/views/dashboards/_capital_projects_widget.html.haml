@@ -14,8 +14,8 @@
           - TransitOperator.where(id: @organization_list).each do |org|
             %tr{:data => {:action_path => capital_projects_path(organizaton_id: org.id)}}
               %td.left= org.to_s
-              %td.center= format_as_integer(org.capital_projects.count)
-              %td.center= format_as_currency(org.capital_projects.total_cost)
+              %td.right= format_as_integer(org.capital_projects.count)
+              %td.right= format_as_currency(org.capital_projects.total_cost)
     - else
       %table.table.table-hover.table-condensed
         %thead
@@ -29,5 +29,5 @@
             %tr{:data => {:action_path => capital_project_path(cp)}}
               %td.left= cp.to_s
               %td.center= format_as_fiscal_year(cp.fy_year)
-              %td.center= format_as_integer(cp.activity_line_items.count)
-              %td.center= format_as_currency(cp.total_cost)
+              %td.right= format_as_integer(cp.activity_line_items.count)
+              %td.right= format_as_currency(cp.total_cost)
