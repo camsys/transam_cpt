@@ -8,7 +8,9 @@
 :javascript
 
   $('#capital_projects_fy').change(function() {
+    $("#spinner").show();
     update_capital_projects_widget();
+    $("#spinner").hide();
   });
 
   function update_capital_projects_widget () {
