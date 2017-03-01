@@ -1,20 +1,22 @@
 $(".modal-backdrop").remove();
 $('#form-modal').modal('hide');
-
-var diff  = parseInt($('#activity_line_item_cost').val()) - parseInt($("#<%= @activity_line_item.object_key %>-ali-cost").data('cost'));
-console.log(diff);
-
-new_fy_sum = parseInt($("#fy-sum-<%= @activity_line_item.fy_year %>").data('cost'))+diff;
-$("#fy-sum-<%= @activity_line_item.fy_year %>").html(number_to_currency(new_fy_sum));
-$("#fy-sum-<%= @activity_line_item.fy_year %>").data('cost',new_fy_sum);
+$('#spinner').hide();
 
 // for detail page
 $('#expected_cost').html("<%= format_field('Expected Cost', format_as_currency(@activity_line_item.cost)) %>");
 $('#cost_diff').html("<%= format_field('Cost Difference', format_as_currency(@activity_line_item.cost_difference)) %>");
 $('#cost_justification').html("<%= escape_javascript(render 'activity_line_items/cost_justification') %>");
+$('.ali_detail_page_actions').dropdown('toggle');
 
 // for project planner
-$('div[data-ali="<%= @activity_line_item.object_key %>"]').html("<%= escape_javascript( render partial: 'planning/ali', formats: [:html], locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true }, layout: false) %>");
+var old_sum  = parseInt($("#<%=@activity_line_item.object_key %>-ali-cost").data('cost'));
+
+$("div[data-ali='<%= @activity_line_item.object_key %>']").html("<div class='panel-body'><%= escape_javascript( render partial: 'planning/ali', formats: [:html], locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true }, layout: false ) %></div>");
+
+var new_sum = parseInt($("#<%=@activity_line_item.object_key %>-ali-cost").data('cost'));
+var new_fy_sum = parseInt($("#fy-sum-<%=@activity_line_item.fy_year %>").data('cost'))+ new_sum - old_sum;
+$("#fy-sum-<%=@activity_line_item.fy_year %>").html(number_to_currency(new_fy_sum));
+$("#fy-sum-<%=@activity_line_item.fy_year %>").data('cost',new_fy_sum);
 
 function number_to_currency(number, options) {
   var options   = options || {};
