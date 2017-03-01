@@ -9,8 +9,8 @@
 
   = format_field("Asset Count", format_as_integer(ali.assets.count))
   = format_field("Estimated Cost", format_as_currency(ali.estimated_cost))
-  = format_field("Expected Cost", format_as_currency(ali.cost))
-  = format_field("Cost Difference", format_as_currency(ali.cost_difference))
+  %span#expected_cost= format_field("Expected Cost", format_as_currency(ali.cost))
+  %span#cost_diff= format_field("Cost Difference", format_as_currency(ali.cost_difference))
   -# = format_field("Funding Shortfall", format_as_currency(ali.funds_required))
 
 .hidden-lg

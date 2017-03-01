@@ -8,6 +8,11 @@ new_fy_sum = parseInt($("#fy-sum-<%= @activity_line_item.fy_year %>").data('cost
 $("#fy-sum-<%= @activity_line_item.fy_year %>").html(number_to_currency(new_fy_sum));
 $("#fy-sum-<%= @activity_line_item.fy_year %>").data('cost',new_fy_sum);
 
+// for detail page
+$('#expected_cost').html("<%= format_field('Expected Cost', format_as_currency(@activity_line_item.cost)) %>");
+$('#cost_diff').html("<%= format_field('Cost Difference', format_as_currency(@activity_line_item.cost_difference)) %>");
+$('#cost_justification').html("<%= escape_javascript(render 'activity_line_items/cost_justification') %>");
+
 // for project planner
 $('div[data-ali="<%= @activity_line_item.object_key %>"]').html("<%= escape_javascript( render partial: 'planning/ali', formats: [:html], locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true }, layout: false) %>");
 
