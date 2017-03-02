@@ -1,6 +1,6 @@
 = link_to project.project_number, capital_project_path(project), title: project.title
 %span.project-early-replacement-warning
-= format_field("Total Cost", format_as_currency(project.total_cost))
+%span.project-total-cost= format_field("Total Cost", format_as_currency(project.total_cost))
 = format_field("Type", project.capital_project_type)
 = format_field("Emergency", format_as_yes_no(project.emergency?)) if project.emergency?
 = format_field("SOGR", format_as_yes_no(project.sogr?))

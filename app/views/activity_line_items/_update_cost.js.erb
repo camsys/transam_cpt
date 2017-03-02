@@ -17,6 +17,7 @@ var new_sum = parseInt($("#<%=@activity_line_item.object_key %>-ali-cost").data(
 var new_fy_sum = parseInt($("#fy-sum-<%=@activity_line_item.fy_year %>").data('cost'))+ new_sum - old_sum;
 $("#fy-sum-<%=@activity_line_item.fy_year %>").html(number_to_currency(new_fy_sum));
 $("#fy-sum-<%=@activity_line_item.fy_year %>").data('cost',new_fy_sum);
+$("tr[data-project='<%= @activity_line_item.capital_project.object_key %>'] .project-total-cost").html("<%= format_field('Total Cost', format_as_currency(@activity_line_item.capital_project.total_cost)) %>");
 
 function number_to_currency(number, options) {
   var options   = options || {};

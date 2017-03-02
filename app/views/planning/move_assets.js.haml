@@ -11,6 +11,7 @@
       $('tr[data-project="#{@activity_line_item.capital_project.object_key}"] .project-early-replacement-warning').html('<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' + '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
     - else
       $('tr[data-project="#{@activity_line_item.capital_project.object_key}"] .project-early-replacement-warning').html('')
+    $("tr[data-project='#{@activity_line_item.capital_project.object_key}'] .project-total-cost").html("#{format_field('Total Cost', format_as_currency(@activity_line_item.capital_project.total_cost))}");
 
   -# update fiscal year sum
   var old_fy_sum = parseInt($("#fy-sum-#{@activity_line_item.fy_year}").data('cost'));
