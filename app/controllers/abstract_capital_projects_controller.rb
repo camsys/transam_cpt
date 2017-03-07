@@ -88,7 +88,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
     # Use ALI as the base relation to deal with asset & ALI filters
     @alis = ActivityLineItem.distinct
-    
+
     #-----------------------------------------------------------------------------
     # Asset parameters
     #-----------------------------------------------------------------------------
@@ -112,42 +112,28 @@ class AbstractCapitalProjectsController < OrganizationAwareController
       asset_values << true
     end
 
-    # always filter assets by org params
-    asset_conditions << 'assets.organization_id IN (?)'
-    asset_values << @organization_list
-
     unless asset_conditions.empty?
+      # always filter assets by org params
+      asset_conditions << 'assets.organization_id IN (?)'
+      asset_values << @organization_list
+
       @alis = @alis.joins(:assets).where(asset_conditions.join(' AND '), *asset_values)
     end
-
     #-----------------------------------------------------------------------------
 
-    #-----------------------------------------------------------------------------
-    # ALI parameters
-    #-----------------------------------------------------------------------------
-    ali_asset_conditions = []
-    ali_asset_values = []
-
-    # TEAM ALI code
-    if @user_activity_line_item_filter.try(:team_ali_code_id).blank?
-      @team_ali_code_filter = []
-    else
-      @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_id]
-
-      ali_asset_conditions << 'activity_line_items.team_ali_code_id IN (?)'
-      ali_asset_values << @team_ali_code_filter
-    end
-
-    unless ali_asset_conditions.empty?
-      @alis = @alis.where(ali_asset_conditions.join(' AND '), *ali_asset_values)
-    end
-    #-----------------------------------------------------------------------------
 
     #-----------------------------------------------------------------------------
-    # Project parameters
+    # CapitalProject specific
     #-----------------------------------------------------------------------------
     # get the projects based on filtered ALIs
-    @projects = CapitalProject.where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
+
+    # dont impose ALI/asset conditions unless they were in the params
+    no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtype_id', 'asset_type_id', 'in_backlog', 'funding_bucket_id', 'not_fully_funded').values.uniq == [nil])
+    if no_ali_or_asset_params_exist
+      @projects = CapitalProject.order(:fy_year, :capital_project_type_id, :created_at)
+    else
+      @projects = CapitalProject.where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
+    end
 
     # org id is not tied to ALI filter
     # org id is used in scheduler though not necessary but all links specify looking at a single org at a time
@@ -179,7 +165,19 @@ class AbstractCapitalProjectsController < OrganizationAwareController
       conditions << 'capital_projects.capital_project_type_id IN (?)'
       values << @capital_project_type_filter
     end
+
+    # TEAM ALI code
+    if @user_activity_line_item_filter.try(:team_ali_code_id).blank?
+      @team_ali_code_filter = []
+    else
+      @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_id]
+
+      conditions << 'capital_projects.team_ali_code_id IN (?)'
+      values << @team_ali_code_filter
+    end
+
     #-----------------------------------------------------------------------------
+
 
     #-----------------------------------------------------------------------------
     # Parse non-common filters
@@ -198,6 +196,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # final results
     @projects = @projects.where(conditions.join(' AND '), *values)
 
+    @alis = ActivityLineItem.where(capital_project_id: @projects.ids) if no_ali_or_asset_params_exist
   end
 
   def get_planning_years

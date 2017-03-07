@@ -234,7 +234,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     add_breadcrumb "New", new_capital_project_path
 
     @project = CapitalProject.new(form_params)
-    @project.organization = @organization if @project.organization_id.nil?
+    @project.organization_id = @organization_list.first if @organization_list.count == 1
     @fiscal_years = get_fiscal_years
 
     respond_to do |format|
