@@ -1,9 +1,10 @@
+- alis ||= @project.activity_line_items
 .row
   .col-sm-12
-    - if @project.activity_line_items.empty?
+    - if alis.empty?
       %p There are no activity line items for this project.
     - else
-      = render :partial => 'activity_line_items_table', :locals => {:project => @project, :popup => '1'}
+      = render :partial => 'activity_line_items_table', :locals => {:project => @project, :alis => alis, :popup => '1'}
 
 - if (can? :add_alis, @project) and @project.sogr? == false and @project.can_update?
   = link_to load_view_capital_project_path(@project, :view => 'new_activity_line_item'), :remote => true, :role => 'button', :class => 'btn btn-primary', :role => 'button', :title => 'Add new ALI...' do

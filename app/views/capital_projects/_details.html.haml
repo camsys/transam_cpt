@@ -1,3 +1,4 @@
+- alis = @alis.where(capital_project_id: @project.id)
 %ul.nav.nav-tabs
   %li
     %a{:href => "#note", :data =>{:toggle => 'tab'}}
@@ -6,7 +7,7 @@
     %a{:href => "#alis", :data =>{:toggle => 'tab'}}
       %span{:style => 'white-space: nowrap !important;'}
         = "Activity Line Items "
-        %span.badge= @project.activity_line_items.count
+        %span.badge= alis.count
   -# %li
   -#   %a{:href => "#hist", :data =>{:toggle => 'tab'}}
   -#     %span.badge.pull-right= @project.history.count
@@ -28,7 +29,7 @@
       = render 'description'
   .tab-pane.fade#alis
     .tab-content
-      = render 'activity_line_items'
+      = render partial: 'activity_line_items', locals: {alis: alis}
   -# .tab-pane.fade#hist
   -#   .tab-content
   -#     = render 'history_table'

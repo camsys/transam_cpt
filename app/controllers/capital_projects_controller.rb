@@ -172,6 +172,9 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @prev_record_path = @prev_record_key.nil? ? "#" : capital_project_path(@prev_record_key)
     @next_record_path = @next_record_key.nil? ? "#" : capital_project_path(@next_record_key)
 
+    # get index of all projects and ALIS that respect the org and ALI filters
+    get_projects
+
     respond_to do |format|
       format.html # show.html.erb
       format.js

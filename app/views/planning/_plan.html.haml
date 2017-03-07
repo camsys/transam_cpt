@@ -25,7 +25,7 @@
     %thead
       %tr
         %th.left Project
-        - cost_by_year = @projects.joins(:activity_line_items).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE) || {}
+        - cost_by_year = @projects.joins(:activity_line_items).where('activity_line_items.id IN (?)', @alis.ids).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE) || {}
         - @years.each do |year|
           %th.center.nowrap
             - if @project_display_threshold_reached
@@ -49,7 +49,7 @@
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}, :id => project.object_key + '-' + year.to_s}
               - next if @display_fy_year != year if !project.multi_year && @display_fy_year
-              - alis = project.activity_line_items.where(:fy_year => year).each do |ali|
+              - @alis.where(:fy_year => year, :capital_project_id => project.id).each do |ali|
                 - project_has_early_replacement_assets = true if !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
                 = render 'ali_render_adaptor', project: project, ali: ali
           - if project_has_early_replacement_assets

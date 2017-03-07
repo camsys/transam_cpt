@@ -1,5 +1,6 @@
 :ruby
   popup ||= '0'
+  alis  ||= project.activity_line_items
 
 .table-responsive
   %table.table.table-condensed
@@ -17,7 +18,7 @@
 
     %tbody
       - sum_assets = 0
-      - project.activity_line_items.each do |ali|
+      - alis.each do |ali|
         - sum_assets += ali.assets.count
         %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
 
