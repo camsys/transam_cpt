@@ -63,6 +63,8 @@ FactoryGirl.define do
       test_filter = create(:user_organization_filter)
       u.user_organization_filter = test_filter
       u.user_organization_filters << test_filter
+
+      u.user_activity_line_item_filter = create(:user_activity_line_item_filter)
       u.save!
     end
   end
