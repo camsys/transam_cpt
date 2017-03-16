@@ -130,9 +130,9 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # dont impose ALI/asset conditions unless they were in the params
     no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtype_id', 'asset_type_id', 'in_backlog', 'funding_bucket_id', 'not_fully_funded').values.uniq == [nil])
     if no_ali_or_asset_params_exist
-      @projects = CapitalProject.order(:fy_year, :capital_project_type_id, :created_at)
+      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).order(:fy_year, :capital_project_type_id, :created_at)
     else
-      @projects = CapitalProject.where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
+      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
     end
 
     # org id is not tied to ALI filter
