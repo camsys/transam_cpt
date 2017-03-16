@@ -25,7 +25,7 @@
     %thead
       %tr
         %th.left Project
-        - cost_by_year = @projects.joins(:activity_line_items).where('activity_line_items.id IN (?)', @alis.ids).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE) || {}
+        - cost_by_year = @alis.group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE) || {}
         - @years.each do |year|
           %th.center.nowrap
             - if @project_display_threshold_reached
