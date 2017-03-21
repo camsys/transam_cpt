@@ -152,12 +152,6 @@ class ActivityLineItem < ActiveRecord::Base
     unless is_cost_estimated?
       anticipated_cost
     else
-      if estimated_cost && estimated_cost > 0
-        Rails.logger.info "hit"
-      else
-        Rails.logger.info "miss"
-        update_estimated_cost
-      end
       estimated_cost
     end
   end

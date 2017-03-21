@@ -252,9 +252,9 @@ class PlanningController < AbstractCapitalProjectsController
     drag_drop_conditions = []
     drag_drop_values = []
     # enable dragging/dropping only if no background jobs
-    @projects.each do |project|
+    @organization_list.each do |org_id|
       drag_drop_conditions << "handler LIKE ?"
-      drag_drop_values << "%organization_id: #{project.organization_id}%"
+      drag_drop_values << "%organization_id: #{org_id}%"
     end
     @drag_drop_enabled = (Delayed::Job.where(drag_drop_conditions.join(' OR '), *drag_drop_values).where("failed_at IS NULL AND (handler LIKE ? OR handler LIKE ?)","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
 
