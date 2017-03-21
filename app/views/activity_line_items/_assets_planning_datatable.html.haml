@@ -56,6 +56,8 @@
         %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
           %th.center{data: {formatter: 'popup_formatter'}}
+        - if ali.has_rehabilitated_assets?
+          %th.center{data: {field: 'is_rehabilitated', formatter: 'rehabilitated_formatter'}}
         - if ali.has_early_replacement_assets?
           %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
         %th.center{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}}
@@ -71,6 +73,8 @@
           %td.right= format_as_currency(ali.assets.sum(:book_value))
           %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
           - if popup == '1'
+            %td
+          - if ali.has_rehabilitated_assets?
             %td
           - if ali.has_early_replacement_assets?
             %td
@@ -310,6 +314,14 @@
 
   function popup_formatter(value, data) {
     return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
+  function rehabilitated_formatter(value, data) {
+    if((value) && (data)) {
+      return '<a class="transam-tooltip" data-placement="top" data-title="Rehabilitated" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-wrench" style="color: maroon !important;"></i></a>';
+    } else {
+      return "";
+    }
   }
 
   function early_replacement_flag_formatter(value, data) {

@@ -263,6 +263,10 @@ class ActivityLineItem < ActiveRecord::Base
     sogr? && !assets.early_replacement.empty?
   end
 
+  def has_rehabilitated_assets?
+    AssetEvent.where(asset_id: assets.ids, asset_event_type_id: AssetEventType.find_by(class_name: "RehabilitationUpdateEvent").id).count > 0
+  end
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
