@@ -43,15 +43,33 @@
       - @display_projects.each do |project|
         %tr{:data => {:project => project.object_key}, :class => project.fy_year.to_s+'-'+project.capital_project_type_id.to_s}
           - project_has_early_replacement_assets = false
+          - proj_alis = @alis.find_all { |ali| ali.capital_project_id == project.id }
           %td.left.planner-project-column
             = render :partial => 'plan_project_detail', :locals => {:project => project}
 
           - @years.each do |year|
             %td.striped.drop-target{:data => {:year => year}, :id => project.object_key + '-' + year.to_s}
               - next if @display_fy_year != year if !project.multi_year && @display_fy_year
-              - @alis.where(:fy_year => year, :capital_project_id => project.id).each do |ali|
-                - project_has_early_replacement_assets = true if !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
-                = render 'ali_render_adaptor', project: project, ali: ali
+              - #@alis.where(:fy_year => year, :capital_project_id => project.id).each do |ali|
+              - (proj_alis.find_all { |ali| ali.fy_year == year }).each do |ali|
+                - project_has_early_replacement_assets = true if !project_has_early_replacement_assets && !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
+                /= render 'ali_render_adaptor', project: project, ali: ali
+                - if ali.notional?
+                  /= render :partial => 'planning/notional_ali', :locals => {:project => project, :ali => ali}
+                  .panel.panel-notional.transam-tooltip{:data => {:year => ali.fy_year, :ali => ali.object_key, :project => ali.capital_project.object_key, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
+                    = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}
+
+                - elsif ali.sogr?
+                  /= render :partial => 'planning/sogr_ali', :locals => {:project => project, :ali => ali}
+                  - draggable_class = can?(:update, ali) || can?(:update_cost, ali)  ? "draggable" : ""
+                  .panel.panel-sogr.transam-tooltip{:class => draggable_class, :data => {:url => ali_action_planning_index_path, :year => ali.fy_year, :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key, :assets_policy_replacement_years => ali.assets.pluck(:policy_replacement_year).uniq, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
+                    = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali, :is_sogr => true}
+                - else
+                  /= render :partial => 'planning/other_ali', :locals => {:project => project, :ali => ali}
+                  - draggable_class = can?(:update, ali) || can?(:update_cost, ali)  ? "draggable" : ""
+                  .panel.panel-other.transam-tooltip{:class => draggable_class, :data => {:url => ali_action_planning_index_path, :year => ali.fy_year, :ali => ali.object_key, :action => PlanningController::ALI_MOVE_YEAR_ACTION, :project => ali.capital_project.object_key, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
+                    = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}
+
           - if project_has_early_replacement_assets
             :javascript
               $('tr[data-project="#{project.object_key}"] .project-early-replacement-warning').html(
