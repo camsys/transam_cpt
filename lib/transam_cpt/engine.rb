@@ -18,7 +18,7 @@ module TransamCpt
 
     config.to_prepare do
       SystemConfig.transam_module_names.each do |mod|
-        Dir.glob("transam_#{mod}".classify.constantize::Engine.root + "app/decorators/**/*_decorator*.rb").each do |c|
+        Dir.glob("transam_#{mod}".camelize.constantize::Engine.root + "app/decorators/**/*_decorator*.rb").each do |c|
           require_dependency(c)
         end
       end
