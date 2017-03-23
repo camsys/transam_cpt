@@ -260,7 +260,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   # check if has any assets that in early replacement
   def has_early_replacement_assets?
-    sogr? && !assets.early_replacement.empty?
+    sogr? && !notional? && !assets.early_replacement.empty?
   end
 
   def has_rehabilitated_assets?

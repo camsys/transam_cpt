@@ -7,7 +7,7 @@
   - else
     - @activity_line_item.reload
     $('div[data-ali="#{@activity_line_item.object_key}"]').html("<div class='panel-body'>#{raw escape_javascript(render :partial => 'ali', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true })}</div>");
-    - if @activity_line_item.sogr? && @activity_line_item.capital_project.try(:has_early_replacement_assets?)
+    - if @activity_line_item.capital_project.try(:has_early_replacement_assets?)
       $('tr[data-project="#{@activity_line_item.capital_project.object_key}"] .project-early-replacement-warning').html('<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' + '<i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>');
     - else
       $('tr[data-project="#{@activity_line_item.capital_project.object_key}"] .project-early-replacement-warning').html('')
