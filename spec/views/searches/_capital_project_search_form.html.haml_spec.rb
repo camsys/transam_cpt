@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "searches/_capital_project_search_form.html.haml", :type => :view do
+describe "searches/_capital_project_search_form.html.haml", :skip, :type => :view do
   it 'fields' do
     test_admin = create(:admin)
     3.times do

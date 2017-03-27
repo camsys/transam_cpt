@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "searches/_funding_line_item_search_form.html.haml", :type => :view do
+describe "searches/_funding_line_item_search_form.html.haml", :skip, :type => :view do
   it 'fields', :skip do
     assign(:organization_list, [1,2,3])
     assign(:searcher, FundingLineItemSearcher.new)
