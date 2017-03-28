@@ -241,7 +241,7 @@ class CapitalProject < ActiveRecord::Base
 
   # Render the project as a JSON object -- overrides the default json encoding
   def as_json(options={})
-    {
+    json = {
       object_key: object_key,
       agency: organization.try(:to_s),
       fy_year: fiscal_year,
@@ -256,6 +256,10 @@ class CapitalProject < ActiveRecord::Base
       total_cost: total_cost,
       has_early_replacement_assets: has_early_replacement_assets?
     }
+
+    if self.respond_to? :fundable_as_json
+      json.merge! self.fundable_as_json
+    end
   end
 
   def to_s
