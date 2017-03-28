@@ -14,9 +14,6 @@
                 = filter
       .col-sm-6
         %ul.multi-column-dropdown
-          - if ['planning', 'capital_projects', 'scheduler'].include? params[:controller]
-            %li.text-left
-              .form-group= select_tag(:sort, options_for_select([['Cost', 'cost'], ['Pcnt Funded', 'pcnt_funded'], ['# of assets', 'num_assets']], :selected => params[:sort]), :prompt => 'Sort by...', :class => "form-control")
           %li.text-left
             = link_to user_user_activity_line_item_filters_path(current_user) do
               %i.fa.fa-list-alt.fa-fw
@@ -27,37 +24,3 @@
               %i.fa.fa-plus.fa-fw
               New Filter
 
-:javascript
-
-    $('#sort').on('click', function(event) {
-      event.stopPropagation();
-    });
-
-    $('#sort').on('change', function(event) {
-      var url = document.location.href
-      var newAdditionalURL = "";
-      var tempArray = url.split("?");
-      var baseURL = tempArray[0];
-      var aditionalURL = tempArray[1];
-      var temp = "";
-      if (aditionalURL){
-        var tempArray = aditionalURL.split("&");
-        for ( var i in tempArray ){
-          if(tempArray[i].indexOf("sort") == -1){
-            newAdditionalURL += temp+tempArray[i];
-            temp = "&";
-          }
-        }
-      }
-      if ($(this).val().length > 1) {
-        var rows_txt = temp+"sort="+$(this).val();
-        var finalURL = baseURL+"?"+newAdditionalURL+rows_txt;
-      } else {
-        var finalURL = baseURL+"?"+newAdditionalURL;
-      }
-
-      if ((baseURL.indexOf("planning") >= 0) || (baseURL.indexOf("capital_projects") >= 0) || (baseURL.indexOf("scheduler") >= 0)) {
-        document.location.href = finalURL;
-      }
-
-    });
