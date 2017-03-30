@@ -63,7 +63,9 @@ Rails.application.routes.draw do
 
   end
 
-  resources :activity_line_items, :only => [] do
+
+
+  resources :activity_line_items, :only => [:show] do
     resources :comments
     resources :documents
     resources :tasks

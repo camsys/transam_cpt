@@ -6,9 +6,9 @@ class ActivityLineItemsController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_action :get_capital_project
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
                                                     :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets]
+  before_action :get_capital_project
   before_filter :reformat_date_fields,    :only => [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
@@ -311,7 +311,7 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   def get_capital_project
-    @project = CapitalProject.find_by(object_key: params[:capital_project_id], organization_id: @organization_list) unless params[:capital_project_id].blank?
+    @project = params[:capital_project_id].blank? ? @activity_line_item.try(:capital_project) :CapitalProject.find_by(object_key: params[:capital_project_id], organization_id: @organization_list)
 
     if @project.nil?
       if CapitalProject.find_by(object_key: params[:capital_project_id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
