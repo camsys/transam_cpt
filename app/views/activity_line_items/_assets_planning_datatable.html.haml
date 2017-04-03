@@ -11,75 +11,65 @@
     display: none !important;
   }
 
-.table-responsive
-  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
-    :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
-    :card_view => "false",
-    :pagination => 'true',
-    :side_pagination => 'server',
-    :show_pagination_switch => 'true',
-    :page_number => '1',
-    :page_list => "[10, 20, 50, 100, 200]",
-    :page_size => current_user.num_table_rows,
-    :search => 'false',
-    :striped => 'true',
-    :single_select => 'false',
-    :show_columns => 'false',
-    :toolbar => "#asset-actions",
-    :row_style => 'row_style',
-    :click_to_select => 'false',
-    :show_export => 'false',
-    :id_field => 'object_key',
-    :state_save => 'true',
-    :state_save_id_table => "assets_id",
-    :state_save_expire => "1y",
-    :classes => 'table-no-bordered'}}
-    %thead
+
+%table.table.table-responsive.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+  :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
+  :card_view => "false",
+  :pagination => 'true',
+  :side_pagination => 'server',
+  :show_pagination_switch => 'true',
+  :page_number => '1',
+  :page_list => "[10, 20, 50, 100, 200]",
+  :page_size => current_user.num_table_rows,
+  :search => 'false',
+  :striped => 'true',
+  :single_select => 'false',
+  :show_columns => 'false',
+  :toolbar => "#asset-actions",
+  :row_style => 'row_style',
+  :click_to_select => 'false',
+  :show_export => 'false',
+  :id_field => 'object_key',
+  :state_save => 'true',
+  :state_save_id_table => "assets_id",
+  :state_save_expire => "1y",
+  :classes => 'table-no-bordered'}}
+  %thead
+    %tr
+      - if move_assets_action == '1'
+        %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+      %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
+      %th.left{data: {field: 'asset_tag'}} Tag
+      %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
+      %th.center{data: {field: 'fuel_type'}} Fuel
+      %th.left{data: {field: 'description'}} Description
+
+
+      %th.center{data: {field: 'age'}} Age
+      %th.center{data: {field: 'in_backlog', formatter: 'boolean_formatter'}} Bcklg
+      %th.right{data: {field: 'reported_mileage', formatter: 'integer_formatter'}} Mileage
+      %th.center{data: {field: 'reported_condition_rating'}} Cond.
+
+      %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy FY
+      %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter'}} Orig. Cost
+      %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
+      %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
+      - if popup == '1'
+        %th.center{data: {formatter: 'popup_formatter'}}
+      %th.center{data: {formatter: 'special_icons_formatter'}}
+
+    %tfoot
       %tr
         - if move_assets_action == '1'
-          %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
-        %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
-        %th.left{data: {field: 'asset_tag'}} Tag
-        %th.left{data: {field: 'asset_subtype_id'}} Asset Subtype
-        %th.center{data: {field: 'fuel_type'}} Fuel
-        %th.left{data: {field: 'description'}} Description
-
-
-        %th.center{data: {field: 'age'}} Age
-        %th.center{data: {field: 'in_backlog', formatter: 'boolean_formatter'}} Bcklg
-        %th.right{data: {field: 'reported_mileage', formatter: 'integer_formatter'}} Mileage
-        %th.center{data: {field: 'reported_condition_rating'}} Cond.
-
-        %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy FY
-        %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter'}} Orig. Cost
-        %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
-        %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
+          %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
+        - else
+          %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+        %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
+        %td.right= format_as_currency(ali.assets.sum(:book_value))
+        %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
         - if popup == '1'
-          %th.center{data: {formatter: 'popup_formatter'}}
-        - if ali.has_rehabilitated_assets?
-          %th.center{data: {field: 'is_rehabilitated', formatter: 'rehabilitated_formatter'}}
-        - if ali.has_early_replacement_assets?
-          %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
-        %th.center{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}}
-        %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}}
-
-      %tfoot
-        %tr
-          - if move_assets_action == '1'
-            %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
-          - else
-            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
-          %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
-          %td.right= format_as_currency(ali.assets.sum(:book_value))
-          %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
-          - if popup == '1'
-            %td
-          - if ali.has_rehabilitated_assets?
-            %td
-          - if ali.has_early_replacement_assets?
-            %td
           %td
-          %td
+        %td
 
 :javascript
 
@@ -316,35 +306,23 @@
     return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
   }
 
-  function rehabilitated_formatter(value, data) {
-    if((value) && (data)) {
-      return '<a class="transam-tooltip" data-placement="top" data-title="Rehabilitated" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-wrench" style="color: maroon !important;"></i></a>';
-    } else {
-      return "";
+  function special_icons_formatter(value, data) {
+    var special_icons = '';
+    if (data.is_rehabilitated) {
+      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Rehabilitated" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-wrench" style="color: maroon !important;"></i></a>';
     }
-  }
 
-  function early_replacement_flag_formatter(value, data) {
-    if((value) && (data)) {
-      return '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
-    } else {
-      return "";
+    if (data.is_early_replacement) {
+      special_icons = special_icons + '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
     }
-  }
 
-  function replace_with_subtype_formatter(value, data) {
-    console.log(value);
-    if((value) && (value != data.asset_subtype_id) && (data)) {
-      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
-    } else {
-      return "";
+    if((data.replace_with_subtype) && (data.replace_with_subtype != data.asset_subtype_id)) {
+      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
     }
-  }
 
-  function replace_with_fuel_type_formatter(value, data) {
-    if((value) && (value != data.fuel_type) && (data)) {
-      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
-    } else {
-      return "";
+    if((data.replace_with_fuel_type) && (data.replace_with_fuel_type != data.fuel_type)) {
+      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
     }
+
+    return special_icons;
   }
