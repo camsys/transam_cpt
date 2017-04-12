@@ -32,9 +32,9 @@ class UserActivityLineItemFilter < ActiveRecord::Base
       :description,
       :capital_project_type_id,
       :sogr_type,
-      :team_ali_code_id,
-      :asset_type_id,
-      :asset_subtype_id,
+      :team_ali_codes,
+      :asset_types,
+      :asset_subtypes,
       :in_backlog
   ]
 
@@ -94,6 +94,7 @@ class UserActivityLineItemFilter < ActiveRecord::Base
   private
   # Set resonable defaults for a new filter
   def set_defaults
+    self.sogr_type ||= 'All'
     self.active = self.active.nil? ? true : self.active
   end
 

@@ -96,12 +96,12 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # Filter by asset type and subtype. Requires joining across CP <- ALI <- ALI-Assets <- Assets
     asset_conditions  = []
     asset_values      = []
-    if @user_activity_line_item_filter.try(:asset_subtype_id).present?
-      @asset_subtype_filter = [@user_activity_line_item_filter.asset_subtype_id]
+    if @user_activity_line_item_filter.try(:asset_subtypes).present?
+      @asset_subtype_filter = @user_activity_line_item_filter.asset_subtypes.split(',')
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
-    elsif @user_activity_line_item_filter.try(:asset_type_id).present?
-      @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_type_id).pluck(:id)
+    elsif @user_activity_line_item_filter.try(:asset_types).present?
+      @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_types.split(',')).pluck(:id)
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
     end
@@ -110,6 +110,11 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     if @user_activity_line_item_filter.try(:in_backlog)
       asset_conditions << 'assets.in_backlog = ?'
       asset_values << true
+    end
+
+    if @user_activity_line_item_filter.try(:asset_query_string)
+      asset_conditions << 'assets.object_key IN (?)'
+      asset_values << Asset.find_by_sql(@user_activity_line_item_filter.asset_query_string).map{|x| x.object_key}
     end
 
     unless asset_conditions.empty?
@@ -128,7 +133,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # get the projects based on filtered ALIs
 
     # dont impose ALI/asset conditions unless they were in the params
-    no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtype_id', 'asset_type_id', 'in_backlog', 'funding_bucket_id', 'not_fully_funded').values.uniq == [nil])
+    no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtypes', 'asset_types', 'in_backlog', 'funding_buckets', 'not_fully_funded').values.uniq == [nil])
     if no_ali_or_asset_params_exist
       @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).order(:fy_year, :capital_project_type_id, :created_at)
     else
@@ -167,10 +172,10 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     end
 
     # TEAM ALI code
-    if @user_activity_line_item_filter.try(:team_ali_code_id).blank?
+    if @user_activity_line_item_filter.try(:team_ali_codes).blank?
       @team_ali_code_filter = []
     else
-      @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_id]
+      @team_ali_code_filter = @user_activity_line_item_filter.team_ali_codes.split(',')
 
       conditions << 'capital_projects.team_ali_code_id IN (?)'
       values << @team_ali_code_filter
