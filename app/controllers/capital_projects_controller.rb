@@ -60,14 +60,14 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
     end
 
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = get_fiscal_years(Date.today) # start at the current FY not the planning FY
     @builder_proxy = BuilderProxy.new
 
     if @organization_list.count == 1
-      if @organization.has_sogr_projects?
-        @builder_proxy.start_fy = current_planning_year_year + 3
+      if Organization.get_typed_organization(Organization.find_by(id: @organization_list.first)).has_sogr_projects?
+        @builder_proxy.start_fy = current_fiscal_year_year + 3
       else
-        @builder_proxy.start_fy = current_planning_year_year
+        @builder_proxy.start_fy = current_fiscal_year_year
       end
     else
       @has_sogr_project_org_list = CapitalProject.joins(:organization).where(organization_id: @organization_list).sogr.group(:organization_id).count
@@ -89,10 +89,11 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     if @builder_proxy.valid?
 
       if @builder_proxy.organization_id.blank?
-        org = @organization
+        org_id = @organization_list.first
       else
-        org = Organization.get_typed_organization(Organization.find(@builder_proxy.organization_id))
+        org_id = @builder_proxy.organization_id
       end
+      org = Organization.get_typed_organization(Organization.find(org_id))
 
       Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.asset_types, @builder_proxy.start_fy, current_user), :priority => 0
 

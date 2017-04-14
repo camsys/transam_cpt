@@ -275,7 +275,7 @@ class CapitalProjectBuilder
 
       # Find all the matching assets for this organization.
       # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-      assets = asset_type.class_name.constantize.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+      assets = asset_type.class_name.constantize.in_replacement_cycle.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
 
       # Process each asset in turn...
       assets.each do |a|
@@ -291,7 +291,7 @@ class CapitalProjectBuilder
                 )
         end
         # reset scheduled replacement year
-        a.scheduled_replacement_year = nil
+        a.scheduled_replacement_year = nil unless a.replacement_underway?
         a.update_early_replacement_reason
 
         # do the work...
@@ -381,9 +381,11 @@ class CapitalProjectBuilder
     #---------------------------------------------------------------------------
     # Step 1: Data consistency check
     #---------------------------------------------------------------------------
-    unless asset_data_consistency_check(asset, start_year, policy_analyzer['replace_with_new'])
-      Rails.logger.info "Asset #{asset.object_key} did not pass data consistency check."
-      return
+    unless asset.replacement_underway?
+      unless asset_data_consistency_check(asset, start_year, policy_analyzer['replace_with_new'])
+        Rails.logger.info "Asset #{asset.object_key} did not pass data consistency check."
+        return
+      end
     end
 
     #---------------------------------------------------------------------------
@@ -426,13 +428,15 @@ class CapitalProjectBuilder
       # Step 3: Process initial replacement and rehab
       #-------------------------------------------------------------------------
 
-      # Add the initial replacement. If the project does not exist it is created
-      projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false, policy_analyzer['replace_fuel_type_id'])
+      unless asset.replacement_underway?
+        # Add the initial replacement. If the project does not exist it is created
+        projects_and_alis << add_to_project(asset.organization, asset, replace_ali_code, year, replacement_project_type, true, false, policy_analyzer['replace_fuel_type_id'])
 
-      if process_rehabs
-        rehab_year = year + (rehab_month / 12)
-        if rehab_year <= last_year
-          projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, rehab_year, rehabilitation_project_type, true, true)
+        if process_rehabs
+          rehab_year = year + (rehab_month / 12)
+          if rehab_year <= last_year
+            projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, rehab_year, rehabilitation_project_type, true, true)
+          end
         end
       end
 
