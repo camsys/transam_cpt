@@ -275,7 +275,7 @@ class CapitalProjectBuilder
 
       # Find all the matching assets for this organization.
       # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-      assets = asset_type.class_name.constantize.in_replacement_cycle.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+      assets = asset_type.class_name.constantize.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
 
       # Process each asset in turn...
       assets.each do |a|
@@ -291,7 +291,7 @@ class CapitalProjectBuilder
                 )
         end
         # reset scheduled replacement year
-        a.scheduled_replacement_year = nil unless a.replacement_underway?
+        a.scheduled_replacement_year = nil if a.replacement_by_policy?
         a.update_early_replacement_reason
 
         # do the work...
@@ -373,8 +373,8 @@ class CapitalProjectBuilder
     end
 
     # Can't build projects for assets that have been scheduled for disposition or already disposed
-    if asset.disposed? or asset.scheduled_for_disposition?
-      Rails.logger.info "Asset #{asset.object_key} has been scheduled for disposition. Nothing to do."
+    if asset.disposed? or asset.scheduled_for_disposition? or asset.no_replacement?
+      Rails.logger.info "Asset #{asset.object_key} has been scheduled for disposition or no replacement. Nothing to do."
       return
     end
 
