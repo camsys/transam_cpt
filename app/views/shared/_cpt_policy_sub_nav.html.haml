@@ -1,4 +1,4 @@
-%li.text-left.dropdown-submenu
+%li.text-left{(can? :create, CapitalProject) ? {class: 'dropdown-submenu'} : {}}
   = link_to capital_projects_path do
     %i.fa.fa-cubes.fa-fw
     = " Capital Projects"
