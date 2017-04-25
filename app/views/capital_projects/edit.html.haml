@@ -4,4 +4,4 @@
   .page-header
     %h2= "Capital Project: #{@project}"
 
-  = render 'form'
+  = render :partial => 'form', :locals => {:is_in_modal => 0}

@@ -5,4 +5,4 @@
 
     = render(:partial => 'shared/form_errors', :locals => {:obj => @project}) unless @project.errors.empty?
 
-    = render 'form'
+    = render :partial => 'form', :locals => {:is_in_modal => 0}

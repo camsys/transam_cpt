@@ -1,3 +1,5 @@
+- is_in_modal ||= 1
+
 = simple_form_for(@project,
   :html => {:class => 'form-vertical', :id => 'capital_project_form'},
   :wrapper => :vertical_form,
@@ -44,7 +46,8 @@
     characters remaining.
 
   = f.button :submit, :class => "btn btn-primary"
-  %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
+  - if is_in_modal == 1
+    %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
 
 :javascript
 
