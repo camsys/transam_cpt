@@ -43,6 +43,7 @@ class CapitalProject < ActiveRecord::Base
 
   # Has 0 or more activity line items. These will be removed if the project is removed.
   has_many    :activity_line_items, :dependent => :destroy
+  has_many    :assets, :through => :activity_line_items
 
   # Has 0 or more documents. Using a polymorphic association. These will be removed if the project is removed
   has_many    :documents,   :as => :documentable, :dependent => :destroy
@@ -241,24 +242,32 @@ class CapitalProject < ActiveRecord::Base
 
   # Render the project as a JSON object -- overrides the default json encoding
   def as_json(options={})
-    json = {
-      object_key: object_key,
-      agency: organization.try(:to_s),
-      fy_year: fiscal_year,
-      project_number: project_number,
-      scope: team_ali_code.try(:scope),
-      is_emergency: emergency?,
-      is_sogr: sogr?,
-      is_notional: notional?,
-      is_multi_year: multi_year?,
-      type: capital_project_type.try(:code),
-      title: title,
-      total_cost: total_cost,
-      has_early_replacement_assets: has_early_replacement_assets?
-    }
+    # dont override Rails method
+    if options[:is_super]
+      super(options).merge! self.fundable_as_json
+    else
+      json = {
+        object_key: object_key,
+        agency: organization.try(:to_s),
+        fy_year: fiscal_year,
+        project_number: project_number,
+        scope: team_ali_code.try(:scope),
+        is_emergency: emergency?,
+        is_sogr: sogr?,
+        is_notional: notional?,
+        is_multi_year: multi_year?,
+        type: capital_project_type.try(:code),
+        title: title,
+        total_cost: total_cost,
+        has_early_replacement_assets: has_early_replacement_assets?
+      }
 
-    if self.respond_to? :fundable_as_json
-      json.merge! self.fundable_as_json
+
+      if self.respond_to? :fundable_as_json
+        json.merge! self.fundable_as_json
+      end
+
+      json
     end
   end
 
