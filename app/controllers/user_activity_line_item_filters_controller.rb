@@ -174,6 +174,8 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
 
     # Save the selection. Next time the user logs in the filter will be reset
     current_user.update(user_activity_line_item_filter: @user_activity_line_item_filter)
+
+    session[:user_activity_line_item_filter] = @user_activity_line_item_filter
   end
 
   # Use callbacks to share common setup or constraints between actions.
