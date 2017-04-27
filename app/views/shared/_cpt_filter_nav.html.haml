@@ -1,7 +1,7 @@
 %li.dropdown
   = link_to "#", :class => 'dropdown-toggle', :style => 'padding-top:15px;', :data => {:toggle => 'dropdown'} do
     %i.fa.fa-filter
-    = " #{current_user.user_activity_line_item_filter.to_s[0..31]}#{current_user.user_activity_line_item_filter.to_s.length > 32 ? '...' : ''}"
+    = " #{session[:user_activity_line_item_filter].to_s[0..31]}#{session[:user_activity_line_item_filter].to_s.length > 32 ? '...' : ''}"
     %b.caret
   %ul.dropdown-menu.columns-2
     .row
