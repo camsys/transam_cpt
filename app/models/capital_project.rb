@@ -244,7 +244,11 @@ class CapitalProject < ActiveRecord::Base
   def as_json(options={})
     # dont override Rails method
     if options[:is_super]
-      super(options).merge! self.fundable_as_json
+      if options[:root]
+        {"capital_project": (super(options)['capital_project'].merge! self.fundable_as_json)}
+      else
+        super(options)
+      end
     else
       json = {
         object_key: object_key,
@@ -264,7 +268,7 @@ class CapitalProject < ActiveRecord::Base
 
 
       if self.respond_to? :fundable_as_json
-        json.merge! self.fundable_as_json
+        json.merge! self.fundable_as_json(options)
       end
 
       json
