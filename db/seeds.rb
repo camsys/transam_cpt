@@ -19,6 +19,10 @@ puts "======= Processing TransAM CPT Lookup Tables  ======="
 roles = [
 ]
 
+asset_event_types = [
+  {:active => 1, :name => 'Replacement status', :class_name => 'ReplacementStatusUpdateEvent', :job_name => 'AssetReplacementStatusUpdateJob', :display_icon_name => 'fa fa-refresh', :description => 'Replacement Status Update'}
+]
+
 capital_project_types = [
   {:active => 1, :name => 'Replacement',    :code => "R",  :description => 'The capital project is aimed at replacing existing assets.'},
   {:active => 1, :name => 'Expansion',      :code => "E",  :description => 'The capital project is aimed at enhancing the service fleet or operations.'},
@@ -35,8 +39,14 @@ milestone_types = [
   {:active => 1, :name => 'Contract Completed',     :is_vehicle_delivery => 0, :description => 'Contract Completed'}
 ]
 
-replace_tables = %w{ milestone_types capital_project_types }
-merge_tables = %w{ roles }
+replacement_status_types = [
+    {:active => 1, :name => 'By Policy', :description => 'Asset will be replaced following tho policy and planner.'},
+    {:active => 1, :name => 'Underway', :description => 'Asset is being replaced this fiscal year.'},
+    {:active => 1, :name => 'None', :description => 'Asset is not being replaced.'}
+]
+
+replace_tables = %w{ milestone_types capital_project_types replacement_status_types }
+merge_tables = %w{ roles asset_event_types }
 
 replace_tables.each do |table_name|
   puts "  Loading #{table_name}"
