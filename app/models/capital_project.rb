@@ -245,7 +245,7 @@ class CapitalProject < ActiveRecord::Base
     # dont override Rails method
     if options[:is_super]
       if options[:root]
-        {"capital_project": (super(options)['capital_project'].merge! self.fundable_as_json)}
+        {"capital_project" => (super(options)['capital_project'].merge! self.fundable_as_json)}
       else
         super(options)
       end
