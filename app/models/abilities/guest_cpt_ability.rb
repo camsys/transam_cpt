@@ -1,5 +1,5 @@
 module Abilities
-  class AuthorizedCptAbility
+  class GuestCptAbility
     include CanCan::Ability
 
     def initialize(user)
