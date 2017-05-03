@@ -30,7 +30,7 @@ module TransamPlannable
 
     belongs_to  :replacement_status_type
 
-    has_many   :replacement_status_updates, -> {where :asset_event_type_id => ReplacementStatusUpdateEvent.asset_event_type.id }, :class_name => "ReplacementStatusUpdateEvent"
+    has_many   :replacement_status_updates, -> {where :asset_event_type_id => ReplacementStatusUpdateEvent.asset_event_type.id }, :class_name => "ReplacementStatusUpdateEvent",  :foreign_key => :asset_id
 
     # belongs to 0 or 1 activity_line_items
     has_and_belongs_to_many    :activity_line_items,  :foreign_key => 'asset_id'
