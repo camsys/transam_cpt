@@ -9,7 +9,7 @@
         %ul.multi-column-dropdown
           - current_user.user_activity_line_item_filters.each do |filter|
             %li.text-left
-              = link_to user_user_activity_line_item_filter_use_path(current_user, filter) do
+              = link_to user_user_activity_line_item_filter_use_path(current_user, filter), :class => 'filter-link' do
                 %i.fa.fa-filter.fa-fw
                 = filter
       .col-sm-6
@@ -24,3 +24,8 @@
               %i.fa.fa-plus.fa-fw
               New Filter
 
+:javascript
+
+  $('.filter-link').click(function(event) {
+    bootbox.dialog({ message: "#{loader_panel_tag({:message => 'Processing...', :spinner => 'cog', :html_class => 'filter-loader'})}", closeButton: false });
+  });
