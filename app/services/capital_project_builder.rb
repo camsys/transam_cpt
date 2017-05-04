@@ -198,7 +198,7 @@ class CapitalProjectBuilder
 
     # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects for planning years
     # Year 1, Year 2,..., Year 12
-    @start_year = current_planning_year_year
+    @start_year = current_fiscal_year_year
     @last_year = last_fiscal_year_year
 
     @replacement_project_type = CapitalProjectType.find_by_code('R')

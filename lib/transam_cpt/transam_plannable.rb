@@ -104,6 +104,7 @@ module TransamPlannable
         self.scheduled_replacement_year = self.policy_replacement_year < current_planning_year_year ? current_planning_year_year : self.policy_replacement_year
       elsif self.replacement_underway?
         self.scheduled_replacement_year = replacement_status_updates.last.replacement_year
+        self.update_early_replacement_reason("Replacement is Early and Underway.")
       end
 
       # save changes to this asset
