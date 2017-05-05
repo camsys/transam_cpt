@@ -32,17 +32,31 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
 
     if @user_activity_line_item_filter.nil?
       notify_user(:alert, 'Record not found!')
+
       redirect_to :back
       return
     end
 
     set_current_user_activity_line_item_filter
 
+
+
+    # possibly improve later on. right now handle on a case by case basis
+    old_path = URI(request.referer)
+    recognized_path = Rails.application.routes.recognize_path(old_path.path)
     # if currently on a filter detail page direct to detail page of filter just set
-    if URI(request.referer).path =~ /\/users\/[[:alnum:]]{12}\/user_activity_line_item_filters\/[[:alnum:]]{12}/
+    if recognized_path[:action] == "show" && recognized_path[:controller] == "user_activity_line_item_filters"
       redirect_to user_user_activity_line_item_filter_path(current_user, @user_activity_line_item_filter)
+    elsif recognized_path[:action] == "show" && (["capital_projects", "activity_line_items"].include? recognized_path[:controller])
+      redirect_to capital_projects_path
     else
-      redirect_to :back
+      old_path.query = Rack::Utils.parse_nested_query(old_path.query).
+          # referrer_url.query returns the existing query string => "f=b"
+          # Rack::Utils.parse_nested_query converts query string to hash => {f: "b"}
+          except('ali').
+          # merge appends or overwrites the new parameter  => {f: "b", cp: :foo'}
+          to_query
+      redirect_to old_path.to_s
     end
 
   end
