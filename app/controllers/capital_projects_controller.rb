@@ -139,10 +139,6 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         Rails.logger.info "blueberry pie"
         @total_projects_cost_by_year =@alis.group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
         @total_projects_cost = @total_projects_cost_by_year.map { |k,v| v}.sum
-        #@total_projects_state_funds = @projects.total_state_funds
-        #@total_projects_federal_funds = @projects.total_federal_funds
-        #@total_projects_local_funds = @projects.total_local_funds
-        #@total_projects__funds = @projects.total_funds
       end
     end
 

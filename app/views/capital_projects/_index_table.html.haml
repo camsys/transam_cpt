@@ -42,11 +42,6 @@
         -#%th.center Status
         %th.right.nowrap{data: {field: 'total_cost', formatter: 'currency_formatter'}} Cost
 
-        %th.right.nowrap{data: {field: 'state_funds', formatter: 'currency_formatter'}} State
-        %th.right.nowrap{data: {field: 'federal_funds', formatter: 'currency_formatter'}} Federal
-        %th.right.nowrap{data: {field: 'local_funds', formatter: 'currency_formatter'}} Local
-        %th.right.nowrap{data: {field: 'total_funds', formatter: 'currency_formatter'}} Total
-
         %th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
         %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
     %tfoot
@@ -57,10 +52,6 @@
           %td{:colspan => 9}
 
         %td.right.nowrap= format_as_currency(@total_projects_cost)
-        %td.right.nowrap= format_as_currency(@total_projects_state_funds)
-        %td.right.nowrap= format_as_currency(@total_projects_federal_funds)
-        %td.right.nowrap= format_as_currency(@total_projects_local_funds)
-        %td.right.nowrap= format_as_currency(@total_projects_funds)
         %td.center
         %td.center
 
