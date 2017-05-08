@@ -6,7 +6,6 @@ describe "capital_projects/_actions.html.haml", :type => :view do
     assign(:project, create(:capital_project))
     render
 
-    expect(rendered).to have_link('Make a copy')
     expect(rendered).to have_link('Modify this project')
     expect(rendered).to have_link('Remove this project')
   end
