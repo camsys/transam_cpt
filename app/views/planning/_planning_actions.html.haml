@@ -1,15 +1,15 @@
-.btn-group.pull-right.panel-action
-  %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
-    %i.fa.fa-cog
-    = " Actions"
-    %span.caret
-  %ul.dropdown-menu{:role => 'menu'}
-    - if can? :create, CapitalProject
+- if can? :create, CapitalProject
+  .btn-group.pull-right.panel-action
+    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+      %i.fa.fa-cog
+      = " Actions"
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu'}
       %li.text-left
         = link_to new_capital_project_path do
           %i.fa.fa-plus.fa-fw
           = " New Capital Project"
-    -# %li
-    -#   = link_to planning_index_path(:capital_project_type_id => @capital_project_type_id, :org_id => @org_filter, :status_type_id => @status_type_id, :start_row => 0, :format => 'xls') do
-    -#     %i.fa.fa-fw.fa-file-excel-o
-    -#     = " Export plan to Excel"
+      -# %li
+      -#   = link_to planning_index_path(:capital_project_type_id => @capital_project_type_id, :org_id => @org_filter, :status_type_id => @status_type_id, :start_row => 0, :format => 'xls') do
+      -#     %i.fa.fa-fw.fa-file-excel-o
+      -#     = " Export plan to Excel"
