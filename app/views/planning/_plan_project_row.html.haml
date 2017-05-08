@@ -1,4 +1,4 @@
-%tr{:data => {:project => project.object_key}}
+%tr{:data => {:project => project.object_key}, :id => project.fy_year}
   - project_has_early_replacement_assets = false
   %td.left.planner-project-column
     = render :partial => 'plan_project_detail', :locals => {:project => project}

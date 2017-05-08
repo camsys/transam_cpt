@@ -35,14 +35,15 @@
               - else
                 = link_to format_as_fiscal_year(year), params.merge({display_fy_year: year}), class: "btn btn-info bold project-planner-year-link", data: {year: year}, title: "Click to load #{format_as_fiscal_year(year)} projects"
             - else
-              = format_as_fiscal_year(year)
+              = link_to format_as_fiscal_year(year), "##{year}", class: "btn btn-info bold project-planner-year-link"
             
             %br
             .well.well-sm.bold{:id => 'fy-sum-'+year.to_s, :data => {:cost => cost_by_year[year].nil? ? '0' : cost_by_year[year]} }= format_as_currency(cost_by_year[year])
     %tbody
       - @alis = @alis.includes(:team_ali_code).references(:team_ali_code)
-      - @display_projects.each do |project|
-        %tr{:data => {:project => project.object_key}, :class => project.fy_year.to_s+'-'+project.capital_project_type_id.to_s}
+      - @display_projects.each_with_index do |project, idx|
+        - properties = {:data => {:project => project.object_key}, :class => project.fy_year.to_s+'-'+project.capital_project_type_id.to_s}
+        %tr{project.fy_year == @display_projects[idx-1].fy_year ? properties : properties.merge({id: project.fy_year})}
           - project_has_early_replacement_assets = false
           - proj_alis = @alis.find_all { |ali| ali.capital_project_id == project.id }
           %td.left.planner-project-column
