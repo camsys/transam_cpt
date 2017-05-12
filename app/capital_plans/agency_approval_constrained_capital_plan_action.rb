@@ -1,0 +1,2 @@
+class AgencyApprovalConstrainedCapitalPlanAction
+end

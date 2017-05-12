@@ -1,0 +1,31 @@
+:ruby
+  show_actions ||= 0
+  table_dom_id ||= SecureRandom.hex
+
+= link_to 'Save', move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'btn btn-info capital-plan-action'
+
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :card_view => "false",
+    :pagination => 'false',
+    :search => 'false',
+    :show_columns => 'true',
+    :show_export => 'true',
+    :row_style => 'row_style',
+    :click_to_select => 'true',
+    :export_types => "['csv', 'txt', 'excel']",
+    :id_field => 'object_key',
+    :state_save => 'true',
+    :state_save_id_table => "capital_plans_id",
+    :state_save_expire => "1y",
+    :single_select => 'true'}}
+
+  %tbody
+    - @capital_plan.capital_plan_modules.each do |m|
+      %tr
+        %td.left{colspan: 2}= m.capital_module_type
+      - m.capital_plan_actions.each do |a|
+        %tr
+          %td.left= a.capital_plan_action_type
+          - if show_actions == 1
+            %td.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}

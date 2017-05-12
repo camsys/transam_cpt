@@ -45,7 +45,17 @@ replacement_status_types = [
     {:active => 1, :name => 'None', :description => 'Asset is not being replaced.'}
 ]
 
-replace_tables = %w{ milestone_types capital_project_types replacement_status_types }
+capital_plan_types = [
+    {name: 'Transit Capital Plan', description: 'Transit Capital Plan', class_name: 'TransitCapitalPlan', active: true}
+]
+capital_plan_module_types = [
+    {capital_plan_id: 1, name: 'Preparation', description: 'Preparation', class_name: 'PreparationCapitalPlanModule', sequence: 1, active: true},
+    {capital_plan_id: 1, name: 'Unconstrained Plan', description: 'Unconstrained Plan', class_name: 'UnconstrainedCapitalPlanModule', sequence: 2, active: true},
+    {capital_plan_id: 1, name: 'Constrained Plan', description: 'Constrained Plan', class_name: 'ConstrainedCapitalPlanModule', sequence: 3, active: true},
+    {capital_plan_id: 1, name: 'Final Review', description: 'Final Review', class_name: 'ReviewCapitalPlanModule', sequence: 4, active: true}
+]
+
+replace_tables = %w{ milestone_types capital_project_types replacement_status_types capital_plan_types capital_plan_module_types }
 merge_tables = %w{ roles asset_event_types }
 
 replace_tables.each do |table_name|

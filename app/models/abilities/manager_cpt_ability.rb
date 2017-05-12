@@ -50,6 +50,7 @@ module Abilities
         ali.capital_project.can_update?
       end
 
+      can :manage, CapitalPlan
 
     end
   end

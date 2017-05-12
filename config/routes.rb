@@ -63,12 +63,16 @@ Rails.application.routes.draw do
 
   end
 
-
-
   resources :activity_line_items, :only => [:show] do
     resources :comments
     resources :documents
     resources :tasks
+  end
+
+  resources :capital_plans, :only => [:index, :show, :edit] do
+    member do
+      get 'complete_actions'
+    end
   end
 
 end

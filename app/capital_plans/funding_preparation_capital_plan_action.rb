@@ -1,0 +1,2 @@
+class FundingPreparationCapitalPlanAction
+end
