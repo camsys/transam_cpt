@@ -4,7 +4,9 @@ class CreateCapitalPlanActions < ActiveRecord::Migration
       t.string :object_key, limit: 12
       t.integer :capital_plan_id, index: true
       t.integer :capital_plan_module_id, index: true
+      t.integer :capital_plan_action_type_id, index: true
       t.integer :sequence
+      t.string :notes
       t.datetime :completed_at
       t.integer :completed_by_user_id
 

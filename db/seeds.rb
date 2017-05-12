@@ -46,16 +46,32 @@ replacement_status_types = [
 ]
 
 capital_plan_types = [
-    {name: 'Transit Capital Plan', description: 'Transit Capital Plan', class_name: 'TransitCapitalPlan', active: true}
+    {name: 'Transit Capital Plan', description: 'Transit Capital Plan', active: true}
 ]
 capital_plan_module_types = [
-    {capital_plan_id: 1, name: 'Preparation', description: 'Preparation', class_name: 'PreparationCapitalPlanModule', sequence: 1, active: true},
-    {capital_plan_id: 1, name: 'Unconstrained Plan', description: 'Unconstrained Plan', class_name: 'UnconstrainedCapitalPlanModule', sequence: 2, active: true},
-    {capital_plan_id: 1, name: 'Constrained Plan', description: 'Constrained Plan', class_name: 'ConstrainedCapitalPlanModule', sequence: 3, active: true},
-    {capital_plan_id: 1, name: 'Final Review', description: 'Final Review', class_name: 'ReviewCapitalPlanModule', sequence: 4, active: true}
+    {capital_plan_type_id: 1, name: 'Preparation', sequence: 1, active: true},
+    {capital_plan_type_id: 1, name: 'Unconstrained Plan', sequence: 2, active: true},
+    {capital_plan_type_id: 1, name: 'Constrained Plan', sequence: 3, active: true},
+    {capital_plan_type_id: 1, name: 'Final Review', sequence: 4, active: true}
+]
+capital_plan_action_types = [
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Preparation').id, name: 'Assets Updated', class_name: 'AssetPreparationCapitalPlanAction', sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Preparation').id, name: 'Funding Verified', class_name: 'BaseCapitalPlanAction', sequence: 2, active: true},
+
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id, name: 'Agency Approval', class_name: 'AgencyApprovalUnconstrainedCapitalPlanAction', sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id, name: 'State Approval', class_name: 'StateApprovalUnconstrainedCapitalPlanAction', sequence: 2, active: true},
+
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'Funding Complete', class_name: 'FundingCompleteConstrainedCapitalPlanAction', sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'Agency Approval', class_name: 'AgencyApprovalConstrainedCapitalPlanAction', sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'State Approval', class_name: 'StateApprovalConstrainedCapitalPlanAction', sequence: 2, active: true},
+
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType(name: 'Final Review').id, name: 'Approver 1', class_name: 'BaseCapitalPlanAction', sequence: 4, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType(name: 'Final Review').id, name: 'Approver 2', class_name: 'BaseCapitalPlanAction', sequence: 4, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType(name: 'Final Review').id, name: 'Approver 3', class_name: 'BaseCapitalPlanAction', sequence: 4, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType(name: 'Final Review').id, name: 'Approver 4', class_name: 'ReviewCapitalPlanAction', sequence: 4, active: true}
 ]
 
-replace_tables = %w{ milestone_types capital_project_types replacement_status_types capital_plan_types capital_plan_module_types }
+replace_tables = %w{ milestone_types capital_project_types replacement_status_types capital_plan_types capital_plan_module_types capital_plan_action_types }
 merge_tables = %w{ roles asset_event_types }
 
 replace_tables.each do |table_name|

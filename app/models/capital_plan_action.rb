@@ -18,6 +18,10 @@ class CapitalPlanAction < ActiveRecord::Base
     prev_action.completed_at.present?
   end
 
+  def is_undo_allowed?
+    next_action.completed_at.nil?
+  end
+
   def prev_action
     CapitalPlanAction.where(capital_plan_type_id: capital_plan_action_type.capital_plan_type_id).where('sequence < ?', self.sequence).order(:sequence).last
   end

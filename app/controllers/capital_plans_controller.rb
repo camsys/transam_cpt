@@ -25,17 +25,12 @@ class CapitalPlansController < ApplicationController
   def complete_actions
     actions = CapitalPlanAction.find_by(object_key: params[:targets].split(','))
 
+    @capital_plan.system_actions.each do |sys_action|
+      sys_action.capital_action_type.class_name.constantize.new(capital_plan_action: sys_action, user: current_user).run
+    end
+
     actions.each do |action|
-      if action.is_allowed?
-        action.capital_action_type.class_name.constantize.new.run
-
-        # run next action in the plan if its a system step
-        next_action_klass = action.next_action.capital_plan_action_type.constantize.new
-        if next_action_klass.system_action?
-          next_action_klass.run
-        end
-      end
-
+      action.capital_action_type.class_name.constantize.new(capital_plan_action: action, user: current_user).run
     end
   end
 
@@ -58,8 +53,8 @@ class CapitalPlansController < ApplicationController
   def set_pagination
     if @organization_list.count > 1
       org_idx = @organization_list.index(@capital_plan.organization_id)
-      @prev_record_path = org_idx == 0 ? "#" : capital_plan_path(CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: @organization_list[org_idx-1]))
-      @next_record_path = org_idx == @organization_list.count-1 ? "#" : capital_plan_path(CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: @organization_list[org_idx+1]))
+      @prev_record_path = org_idx == 0 ? "#" : capital_plan_path(CapitalPlan.current_plan(@organization_list[org_idx-1]))
+      @next_record_path = org_idx == @organization_list.count-1 ? "#" : capital_plan_path(CapitalPlan.current_plan(@organization_list[org_idx+1]))
     end
   end
 

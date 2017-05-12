@@ -1,2 +1,0 @@
-class AgencyApprovalConstrainedCapitalPlanAction
-end

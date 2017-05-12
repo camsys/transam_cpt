@@ -1,2 +1,0 @@
-class TransitCapitalPlan
-end

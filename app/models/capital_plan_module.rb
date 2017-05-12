@@ -12,15 +12,11 @@ class CapitalPlanModule < ActiveRecord::Base
 
   default_scope { order(:sequence) }
 
-  def is_allowed?
-    prev_action.completed_at.present?
-  end
-
-  def prev_action
+  def prev_module
     CapitalPlanModule.where(capital_plan_type_id: capital_plan_module_type.capital_plan_type_id).where('sequence < ?', self.sequence).order(:sequence).last
   end
 
-  def next_action
+  def next_module
     CapitalPlanModule.where(capital_plan_type_id: capital_plan_module_type.capital_plan_type_id).where('sequence > ?', self.sequence).order(:sequence).first
   end
 
