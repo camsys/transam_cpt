@@ -4,7 +4,7 @@ class CapitalPlansController < ApplicationController
   include FiscalYear
 
   before_action :get_capital_plan, except: :index
-  before_action :set_pagination, only: [:show, :edit]
+  before_action :setup_vars, only: [:show, :edit]
 
   def index
     # state view
@@ -14,8 +14,6 @@ class CapitalPlansController < ApplicationController
 
   def show
     # Single agency view
-
-
   end
 
   def edit
@@ -24,10 +22,6 @@ class CapitalPlansController < ApplicationController
 
   def complete_actions
     actions = CapitalPlanAction.find_by(object_key: params[:targets].split(','))
-
-    @capital_plan.system_actions.each do |sys_action|
-      sys_action.capital_action_type.class_name.constantize.new(capital_plan_action: sys_action, user: current_user).run
-    end
 
     actions.each do |action|
       action.capital_action_type.class_name.constantize.new(capital_plan_action: action, user: current_user).run
@@ -50,12 +44,20 @@ class CapitalPlansController < ApplicationController
     end
   end
 
-  def set_pagination
+  def setup_vars
+
+    # pagination if needed
     if @organization_list.count > 1
       org_idx = @organization_list.index(@capital_plan.organization_id)
       @prev_record_path = org_idx == 0 ? "#" : capital_plan_path(CapitalPlan.current_plan(@organization_list[org_idx-1]))
       @next_record_path = org_idx == @organization_list.count-1 ? "#" : capital_plan_path(CapitalPlan.current_plan(@organization_list[org_idx+1]))
     end
+
+    #update system actions
+    @capital_plan.system_actions.each do |sys_action|
+      sys_action.capital_action_type.class_name.constantize.new(capital_plan_action: sys_action, user: current_user).run
+    end
+
   end
 
   private

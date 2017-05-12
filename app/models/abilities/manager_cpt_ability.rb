@@ -51,6 +51,9 @@ module Abilities
       end
 
       can :manage, CapitalPlan
+      can :complete_action, CapitalPlanAction do |a|
+        user.organization_ids.include? a.capital_plan.organization_id
+      end
 
     end
   end

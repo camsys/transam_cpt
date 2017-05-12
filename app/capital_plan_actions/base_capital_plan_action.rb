@@ -4,18 +4,18 @@ class BaseCapitalPlanAction
   attr_accessor :user
 
   def run
-    if pre_process
-      complete
+    if @capital_plan_action.completed_at.nil?
+      if pre_process
+        complete
 
-      post_process
-    end
-  end
+        post_process
+      end
+    else
+      if undo_pre_process
+        undo_complete
 
-  def undo
-    if undo_pre_process
-      undo_complete
-
-      undo_post_process
+        undo_post_process
+      end
     end
   end
 

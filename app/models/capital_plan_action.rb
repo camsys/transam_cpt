@@ -15,11 +15,11 @@ class CapitalPlanAction < ActiveRecord::Base
   default_scope { order(:sequence) }
 
   def is_allowed?
-    prev_action.completed_at.present?
+    prev_action.completed_at.present? && completed_at.nil?
   end
 
   def is_undo_allowed?
-    next_action.completed_at.nil?
+    next_action.completed_at.nil? && completed_at.present?
   end
 
   def prev_action

@@ -26,8 +26,19 @@ class CreateCapitalPlanActionTypes < ActiveRecord::Migration
         {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType(name: 'Final Review').id, name: 'Approver 4', class_name: 'ReviewCapitalPlanAction', sequence: 4, active: true}
     ]
 
+    roles = [
+        {name: 'approver_one', weight: 11, resource_id: Role.find_by(name: 'manager').id, resource_type: 'Role', privilege: true, label: 'Approver 1'},
+        {name: 'approver_two', weight: 12, resource_id: Role.find_by(name: 'manager').id, resource_type: 'Role', privilege: true, label: 'Approver 2'},
+        {name: 'approver_three', weight: 13, resource_id: Role.find_by(name: 'manager').id, resource_type: 'Role', privilege: true, label: 'Approver 3'},
+        {name: 'approver_four', weight: 14, resource_id: Role.find_by(name: 'manager').id, resource_type: 'Role', privilege: true, label: 'Approver 4'},
+    ]
+
     capital_plan_action_types.each do |type|
       CapitalPlanActionType.create!(type)
+    end
+
+    roles.each do |role|
+      Role.create!(role)
     end
   end
 end
