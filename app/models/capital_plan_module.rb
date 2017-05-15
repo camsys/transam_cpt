@@ -10,14 +10,20 @@ class CapitalPlanModule < ActiveRecord::Base
 
   belongs_to :capital_plan
 
+  has_many :capital_plan_actions
+
   default_scope { order(:sequence) }
 
+  def is_allowed?
+    !(capital_plan_actions.pluck(:completed_at).include? nil)
+  end
+
   def prev_module
-    CapitalPlanModule.where(capital_plan_type_id: capital_plan_module_type.capital_plan_type_id).where('sequence < ?', self.sequence).order(:sequence).last
+    capital_plan.capital_plan_modules.where('sequence < ?', self.sequence).order(:sequence).last
   end
 
   def next_module
-    CapitalPlanModule.where(capital_plan_type_id: capital_plan_module_type.capital_plan_type_id).where('sequence > ?', self.sequence).order(:sequence).first
+    capital_plan.capital_plan_modules.where('sequence > ?', self.sequence).order(:sequence).first
   end
 
 end

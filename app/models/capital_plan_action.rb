@@ -12,22 +12,51 @@ class CapitalPlanAction < ActiveRecord::Base
   belongs_to :capital_plan_module
   belongs_to :capital_plan
 
-  default_scope { order(:sequence) }
+  default_scope { joins(:capital_plan_module).order('capital_plan_modules.sequence', 'capital_plan_actions.sequence') }
+
+  def system_action?
+    capital_plan_action_type.system_action?
+  end
+
+  def completed?
+    completed_at.present?
+  end
 
   def is_allowed?
-    prev_action.completed_at.present? && completed_at.nil?
+
+    return true if system_action?
+
+    if capital_plan_action_type.prev_action_required
+      (prev_action.nil? || prev_action.completed_at.present?) && completed_at.nil?
+    else
+      prev_module = capital_plan.capital_plan_modules.find_by(sequence: capital_plan_module.sequence-1)
+      (prev_module.nil? || prev_module.completed_at.present?) && completed_at.nil?
+    end
   end
 
   def is_undo_allowed?
-    next_action.completed_at.nil? && completed_at.present?
+
+    if capital_plan_action_type.prev_action_required
+      (next_action.nil? || next_action.completed_at.nil?) && completed_at.present?
+    else
+      next_module = capital_plan.capital_plan_modules.find_by(sequence: capital_plan_module.sequence+1)
+      (next_module.nil? || next_module.capital_plan_actions.pluck(:completed_at).uniq == [nil]) && completed_at.present?
+    end
   end
 
   def prev_action
-    CapitalPlanAction.where(capital_plan_type_id: capital_plan_action_type.capital_plan_type_id).where('sequence < ?', self.sequence).order(:sequence).last
+    idx = capital_plan.capital_plan_actions.index(self)-1
+    if idx > -1
+      capital_plan.capital_plan_actions[idx]
+    end
+
   end
 
   def next_action
-    CapitalPlanAction.where(capital_plan_type_id: capital_plan_action_type.capital_plan_type_id).where('sequence > ?', self.sequence).order(:sequence).first
+    idx = capital_plan.capital_plan_actions.index(self)+1
+    if idx < capital_plan.capital_plan_actions.length
+      capital_plan.capital_plan_actions[idx]
+    end
   end
 
 end

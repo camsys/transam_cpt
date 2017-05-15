@@ -69,8 +69,8 @@ Rails.application.routes.draw do
     resources :tasks
   end
 
-  resources :capital_plans, :only => [:index, :show, :edit] do
-    member do
+  resources :capital_plans, :only => [:index, :show] do
+    collection do
       get 'complete_actions'
     end
   end

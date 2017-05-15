@@ -11,7 +11,7 @@ module Abilities
         (user.organization_ids.include? a.capital_plan.organization_id) && a.capital_plan_action_type.capital_plan_module_type != CapitalPlanModuleType.find_by(name: 'Final Review')
       end
 
-      cannot :read_all, CapitalPlan
+      cannot [:read_all, :update_all], CapitalPlan
 
     end
   end

@@ -15,11 +15,11 @@ class CapitalPlan < ActiveRecord::Base
   has_many :capital_plan_actions
 
   def self.current_plan(org_id)
-    plan = CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: org_id)
+    org = Organization.find_by(id: org_id)
+    plan = CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: org_id, capital_plan_type_id: org.capital_plan_type_id)
 
     # generate a new plan for the current planning year if DNE
     if plan.nil?
-      org = Organization.find_by(id: org_id)
       plan = CapitalPlan.create(fy_year: current_planning_year_year, organization_id: org_id, capital_plan_type_id: org.capital_plan_type_id)
       CapitalPlanModuleType.where(capital_plan_type_id: plan.capital_plan_type_id).each do |module_type|
         CapitalPlanModule.create(capital_plan_id: plan.id, capital_plan_module_type_id: module_type.id, sequence: module_type.sequence)
@@ -33,7 +33,12 @@ class CapitalPlan < ActiveRecord::Base
     plan
   end
 
+
+  def self.current_planning_year_year
+    CapitalPlan.new.current_planning_year_year
+  end
+
   def system_actions
-    capital_plan_actions.select{|a| a.class_name.constantize.new.system_action?}
+    capital_plan_actions.select{|a| a.capital_plan_action_type.class_name.constantize.new.system_action?}
   end
 end

@@ -4,4 +4,8 @@ class AgencyApprovalConstrainedCapitalPlanAction < BaseCapitalPlanAction
     # lock fund projects for agency users
   end
 
+  def undo
+
+  end
+
 end

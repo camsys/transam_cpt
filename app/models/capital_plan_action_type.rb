@@ -10,4 +10,8 @@ class CapitalPlanActionType < ActiveRecord::Base
     name
   end
 
+  def system_action?
+    class_name.constantize.new.system_action?
+  end
+
 end

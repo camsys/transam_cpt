@@ -1,0 +1,60 @@
+:ruby
+  show_actions ||= 0
+  table_dom_id ||= SecureRandom.hex
+
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :card_view => "false",
+    :pagination => 'false',
+    :search => 'false',
+    :show_columns => 'true',
+    :show_export => 'true',
+    :row_style => 'row_style',
+    :click_to_select => 'true',
+    :export_types => "['csv', 'txt', 'excel']",
+    :id_field => 'object_key',
+    :state_save => 'true',
+    :state_save_id_table => "capital_plans_id",
+    :state_save_expire => "1y",
+    :single_select => 'true'}}
+
+    %thead
+      %tr
+        %th.left
+        - capital_plan_type.capital_plan_module_types.each do |m|
+          %th.left{colspan: m.capital_plan_action_types.count}= m
+      %tr
+        %th.left
+        - capital_plan_type.capital_plan_module_types.each do |m|
+          - m.capital_plan_action_types.each do |a|
+            %th.left= a
+
+      %tr
+        %th.left
+        - capital_plan_type.capital_plan_module_types.each do |m|
+          - m.capital_plan_action_types.each do |a|
+            %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state', :formatter => 'checkBoxFormatter'}}
+
+    %tbody
+      - TransitOperator.where(id: @organization_list).each do |org|
+        %tr
+          %td= org.short_name
+          - CapitalPlan.current_plan(org.id).capital_plan_actions.each do |a|
+            %td
+              - if a.system_action?
+                = "system-#{a.notes}"
+              - elsif !(a.is_allowed? && (can? :complete_action, a))
+                = a.completed? ? 'checked_disabled' : 'disabled'
+
+
+
+:javascript
+  function checkBoxFormatter(value, row, index) {
+   // TEMP - bad code
+    console.log(value);
+    console.log(row);
+    console.log(index);
+    console.log("====");
+    return {disabled: true};
+
+  }

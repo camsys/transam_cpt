@@ -2,7 +2,8 @@
   show_actions ||= 0
   table_dom_id ||= SecureRandom.hex
 
-= link_to 'Save', move_assets_planning_index_path(:ali => @activity_line_item.object_key, :year => fy[1]), :remote => true, :class => 'btn btn-info capital-plan-action'
+
+
 
 .table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
@@ -20,12 +21,57 @@
     :state_save_expire => "1y",
     :single_select => 'true'}}
 
-  %tbody
-    - @capital_plan.capital_plan_modules.each do |m|
+    %thead
       %tr
-        %td.left{colspan: 2}= m.capital_module_type
-      - m.capital_plan_actions.each do |a|
+        %th
+        %th
+        %th
+        %th
+        %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state', :formatter => 'checkBoxFormatter'}}
+
+    %tbody
+      - prev_action = @capital_plan.capital_plan_actions.last
+      - @capital_plan.capital_plan_actions.each do |a|
         %tr
+          - if a.capital_plan_action_type.capital_plan_module_type != prev_action.capital_plan_action_type.capital_plan_module_type
+            %td.left= a.capital_plan_action_type.capital_plan_module_type
+          - else
+            %td
+          - prev_action = a
+          %td.left= a.object_key
           %td.left= a.capital_plan_action_type
-          - if show_actions == 1
-            %td.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+          %td.left= a.notes
+          %td
+            - if a.system_action?
+              = "system-#{a.notes}"
+            - elsif !(a.is_allowed? && (can? :complete_action, a))
+              = a.completed? ? 'checked_disabled' : 'disabled'
+
+:javascript
+  var hide_checkboxes = [];
+
+  function checkBoxFormatter(value, row, index) {
+    var params = {};
+
+    if (value.indexOf('system') != -1) {
+      hide_checkboxes.push(index);
+      return value.substring(8);
+    } else {
+      if (value.indexOf('checked') != -1) {
+        params['checked'] = true;
+      }
+      if (value.indexOf('disabled') != -1) {
+        params['disabled'] = true;
+      }
+      return params;
+    }
+
+  }
+
+  $(document).ready(function() {
+
+    $.each(hide_checkboxes, function( index, value ) {
+      $('input[data-index="'+value+'"]').hide();
+    });
+  });
+

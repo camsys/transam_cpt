@@ -1,4 +1,4 @@
-class ReviewCapitalPlanAction < BaseCapitalPlanAction
+class ReviewCapitalPlanModule < BaseCapitalPlanAction
   def complete
     # go to archiving
     # export options to dotgrants
