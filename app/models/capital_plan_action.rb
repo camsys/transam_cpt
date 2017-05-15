@@ -35,13 +35,8 @@ class CapitalPlanAction < ActiveRecord::Base
   end
 
   def is_undo_allowed?
-
-    if capital_plan_action_type.prev_action_required
-      (next_action.nil? || next_action.completed_at.nil?) && completed_at.present?
-    else
-      next_module = capital_plan.capital_plan_modules.find_by(sequence: capital_plan_module.sequence+1)
-      (next_module.nil? || next_module.capital_plan_actions.pluck(:completed_at).uniq == [nil]) && completed_at.present?
-    end
+    next_module = capital_plan.capital_plan_modules.find_by(sequence: capital_plan_module.sequence+1)
+    (next_module.nil? || next_module.capital_plan_actions.pluck(:completed_at).uniq == [nil]) && completed_at.present?
   end
 
   def prev_action

@@ -23,13 +23,12 @@
   // Updates the selected rows in the table
   function update_selected() {
     var selected = $('##{table_dom_id}').bootstrapTable('getSelections');
-    selected_rows = new Set();
-    selected_states = new Set();
+    selected_plan_actions = [];
     for (i = 0; i < selected.length; i++) {
       //console.log(selected[i]);
       selected_plan_actions.push(selected[i][1]);
     }
-    console.log(selected_plan_actions);
+    //console.log(selected_plan_actions);
 
   };
 

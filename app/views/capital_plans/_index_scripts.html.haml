@@ -2,54 +2,28 @@
 
   var selected_plan_actions = [];
 
-  $("##{table_dom_id}").on('click-row.bs.table', function (e, row, $element) {
-    var url = path.replace("x", row['object_key']);
-    document.location.href = url;
-  }).on('check.bs.table', function(e, row) {
-    update_selected();
-  }).on('uncheck.bs.table', function(e, row) {
-    update_selected();
-  }).on('check-all.bs.table', function(e, row) {
-    update_selected();
-  }).on('uncheck-all.bs.table', function(e, row) {
-    update_selected();
-  }).on('post-body.bs.table', function(e, row) {
-    var i, checkbox, $table = $("##{table_dom_id}");
-    //update the checkbox selections after the table body is rendered
-    for(i=0; i<selected_plan_actions.length; i++){
-      checkbox = $table.find('input[type=checkbox][value=' +selected_plan_actions[i]+ ']');
-      checkbox.length && checkbox.prop('checked', true) && checkbox.parents('tr').addClass('selected');
-    }
+  $(document).ready(function() {
+
+    $(".capital-plan-action-checkbox").on('click', function(e) {
+      selected_plan_actions = [];
+      $( ".capital-plan-action-checkbox:checked" ).each(function() {
+        selected_plan_actions.push($( this ).val());
+      });
+
+      //console.log(selected_plan_actions);
+    });
+
+    $(".capital-plan-action").on('click', function(e) {
+      var href = $(this).attr('href');
+
+      $.ajax({
+          url: href,
+          data: { targets: selected_plan_actions.join(',')}
+      });
+
+      return false;
+    });
 
   });
 
-  // Updates the selected rows in the table
-  function update_selected() {
-    var $table, selected, notSelected, removeKey, i;
-    $table = $("##{table_dom_id}");
-    selected = $table.bootstrapTable('getSelections');
-    notSelected = $table.find('input:unchecked').map(function(a,b){ return b.value; })
-    //console.log(selected);
-    // remove unselected from the selected
-    for(i = 0; i < notSelected.length; i++){
-      removeKey = selected_plan_actions.indexOf( notSelected[i] );
-      if(removeKey > -1){
-        selected_plan_actions.splice(removeKey, 1);
-      }
-    }
-    // add selected to selected (if not already there)
-    for (i = 0; i < selected.length; i++) {
-      var selected_key = selected[i].object_key;
-      if(selected_plan_actions.indexOf(selected_key) < 0) {
-        selected_plan_actions.push(selected_key);
-      }
-    }
-  };
 
-  $(".capital-plan-action").on('click', function(e) {
-    var href = $(this).attr('href');
-    href += ('&targets=' + selected_plan_actions.join(','));
-
-    $(this).attr('href', href);
-    return true;
-  });

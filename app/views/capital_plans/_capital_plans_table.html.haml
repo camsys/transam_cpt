@@ -33,28 +33,20 @@
         %th.left
         - capital_plan_type.capital_plan_module_types.each do |m|
           - m.capital_plan_action_types.each do |a|
-            %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state', :formatter => 'checkBoxFormatter'}}
+            %th.bs-checkbox
 
     %tbody
-      - TransitOperator.where(id: @organization_list).each do |org|
+      - TransitOperator.where(id: @organization_list).each_with_index do |org, idx|
         %tr
           %td= org.short_name
           - CapitalPlan.current_plan(org.id).capital_plan_actions.each do |a|
             %td
               - if a.system_action?
-                = "system-#{a.notes}"
-              - elsif !(a.is_allowed? && (can? :complete_action, a))
-                = a.completed? ? 'checked_disabled' : 'disabled'
-
-
-
-:javascript
-  function checkBoxFormatter(value, row, index) {
-   // TEMP - bad code
-    console.log(value);
-    console.log(row);
-    console.log(index);
-    console.log("====");
-    return {disabled: true};
-
-  }
+                = a.notes
+              - else
+                - checkbox_params = {type: 'checkbox', data: {index: idx}, value: a.object_key, class: 'capital-plan-action-checkbox'}
+                - if a.completed?
+                  - checkbox_params['checked'] = 'checked'
+                - if !(a.is_allowed? && (can? :complete_action, a))
+                  - checkbox_params['disabled'] = 'disabled'
+                %input{checkbox_params}
