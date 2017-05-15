@@ -10,14 +10,17 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
     notes = ""
     Audit.all.each do |audit|
       audit_results = report.get_data(audit, [@capital_plan_action.capital_plan.organization_id], 'Asset', {disposition_date: nil},{})
+      total_assets = 0
+      passed_assets = 0
       audit_results[1].each do |row|
-        pcnt_passed = ((row[3] / row[2].to_f) * 100).truncate
-
-        if notes.length > 0
-          notes += ",#{pcnt_passed}%"
-        else
-          notes += "#{pcnt_passed}%"
-        end
+        total_assets += row[2]
+        passed_assets += row[3]
+      end
+      pcnt_passed = ((passed_assets / total_assets.to_f) * 100).truncate
+      if notes.length > 0
+        notes += ",#{pcnt_passed}%"
+      else
+        notes += "#{pcnt_passed}%"
       end
     end
 
@@ -25,7 +28,7 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
   end
 
   def post_process
-    if @capital_plan_action.notes == '100%'
+    if @capital_plan_action.notes.split(',').uniq == ['100%']
       super
     end
   end
