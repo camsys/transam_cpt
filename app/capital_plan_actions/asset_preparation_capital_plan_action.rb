@@ -16,11 +16,13 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
         total_assets += row[2]
         passed_assets += row[3]
       end
-      pcnt_passed = ((passed_assets / total_assets.to_f) * 100).truncate
-      if notes.length > 0
-        notes += ",#{pcnt_passed}%"
-      else
-        notes += "#{pcnt_passed}%"
+      if audit_results[1].length > 0
+        pcnt_passed = ((passed_assets / total_assets.to_f) * 100).truncate
+        if notes.length > 0
+          notes += ",#{pcnt_passed}%"
+        else
+          notes += "#{pcnt_passed}%"
+        end
       end
     end
 
