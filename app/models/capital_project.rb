@@ -51,6 +51,9 @@ class CapitalProject < ActiveRecord::Base
   # Has 0 or more comments. Using a polymorphic association, These will be removed if the project is removed
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
+  # every capital_project is done to support a set of geographies
+  has_and_belongs_to_many   :districts
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
