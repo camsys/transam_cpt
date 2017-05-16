@@ -32,6 +32,23 @@
     var asset_types = JSON.parse('#{@asset_types.to_json}');
     var current_planning_year = #{current_planning_year_year};
     var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
+    var have_sogr_locked_list = #{(@has_locked_sogr_this_fiscal_year || {}).to_json.html_safe}
+    var second_fy_year = #{(@fiscal_years[1][1])}
+
+    console.log("first_fy_year "+second_fy_year);
+    console.log("first_fy_year +1"+second_fy_year+1);
+
+    console.log("has_sogr_project_org_list FOLLOWS");
+    console.log(has_sogr_project_org_list);
+    console.log("has_sogr_project_org_list ABOVE");
+
+    console.log("-------------------------------");
+    console.log("-------------------------------");
+    console.log("-------------------------------");
+
+    console.log("have_sogr_locked_list FOLLOWS");
+    console.log(have_sogr_locked_list);
+    console.log("have_sogr_locked_list ABOVE");
 
     // Detect changes in the org selected
     $('#builder_proxy_organization_id').on('change', function(event) {
@@ -40,9 +57,26 @@
       if (id != org_id) {
         // store the selected org
         org_id = id;
+        console.log("THE VALUE FOR org_id " + org_id);
+
+        var fy_year = current_planning_year;
+
+        var is_sogr_locked = $.inArray(org_id, have_sogr_locked_list);
+
+
+        console.log("THE VALUE FOR is_sogr_locked " + is_sogr_locked);
+        if(is_sogr_locked >= 0)
+        {
+            console.log("IN is_sogr_locked")
+
+          $("#builder_proxy_start_fy option[value="+(second_fy_year)+"]").hide();
+        }
+        else{
+          console.log("IN ELSE NOT is_sogr_locked")
+          $("#builder_proxy_start_fy option[value="+(second_fy_year)+"]").show();
+        }
 
         var org_has_sogr_project = has_sogr_project_org_list[org_id];
-        var fy_year = current_planning_year;
         if(org_has_sogr_project) {
           $('.builder-warning').show();
           fy_year += 3;
@@ -66,4 +100,6 @@
         }
       }
     });
+
+
   });

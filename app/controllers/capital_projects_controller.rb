@@ -71,6 +71,18 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
     else
       @has_sogr_project_org_list = CapitalProject.joins(:organization).where(organization_id: @organization_list).sogr.group(:organization_id).count
+
+      @has_locked_sogr_this_fiscal_year = []
+
+      # unless (current_user.organization.organization_type.class_name == "Grantor")
+        #TODO Makes this a useful join
+        capital_plan_modules = CapitalPlanModule.where(id: CapitalPlanModuleType.find_by(class_name: 'UnconstrainedCapitalPlanModule').id, capital_plan_id: CapitalPlan.where(organization_id: @organization_list, fy_year: current_fiscal_year_year+1)).where.not(completed_at: nil)
+
+        capital_plan_modules.each { |cpm|
+          @has_locked_sogr_this_fiscal_year << cpm.capital_plan.organization.id.to_s
+        }
+      # end
+
     end
 
     @message = "Creating SOGR capital projects. This process might take a while."
