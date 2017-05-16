@@ -1,12 +1,11 @@
+#spinner= loader_panel_tag({:message => "Updating capital plan(s)...", :size => 3, :spinner => "cog"})
+
 .row
   .col-md-12
-    - if can? :update, CapitalPlan
-      = link_to 'Save', complete_actions_capital_plans_path, :remote => true, :class => 'btn btn-info capital-plan-action', :data => {:confirm => 'Are you sure?'}
-
-
     - CapitalPlanType.all.each do |plan_type|
       - table_dom_id = SecureRandom.hex
       = render partial: 'capital_plans_table', locals: {capital_plan_type: plan_type, table_dom_id: table_dom_id}
 
       - if can? :update, CapitalPlan
-        = render partial: 'index_scripts', locals: {table_dom_id: table_dom_id}
+        = render partial: 'scripts', locals: {table_dom_id: table_dom_id}
+
