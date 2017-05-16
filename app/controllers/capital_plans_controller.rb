@@ -1,5 +1,7 @@
 class CapitalPlansController < OrganizationAwareController
 
+  before_action :get_capital_plan, only: [:show]
+
   def index
     # state view
 
@@ -7,18 +9,6 @@ class CapitalPlansController < OrganizationAwareController
   end
 
   def show
-    @capital_plan = CapitalPlan.find_by(object_key: params[:id], organization_id: @organization_list)
-
-    if @capital_plan.nil?
-      if CapitalPlan.find_by(object_key: params[:id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
-        redirect_to '/404'
-      else
-        notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
-        redirect_to capital_plans_path
-      end
-      return
-    end
-
     authorize! :read, @capital_plan
 
     # pagination if needed
@@ -36,9 +26,7 @@ class CapitalPlansController < OrganizationAwareController
 
   def complete_actions
 
-
-    actions = CapitalPlanAction.where(object_key: params[:targets].split(','))
-
+    actions = CapitalPlanAction.where('(object_key IN (?) AND completed_at IS NULL) OR (object_key IN (?) AND completed_at IS NOT NULL)', params[:targets].split(','), params[:undo_targets].split(','))
     actions.each do |action|
       authorize! :update, action.capital_plan
       action.capital_plan_action_type.class_name.constantize.new(capital_plan_action: action, user: current_user).run
@@ -48,6 +36,20 @@ class CapitalPlansController < OrganizationAwareController
   end
 
   protected
+
+  def get_capital_plan
+    @capital_plan = CapitalPlan.find_by(object_key: params[:id], organization_id: @organization_list)
+
+    if @capital_plan.nil?
+      if CapitalPlan.find_by(object_key: params[:id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
+        redirect_to '/404'
+      else
+        notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
+        redirect_to capital_plans_path
+      end
+      return
+    end
+  end
 
   private
 end

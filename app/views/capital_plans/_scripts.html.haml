@@ -1,44 +1,31 @@
 :javascript
 
   var selected_plan_actions = [];
+  var unselected_plan_actions = [];
 
-  $("##{table_dom_id}").on('check.bs.table', function(e, row) {
-    update_selected();
-  }).on('uncheck.bs.table', function(e, row) {
-    update_selected();
-  }).on('check-all.bs.table', function(e, row) {
-    update_selected();
-  }).on('uncheck-all.bs.table', function(e, row) {
-    update_selected();
-  }).on('post-body.bs.table', function(e, row) {
-    var i, checkbox, $table = $("##{table_dom_id}");
-    //update the checkbox selections after the table body is rendered
-    for(i=0; i<selected_plan_actions.length; i++){
-      checkbox = $table.find('input[type=checkbox][value=' +selected_plan_actions[i]+ ']');
-      checkbox.length && checkbox.prop('checked', true) && checkbox.parents('tr').addClass('selected');
-    }
+  $(document).ready(function() {
 
-  });
+    $(".capital-plan-action-checkbox").on('click', function(e) {
+      if ($(this).is(':checked')) {
+        selected_plan_actions.push($( this ).val());
+      } else {
+        unselected_plan_actions.push($( this ).val());
+      }
+    });
 
-  // Updates the selected rows in the table
-  function update_selected() {
-    var selected = $('##{table_dom_id}').bootstrapTable('getSelections');
-    selected_plan_actions = [];
-    for (i = 0; i < selected.length; i++) {
-      //console.log(selected[i]);
-      selected_plan_actions.push(selected[i][1]);
-    }
-    //console.log(selected_plan_actions);
+    $(".capital-plan-action").on('click', function(e) {
+      $('#spinner').show();
 
-  };
-
-  $(".capital-plan-action").on('click', function(e) {
       var href = $(this).attr('href');
+      selected_plan_actions = $.unique(selected_plan_actions);
+      unselected_plan_actions = $.unique(unselected_plan_actions);
 
       $.ajax({
           url: href,
-          data: { targets: selected_plan_actions.join(',')}
+          data: { targets: selected_plan_actions.join(','), undo_targets: unselected_plan_actions.join(',')}
       });
 
       return false;
+    });
+
   });

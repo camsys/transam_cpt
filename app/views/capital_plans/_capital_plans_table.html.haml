@@ -2,15 +2,22 @@
   show_actions ||= 0
   table_dom_id ||= SecureRandom.hex
 
+#table_actions.btn-toolbar
+  - if can? :update, CapitalPlan
+    .btn-group
+      = link_to complete_actions_capital_plans_path, :remote => true, :class => 'btn btn-default capital-plan-action', :data => {:confirm => 'Are you sure?'} do
+        %i.fa.fa-edit.fa-fw
+        = "Update Capital Plans"
+
 .table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
     :card_view => "false",
     :pagination => 'false',
     :search => 'false',
-    :show_columns => 'true',
     :show_export => 'true',
     :row_style => 'row_style',
     :click_to_select => 'true',
+    :toolbar => "#table_actions",
     :export_types => "['csv', 'txt', 'excel']",
     :id_field => 'object_key',
     :state_save => 'true',
@@ -40,13 +47,16 @@
         %tr
           %td= org.short_name
           - CapitalPlan.current_plan(org.id).capital_plan_actions.each do |a|
-            %td
+            %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
               - if a.system_action?
                 = a.notes
               - else
                 - checkbox_params = {type: 'checkbox', data: {index: idx}, value: a.object_key, class: 'capital-plan-action-checkbox'}
                 - if a.completed?
                   - checkbox_params['checked'] = 'checked'
-                - if !(a.is_allowed? && (can? :complete_action, a))
-                  - checkbox_params['disabled'] = 'disabled'
+                  - if !(a.is_undo_allowed? && (can? :complete_action, a))
+                    - checkbox_params['disabled'] = 'disabled'
+                - else
+                  - if !(a.is_allowed? && (can? :complete_action, a))
+                    - checkbox_params['disabled'] = 'disabled'
                 %input{checkbox_params}
