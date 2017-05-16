@@ -5,12 +5,38 @@
 
   $(document).ready(function() {
 
+    var org_count = parseInt('#{TransitOperator.where(id: @organization_list).count}');
+
+    // disable group checkboxes if all agencies disabled
+    $(".capital-plan-action-grp-checkbox").each(function() {
+      disabled_count = $('input.capital-plan-action-checkbox[data-col-index="'+$(this).data('col-index')+'"]:disabled').length
+      if (disabled_count == org_count) {
+        $(this).prop('disabled', true);
+      }
+    });
+
     $(".capital-plan-action-checkbox").on('click', function(e) {
       if ($(this).is(':checked')) {
         selected_plan_actions.push($( this ).val());
       } else {
         unselected_plan_actions.push($( this ).val());
       }
+    });
+
+    $(".capital-plan-action-grp-checkbox").on('click', function(e) {
+      grp_checkbox = $(this);
+      $('input.capital-plan-action-checkbox[data-col-index="'+$(this).data('col-index')+'"]').each(function() {
+        if ($(this).is(":not(:disabled)")) {
+          if ((grp_checkbox.is(':checked')) && ($(this).is(':not(:checked)'))) {
+            selected_plan_actions.push($( this ).val());
+          } else if ((grp_checkbox.is(':not(:checked)')) && ($(this).is(':checked'))) {
+            unselected_plan_actions.push($( this ).val());
+          }
+
+          // check/uncheck all
+          $(this).prop('checked', grp_checkbox.is(':checked'));
+        }
+      });
     });
 
     $(".capital-plan-action").on('click', function(e) {

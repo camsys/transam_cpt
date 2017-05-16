@@ -38,20 +38,28 @@
 
       %tr
         %th.left
+        - col_idx = 0
         - capital_plan_type.capital_plan_module_types.each do |m|
-          - m.capital_plan_action_types.each do |a|
+          - m.capital_plan_action_types.each_with_index do |a, idx|
+            - col_idx += 1
             %th.bs-checkbox
+              - unless a.system_action?
+                %input{type: 'checkbox', data: {col_index: col_idx}, value: a.id, class: 'capital-plan-action-grp-checkbox'}
+
+        - view_component = "app_capital_plans_table_head"
+        - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+          = render :partial => "capital_plans/#{view_component}"
 
     %tbody
-      - TransitOperator.where(id: @organization_list).each_with_index do |org, idx|
+      - TransitOperator.where(id: @organization_list).each_with_index do |org, row_idx|
         %tr
           %td= org.short_name
-          - CapitalPlan.current_plan(org.id).capital_plan_actions.each do |a|
+          - CapitalPlan.current_plan(org.id).capital_plan_actions.each_with_index do |a, col_idx|
             %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
               - if a.system_action?
                 = a.notes
               - else
-                - checkbox_params = {type: 'checkbox', data: {index: idx}, value: a.object_key, class: 'capital-plan-action-checkbox'}
+                - checkbox_params = {type: 'checkbox', data: {index: row_idx, col_index: col_idx+1}, value: a.object_key, class: 'capital-plan-action-checkbox'}
                 - if a.completed?
                   - checkbox_params['checked'] = 'checked'
                   - if !(a.is_undo_allowed? && (can? :complete_action, a))
@@ -60,3 +68,7 @@
                   - if !(a.is_allowed? && (can? :complete_action, a))
                     - checkbox_params['disabled'] = 'disabled'
                 %input{checkbox_params}
+
+          - view_component = "app_capital_plans_table_row"
+          - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+            = render :partial => "capital_plans/#{view_component}", :locals => {org: org}
