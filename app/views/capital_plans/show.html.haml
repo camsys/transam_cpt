@@ -8,3 +8,15 @@
 
     - if can? :update, @capital_plan
       = render partial: 'scripts', locals: {table_dom_id: table_dom_id}
+
+      :javascript
+          function checkboxes_to_update(action) {
+            targets = [];
+            $('input.capital-plan-action-checkbox').each(function() {
+              if ($(this) != action) {
+                targets.push($( this ).val());
+              }
+            });
+
+            return targets.join(',');
+          }

@@ -9,3 +9,15 @@
       - if can? :update, CapitalPlan
         = render partial: 'scripts', locals: {table_dom_id: table_dom_id}
 
+        :javascript
+          function checkboxes_to_update(action) {
+            targets = [];
+            $('input.capital-plan-action-checkbox[data-index="'+action.data('index')+'"]').each(function() {
+              if ($(this).val() != action.val()) {
+                targets.push($( this ).val());
+              }
+            });
+
+            return targets.join(',');
+          }
+

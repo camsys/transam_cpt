@@ -35,6 +35,35 @@ class CapitalPlansController < OrganizationAwareController
     redirect_to :back
   end
 
+  def get_checkboxes
+    main_action = CapitalPlanAction.find_by(object_key: params[:capital_plan_action])
+
+    # temporarily mark action as complete so can see what other actions would be now allowed
+    main_action.update!(completed_at: Time.now)
+
+    actions = CapitalPlanAction.where(object_key: params[:targets].split(','))
+    checkbox_params = Hash.new
+    actions.each do |a|
+      checkbox_params[a.object_key] = Hash.new
+      if a.completed?
+        if !(a.is_undo_allowed? && (can? :complete_action, a))
+          checkbox_params[a.object_key]['disabled'] = 'disabled'
+        end
+      else
+        if !(a.is_allowed? && (can? :complete_action, a))
+          checkbox_params[a.object_key]['disabled'] = 'disabled'
+        end
+      end
+    end
+
+    # reset completed at
+    main_action.update!(completed_at: nil)
+
+    respond_to do |format|
+      format.json { render json: checkbox_params.to_json }
+    end
+  end
+
   protected
 
   def get_capital_plan

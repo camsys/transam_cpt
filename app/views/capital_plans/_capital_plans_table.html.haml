@@ -30,11 +30,19 @@
         %th.left
         - capital_plan_type.capital_plan_module_types.each do |m|
           %th.left{colspan: m.capital_plan_action_types.count}= m
+
+        - view_component = "app_capital_plans_table_head"
+        - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+          = render :partial => "capital_plans/#{view_component}"
       %tr
         %th.left
         - capital_plan_type.capital_plan_module_types.each do |m|
           - m.capital_plan_action_types.each do |a|
             %th.left= a
+
+        - view_component = "app_capital_plans_table_head"
+        - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+          = render :partial => "capital_plans/#{view_component}"
 
       %tr
         %th.left

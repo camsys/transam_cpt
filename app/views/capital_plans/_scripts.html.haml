@@ -21,6 +21,8 @@
       } else {
         unselected_plan_actions.push($( this ).val());
       }
+
+      update_checkboxes($(this).val(), checkboxes_to_update($(this)));
     });
 
     $(".capital-plan-action-grp-checkbox").on('click', function(e) {
@@ -55,3 +57,26 @@
     });
 
   });
+
+  function update_checkboxes(action, targets) {
+    var url = '#{get_checkboxes_capital_plans_path}';
+
+    $.ajax({
+      url: url,
+      data: {capital_plan_action: action, targets: targets},
+      success: function(result){
+        console.log(result);
+        $.each( result, function( key, value ) {
+          checkbox = $('input.capital-plan-action-checkbox[value="'+key+'"]');
+          if (value['disabled'] == 'disabled') {
+            checkbox.prop('disabled', true);
+          } else {
+            checkbox.prop('disabled', false);
+          }
+        });
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+      }
+    });
+  }

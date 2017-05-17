@@ -72,6 +72,7 @@ Rails.application.routes.draw do
   resources :capital_plans, :only => [:index, :show] do
     collection do
       get 'complete_actions'
+      get 'get_checkboxes'
     end
   end
 
