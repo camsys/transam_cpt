@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary]
+  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -290,6 +290,27 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         end
       }
       format.json { head :no_content }
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # ajax called method used to find the distrcits for an organization to auto-populate on capital project loading
+  #-----------------------------------------------------------------------------
+  def find_districts
+    organization_id = params[:district_desired_org_id]
+    districts = FtaAgency.find_by(id: organization_id).districts
+
+    result = []
+    districts.each { |d|
+      entry = []
+      entry << d.id
+      entry << d.name
+      result << entry
+      }
+
+    @organization_distrcits = result
+    respond_to do |format|
+      format.json { render json: result.to_json }
     end
   end
 

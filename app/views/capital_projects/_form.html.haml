@@ -26,12 +26,14 @@
         = f.input :fy_year, :collection => @fiscal_years, :include_blank => false, :label => "Fiscal Year"
       .col-md-4
         = f.association :team_ali_code, :disabled => !@project.new_record?, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
-      .col-md-4
-        = f.association :capital_project_type, :collection => CapitalProjectType.active, :include_blank => false, :label => 'Project Type'
-
     .row
       .col-md-4
+        = f.association :capital_project_type, :collection => CapitalProjectType.active, :include_blank => false, :label => 'Project Type'
+      .col-md-4
+        = f.association :districts, :collection => District.active, :include_blank => false, :label => 'Project District'
+      .col-md-4
         = f.input :emergency, :as => :boolean, :label => 'Emergency project'
+    .row
       .col-md-4
         = f.input :multi_year, :as => :boolean, :label => 'Multi year project'
 
@@ -79,4 +81,37 @@
     strictMax: false,
     safeClass: 'text-muted',
     overClass: 'text-danger'
+  });
+
+  var org_id = 0;
+    //-#var asset_types = JSON.parse('#{@asset_types.to_json}');
+    //-#var current_planning_year = #{current_planning_year_year};
+    //-#var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
+
+  // Detect changes in the org selected
+  $('#capital_project_organization_id').on('change', function(event) {
+    var id = $(this).val();
+
+    var url = '#{find_districts_capital_projects_path}';
+
+    console.log("Find districts url is "+url);
+
+    $.ajax({
+      type: 'GET',
+      url: url,
+      data: {district_desired_org_id: id},
+      success: function(result){
+        console.log(result);
+        $('#capital_project_district_ids').empty();
+        for(i = 0;i<result.length;i++){
+          //add an option for each organizations available to the tempalte
+          $("#capital_project_district_ids").append(
+              $("<option></option>").attr("value", result[i][0]).text(result[i][1])
+          );
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+        }
+      });
   });

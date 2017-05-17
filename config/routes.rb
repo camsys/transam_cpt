@@ -32,8 +32,9 @@ Rails.application.routes.draw do
 
     collection do
       get   'builder'
+      get   'get_dashboard_summary'
+      get   'find_districts'
       post  'runner'
-      get 'get_dashboard_summary'
     end
 
     member do
