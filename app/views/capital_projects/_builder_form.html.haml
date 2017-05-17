@@ -33,7 +33,7 @@
     var current_planning_year = #{current_planning_year_year};
     var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
     var have_sogr_locked_list = #{(@has_locked_sogr_this_fiscal_year || {}).to_json.html_safe}
-    var planning_year = #{(@fiscal_years[1][1])}
+    var planning_year = parseInt(#{(@fiscal_years[1][1])});
 
     // Detect changes in the org selected
     $('#builder_proxy_organization_id').on('change', function(event) {
@@ -47,10 +47,22 @@
 
         if(is_sogr_locked >= 0)
         {
-          $("#builder_proxy_start_fy option[value="+(planning_year)+"]").hide();
+          $("#builder_proxy_start_fy option[value='"+(planning_year)+"']").hide();
+          var smaller years = planning_year-1
+          while(smaller_years >= current_planning_year)
+          {
+            $("#builder_proxy_start_fy option[value='"+(smaller years)+"']").hide();
+            smaller_years--;
+          }
         }
         else{
-          $("#builder_proxy_start_fy option[value="+(planning_year)+"]").show();
+          $("#builder_proxy_start_fy option[value='"+(planning_year)+"']").show();
+          var smaller years = planning_year-1
+          while(smaller_years >= current_planning_year)
+          {
+            $("#builder_proxy_start_fy option[value='"+(smaller years)+"']").show();
+            smaller_years--;
+          }
         }
 
         var org_has_sogr_project = has_sogr_project_org_list[org_id];

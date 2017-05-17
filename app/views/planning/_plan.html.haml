@@ -56,7 +56,13 @@
               - (proj_alis.find_all { |ali| ali.fy_year == year }).each do |ali|
                 - project_has_early_replacement_assets = true if !project_has_early_replacement_assets && !ali.notional? && ali.sogr? && ali.has_early_replacement_assets?
                 /= render 'ali_render_adaptor', project: project, ali: ali
-                - if ali.notional?
+                - if ali.is_planning_complete
+                  /= render :partial => 'planning/sogr_ali', :locals => {:project => project, :ali => ali}
+                  - draggable_class = ""
+                  .panel.panel-complete.transam-tooltip{:data => {:year => ali.fy_year, :ali => ali.object_key, :project => ali.capital_project.object_key, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
+                    = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}
+
+                - elsif ali.notional?
                   /= render :partial => 'planning/notional_ali', :locals => {:project => project, :ali => ali}
                   .panel.panel-notional.transam-tooltip{:data => {:year => ali.fy_year, :ali => ali.object_key, :project => ali.capital_project.object_key, :placement => "left", :title => "#{format_as_fiscal_year(ali.fy_year)}", :toggle => "tooltip"}, :tabindex => "0"}
                     = render :partial => 'planning/ali', :locals => {:project => project, :ali => ali}

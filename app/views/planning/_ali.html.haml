@@ -9,18 +9,21 @@
       %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'top', :title => "Contains early replacement assets"}}
         %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
   %p.text-center.bold{:id => ali.object_key+'-ali-cost', :data => {:cost => ali.cost}}= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
-  %hr.ali
-  .button-toolbar{:role => 'toolbar'}
-    - if can? :update, ali or can? :update_cost, ali
-      .btn-group.pull-right.panel-action
-        %button.btn.btn-info.btn-xs.dropdown-toggle{:data => {:toggle => 'dropdown'}, :class => 'ali_actions'}
-          %i.fa.fa-edit
-          %span.caret
-        %ul.dropdown-menu{:role => 'menu'}
-          = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => project, :ali => ali}
 
-    - unless ali.assets.empty?
-      .btn-group.pull-left.panel-action
-        = link_to assets_capital_project_activity_line_item_path(project, ali), :class => 'btn btn-success btn-xs', :remote => true do
-          %i.fa.fa-list.fa-fw
+  -#Should this be moved into the ability file? Or should we assume if the is_planning complete then nobody can edit this
+  -unless ali.is_planning_complete
+    %hr.ali
+    .button-toolbar{:role => 'toolbar'}
+      - if can? :update, ali or can? :update_cost, ali
+        .btn-group.pull-right.panel-action
+          %button.btn.btn-info.btn-xs.dropdown-toggle{:data => {:toggle => 'dropdown'}, :class => 'ali_actions'}
+            %i.fa.fa-edit
+            %span.caret
+          %ul.dropdown-menu{:role => 'menu'}
+            = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => project, :ali => ali}
+
+      - unless ali.assets.empty?
+        .btn-group.pull-left.panel-action
+          = link_to assets_capital_project_activity_line_item_path(project, ali), :class => 'btn btn-success btn-xs', :remote => true do
+            %i.fa.fa-list.fa-fw
 
