@@ -1,7 +1,7 @@
 class AgencyApprovalUnconstrainedCapitalPlanAction < BaseCapitalPlanAction
 
   def complete
-    # lock sogr for agency users
+  #   there is nothing to do at this point. SOGR for the completing agency is only locked once both state & agency have approved
   end
 
   def undo

@@ -23,6 +23,10 @@ class BaseCapitalPlanModule
     @capital_plan_module.update(completed_at: Time.now, completed_by_user_id: @user.id)
   end
 
+  def undo_post_process
+    @capital_plan_module.update(completed_at: nil, completed_by_user_id: @user.id)
+  end
+
   private
 
   def initialize(args = {})
