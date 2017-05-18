@@ -5,4 +5,8 @@
       = " Actions"
       %span.caret
     %ul.dropdown-menu{:role => 'menu'}
+      %li
+        = link_to edit_milestones_capital_project_activity_line_item_path(project, ali), :remote => true do
+          %i.fa.fa-clock-o.fa-fw
+          = " Update Milestones"
       = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => project, :ali => ali}

@@ -1,20 +1,34 @@
 = simple_form_for(@activity_line_item,
   :url => capital_project_activity_line_item_path(@project, @activity_line_item),
-  :html => {:class => 'form-horizontal' },
+  :html => {:class => 'form-horizontal milestones_form' },
   :method => 'put',
   :wrapper => :horizontal_form,
   :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
-  .col-md-12
-    .table-responsive
-      %table.table
-        %thead
-          %tr
-            %th.left.nowrap Milestone
-            %th.left Completion Date 
-            %th.left Comments
-        %tbody          
-          = f.simple_fields_for :milestones do |i_f|  
-            = render 'milestone_form', :i_f => i_f  
+  .row
+    .col-md-12
+      .table-responsive
+        %table.table
+          %thead
+            %tr
+              %th.left.nowrap Milestone
+              %th.left Completion Date
+              %th.left Comments
+          %tbody
+            = f.simple_fields_for :milestones do |i_f|
+              = render 'milestone_form', :i_f => i_f
             
-  .col-md-12
-    = f.button :submit, :class => "btn btn-primary"
+      = f.button :submit, :class => "btn btn-primary"
+
+:javascript
+
+  $(document).ready(function(){
+    $('[data-behavior~=datepicker]').datepicker({
+    });
+  });
+
+  // jquery validations
+  $('.milestones_form').validate({
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });

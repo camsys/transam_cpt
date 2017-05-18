@@ -21,7 +21,7 @@ class Milestone < ActiveRecord::Base
   
   validates :object_key,          :presence => true
   validates :milestone_type,      :presence => true  
-  validates :milestone_date,      :presence => true  
+  #validates :milestone_date,      :presence => true
   #validates :comments,            :presence => true
 
   # List of hash parameters allowed by the controller
