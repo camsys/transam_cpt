@@ -43,6 +43,9 @@ class BaseCapitalPlanAction
 
   def undo_post_process
     @capital_plan_action.update(completed_at: nil, completed_by_user_id: @user.id)
+    @capital_plan_action.capital_plan_module.update(completed_at: nil, completed_by_user_id: @user.id)
+
+    @capital_plan_action.capital_plan_module.capital_plan_module_type.class_name.constantize.new(capital_plan_module: @capital_plan_action.capital_plan_module, user: @user).run
   end
 
   def system_action?

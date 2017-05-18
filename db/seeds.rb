@@ -62,12 +62,12 @@ capital_plan_action_types = [
     {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Preparation').id, name: 'Assets Updated', class_name: 'AssetPreparationCapitalPlanAction', prev_action_required: false, sequence: 1, active: true},
     {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Preparation').id, name: 'Funding Verified', class_name: 'BaseCapitalPlanAction', prev_action_required: false, sequence: 2, active: true},
 
-    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id, name: 'Agency Approval', class_name: 'AgencyApprovalUnconstrainedCapitalPlanAction', prev_action_required: false, sequence: 1, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id, name: 'State Approval', class_name: 'StateApprovalUnconstrainedCapitalPlanAction', prev_action_required: false, sequence: 2, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id, name: 'Agency Approval', class_name: 'BaseCapitalPlanAction', prev_action_required: false, sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id, name: 'State Approval', class_name: 'BaseCapitalPlanAction', prev_action_required: false, sequence: 2, active: true},
 
     {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'Funding Complete', class_name: 'FundingCompleteConstrainedCapitalPlanAction', prev_action_required: false, sequence: 1, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'Agency Approval', class_name: 'AgencyApprovalConstrainedCapitalPlanAction', prev_action_required: false, sequence: 2, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'State Approval', class_name: 'StateApprovalConstrainedCapitalPlanAction', prev_action_required: false, sequence: 3, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'Agency Approval', class_name: 'BaseCapitalPlanAction', prev_action_required: false, sequence: 2, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Constrained Plan').id, name: 'State Approval', class_name: 'BaseCapitalPlanAction', prev_action_required: false, sequence: 3, active: true},
 
     {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 1', class_name: 'BaseCapitalPlanAction', prev_action_required: true, sequence: 1, active: true},
     {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 2', class_name: 'BaseCapitalPlanAction', prev_action_required: true, sequence: 2, active: true},

@@ -15,7 +15,11 @@ class CapitalPlanModule < ActiveRecord::Base
   default_scope { order(:sequence) }
 
   def is_allowed?
-    !(capital_plan_actions.pluck(:completed_at).include? nil)
+    !(capital_plan_actions.pluck(:completed_at).include? nil) && completed_at.nil?
+  end
+
+  def is_undo_allowed?
+    (capital_plan_actions.pluck(:completed_at).include? nil) && completed_at.present?
   end
 
   def prev_module
