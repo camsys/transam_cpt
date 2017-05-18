@@ -71,12 +71,15 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
     expect(assigns(:activity_line_item)).to eq(test_ali)
   end
   describe 'GET edit_milestones' do
-    it 'vehicle delivery', :skip do
+    before(:each) do
+      allow_any_instance_of(ActivityLineItemsController).to receive(:render).and_return ""
+    end
+    it 'vehicle delivery' do
       get :edit_milestones, :capital_project_id => test_project.object_key, :id => test_ali.object_key
 
       expect(assigns(:project)).to eq(test_project)
       expect(assigns(:activity_line_item)).to eq(test_ali)
-      expect(test_ali.milestones.count).to eq(MilestoneType.where('is_vehicle_delivery = true').count)
+      expect(test_ali.milestones.count).to eq(MilestoneType.count)
     end
     it 'not vehicle delivery' do
       test_ali.update!(:team_ali_code => create(:rehabilitation_ali_code, :parent => create(:rehabilitation_ali_code)))
