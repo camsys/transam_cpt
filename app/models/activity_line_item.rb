@@ -62,8 +62,6 @@ class ActivityLineItem < ActiveRecord::Base
 
   has_many    :tasks,       :as => :taskable,     :dependent => :destroy
 
-  attr_accessor   :is_planning_complete
-
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
