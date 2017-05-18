@@ -27,6 +27,7 @@
         = f.input :capital_project_type_id, :collection => CapitalProjectType.active, :label => 'Type'
         = f.input :sogr_type, :collection => ['All', 'SOGR', 'Non-SOGR'], :label => 'SOGR', :include_blank => false
         = f.input :team_ali_codes, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
+        = f.input :districts, :collection => District.active, :label => 'Project District'
         .row
           .col-sm-6
             = f.input :asset_types, :collection => AssetType.active, :label => 'Asset Type'

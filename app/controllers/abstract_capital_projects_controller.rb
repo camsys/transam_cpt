@@ -134,9 +134,8 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
     # dont impose ALI/asset conditions unless they were in the params
     no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtypes', 'asset_types', 'in_backlog', 'funding_buckets', 'not_fully_funded').values.uniq == [nil])
-    if no_ali_or_asset_params_exist
-      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code)
-    else
+    @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).joins(:districts)
+    unless no_ali_or_asset_params_exist
       @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
     end
 
@@ -179,6 +178,15 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
       conditions << 'capital_projects.team_ali_code_id IN (?)'
       values << @team_ali_code_filter
+    end
+
+    # District
+    if @user_activity_line_item_filter.try(:districts).blank?
+      @district_filter = []
+    else
+      @district_filter = @user_activity_line_item_filter.districts.split(',')
+      conditions << 'capital_projects.id IN (SELECT DISTINCT capital_projects_districts.capital_project_id FROM capital_projects_districts WHERE capital_projects_districts.district_id IN (?))'
+      values << @district_filter
     end
 
     #-----------------------------------------------------------------------------

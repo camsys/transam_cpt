@@ -11,6 +11,7 @@
       = format_field("Scope", format_as_list(TeamAliCode.where(id: @user_activity_line_item_filter.team_ali_codes.split(',')))) if @user_activity_line_item_filter.team_ali_codes.present?
       = format_field("Asset Type", format_as_list(AssetType.where(id: @user_activity_line_item_filter.asset_types.split(',')))) if @user_activity_line_item_filter.asset_types.present?
       = format_field("Asset Subtype", format_as_list(AssetSubtype.where(id: @user_activity_line_item_filter.asset_subtypes.split(',')))) if @user_activity_line_item_filter.asset_subtypes.present?
+      = format_field("Project Districts", format_as_list(District.where(id: @user_activity_line_item_filter.districts.split(',')))) if @user_activity_line_item_filter.districts.present?
 
       = format_field("In Backlog", format_as_boolean(@user_activity_line_item_filter.in_backlog)) if @user_activity_line_item_filter.in_backlog
 
