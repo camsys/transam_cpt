@@ -134,7 +134,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
     # dont impose ALI/asset conditions unless they were in the params
     no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtypes', 'asset_types', 'in_backlog', 'funding_buckets', 'not_fully_funded').values.uniq == [nil])
-    @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).joins(:districts)
+    @projects = CapitalProject.includes(:capital_project_type,:team_ali_code)
     unless no_ali_or_asset_params_exist
       @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
     end
