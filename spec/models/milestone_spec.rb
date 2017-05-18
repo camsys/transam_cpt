@@ -22,10 +22,6 @@ RSpec.describe Milestone, :type => :model do
       test_milestone.milestone_type = nil
       expect(test_milestone.valid?).to be false
     end
-    it 'must have a date' do
-      test_milestone.milestone_date = nil
-      expect(test_milestone.valid?).to be false
-    end
   end
 
   it '#allowable_params' do
