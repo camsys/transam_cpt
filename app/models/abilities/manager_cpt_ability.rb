@@ -50,6 +50,10 @@ module Abilities
         ali.capital_project.can_update?
       end
 
+      can :manage, CapitalPlan
+      can :complete_action, CapitalPlanAction do |a|
+        (a.capital_plan_action_type.roles.split(',') & user.roles_name).any?
+      end
 
     end
   end

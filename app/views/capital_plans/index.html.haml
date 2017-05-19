@@ -1,0 +1,26 @@
+#spinner{style: 'display:none;'}= loader_panel_tag({:message => "Updating capital plan(s)...", :size => 3, :spinner => "cog"})
+
+.row
+  .col-md-12
+    - CapitalPlanType.all.each do |plan_type|
+      - table_dom_id = SecureRandom.hex
+      = render partial: 'capital_plans_table', locals: {capital_plan_type: plan_type, table_dom_id: table_dom_id}
+
+      - if can? :update, CapitalPlan
+        = render partial: 'scripts', locals: {table_dom_id: table_dom_id}
+
+        :javascript
+          function get_checkbox_vals(action) {
+            checked_targets = [];
+            unchecked_targets = [];
+            $('input.capital-plan-action-checkbox[data-index="'+action.data('index')+'"]').each(function() {
+              if ($(this).is(':checked')) {
+                checked_targets.push($( this ).val());
+              } else{
+                unchecked_targets.push($( this ).val());
+              }
+            });
+
+            return [$('tr[data-index="'+action.data('index')+'"]').data('object-key'), checked_targets.join(',')];
+          }
+

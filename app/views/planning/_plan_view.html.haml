@@ -2,6 +2,7 @@
   $sogr_project_color: #aaffff;
   $other_project_color: #9fff87;
   $notional_project_color: #ffaaff;
+  $complete_project_color: #808080;
 
   hr.ali {
     margin-top: 5px;
@@ -59,6 +60,14 @@
     border-top: 1px solid darken($notional_project_color, 10%);
   }
   //colors: ['#4DDBB8', '#A6EDDC', '#00A37A'],
+
+  .panel-complete {
+    background-color: lighten($complete_project_color, 10%) !important;
+    border: 1px solid darken($complete_project_color, 10%)!important;
+  }
+  .panel-complete  > .panel-body > hr.ali  {
+    border-top: 1px solid darken($complete_project_color, 10%);
+  }
 
   .modal-backdrop {
     display: none;
@@ -142,6 +151,7 @@
   // Creates drop targets for draggable items.
   var confirm_result = false;
   function configure_droppable() {
+  var is_ali_complete =
     $(".drop-target").droppable({
         tolerance: "pointer",
   		hoverClass : 'drop-zone-active',

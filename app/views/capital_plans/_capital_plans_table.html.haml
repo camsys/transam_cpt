@@ -1,0 +1,82 @@
+:ruby
+  show_actions ||= 0
+  table_dom_id ||= SecureRandom.hex
+
+#table_actions.btn-toolbar
+  - if can? :update, CapitalPlan
+    .btn-group
+      = link_to complete_actions_capital_plans_path, :remote => true, :class => 'btn btn-default capital-plan-action', :data => {:confirm => 'Are you sure?'} do
+        %i.fa.fa-edit.fa-fw
+        = "Update Capital Plans"
+
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :card_view => "false",
+    :pagination => 'false',
+    :search => 'false',
+    :show_export => 'true',
+    :row_style => 'row_style',
+    :click_to_select => 'true',
+    :toolbar => "#table_actions",
+    :export_types => "['csv', 'txt', 'excel']",
+    :id_field => 'object_key',
+    :state_save => 'true',
+    :state_save_id_table => "capital_plans_id",
+    :state_save_expire => "1y",
+    :single_select => 'true'}}
+
+    %thead
+      %tr
+        %th.left
+        - capital_plan_type.capital_plan_module_types.each do |m|
+          %th.left{colspan: m.capital_plan_action_types.count}= m
+
+        - view_component = "app_capital_plans_table_head"
+        - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+          = render :partial => "capital_plans/#{view_component}"
+      %tr
+        %th.left
+        - capital_plan_type.capital_plan_module_types.each do |m|
+          - m.capital_plan_action_types.each do |a|
+            %th.left= a
+
+        - view_component = "app_capital_plans_table_head"
+        - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+          = render :partial => "capital_plans/#{view_component}"
+
+      %tr
+        %th.left
+        - col_idx = 0
+        - capital_plan_type.capital_plan_module_types.each do |m|
+          - m.capital_plan_action_types.each_with_index do |a, idx|
+            - col_idx += 1
+            %th.bs-checkbox
+              - unless a.system_action?
+                %input{type: 'checkbox', data: {col_index: col_idx}, value: a.id, class: 'capital-plan-action-grp-checkbox'}
+
+        - view_component = "app_capital_plans_table_head"
+        - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+          = render :partial => "capital_plans/#{view_component}"
+
+    %tbody
+      - @capital_plans.each_with_index do |plan, row_idx|
+        %tr{data: {index: row_idx, object_key: plan.object_key}}
+          %td= plan.organization.short_name
+          - plan.capital_plan_actions.each_with_index do |a, col_idx|
+            %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
+              - if a.system_action?
+                = a.notes
+              - else
+                - checkbox_params = {type: 'checkbox', data: {index: row_idx, col_index: col_idx+1}, value: a.object_key, class: 'capital-plan-action-checkbox'}
+                - if a.completed?
+                  - checkbox_params['checked'] = 'checked'
+                  - if !(a.is_undo_allowed? && (can? :complete_action, a))
+                    - checkbox_params['disabled'] = 'disabled'
+                - else
+                  - if !(a.is_allowed? && (can? :complete_action, a))
+                    - checkbox_params['disabled'] = 'disabled'
+                %input{checkbox_params}
+
+          - view_component = "app_capital_plans_table_row"
+          - if lookup_context.template_exists?(view_component, 'capital_plans', true)
+            = render :partial => "capital_plans/#{view_component}", :locals => {org: plan.organization}

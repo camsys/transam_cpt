@@ -28,6 +28,9 @@ module TransamPlanningOrganization
     # Each Transit Agency has one or more capital projects. The capital projects will be removed if the org is removed
     has_many    :capital_projects,  -> { order(:fy_year) }, :foreign_key => :organization_id,  :dependent => :destroy
 
+    has_many :capital_plans, :foreign_key => :organization_id,  :dependent => :destroy
+    belongs_to :capital_plan_type
+
     # ----------------------------------------------------
     # Validations
     # ----------------------------------------------------

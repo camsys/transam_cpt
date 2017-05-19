@@ -1,0 +1,89 @@
+:javascript
+
+  var selected_plan_actions = [];
+  var unselected_plan_actions = [];
+
+  $(document).ready(function() {
+
+    var org_count = parseInt('#{TransitOperator.where(id: @organization_list).count}');
+
+    // disable group checkboxes if all agencies disabled
+    $(".capital-plan-action-grp-checkbox").each(function() {
+      disabled_count = $('input.capital-plan-action-checkbox[data-col-index="'+$(this).data('col-index')+'"]:disabled').length
+      if (disabled_count == org_count) {
+        $(this).prop('disabled', true);
+      }
+    });
+
+    $(".capital-plan-action-checkbox").on('click', function(e) {
+      if ($(this).is(':checked')) {
+        selected_plan_actions.push($( this ).val());
+      } else {
+        unselected_plan_actions.push($( this ).val());
+      }
+
+      update_checkboxes($(this).val(), get_checkbox_vals($(this)));
+    });
+
+    $(".capital-plan-action-grp-checkbox").on('click', function(e) {
+      grp_checkbox = $(this);
+      $('input.capital-plan-action-checkbox[data-col-index="'+$(this).data('col-index')+'"]').each(function() {
+        if ($(this).is(":not(:disabled)")) {
+          if ((grp_checkbox.is(':checked')) && ($(this).is(':not(:checked)'))) {
+            selected_plan_actions.push($( this ).val());
+          } else if ((grp_checkbox.is(':not(:checked)')) && ($(this).is(':checked'))) {
+            unselected_plan_actions.push($( this ).val());
+          }
+
+          // check/uncheck all
+          $(this).prop('checked', grp_checkbox.is(':checked'));
+        }
+      });
+    });
+
+    $(".capital-plan-action").on('click', function(e) {
+      $('#spinner').show();
+
+      var href = $(this).attr('href');
+      selected_plan_actions = $.unique(selected_plan_actions);
+      unselected_plan_actions = $.unique(unselected_plan_actions);
+
+      $.ajax({
+          url: href,
+          type: 'GET',
+          dataType: 'json',
+          data: { targets: selected_plan_actions.join(','), undo_targets: unselected_plan_actions.join(',')},
+          complete: function(data, status) {
+            console.log(data);
+            // data.redirect contains the string URL to redirect to
+            window.location.href = data.responseText;
+          }
+      });
+
+      return false;
+    });
+
+  });
+
+  function update_checkboxes(action, targets) {
+    var url = '#{get_checkboxes_capital_plans_path}';
+
+    $.ajax({
+      url: url,
+      data: {id: targets[0], checked_targets: targets[1]},
+      success: function(result){
+        //console.log(result);
+        $.each( result, function( key, value ) {
+          checkbox = $('input.capital-plan-action-checkbox[value="'+key+'"]');
+          if (value['disabled'] == 'disabled') {
+            checkbox.prop('disabled', true);
+          } else {
+            checkbox.prop('disabled', false);
+          }
+        });
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+      }
+    });
+  }

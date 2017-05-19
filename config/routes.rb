@@ -64,12 +64,17 @@ Rails.application.routes.draw do
 
   end
 
-
-
   resources :activity_line_items, :only => [:show] do
     resources :comments
     resources :documents
     resources :tasks
+  end
+
+  resources :capital_plans, :only => [:index, :show] do
+    collection do
+      get 'complete_actions'
+      get 'get_checkboxes'
+    end
   end
 
 end
