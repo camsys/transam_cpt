@@ -29,7 +29,6 @@
       %tr
         %th
         %th
-        %th
         %th.bs-checkbox
 
     %tbody
@@ -41,7 +40,6 @@
           - else
             %td
           - prev_action = a
-          %td.left= a.object_key
           %td.left= a.capital_plan_action_type
           %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
             - if a.system_action?

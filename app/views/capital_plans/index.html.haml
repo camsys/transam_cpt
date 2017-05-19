@@ -10,14 +10,17 @@
         = render partial: 'scripts', locals: {table_dom_id: table_dom_id}
 
         :javascript
-          function checkboxes_to_update(action) {
-            targets = [];
+          function get_checkbox_vals(action) {
+            checked_targets = [];
+            unchecked_targets = [];
             $('input.capital-plan-action-checkbox[data-index="'+action.data('index')+'"]').each(function() {
-              if ($(this).val() != action.val()) {
-                targets.push($( this ).val());
+              if ($(this).is(':checked')) {
+                checked_targets.push($( this ).val());
+              } else{
+                unchecked_targets.push($( this ).val());
               }
             });
 
-            return targets.join(',');
+            return [$('tr[data-index="'+action.data('index')+'"]').data('object-key'), checked_targets.join(',')];
           }
 

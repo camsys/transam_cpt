@@ -52,7 +52,7 @@ module Abilities
 
       can :manage, CapitalPlan
       can :complete_action, CapitalPlanAction do |a|
-        user.organization_ids.include? a.capital_plan.organization_id
+        (a.capital_plan_action_type.roles.split(',') & user.roles_name).any?
       end
 
     end

@@ -8,6 +8,8 @@ class CapitalPlan < ActiveRecord::Base
 
   include FiscalYear
 
+  include TransamFormatHelper
+
   belongs_to :organization
   belongs_to :capital_plan_type
 
@@ -31,6 +33,26 @@ class CapitalPlan < ActiveRecord::Base
     end
 
     plan
+  end
+
+  def allowed_sequences
+    sequences = []
+
+    capital_plan_modules.each do |m|
+      unless m.capital_plan_module_type.strict_action_sequence
+        sequences << m.capital_plan_actions.pluck(:object_key).permutation.to_a
+      else
+        sequences << [m.capital_plan_actions.pluck(:object_key)]
+      end
+    end
+    puts sequences.inspect
+
+    (sequences.first.product(*sequences[1..-1])).map{|s| s.flatten!}
+
+  end
+
+  def to_s
+    "#{organization.short_name} #{format_as_fiscal_year(fy_year)} Plan"
   end
 
 

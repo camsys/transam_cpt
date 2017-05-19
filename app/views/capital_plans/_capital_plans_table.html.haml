@@ -59,10 +59,10 @@
           = render :partial => "capital_plans/#{view_component}"
 
     %tbody
-      - TransitOperator.where(id: @organization_list).each_with_index do |org, row_idx|
-        %tr
-          %td= org.short_name
-          - CapitalPlan.current_plan(org.id).capital_plan_actions.each_with_index do |a, col_idx|
+      - @capital_plans.each_with_index do |plan, row_idx|
+        %tr{data: {index: row_idx, object_key: plan.object_key}}
+          %td= plan.organization.short_name
+          - plan.capital_plan_actions.each_with_index do |a, col_idx|
             %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
               - if a.system_action?
                 = a.notes
@@ -79,4 +79,4 @@
 
           - view_component = "app_capital_plans_table_row"
           - if lookup_context.template_exists?(view_component, 'capital_plans', true)
-            = render :partial => "capital_plans/#{view_component}", :locals => {org: org}
+            = render :partial => "capital_plans/#{view_component}", :locals => {org: plan.organization}

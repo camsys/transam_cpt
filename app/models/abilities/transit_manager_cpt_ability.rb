@@ -8,7 +8,7 @@ module Abilities
         user.organization_ids.include? c.organization_id
       end
       can :complete_action, CapitalPlanAction do |a|
-        (user.organization_ids.include? a.capital_plan.organization_id) && a.capital_plan_action_type.capital_plan_module_type != CapitalPlanModuleType.find_by(name: 'Final Review')
+        (user.organization_ids.include? a.capital_plan.organization_id) && (a.capital_plan_action_type.roles.split(',') & user.roles_name).any?
       end
 
       cannot [:read_all, :update_all], CapitalPlan
