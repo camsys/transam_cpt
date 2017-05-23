@@ -594,7 +594,7 @@ class CapitalProjectBuilder
     end
 
     # add districts to capital project
-    project.districts = org.districts
+    project.districts = Organization.get_typed_organization(org).districts
 
     project.save
     project
