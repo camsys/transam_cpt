@@ -21,14 +21,17 @@ class CapitalPlansController < OrganizationAwareController
     authorize! :read, @capital_plan
 
     # pagination if needed
-    if @organization_list.count > 1
-      add_breadcrumb 'Capital Plans', capital_plan_path(CapitalPlan.current_plan(@organization_list.first))
+    org_list = TransitOperator.where(id: @organization_list).ids # only use transit agencies
+    if org_list.count > 1
+      if can? :read_all, CapitalPlan
+        add_breadcrumb 'Capital Plans', capital_plans_path
+      end
 
-      @total_rows = @organization_list.count
-      org_idx = @organization_list.index(@capital_plan.organization_id)
+      @total_rows = org_list.count
+      org_idx = org_list.index(@capital_plan.organization_id)
       @row_number = org_idx+1
-      @prev_record_key = CapitalPlan.current_plan(@organization_list[org_idx-1]).object_key if org_idx > 0
-      @next_record_key = CapitalPlan.current_plan(@organization_list[org_idx+1]).object_key if org_idx < @organization_list.count - 1
+      @prev_record_key = CapitalPlan.current_plan(org_list[org_idx-1]).object_key if org_idx > 0
+      @next_record_key = CapitalPlan.current_plan(org_list[org_idx+1]).object_key if org_idx < org_list.count - 1
 
       @prev_record_path = @prev_record_key.nil? ? "#" : capital_plan_path(@prev_record_key)
       @next_record_path = @next_record_key.nil? ? "#" : capital_plan_path(@next_record_key)

@@ -189,11 +189,11 @@ class CapitalProject < ActiveRecord::Base
   end
 
   def capital_plan_action_completed?(action_type_id)
-    CapitalPlan.find_by(organization_id: organization_id, fy_year: fy_year).capital_plan_actions.find_by(capital_plan_action_type_id: action_type_id).completed?
+    CapitalPlan.current_plan(organization_id).capital_plan_actions.find_by(capital_plan_action_type_id: action_type_id).completed?
   end
 
   def capital_plan_module_completed?(module_type_id)
-    CapitalPlan.find_by(organization_id: organization_id, fy_year: fy_year).capital_plan_modules.find_by(capital_plan_module_type_id: module_type_id).completed?
+    CapitalPlan.current_plan(organization_id).capital_plan_modules.find_by(capital_plan_module_type_id: module_type_id).completed?
   end
 
   # Returns true if the project is an SOGR project that was created by the SOGR

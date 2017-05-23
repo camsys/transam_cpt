@@ -1,4 +1,4 @@
-class ConstrainedCapitalPlanModule < BaseCapitalPlanAction
+class ConstrainedCapitalPlanModule < BaseCapitalPlanModule
   def complete
 
     # Should this be here or in an overload of pre_process or should it live in the module model class?
