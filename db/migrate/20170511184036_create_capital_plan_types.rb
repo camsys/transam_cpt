@@ -8,14 +8,17 @@ class CreateCapitalPlanTypes < ActiveRecord::Migration
 
     add_column :organizations, :capital_plan_type_id, :integer
 
-    capital_plan_types = [
-        {name: 'Transit Capital Plan', description: 'Transit Capital Plan', active: true}
-    ]
+    unless Rails.env == 'test'
+      capital_plan_types = [
+          {name: 'Transit Capital Plan', description: 'Transit Capital Plan', active: true}
+      ]
 
-    capital_plan_types.each do |type|
-      CapitalPlanType.create!(type)
+
+      capital_plan_types.each do |type|
+        CapitalPlanType.create!(type)
+      end
+
+      Organization.update_all(capital_plan_type_id: 1)
     end
-
-    Organization.update_all(capital_plan_type_id: 1)
   end
 end
