@@ -9,7 +9,7 @@ class CreateCapitalPlanModuleTypes < ActiveRecord::Migration
       t.boolean :active
     end
 
-    unless Rails.nenv == 'test'
+    unless Rails.env == 'test'
       capital_plan_module_types = [
           {capital_plan_type_id: 1, name: 'Preparation', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 1, active: true},
           {capital_plan_type_id: 1, name: 'Unconstrained Plan', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 2, active: true},
