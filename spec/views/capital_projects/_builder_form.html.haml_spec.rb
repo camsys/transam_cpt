@@ -4,7 +4,7 @@ describe "capital_projects/_builder_form.html.haml", :type => :view do
   it 'fields' do
     assign(:builder_proxy, BuilderProxy.new)
     assign(:asset_types, AssetType.all)
-    assign(:fiscal_years, [2010])
+    assign(:fiscal_years, [['FY 10-11', 2010], ['FY 11-12', 2012]])
     assign(:organization, create(:organization))
     assign(:organization_list,[1,2])
     render
