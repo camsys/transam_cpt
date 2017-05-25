@@ -1,20 +1,6 @@
 class ConstrainedCapitalPlanModule < BaseCapitalPlanModule
   def complete
-
-    # Should this be here or in an overload of pre_process or should it live in the module model class?
-    actions = @capital_plan_module.capital_plan_actions
-    is_complete = true
-    actions.each {|action|
-      is_complete = action.completed_at.present
-
-      if !is_complete
-        break
-      end
-    }
-
-    if is_complete
-      set_ali_is_complete_status true
-    end
+    set_ali_is_complete_status true
   end
 
   def undo
