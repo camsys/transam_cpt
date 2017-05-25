@@ -198,7 +198,7 @@ class CapitalProjectBuilder
 
     # Get the current fiscal year and the last year that we will generate projects for. We can only generate projects for planning years
     # Year 1, Year 2,..., Year 12
-    @start_year = current_fiscal_year_year
+    @start_year = current_planning_year_year
     @last_year = last_fiscal_year_year
 
     @replacement_project_type = CapitalProjectType.find_by_code('R')
@@ -275,7 +275,9 @@ class CapitalProjectBuilder
 
       # Find all the matching assets for this organization.
       # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-      assets = asset_type.class_name.constantize.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+      assets = asset_type.class_name.constantize.replacement_by_policy.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+
+      assets += asset_type.class_name.constantize.replacement_underway.where('organization_id = ?', organization.id)
 
       # Process each asset in turn...
       assets.each do |a|

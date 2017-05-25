@@ -32,8 +32,7 @@
     var asset_types = JSON.parse('#{@asset_types.to_json}');
     var current_planning_year = #{current_planning_year_year};
     var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
-    var have_sogr_locked_list = #{(@has_locked_sogr_this_fiscal_year || {}).to_json.html_safe}
-    var planning_year = parseInt(#{(@fiscal_years[1][1])});
+    var have_sogr_locked_list = #{(@has_locked_sogr_this_fiscal_year || {}).to_json.html_safe};
 
     // Detect changes in the org selected
     $('#builder_proxy_organization_id').on('change', function(event) {
@@ -43,26 +42,11 @@
         // store the selected org
         org_id = id;
 
-        var is_sogr_locked = $.inArray(org_id, have_sogr_locked_list);
-
-        if(is_sogr_locked >= 0)
-        {
-          $("#builder_proxy_start_fy option[value='"+(planning_year)+"']").hide();
-          var smaller years = planning_year-1
-          while(smaller_years >= current_planning_year)
-          {
-            $("#builder_proxy_start_fy option[value='"+(smaller years)+"']").hide();
-            smaller_years--;
-          }
-        }
-        else{
-          $("#builder_proxy_start_fy option[value='"+(planning_year)+"']").show();
-          var smaller years = planning_year-1
-          while(smaller_years >= current_planning_year)
-          {
-            $("#builder_proxy_start_fy option[value='"+(smaller years)+"']").show();
-            smaller_years--;
-          }
+        var is_sogr_locked = $.inArray(parseInt(org_id), have_sogr_locked_list);
+        if(is_sogr_locked >= 0) {
+          $("#builder_proxy_start_fy option[value='"+(current_planning_year)+"']").hide();
+        } else{
+          $("#builder_proxy_start_fy option[value='"+(current_planning_year)+"']").show();
         }
 
         var org_has_sogr_project = has_sogr_project_org_list[org_id];

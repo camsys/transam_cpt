@@ -36,6 +36,7 @@ module TransamPlannable
     has_and_belongs_to_many    :activity_line_items,  :foreign_key => 'asset_id'
 
     scope :in_replacement_cycle, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id != ?', ReplacementStatusType.find_by(name: 'None').id) }
+    scope :replacement_by_policy, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id = ?', ReplacementStatusType.find_by(name: 'Policy').id) }
     scope :replacement_underway, -> { where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Underway').id) }
 
     # ----------------------------------------------------

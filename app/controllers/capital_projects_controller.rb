@@ -60,28 +60,24 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
     end
 
-    @fiscal_years = get_fiscal_years(Date.today) # start at the current FY not the planning FY
+    @fiscal_years = get_fiscal_years
     @builder_proxy = BuilderProxy.new
 
+    unless (current_user.organization.organization_type.class_name == "Grantor")
+      @has_locked_sogr_this_fiscal_year = CapitalPlanModule.joins(:capital_plan_module_type, :capital_plan).where(capital_plan_module_types: {name: 'Unconstrained Plan'}, capital_plans: {organization_id: @organization_list, fy_year: current_planning_year_year}).where('capital_plan_modules.completed_at IS NOT NULL').pluck('capital_plans.organization_id')
+    end
+
     if @organization_list.count == 1
+      if @has_locked_sogr_this_fiscal_year.include? @organization_list.first
+        @fiscal_years = @fiscal_years[1..-1]
+      end
       if Organization.get_typed_organization(Organization.find_by(id: @organization_list.first)).has_sogr_projects?
-        @builder_proxy.start_fy = current_fiscal_year_year + 3
+        @builder_proxy.start_fy = current_planning_year_year + 3
       else
-        @builder_proxy.start_fy = current_fiscal_year_year
+        @builder_proxy.start_fy = current_planning_year_year
       end
     else
       @has_sogr_project_org_list = CapitalProject.joins(:organization).where(organization_id: @organization_list).sogr.group(:organization_id).count
-
-      @has_locked_sogr_this_fiscal_year = []
-
-      unless (current_user.organization.organization_type.class_name == "Grantor")
-        #TODO Makes this a useful join
-        capital_plan_modules = CapitalPlanModule.where(id: CapitalPlanModuleType.find_by(class_name: 'UnconstrainedCapitalPlanModule').id, capital_plan_id: CapitalPlan.where(organization_id: @organization_list, fy_year: current_planning_year_year)).where.not(completed_at: nil)
-
-        capital_plan_modules.each { |cpm|
-          @has_locked_sogr_this_fiscal_year << cpm.capital_plan.organization.id.to_s
-        }
-      end
     end
 
     @message = "Creating SOGR capital projects. This process might take a while."
@@ -105,6 +101,9 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         org_id = @builder_proxy.organization_id
       end
       org = Organization.get_typed_organization(Organization.find(org_id))
+
+      # fy year is one less to handle assets under replacement
+      @builder_proxy.start_fy = @builder_proxy.start_fy - 1
 
       Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.asset_types, @builder_proxy.start_fy, current_user), :priority => 0
 

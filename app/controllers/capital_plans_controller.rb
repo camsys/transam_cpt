@@ -6,14 +6,16 @@ class CapitalPlansController < OrganizationAwareController
     # state view
 
     authorize! :read_all, CapitalPlan
-    add_breadcrumb 'Capital Plans', capital_plans_path
+    add_breadcrumb 'Capital Plans xxx ', capital_plans_path
 
 
     @capital_plans = []
-    TransitOperator.where(id: @organization_list).each do |org|
-      plan = CapitalPlan.current_plan(org.id)
-      @capital_plans << plan
-      run_system_actions(plan)
+    @organization_list.each do |org|
+      if Asset.operational.where(organization_id: org).count > 0
+        plan = CapitalPlan.current_plan(org)
+        @capital_plans << plan
+        run_system_actions(plan)
+      end
     end
   end
 
@@ -21,7 +23,7 @@ class CapitalPlansController < OrganizationAwareController
     authorize! :read, @capital_plan
 
     # pagination if needed
-    org_list = TransitOperator.where(id: @organization_list).ids # only use transit agencies
+    org_list = @organization_list.select{ |o| Asset.operational.where(organization_id: o).count > 0 }
     if org_list.count > 1
       if can? :read_all, CapitalPlan
         add_breadcrumb 'Capital Plans', capital_plans_path

@@ -16,30 +16,7 @@
     });
 
     $(".capital-plan-action-checkbox").on('click', function(e) {
-      action_obj_key = $( this ).val();
-      if ($(this).is(':checked')) {
-        selected_plan_actions.push(action_obj_key);
-
-        // if in opposite array remove
-        idx = unselected_plan_actions.indexOf(action_obj_key);
-        if (idx > -1) {
-          unselected_plan_actions.splice(idx, 1);
-        }
-
-      } else {
-        unselected_plan_actions.push(action_obj_key);
-
-        // if in opposite array remove
-        idx = selected_plan_actions.indexOf(action_obj_key);
-        if (idx > -1) {
-          selected_plan_actions.splice(idx, 1);
-        }
-      }
-
-      selected_plan_actions = $.unique(selected_plan_actions);
-      unselected_plan_actions = $.unique(unselected_plan_actions);
-
-      update_checkboxes(action_obj_key, get_checkbox_vals($(this)));
+      after_checkbox_change($(this));
     });
 
     $(".capital-plan-action-grp-checkbox").on('click', function(e) {
@@ -82,7 +59,34 @@
 
   });
 
-  function update_checkboxes(action, targets) {
+  function after_checkbox_change(checkbox) {
+    action_obj_key = checkbox.val();
+    if (checkbox.is(':checked')) {
+      selected_plan_actions.push(action_obj_key);
+
+      // if in opposite array remove
+      idx = unselected_plan_actions.indexOf(action_obj_key);
+      if (idx > -1) {
+        unselected_plan_actions.splice(idx, 1);
+      }
+
+    } else {
+      unselected_plan_actions.push(action_obj_key);
+
+      // if in opposite array remove
+      idx = selected_plan_actions.indexOf(action_obj_key);
+      if (idx > -1) {
+        selected_plan_actions.splice(idx, 1);
+      }
+    }
+
+    selected_plan_actions = $.unique(selected_plan_actions);
+    unselected_plan_actions = $.unique(unselected_plan_actions);
+
+    update_checkboxes(get_checkbox_vals(checkbox));
+  }
+
+  function update_checkboxes(targets) {
     var url = '#{get_checkboxes_capital_plans_path}';
 
     $.ajax({

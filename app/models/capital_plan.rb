@@ -51,13 +51,25 @@ class CapitalPlan < ActiveRecord::Base
 
   end
 
-  def to_s
-    "#{organization.short_name} #{format_as_fiscal_year(fy_year)} Plan"
-  end
-
 
   def self.current_planning_year_year
     CapitalPlan.new.current_planning_year_year
+  end
+
+  def completed?
+    !(capital_plan_modules.pluck(:completed_at).include? nil)
+  end
+
+  def capital_plan_action_completed?(action_type_id)
+    capital_plan_actions.find_by(capital_plan_action_type_id: action_type_id).completed?
+  end
+
+  def capital_plan_module_completed?(module_type_id)
+    capital_plan_modules.find_by(capital_plan_module_type_id: module_type_id).completed?
+  end
+
+  def to_s
+    "#{organization.short_name} #{format_as_fiscal_year(fy_year)} Plan"
   end
 
   def system_actions

@@ -96,6 +96,9 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb "Assets"
 
     @fiscal_years = @activity_line_item.get_fiscal_years
+    if CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id)
+      @fiscal_years = @fiscal_years[1..-1]
+    end
 
     # enable dragging/dropping only if no background jobs
     @drag_drop_enabled = (Delayed::Job.where("failed_at IS NULL AND handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{@project.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)

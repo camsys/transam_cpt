@@ -80,4 +80,4 @@
 
           - view_component = "app_capital_plans_table_row"
           - if lookup_context.template_exists?(view_component, 'capital_plans', true)
-            = render :partial => "capital_plans/#{view_component}", :locals => {org: plan.organization}
+            = render :partial => "capital_plans/#{view_component}", :locals => {plan: plan}

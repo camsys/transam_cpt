@@ -88,7 +88,8 @@ class CapitalProject < ActiveRecord::Base
     :justification,
     :emergency,
     :multi_year,
-    :active
+    :active,
+    :district_ids => []
   ]
   # List of fields which can be searched using a simple text-based search
   SEARCHABLE_FIELDS = [
@@ -188,13 +189,7 @@ class CapitalProject < ActiveRecord::Base
     end
   end
 
-  def capital_plan_action_completed?(action_type_id)
-    CapitalPlan.current_plan(organization_id).capital_plan_actions.find_by(capital_plan_action_type_id: action_type_id).completed?
-  end
 
-  def capital_plan_module_completed?(module_type_id)
-    CapitalPlan.current_plan(organization_id).capital_plan_modules.find_by(capital_plan_module_type_id: module_type_id).completed?
-  end
 
   # Returns true if the project is an SOGR project that was created by the SOGR
   # builder
