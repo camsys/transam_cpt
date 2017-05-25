@@ -61,11 +61,11 @@ class CapitalPlan < ActiveRecord::Base
   end
 
   def capital_plan_action_completed?(action_type_id)
-    capital_plan_actions.find_by(capital_plan_action_type_id: action_type_id).completed?
+    capital_plan_actions.find_by(capital_plan_action_type_id: action_type_id).try(:completed?) || false
   end
 
   def capital_plan_module_completed?(module_type_id)
-    capital_plan_modules.find_by(capital_plan_module_type_id: module_type_id).completed?
+    capital_plan_modules.find_by(capital_plan_module_type_id: module_type_id).try(:completed?) || false
   end
 
   def to_s

@@ -87,7 +87,8 @@ RSpec.describe CapitalProject, :type => :model do
       :justification,
       :emergency,
       :multi_year,
-      :active
+      :active,
+      :district_ids=>[]
     ])
   end
 
