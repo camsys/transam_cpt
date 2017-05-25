@@ -315,7 +315,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     districts.each { |d|
       entry = []
       entry << d.id
-      entry << d.name
+      entry << d.to_s
       result << entry
       }
 
