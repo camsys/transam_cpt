@@ -1,6 +1,11 @@
 #spinner{style: 'display:none;'}= loader_panel_tag({:message => "Updating capital plan(s)...", :size => 3, :spinner => "cog"})
 
 .row
+  .col-sm-12
+    .page-header
+      %h2= "#{format_as_fiscal_year(current_planning_year_year)} Capital Plans"
+
+.row
   .col-md-12
     - CapitalPlanType.all.each do |plan_type|
       - table_dom_id = SecureRandom.hex

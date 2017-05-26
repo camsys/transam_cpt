@@ -13,8 +13,8 @@ class CapitalPlan < ActiveRecord::Base
   belongs_to :organization
   belongs_to :capital_plan_type
 
-  has_many :capital_plan_modules
-  has_many :capital_plan_actions
+  has_many :capital_plan_modules, :dependent => :destroy
+  has_many :capital_plan_actions, :dependent => :destroy
 
   def self.current_plan(org_id)
     org = Organization.find_by(id: org_id)
@@ -35,6 +35,10 @@ class CapitalPlan < ActiveRecord::Base
     plan
   end
 
+  def self.current_planning_year_year
+    CapitalPlan.new.current_planning_year_year
+  end
+
   def allowed_sequences
     sequences = []
 
@@ -51,11 +55,6 @@ class CapitalPlan < ActiveRecord::Base
 
   end
 
-
-  def self.current_planning_year_year
-    CapitalPlan.new.current_planning_year_year
-  end
-
   def completed?
     !(capital_plan_modules.pluck(:completed_at).include? nil)
   end
@@ -69,7 +68,7 @@ class CapitalPlan < ActiveRecord::Base
   end
 
   def to_s
-    "#{organization.short_name} #{format_as_fiscal_year(fy_year)} Plan"
+    "#{organization.short_name} #{format_as_fiscal_year(fy_year)} Capital Plan"
   end
 
   def system_actions

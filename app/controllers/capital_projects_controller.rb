@@ -64,7 +64,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @builder_proxy = BuilderProxy.new
 
     unless (current_user.organization.organization_type.class_name == "Grantor")
-      @has_locked_sogr_this_fiscal_year = CapitalPlanModule.joins(:capital_plan_module_type, :capital_plan).where(capital_plan_module_types: {name: 'Unconstrained Plan'}, capital_plans: {organization_id: @organization_list, fy_year: current_planning_year_year}).where('capital_plan_modules.completed_at IS NOT NULL').pluck('capital_plans.organization_id')
+      @has_locked_sogr_this_fiscal_year = CapitalPlanModule.joins(:capital_plan_module_type, :capital_plan).where(capital_plan_module_types: {name: 'Constrained Plan'}, capital_plans: {organization_id: @organization_list, fy_year: current_planning_year_year}).where('capital_plan_modules.completed_at IS NOT NULL').pluck('capital_plans.organization_id')
     end
 
     if @organization_list.count == 1

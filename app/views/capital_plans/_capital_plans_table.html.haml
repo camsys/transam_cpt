@@ -50,8 +50,8 @@
         - capital_plan_type.capital_plan_module_types.each do |m|
           - m.capital_plan_action_types.each_with_index do |a, idx|
             - col_idx += 1
-            %th.bs-checkbox
-              - unless a.system_action?
+            %th
+              - unless a.system_action? || a.name == 'Archive'
                 %input{type: 'checkbox', data: {col_index: col_idx}, value: a.id, class: 'capital-plan-action-grp-checkbox'}
 
         - view_component = "app_capital_plans_table_head"
@@ -63,20 +63,28 @@
         %tr{data: {index: row_idx, object_key: plan.object_key}}
           %td
             = link_to plan.organization.short_name, capital_plan_path(plan)
-          - plan.capital_plan_actions.each_with_index do |a, col_idx|
-            %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
-              - if a.system_action?
-                = a.notes
-              - else
-                - checkbox_params = {type: 'checkbox', data: {index: row_idx, col_index: col_idx+1}, value: a.object_key, class: 'capital-plan-action-checkbox'}
-                - if a.completed?
-                  - checkbox_params['checked'] = 'checked'
-                  - if !(a.is_undo_allowed? && (can? :complete_action, a))
-                    - checkbox_params['disabled'] = 'disabled'
+          - plan.capital_plan_actions.includes(:capital_plan_action_type).each_with_index do |a, col_idx|
+            - if a.capital_plan_action_type.name == 'Archive'
+              %td.center
+                - if plan.completed?
+                  [Archived]
+                - elsif a.is_allowed? && (can? :complete_action, a)
+                  = link_to complete_actions_capital_plans_path(targets: a.object_key, undo_targets: ''), :class => 'btn btn-info', :data => {:confirm => 'Are you sure?'} do
+                    Archive
+            - else
+              %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
+                - if a.system_action?
+                  = a.notes
                 - else
-                  - if !(a.is_allowed? && (can? :complete_action, a))
-                    - checkbox_params['disabled'] = 'disabled'
-                %input{checkbox_params}
+                  - checkbox_params = {type: 'checkbox', data: {index: row_idx, col_index: col_idx+1}, value: a.object_key, class: 'capital-plan-action-checkbox'}
+                  - if a.completed?
+                    - checkbox_params['checked'] = 'checked'
+                    - if !(a.is_undo_allowed? && (can? :complete_action, a))
+                      - checkbox_params['disabled'] = 'disabled'
+                  - else
+                    - if !(a.is_allowed? && (can? :complete_action, a))
+                      - checkbox_params['disabled'] = 'disabled'
+                  %input{checkbox_params}
 
           - view_component = "app_capital_plans_table_row"
           - if lookup_context.template_exists?(view_component, 'capital_plans', true)

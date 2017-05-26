@@ -47,21 +47,11 @@ module Abilities
       end
 
       can [:update, :destroy], ActivityLineItem do |ali|
-        if ali.is_unconstrained_planning_complete
-          false
-        else
-          ali.capital_project.sogr? == false and ali.capital_project.can_update? and user.organization_ids.include?(ali.capital_project.organization_id)
-        end
-
-
+        ali.capital_project.sogr? == false and ali.capital_project.can_update? and user.organization_ids.include?(ali.capital_project.organization_id)
       end
 
       can [:update_cost], ActivityLineItem do |ali|
-        if ali.is_unconstrained_planning_complete
-          false
-        else
-          ali.capital_project.can_update? and user.organization_ids.include?(ali.capital_project.organization_id)
-        end
+        ali.capital_project.can_update? and user.organization_ids.include?(ali.capital_project.organization_id)
       end
 
 

@@ -6,7 +6,7 @@ class CapitalPlansController < OrganizationAwareController
     # state view
 
     authorize! :read_all, CapitalPlan
-    add_breadcrumb 'Capital Plans xxx ', capital_plans_path
+    add_breadcrumb 'Capital Plans', capital_plans_path
 
 
     @capital_plans = []
@@ -54,6 +54,7 @@ class CapitalPlansController < OrganizationAwareController
     end
 
     respond_to do |format|
+      format.html { redirect_to :back }
       format.js { render text: URI(request.referer) }
     end
   end

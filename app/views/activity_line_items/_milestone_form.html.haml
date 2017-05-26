@@ -12,6 +12,7 @@
     = i_f.input :object_key, :as => :hidden
     = i_f.input :milestone_type_id, :as => :hidden
   %td.col-md-2
-    = i_f.input :milestone_date, :label => false, :as => :string, :input_html => {:data => {'behavior' => 'datepicker'}, :value => format_as_date(i_f.object.milestone_date)}, :required => i_f.object.milestone_type.name == "Contract Completed"
+    - is_required = i_f.object.milestone_type.name == "Contract Completed"
+    = i_f.input :milestone_date, :label => false, :as => :string, :input_html => {:data => {'behavior' => 'datepicker'}, :value => format_as_date(i_f.object.milestone_date || (is_required ? Date.today : nil))}, :required => is_required
   %td.col-md-8
     = i_f.input :comments, :input_html => { :rows => 3 }, :placeholder => "Enter any additional comments...", :label => false

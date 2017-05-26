@@ -10,7 +10,7 @@ class CapitalPlanModule < ActiveRecord::Base
 
   belongs_to :capital_plan
 
-  has_many :capital_plan_actions
+  has_many :capital_plan_actions, :dependent => :destroy
 
   default_scope { order(:sequence) }
 

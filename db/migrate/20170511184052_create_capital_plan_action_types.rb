@@ -24,7 +24,8 @@ class CreateCapitalPlanActionTypes < ActiveRecord::Migration
           {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 1', class_name: 'BaseCapitalPlanAction', roles: 'approver_one', sequence: 1, active: true},
           {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 2', class_name: 'BaseCapitalPlanAction', roles: 'approver_two', sequence: 2, active: true},
           {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 3', class_name: 'BaseCapitalPlanAction', roles: 'approver_three', sequence: 3, active: true},
-          {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 4', class_name: 'BaseCapitalPlanAction', roles: 'approver_four', sequence: 4, active: true}
+          {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Approver 4', class_name: 'BaseCapitalPlanAction', roles: 'approver_four', sequence: 4, active: true},
+          {capital_plan_type_id: 1, capital_plan_module_type_id: CapitalPlanModuleType.find_by(name: 'Final Review').id, name: 'Archive', class_name: 'BaseCapitalPlanAction', roles: 'admin', sequence: 4, active: true}
       ]
 
       roles = [

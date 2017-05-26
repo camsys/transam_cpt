@@ -134,11 +134,6 @@ class ActivityLineItem < ActiveRecord::Base
     (capital_project.notional?)
   end
 
-  def is_unconstrained_planning_complete
-    plan = CapitalPlan.current_plan(capital_project.organization_id)
-    fy_year == plan.fy_year and plan.capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id)
-  end
-
   def to_s
     name
   end

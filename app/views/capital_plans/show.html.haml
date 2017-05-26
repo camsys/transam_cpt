@@ -3,6 +3,11 @@
 #spinner{style: 'display:none;'}= loader_panel_tag({:message => "Updating capital plan...", :size => 3, :spinner => "cog"})
 
 .row
+  .col-sm-12
+    .page-header
+      %h2= "#{@capital_plan.organization} #{format_as_fiscal_year(@capital_plan.fy_year)} #{@capital_plan.completed? ? '[Archived]' : ''}"
+
+.row
   .col-md-12
     = render partial: 'capital_plan_table', locals: {table_dom_id: table_dom_id}
 

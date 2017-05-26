@@ -25,6 +25,7 @@ class CapitalPlanAction < ActiveRecord::Base
   def is_allowed?(hypothetical_finished_seq=[])
 
     return true if system_action?
+    return false if capital_plan.completed?
 
     # check prev_module
     prev_module_check = (prev_module.nil? || prev_module.completed_at.present?) && completed_at.nil?
@@ -51,6 +52,9 @@ class CapitalPlanAction < ActiveRecord::Base
   end
 
   def is_undo_allowed?(hypothetical_finished_seq=[])
+
+    return false if capital_plan.completed?
+
     unless hypothetical_finished_seq.length > 0
       (next_action.nil? || !next_action.completed?) && completed_at.present?
     else

@@ -3,7 +3,7 @@
   table_dom_id ||= SecureRandom.hex
 
 #table_actions.btn-toolbar
-  - if can? :update, CapitalPlan
+  - if can? :update, @capital_plan
     .btn-group
       = link_to complete_actions_capital_plans_path, :remote => true, :class => 'btn btn-default capital-plan-action', :data => {:confirm => 'Are you sure?'} do
         %i.fa.fa-edit.fa-fw
@@ -29,29 +29,30 @@
       %tr
         %th
         %th
-        %th.bs-checkbox
+        %th
 
     %tbody
       - prev_action = @capital_plan.capital_plan_actions.last
-      - @capital_plan.capital_plan_actions.each_with_index do |a,idx|
-        %tr
-          - if a.capital_plan_action_type.capital_plan_module_type != prev_action.capital_plan_action_type.capital_plan_module_type
-            %td.left= a.capital_plan_action_type.capital_plan_module_type
-          - else
-            %td
-          - prev_action = a
-          %td.left= a.capital_plan_action_type
-          %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
-            - if a.system_action?
-              = a.notes
+      - @capital_plan.capital_plan_actions.includes(:capital_plan_action_type).each_with_index do |a,idx|
+        - if a.capital_plan_action_type.name != 'Archive'
+          %tr
+            - if a.capital_plan_action_type.capital_plan_module_type != prev_action.capital_plan_action_type.capital_plan_module_type
+              %td.left= a.capital_plan_action_type.capital_plan_module_type
             - else
-              - checkbox_params = {type: 'checkbox', data: {index: idx}, value: a.object_key, class: 'capital-plan-action-checkbox'}
-              - if a.completed?
-                - checkbox_params['checked'] = 'checked'
-                - if !(a.is_undo_allowed? && (can? :complete_action, a))
-                  - checkbox_params['disabled'] = 'disabled'
+              %td
+            - prev_action = a
+            %td.left= a.capital_plan_action_type
+            %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
+              - if a.system_action?
+                = a.notes
               - else
-                - if !(a.is_allowed? && (can? :complete_action, a))
-                  - checkbox_params['disabled'] = 'disabled'
-              %input{checkbox_params}
+                - checkbox_params = {type: 'checkbox', data: {index: idx}, value: a.object_key, class: 'capital-plan-action-checkbox'}
+                - if a.completed?
+                  - checkbox_params['checked'] = 'checked'
+                  - if !(a.is_undo_allowed? && (can? :complete_action, a))
+                    - checkbox_params['disabled'] = 'disabled'
+                - else
+                  - if !(a.is_allowed? && (can? :complete_action, a))
+                    - checkbox_params['disabled'] = 'disabled'
+                %input{checkbox_params}
 

@@ -96,7 +96,7 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb "Assets"
 
     @fiscal_years = @activity_line_item.get_fiscal_years
-    if CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Unconstrained Plan').id)
+    if CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id)
       @fiscal_years = @fiscal_years[1..-1]
     end
 
@@ -200,7 +200,7 @@ class ActivityLineItemsController < OrganizationAwareController
         milestone_types = MilestoneType.other_project_milestones
       end
       milestone_types.all.each do |mt|
-        @activity_line_item.milestones.create(:milestone_type_id => mt.id, :milestone_date => today)
+        @activity_line_item.milestones.create(:milestone_type_id => mt.id)
       end
     end
 
