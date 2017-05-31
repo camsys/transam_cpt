@@ -55,11 +55,8 @@ class CapitalPlanAction < ActiveRecord::Base
 
     return false if capital_plan.completed?
 
-    unless hypothetical_finished_seq.length > 0
-      (next_action.nil? || !next_action.completed?) && completed_at.present?
-    else
-      hypothetical_finished_seq.index(object_key) == hypothetical_finished_seq.length-1
-    end
+    finished_actions = hypothetical_finished_seq.length > 0 ? hypothetical_finished_seq : capital_plan.capital_plan_actions.where('capital_plan_actions.completed_at IS NOT NULL').pluck(:object_key)
+    finished_actions.index(object_key) == finished_actions.length-1
   end
 
   def prev_action
