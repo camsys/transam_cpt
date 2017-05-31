@@ -23,14 +23,18 @@
       grp_checkbox = $(this);
       $('input.capital-plan-action-checkbox[data-col-index="'+$(this).data('col-index')+'"]').each(function() {
         if ($(this).is(":not(:disabled)")) {
+          changed = false;
           if ((grp_checkbox.is(':checked')) && ($(this).is(':not(:checked)'))) {
-            selected_plan_actions.push($( this ).val());
+            changed = true;
           } else if ((grp_checkbox.is(':not(:checked)')) && ($(this).is(':checked'))) {
-            unselected_plan_actions.push($( this ).val());
+            changed = true;
           }
 
-          // check/uncheck all
-          $(this).prop('checked', grp_checkbox.is(':checked'));
+          if (changed) {
+            $(this).prop('checked', grp_checkbox.is(':checked'));
+            after_checkbox_change($(this));
+          }
+
         }
       });
     });
@@ -83,12 +87,8 @@
     selected_plan_actions = $.unique(selected_plan_actions);
     unselected_plan_actions = $.unique(unselected_plan_actions);
 
-    update_checkboxes(get_checkbox_vals(checkbox));
-  }
-
-  function update_checkboxes(targets) {
     var url = '#{get_checkboxes_capital_plans_path}';
-
+    var targets = get_checkbox_vals(checkbox);
     $.ajax({
       url: url,
       data: {id: targets[0], checked_targets: targets[1]},
