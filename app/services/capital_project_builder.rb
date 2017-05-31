@@ -163,7 +163,7 @@ class CapitalProjectBuilder
 
       # Use the utility method to set up a new project and ALI if needed. This
       # retuns an array [project, ali]
-      a = add_to_project(nproject.organization, il, ali.team_ali_code, fy_year, project.capital_project_type, project.sogr, project.notional)
+      a = add_to_project(project.organization, il, ali.team_ali_code, fy_year, project.capital_project_type, project.sogr, project.notional)
       new_project = a.first
       new_ali = a.last
       # We don't need the new ali so we can just replace the new one on the

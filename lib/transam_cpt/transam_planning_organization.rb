@@ -1,4 +1,8 @@
 module TransamPlanningOrganization
+
+  PLAN_TYPE = 1
+
+
   #------------------------------------------------------------------------------
   #
   # PlanningOrganization
@@ -20,6 +24,8 @@ module TransamPlanningOrganization
     # ----------------------------------------------------
     # Call Backs
     # ----------------------------------------------------
+
+    after_create :set_capital_plan_type
 
     # ----------------------------------------------------
     # Associations
@@ -56,5 +62,11 @@ module TransamPlanningOrganization
 
   def has_sogr_projects?
     (capital_projects.sogr.count > 0)
+  end
+
+  private
+
+  def set_capital_plan_type
+    self.update_attributes(capital_plan_type_id: PLAN_TYPE)
   end
 end
