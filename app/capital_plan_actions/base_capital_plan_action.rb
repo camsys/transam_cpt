@@ -4,7 +4,7 @@ class BaseCapitalPlanAction
   attr_accessor :user
 
   def run
-    if @capital_plan_action.completed_at.nil?
+    if @capital_plan_action.completed_at.nil? || @capital_plan_action.system_action?
       if pre_process
         complete
 
