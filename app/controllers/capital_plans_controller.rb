@@ -97,7 +97,8 @@ class CapitalPlansController < OrganizationAwareController
         redirect_to '/404'
       else
         notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
-        redirect_to capital_plans_path
+        org_list = @organization_list.select{|x| Asset.operational.where(organization_id: x).count > 0}
+        redirect_to capital_plan_path(CapitalPlan.current_plan(org_list.first))
       end
       return
     end
