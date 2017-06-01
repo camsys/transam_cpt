@@ -102,9 +102,6 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
       org = Organization.get_typed_organization(Organization.find(org_id))
 
-      # fy year is one less to handle assets under replacement
-      @builder_proxy.start_fy = @builder_proxy.start_fy - 1
-
       Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.asset_types, @builder_proxy.start_fy, current_user), :priority => 0
 
       # Let the user know the results
