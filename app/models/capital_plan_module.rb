@@ -19,7 +19,7 @@ class CapitalPlanModule < ActiveRecord::Base
   end
 
   def is_allowed?
-    (prev_module.nil? || prev_module.completed_at.present?) && !(capital_plan_actions.pluck(:completed_at).include? nil) && completed_at.nil?
+    capital_plan.capital_plan_modules.where('completed_at IS NULL AND sequence < ?', sequence).count == 0 && !(capital_plan_actions.pluck(:completed_at).include? nil) && completed_at.nil?
   end
 
   def is_undo_allowed?
