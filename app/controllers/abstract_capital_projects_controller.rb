@@ -88,6 +88,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
 
     # Use ALI as the base relation to deal with asset & ALI filters
     @alis = ActivityLineItem.active.distinct
+    no_ali_or_asset_params_exist = true
 
     #-----------------------------------------------------------------------------
     # Asset parameters
@@ -100,21 +101,25 @@ class AbstractCapitalProjectsController < OrganizationAwareController
       @asset_subtype_filter = @user_activity_line_item_filter.asset_subtypes.split(',')
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
+      no_ali_or_asset_params_exist = false
     elsif @user_activity_line_item_filter.try(:asset_types).present?
       @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_types.split(',')).pluck(:id)
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
+      no_ali_or_asset_params_exist = false
     end
 
     # filter by backlog
     if @user_activity_line_item_filter.try(:in_backlog)
       asset_conditions << 'assets.in_backlog = ?'
       asset_values << true
+      no_ali_or_asset_params_exist = false
     end
 
     if @user_activity_line_item_filter.try(:asset_query_string)
       asset_conditions << 'assets.object_key IN (?)'
       asset_values << Asset.find_by_sql(@user_activity_line_item_filter.asset_query_string).map{|x| x.object_key}
+      no_ali_or_asset_params_exist = false
     end
 
     unless asset_conditions.empty?
@@ -133,7 +138,6 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # get the projects based on filtered ALIs
 
     # dont impose ALI/asset conditions unless they were in the params
-    no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtypes', 'asset_types', 'in_backlog', 'funding_buckets', 'not_fully_funded').values.uniq == [nil])
     @projects = CapitalProject.active.includes(:capital_project_type,:team_ali_code)
     unless no_ali_or_asset_params_exist
       @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
@@ -209,7 +213,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # final results
     @projects = @projects.where(conditions.join(' AND '), *values).order(:fy_year, :project_number)
 
-    @alis = ActivityLineItem.where(capital_project_id: @projects.ids) if no_ali_or_asset_params_exist
+    @alis = ActivityLineItem.where(capital_project_id: @projects.ids)
   end
 
   def get_planning_years
