@@ -55,8 +55,9 @@ capital_plan_types = [
 capital_plan_module_types = [
     {capital_plan_type_id: 1, name: 'Preparation', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 1, active: true},
     {capital_plan_type_id: 1, name: 'Unconstrained Plan', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 2, active: true},
-    {capital_plan_type_id: 1, name: 'Constrained Plan', class_name: 'ConstrainedCapitalPlanModule', strict_action_sequence: false, sequence: 3, active: true},
-    {capital_plan_type_id: 1, name: 'Final Review', class_name: 'ReviewCapitalPlanModule', strict_action_sequence: true, sequence: 4, active: true}
+    {capital_plan_type_id: 1, name: 'Funding', class_name: 'ConstrainedCapitalPlanModule', strict_action_sequence: false, sequence: 3, active: true},
+    {capital_plan_type_id: 1, name: 'Constrained Plan', class_name: 'ConstrainedCapitalPlanModule', strict_action_sequence: false, sequence: 4, active: true},
+    {capital_plan_type_id: 1, name: 'Final Review', class_name: 'ReviewCapitalPlanModule', strict_action_sequence: true, sequence: 5, active: true}
 ]
 capital_plan_action_types = [
     {capital_plan_type_id: 1, capital_plan_module_type_id: 1, name: 'Assets Updated', class_name: 'AssetPreparationCapitalPlanAction', roles: 'transit_manager,manager', sequence: 1, active: true},
@@ -66,14 +67,15 @@ capital_plan_action_types = [
     {capital_plan_type_id: 1, capital_plan_module_type_id: 2, name: 'State Approval', class_name: 'BaseCapitalPlanAction', roles: 'manager', sequence: 2, active: true},
 
     {capital_plan_type_id: 1, capital_plan_module_type_id: 3, name: 'Funding Complete', class_name: 'FundingCompleteConstrainedCapitalPlanAction', roles: 'transit_manager,manager', sequence: 1, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 3, name: 'Agency Approval', class_name: 'BaseCapitalPlanAction', roles: 'transit_manager,manager', sequence: 2, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 3, name: 'State Approval', class_name: 'BaseCapitalPlanAction', roles: 'manager', sequence: 3, active: true},
 
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'Approver 1', class_name: 'BaseCapitalPlanAction', roles: 'approver_one', sequence: 1, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'Approver 2', class_name: 'BaseCapitalPlanAction', roles: 'approver_two', sequence: 2, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'Approver 3', class_name: 'BaseCapitalPlanAction', roles: 'approver_three', sequence: 3, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'Approver 4', class_name: 'BaseCapitalPlanAction', roles: 'approver_four', sequence: 4, active: true},
-    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'Archive', class_name: 'BaseCapitalPlanAction', roles: 'admin', sequence: 4, active: true}
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'Agency Approval', class_name: 'BaseCapitalPlanAction', roles: 'transit_manager,manager', sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 4, name: 'State Approval', class_name: 'BaseCapitalPlanAction', roles: 'manager', sequence: 2, active: true},
+
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 1', class_name: 'BaseCapitalPlanAction', roles: 'approver_one', sequence: 1, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 2', class_name: 'BaseCapitalPlanAction', roles: 'approver_two', sequence: 2, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 3', class_name: 'BaseCapitalPlanAction', roles: 'approver_three', sequence: 3, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 4', class_name: 'BaseCapitalPlanAction', roles: 'approver_four', sequence: 4, active: true},
+    {capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Archive', class_name: 'BaseCapitalPlanAction', roles: 'admin', sequence: 4, active: true}
 ]
 
 replace_tables = %w{ milestone_types capital_project_types replacement_status_types capital_plan_types capital_plan_module_types capital_plan_action_types }
