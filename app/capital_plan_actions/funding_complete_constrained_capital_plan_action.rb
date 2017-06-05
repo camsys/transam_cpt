@@ -13,7 +13,7 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
       funded_ali_count += 1 if ali.pcnt_funded == 100
     end
 
-    pcnt_funded = ali_count > 0 ? (funded_ali_count * 100.0 / ali_count).to_i : 0
+    pcnt_funded = ali_count > 0 ? (funded_ali_count * 100.0 / ali_count).to_i : 100
 
     @capital_plan_action.update!(notes: "#{pcnt_funded}%")
   end
