@@ -36,20 +36,26 @@ class CapitalPlanAction < ActiveRecord::Base
         prev_module_check
       end
     else
-      sys_actions_completed = true
-      capital_plan.capital_plan_actions[0..hypothetical_finished_seq.length-1].each do |action|
-        if action.system_action?
-          sys_actions_completed = (sys_actions_completed & action.completed?)
+      if prev_module
+        prev_module_obj_key_actions = prev_module.capital_plan_actions.select{|a| !a.system_action?}.map(&:object_key)
+        prev_module_system_actions = prev_module.capital_plan_actions.select{|a| a.system_action?}
+        prev_module_system_actions_completed = (prev_module_system_actions.count == prev_module_system_actions.select{|a| a.completed?}.count)
+
+        # if the prev module is made up of all system actions that are all completed
+        # we need to check even further back to a module that includes user input or the first module in the plan
+        while prev_module.sequence > 1 && prev_module_system_actions.count == prev_module.capital_plan_actions.count && prev_module_system_actions_completed
+          prev_module_obj_key_actions = prev_module.prev_module.capital_plan_actions.select{|a| !a.system_action?}.map(&:object_key)
+          prev_module_system_actions = prev_module.prev_module.capital_plan_actions.select{|a| a.system_action?}
+          prev_module_system_actions_completed = (prev_module_system_actions.count == prev_module_system_actions.select{|a| a.completed?}.count)
         end
       end
-      obj_key_actions = capital_plan.capital_plan_actions.select{|a| !a.system_action?}.map(&:object_key)
 
-      prev_check = prev_module.nil? || (obj_key_actions & hypothetical_finished_seq) == obj_key_actions && sys_actions_completed
+      prev_module_check = prev_module.nil? || ((prev_module_obj_key_actions & hypothetical_finished_seq) == prev_module_obj_key_actions && prev_module_system_actions_completed)
       if capital_plan_module.capital_plan_module_type.strict_action_sequence?
         idx = hypothetical_finished_seq.index(prev_action.object_key)
-        prev_check && (sequence == 1 || idx )
+        prev_module_check && (sequence == 1 || idx )
       else
-        prev_check
+        prev_module_check
       end
     end
   end
