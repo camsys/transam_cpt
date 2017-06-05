@@ -28,7 +28,7 @@
         - else
           = f.association :districts, :collection => TransitOperator.find_by(id: @organization_list).districts, :label_method => :to_s, :include_blank => false, :label => 'Project District'
       - else
-        = f.association :districts, :collection => TransitOperator.find_by(id: @project.organization_id).districts, :include_blank => false, :label => 'Project District'
+        = f.association :districts, :collection => TransitOperator.find_by(id: @project.organization_id).districts, :label_method => :to_s, :include_blank => false, :label => 'Project District'
 
   - unless @project.sogr?
     .row
