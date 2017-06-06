@@ -58,6 +58,7 @@ namespace :transam do
     end
 
     Organization.update_all(capital_plan_type_id: 1)
+    ActivityLineItem.update_all(is_planning_complete: false)
 
     roles = [
         {name: 'approver_one', weight: 11, resource_id: Role.find_by(name: 'manager').id, resource_type: 'Role', privilege: true, label: 'Approver 1'},
