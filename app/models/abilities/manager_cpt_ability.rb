@@ -43,11 +43,11 @@ module Abilities
       end
 
       can [:update, :destroy], ActivityLineItem do |ali|
-        ali.capital_project.sogr? == false and ali.capital_project.can_update?
+        ali.capital_project.sogr? == false and ali.capital_project.can_update? and !ali.is_planning_complete
       end
 
       can [:update_cost], ActivityLineItem do |ali|
-        ali.capital_project.can_update?
+        ali.capital_project.can_update? and !ali.is_planning_complete
       end
 
       can :manage, CapitalPlan do |c|

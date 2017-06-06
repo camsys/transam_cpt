@@ -11,7 +11,7 @@
   %p.text-center.bold{:id => ali.object_key+'-ali-cost', :data => {:cost => ali.cost}}= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
 
   -#Should this be moved into the ability file? Or should we assume if the is_planning complete then nobody can edit this
-  -unless ali.is_planning_complete
+  - unless ali.is_planning_complete
     %hr.ali
     .button-toolbar{:role => 'toolbar'}
       - if can? :update, ali or can? :update_cost, ali
