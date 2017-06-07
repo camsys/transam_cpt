@@ -53,7 +53,7 @@ class CapitalPlansController < OrganizationAwareController
       action.capital_plan_action_type.class_name.constantize.new(capital_plan_action: action, user: current_user).run
     end
 
-    undo_actions = CapitalPlanAction.unscoped.where('capital_plan_actions.object_key IN (?) AND capital_plan_actions.completed_at IS NOT NULL', params[:undo_targets].split(',')).order('capital_plan_modules.sequence DESC', 'capital_plan_actions.sequence DESC')
+    undo_actions = CapitalPlanAction.unscoped.joins(:capital_plan_module).where('capital_plan_actions.object_key IN (?) AND capital_plan_actions.completed_at IS NOT NULL', params[:undo_targets].split(',')).order('capital_plan_modules.sequence DESC', 'capital_plan_actions.sequence DESC')
     undo_actions.each do |action|
       authorize! :update, action.capital_plan
       action.capital_plan_action_type.class_name.constantize.new(capital_plan_action: action, user: current_user).run
