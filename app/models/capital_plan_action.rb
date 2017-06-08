@@ -12,6 +12,10 @@ class CapitalPlanAction < ActiveRecord::Base
   belongs_to :capital_plan_module
   belongs_to :capital_plan
 
+  validates :capital_plan_action_type, :presence => true
+  validates :capital_plan_module, :presence => true
+  validates :capital_plan, :presence => true
+
   default_scope { joins(:capital_plan_module).order('capital_plan_modules.sequence', 'capital_plan_actions.sequence') }
 
   def system_action?

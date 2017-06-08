@@ -16,6 +16,9 @@ class CapitalPlan < ActiveRecord::Base
   has_many :capital_plan_modules, :dependent => :destroy
   has_many :capital_plan_actions, :dependent => :destroy
 
+  validates :organization, :presence => true
+  validates :capital_plan_type, :presence => true
+
   def self.current_plan(org_id)
     org = Organization.find_by(id: org_id)
     plan = CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: org_id, capital_plan_type_id: org.capital_plan_type_id)

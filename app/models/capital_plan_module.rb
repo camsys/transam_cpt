@@ -12,6 +12,10 @@ class CapitalPlanModule < ActiveRecord::Base
 
   has_many :capital_plan_actions, :dependent => :destroy
 
+
+  validates :capital_plan_module_type, :presence => true
+  validates :capital_plan, :presence => true
+
   default_scope { order(:sequence) }
 
   def completed?
