@@ -7,9 +7,9 @@ namespace :transam do
 
     orgs.each do |o|
       builder = CapitalProjectBuilder.new
-      num_created = builder.build(org) # uses default options
+      num_created = builder.build(o) # uses default options
 
-      puts "#{num_created} SOGR capital projects were added to #{org.short_name}'s capital needs list."
+      puts "#{num_created} SOGR capital projects were added to #{o.short_name}'s capital needs list."
     end
   end
 
