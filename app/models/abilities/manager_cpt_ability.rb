@@ -57,6 +57,10 @@ module Abilities
         (a.capital_plan_action_type.roles.split(',') & user.roles_name).any?
       end
 
+      cannot :complete_action, CapitalPlanAction do |a|
+        a.capital_plan_action_type.class_name == 'AssetOverridePreparationCapitalPlanAction' && a.completed?
+      end
+
     end
   end
 end
