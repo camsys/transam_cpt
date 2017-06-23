@@ -58,7 +58,7 @@ module Abilities
       end
 
       cannot :complete_action, CapitalPlanAction do |a|
-        a.capital_plan_action_type.class_name == 'AssetOverridePreparationCapitalPlanAction' && a.completed?
+        a.capital_plan_action_type.class_name == 'AssetOverridePreparationCapitalPlanAction' && a.completed? && a.prev_action.notes == '100%'
       end
 
     end
