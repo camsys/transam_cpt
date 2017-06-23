@@ -102,9 +102,15 @@ class CapitalPlansController < OrganizationAwareController
       if CapitalPlan.find_by(object_key: params[:id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
         redirect_to '/404'
       else
-        notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
         org_list = @organization_list.select{|x| Asset.operational.where(organization_id: x).count > 0}
-        redirect_to capital_plan_path(CapitalPlan.current_plan(org_list.first))
+
+        if org_list.count > 0
+          notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
+          redirect_to capital_plan_path(CapitalPlan.current_plan(org_list.first))
+        else
+          notify_user(:warning, 'No capital plans for your organization filter. Try changing your filter.')
+          redirect_to root_path
+        end
       end
       return
     end
