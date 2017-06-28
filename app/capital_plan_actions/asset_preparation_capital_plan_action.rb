@@ -26,15 +26,16 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
       end
     end
 
-    @capital_plan_action.update(notes: notes)
+    @capital_plan_action.update(notes: notes, completed_at: Time.now)
+
+    if @capital_plan_action.notes.split(',').uniq == ['100%']
+      @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
+    end
   end
 
   def post_process
-    if @capital_plan_action.notes.split(',').uniq == ['100%']
-      super
-
-      @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
-    end
+    # do nothing
+    return true
   end
 
 end
