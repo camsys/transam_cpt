@@ -1,7 +1,7 @@
--# %li
--#   = link_to edit_milestones_capital_project_activity_line_item_path(@project, @activity_line_item) do
--#     %i.fa.fa-edit.fa-fw
--#     = " Update the milestones"
+%li
+  = link_to edit_milestones_capital_project_activity_line_item_path(project, ali), :remote => true do
+    %i.fa.fa-clock-o.fa-fw
+    = " Update milestones"
 
 %li
   = link_to edit_cost_capital_project_activity_line_item_path(project, ali), :remote => true do
