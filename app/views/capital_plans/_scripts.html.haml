@@ -1,3 +1,7 @@
+- view_component = "app_scripts"
+- if lookup_context.template_exists?(view_component, 'capital_plans', true)
+  = render :partial => "capital_plans/#{view_component}"
+
 :javascript
 
   var selected_plan_actions = [];
