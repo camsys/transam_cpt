@@ -29,7 +29,7 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
       send_asset_transferred_message new_asset
     end
 
-    if asset.general_ledger_accounts.count > 0
+    if (asset.respond_to? :general_ledger_accounts) && asset.general_ledger_accounts.count > 0
       disposal_account = ChartOfAccount.find_by(organization_id: asset.organization_id).general_ledger_accounts.find_by(general_ledger_account_subtype: GeneralLedgerAccountSubtype.find_by(name: 'Disposal Account'))
 
       asset.general_ledger_accounts.find_by(general_ledger_account_subtype: GeneralLedgerAccountSubtype.find_by(name: 'Accumulated Depreciation Account')).general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: asset.purchase_cost-asset.book_value)
