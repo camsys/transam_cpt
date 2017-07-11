@@ -28,6 +28,24 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
       new_asset = asset.transfer asset_event.organization_id
       send_asset_transferred_message new_asset
     end
+
+    if asset.general_ledger_accounts.count > 0
+      disposal_account = ChartOfAccount.find_by(organization_id: asset.organization_id).general_ledger_accounts.find_by(general_ledger_account_subtype: GeneralLedgerAccountSubtype.find_by(name: 'Disposal Account'))
+
+      asset.general_ledger_accounts.find_by(general_ledger_account_subtype: GeneralLedgerAccountSubtype.find_by(name: 'Accumulated Depreciation Account')).general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: asset.purchase_cost-asset.book_value)
+
+
+      if asset.book_value > 0
+        disposal_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: asset.book_value)
+      end
+
+      asset.general_ledger_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: -asset.purchase_cost)
+
+      disposition_event = asset.disposition_updates.last
+      if disposition_event.sale_proceeds > 0
+        disposal_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: -disposition_event.sale_proceeds)
+      end
+    end
   end
 
   def prepare
