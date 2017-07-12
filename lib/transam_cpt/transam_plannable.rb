@@ -21,6 +21,8 @@ module TransamPlannable
     # Call Backs
     # ----------------------------------------------------
 
+    before_validation  :set_plannable_defaults
+
      # Clean up any HABTM associations before the asset is destroyed
     before_destroy { activity_line_items.clear }
 
@@ -124,6 +126,14 @@ module TransamPlannable
     activity_line_items.each{|x| projects << x.capital_project}
     projects.uniq
     
+  end
+
+  protected
+
+  def set_plannable_defaults
+    if self.type_of? Expenditure
+      self.replacement_status_type_id ||= ReplacementStatusType.find_by(name: 'None').id
+    end
   end
 
 end
