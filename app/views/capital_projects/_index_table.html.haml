@@ -1,6 +1,13 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
+#table_actions.btn-group
+  - if can? :create, CapitalProject
+    = link_to new_capital_project_path, :class => 'btn btn-default' do
+      %i.fa.fa-plus.fa-fw
+      = " New Capital Project"
+
+
 .table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
     :url => capital_projects_path(format: :json),
