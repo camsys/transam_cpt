@@ -177,11 +177,20 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # TEAM ALI code
     if @user_activity_line_item_filter.try(:team_ali_codes).blank?
       @team_ali_code_filter = []
-    else
+      else
       @team_ali_code_filter = @user_activity_line_item_filter.team_ali_codes.split(',')
 
       conditions << 'capital_projects.team_ali_code_id IN (?)'
       values << @team_ali_code_filter
+    end
+
+    if @user_activity_line_item_filter.try(:planning_year)
+      @fy_year_filter = []
+    else
+      @fy_year_filter = [current_planning_year_year]
+
+      conditions << 'capital_projects.fy_year IN (?)'
+      values << @fy_year_filter
     end
 
     # District
