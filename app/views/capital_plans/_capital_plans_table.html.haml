@@ -5,9 +5,8 @@
 #table_actions.btn-toolbar
   - if can? :update, CapitalPlan
     .btn-group
-      = link_to complete_actions_capital_plans_path, :remote => true, :class => 'btn btn-default capital-plan-action', :data => {:confirm => 'Are you sure?'} do
-        %i.fa.fa-edit.fa-fw
-        = "Update Capital Plans"
+      = link_to complete_actions_capital_plans_path, :remote => true, :class => 'btn btn-primary capital-plan-action', :data => {:confirm => 'Are you sure?'} do
+        Save
 
 .table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
