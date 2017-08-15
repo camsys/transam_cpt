@@ -185,12 +185,12 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     end
 
     if @user_activity_line_item_filter.try(:planning_year)
-      @fy_year_filter = []
-    else
       @fy_year_filter = [current_planning_year_year]
 
       conditions << 'capital_projects.fy_year IN (?)'
       values << @fy_year_filter
+    else
+      @fy_year_filter = []
     end
 
     # District
