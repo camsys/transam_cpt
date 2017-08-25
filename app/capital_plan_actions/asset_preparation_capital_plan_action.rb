@@ -26,13 +26,7 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
     total_pcnt_passed = pcnts_passed.reduce(:+) / pcnts_passed.size.to_f
     total_pcnt_passed = (total_pcnt_passed + 0.5).to_i
 
-    if @user.organization.organization_type.class_name == 'Grantor'
-      url = Rails.application.routes.url_helpers.funding_buckets_url(funds_filter: 'funds_overcommitted')
-    else
-      url = Rails.application.routes.url_helpers.my_funds_funding_buckets_url(funds_filter: 'funds_overcommitted')
-    end
-
-    @capital_plan_action.update(completed_pcnt: total_pcnt_passed, notes: "<a href='#{url}' style='color:red;'>#{total_pcnt_passed}%</a>")
+    @capital_plan_action.update(completed_pcnt: total_pcnt_passed, notes: "#{total_pcnt_passed}%")
 
     if @capital_plan_action.completed_pcnt == 100
       @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
