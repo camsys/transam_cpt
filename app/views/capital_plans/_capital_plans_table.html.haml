@@ -72,9 +72,9 @@
                   = link_to complete_actions_capital_plans_path(targets: a.object_key, undo_targets: ''), :class => 'btn btn-info', :data => {:confirm => 'Are you sure?'} do
                     Archive
             - else
-              %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
+              %td{data: {tableexport: {value: a.system_action? ? a.completed_pcnt : (a.completed? ? 'X' : '')}}}
                 - if a.system_action?
-                  = a.notes
+                  = a.notes.html_safe
                 - else
                   - checkbox_params = {type: 'checkbox', data: {index: row_idx, col_index: col_idx+1}, value: a.object_key, class: 'capital-plan-action-checkbox'}
                   - if a.completed?

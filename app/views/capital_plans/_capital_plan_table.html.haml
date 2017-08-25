@@ -41,9 +41,9 @@
               %td
             - prev_action = a
             %td.left= a.capital_plan_action_type
-            %td{data: {tableexport: {value: a.system_action? ? a.notes : (a.completed? ? 'X' : '')}}}
+            %td{data: {tableexport: {value: a.system_action? ? a.completed_pcnt : (a.completed? ? 'X' : '')}}}
               - if a.system_action?
-                = a.notes
+                = a.notes.html_safe
               - else
                 - checkbox_params = {type: 'checkbox', data: {index: idx}, value: a.object_key, class: 'capital-plan-action-checkbox'}
                 - if a.completed?
