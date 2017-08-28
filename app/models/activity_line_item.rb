@@ -134,6 +134,14 @@ class ActivityLineItem < ActiveRecord::Base
     (capital_project.notional?)
   end
 
+  def pinned?
+    !notional? && (assets.where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Pinned').id).count > 0)
+  end
+
+  def can_pin?
+    !notional?
+  end
+
   def to_s
     name
   end

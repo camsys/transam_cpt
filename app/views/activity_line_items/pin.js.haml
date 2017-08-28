@@ -1,0 +1,7 @@
+$('#confirm_dialog_modal').modal('hide');
+- if @activity_line_item.pinned?
+  $("##{@activity_line_item.object_key}.pin").removeClass('fa-star-o');
+  $("##{@activity_line_item.object_key}.pin").addClass('fa-star');
+- else
+  $("##{@activity_line_item.object_key}.pin").removeClass('fa-star');
+  $("##{@activity_line_item.object_key}.pin").addClass('fa-star-o');

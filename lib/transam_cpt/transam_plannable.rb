@@ -39,6 +39,8 @@ module TransamPlannable
 
     scope :in_replacement_cycle, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id != ?', ReplacementStatusType.find_by(name: 'None').id) }
     scope :replacement_by_policy, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id = ?', ReplacementStatusType.find_by(name: 'By Policy').id) }
+    scope :replacement_by_policy_with_pinned, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id IN (?)', ReplacementStatusType.where(nam: ['By Policy', 'Pinned']).ids) }
+    scope :replacement_pinned, -> { where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Pinned').id) }
     scope :replacement_underway, -> { where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Underway').id) }
 
     # ----------------------------------------------------
@@ -79,6 +81,10 @@ module TransamPlannable
 
   def replacement_by_policy?
     replacement_status_type.nil? || replacement_status_type == ReplacementStatusType.find_by(name: 'By Policy')
+  end
+
+  def replacement_pinned?
+    replacement_status_type == ReplacementStatusType.find_by(name: 'Pinned')
   end
 
   def replacement_underway?
