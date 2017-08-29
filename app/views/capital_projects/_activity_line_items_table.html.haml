@@ -6,13 +6,14 @@
   %table.table.table-condensed
     %thead
       %tr
-        %th
+        - if popup == '1'
+          %th
         %th Name
         %th.center FY
         %th.center Sub Category
         %th.right Count
         %th.right Cost
-        - if popup
+        - if popup == '1'
           %th.center
         - if project.has_early_replacement_assets?
           %th.center
@@ -22,9 +23,8 @@
       - alis.each do |ali|
         - sum_assets += ali.assets.count
         %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
-
-          %td
-            = render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?}
+          - if popup == '1'
+            %td= render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?}
           %td.left.nowrap= ali.name
           %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
           %td.center.nowrap= ali.team_ali_code
