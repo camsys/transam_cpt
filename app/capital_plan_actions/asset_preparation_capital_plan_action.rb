@@ -28,14 +28,15 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
 
     @capital_plan_action.update(completed_pcnt: total_pcnt_passed, notes: "#{total_pcnt_passed}%")
 
-    if @capital_plan_action.completed_pcnt == 100
-      @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
-    end
+
   end
 
   def post_process
-    # do nothing
-    return true
+    if @capital_plan_action.completed_pcnt == 100
+      super
+
+      @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
+    end
   end
 
 end
