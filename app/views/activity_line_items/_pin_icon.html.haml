@@ -1,13 +1,13 @@
 - if can? :pin, ali
   = link_to pin_capital_project_activity_line_item_path(ali.capital_project, ali), :remote => true, :class => 'btn btn-warning btn-xs', :data => {:confirm => "Are you sure you want to #{pinned ? 'unpin' : 'pin'} this ALI?"}  do
     - if pinned
-      %i.fa.fa-star.fa-fw.pin{:id => ali.object_key, :title => 'Pinned'}
+      %i.fa.fa-thumb-tack.fa-fw.pin{:id => ali.object_key, :title => 'Pinned'}
     - else
-      %i.fa.fa-star-o.fa-fw.pin{:id => ali.object_key, :title => 'Pin'}
-- else
+      %i.fa.fa-thumb-tack.fa-rotate-90.fa-fw.pin{:id => ali.object_key, :title => 'Pin'}
+- elsif ali.can_pin?
   - if pinned
-    %i.fa.fa-star.fa-fw.pin{:id => ali.object_key, :title => 'Pinned'}
+    %i.fa.fa-thumb-tack.fa-fw.pin{:id => ali.object_key, :title => 'Pinned', :style => 'margin-top:3px;'}
   - else
-    %i.fa.fa-star-o.fa-fw.pin{:id => ali.object_key, :title => 'Pin'}
+    %i.fa.fa-thumb-tack.fa-rotate-90.fa-fw.pin{:id => ali.object_key, :title => 'Pin', :style => 'margin-top:3px;'}
 
 
