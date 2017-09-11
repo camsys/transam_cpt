@@ -22,21 +22,21 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
       end
     end
 
-
     total_pcnt_passed = pcnts_passed.reduce(:+) / pcnts_passed.size.to_f
     total_pcnt_passed = (total_pcnt_passed + 0.5).to_i
 
-    @capital_plan_action.update(completed_pcnt: total_pcnt_passed, notes: "#{total_pcnt_passed}%")
+    # this system action is always completed right off the bat even if not at 100 pcnt
+    # to actually go to the next step the "Asset Override" must also be completed - this can be either done by the user or it has to be a 100% (see next code block)
+    @capital_plan_action.update(completed_pcnt: total_pcnt_passed, notes: "#{total_pcnt_passed}%", completed_at: Time.now)
 
-
+    if @capital_plan_action.completed_pcnt == 100
+      @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
+    end
   end
 
   def post_process
-    if @capital_plan_action.completed_pcnt == 100
-      super
-
-      @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
-    end
+    # do nothing
+    return true
   end
 
 end
