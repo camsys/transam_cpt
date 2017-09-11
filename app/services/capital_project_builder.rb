@@ -543,7 +543,7 @@ class CapitalProjectBuilder
         ali = ActivityLineItem.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
       end
       # ali cant be a "pinned" ALI
-      ali = nil if ali.pinned?
+      ali = nil if ali.try(:pinned?)
 
       # if there is an exisiting ALI, see if the asset is in it
       if ali
