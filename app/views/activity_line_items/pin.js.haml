@@ -1,7 +1,10 @@
 $('#confirm_dialog_modal').modal('hide');
+$('div[data-ali="#{@activity_line_item.object_key}"]').html("#{raw escape_javascript(render :partial => 'planning/ali', locals: { project: @activity_line_item.capital_project, ali: @activity_line_item, is_sogr: true })}")
 - if @activity_line_item.pinned?
-  $("##{@activity_line_item.object_key}.pin").removeClass('fa-star-o');
-  $("##{@activity_line_item.object_key}.pin").addClass('fa-star');
+  $("##{@activity_line_item.object_key}.pin").removeClass('fa-rotate-90');
+  $('div[data-ali="#{@activity_line_item.object_key}"]').removeClass('draggable ui-draggable');
+  $('div[data-ali="#{@activity_line_item.object_key}"]').draggable({ disabled: true });
 - else
-  $("##{@activity_line_item.object_key}.pin").removeClass('fa-star');
-  $("##{@activity_line_item.object_key}.pin").addClass('fa-star-o');
+  $("##{@activity_line_item.object_key}.pin").addClass('fa-rotate-90');
+  $('div[data-ali="#{@activity_line_item.object_key}"]').addClass('draggable ui-draggable');
+  $('div[data-ali="#{@activity_line_item.object_key}"]').draggable({ disabled: false });
