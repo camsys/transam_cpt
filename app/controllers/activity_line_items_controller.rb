@@ -96,6 +96,10 @@ class ActivityLineItemsController < OrganizationAwareController
     end
 
     respond_to do |format|
+      format.html {
+        notify_user(:notice, "The ALI was successfully #{@activity_line_item.pinned? ? 'pinned' : 'unpinned'}.")
+        redirect_to :back
+      }
       format.js
     end
 
