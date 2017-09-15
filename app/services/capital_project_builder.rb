@@ -51,9 +51,11 @@ class CapitalProjectBuilder
     a = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
 
     # Run the update
-    process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
+    if a.replacement_by_policy? || a.replacement_underway?
+      process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
+    end
 
-    # Cleanup any empty projects and ALIs
+    # Cleanup any empty projects and AL Is
     {:deleted_alis => post_build_clean_up(asset.organization)}
 
   end

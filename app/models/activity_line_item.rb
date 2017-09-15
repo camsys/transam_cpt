@@ -139,7 +139,7 @@ class ActivityLineItem < ActiveRecord::Base
   end
 
   def can_pin?
-    !notional?
+    !notional? && assets.count > 0
   end
 
   def to_s
