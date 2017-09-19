@@ -51,7 +51,7 @@ class CapitalProjectBuilder
     a = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
 
     # Run the update
-    if a.replacement_by_policy? || a.replacement_underway?
+    unless a.replacement_pinned?
       process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type)
     end
 
