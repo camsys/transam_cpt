@@ -215,8 +215,8 @@ class CapitalProjectBuilder
 
   def post_build_clean_up organization
     # destroy all empty ALIs
-   deleted_alis =  ActivityLineItem.joins('LEFT OUTER JOIN activity_line_items_assets ON activity_line_items.id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.activity_line_item_id IS NULL').joins(:capital_project).where('capital_projects.sogr = true')
-   deleted_projs_alis = deleted_alis.map{|x| [x.capital_project, x]}
+    deleted_alis =  ActivityLineItem.joins('LEFT OUTER JOIN activity_line_items_assets ON activity_line_items.id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.activity_line_item_id IS NULL').joins(:capital_project).where('capital_projects.sogr = true')
+    deleted_projs_alis = deleted_alis.map{|x| [x.capital_project, x]}
 
     deleted_alis.destroy_all
 
@@ -226,7 +226,7 @@ class CapitalProjectBuilder
     # destroy all empty capital projects
     CapitalProject.where(:organization_id => organization.id, :sogr => true).joins('LEFT OUTER JOIN activity_line_items ON capital_projects.id = activity_line_items.capital_project_id').where('activity_line_items.capital_project_id IS NULL').destroy_all
 
-   deleted_projs_alis
+    deleted_projs_alis
   end
 
   def build_bottom_up(organization, options)
@@ -277,9 +277,9 @@ class CapitalProjectBuilder
 
       # Find all the matching assets for this organization.
       # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-      assets = asset_type.class_name.constantize.replacement_by_policy.where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+      assets = asset_type.class_name.constantize.replacement_by_policy.where('asset_type_id = ? AND organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', asset_type.id, organization.id, @start_year)
 
-      assets += asset_type.class_name.constantize.replacement_underway.where('organization_id = ?', organization.id)
+      assets += asset_type.class_name.constantize.replacement_underway.where('asset_type_id = ? AND organization_id = ?', asset_type.id, organization.id)
 
       # Process each asset in turn...
       assets.each do |a|
@@ -287,12 +287,12 @@ class CapitalProjectBuilder
         if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
           policy_analyzer =
               policy_type_rules[asset_type.id].attributes
-                .merge(
-                  policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
-                )
-                .merge(
-                  policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
-                )
+                  .merge(
+                      policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
+                  )
+                  .merge(
+                      policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
+                  )
         end
         # reset scheduled replacement year
         a.scheduled_replacement_year = nil if a.replacement_by_policy?
@@ -615,3 +615,4 @@ class CapitalProjectBuilder
   private
 
 end
+
