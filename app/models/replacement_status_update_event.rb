@@ -45,6 +45,11 @@ class ReplacementStatusUpdateEvent < AssetEvent
   #
   #------------------------------------------------------------------------------
 
+  # usually no conditions on can create but can be overridden by specific asset events
+  def can_update?
+    asset_event_type.active && asset.replacement_status_type != ReplacementStatusType.find_by(name: 'Pinned')
+  end
+
   # This must be overriden otherwise a stack error will occur  
   def get_update
     "Replacement status: #{replacement_status_type}."
