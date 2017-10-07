@@ -539,11 +539,11 @@ class CapitalProjectBuilder
 
 
     if asset.present?
-      not_pinned_alis = ActivityLineItem.distinct.joins(:assets).where('assets.replacement_status_type_id != 4 OR replacement_status_type_id IS NULL')
+      not_pinned_alis = ActivityLineItem.distinct.joins(:assets).where('assets.replacement_status_type_id != 4 OR assets.replacement_status_type_id IS NULL')
       if asset.fuel_type_id.present?
-        ali = not_pinned_alis.find_by('capital_project_id = ? AND team_ali_code_id = ? AND fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
+        ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ? AND activity_line_items.fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
       else
-        ali = not_pinned_alis.find_by('capital_project_id = ? AND team_ali_code_id = ?', project.id, ali_code.id)
+        ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ?', project.id, ali_code.id)
       end
 
       # if there is an exisiting ALI, see if the asset is in it
