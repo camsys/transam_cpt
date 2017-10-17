@@ -12,11 +12,6 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
   def execute_job(asset)  
     # remove the asset from ALIs if going to dispose it
     asset = Asset.get_typed_asset(asset)
-    if asset.respond_to?(:activity_line_items) && !asset.disposition_updates.empty?   
-      asset.activity_line_items.each do |ali|
-        ali.assets.destroy(asset) # trigger ALI after_update_callback
-      end
-    end
 
     just_disposed_and_transferred = !asset.disposed? && asset.disposition_updates.last.try(:disposition_type_id) == 2
 
@@ -26,23 +21,34 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
       send_asset_transferred_message new_asset
     end
 
-    gl_mapping = GeneralLedgerMapping.find_by(organization_id: asset.organization_id, asset_subtype_id: asset.asset_subtype_id)
-    if gl_mapping.present?
-
-      amount = asset.depreciation_purchase_cost-asset.book_value # temp variable for tracking rounding errors
-      gl_mapping.accumulated_depr_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: amount)
-
-      if asset.book_value > 0
-        gl_mapping.gain_loss_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: asset.book_value)
+    if !asset.disposition_updates.empty?
+      if asset.respond_to?(:activity_line_items)
+        asset.activity_line_items.each do |ali|
+          ali.assets.destroy(asset) # trigger ALI after_update_callback
+        end
       end
 
-      gl_mapping.asset_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: -asset.depreciation_purchase_cost)
+      gl_mapping = GeneralLedgerMapping.find_by(organization_id: asset.organization_id, asset_subtype_id: asset.asset_subtype_id)
+      if gl_mapping.present?
 
-      disposition_event = asset.disposition_updates.last
-      if disposition_event.sale_proceeds > 0
-        gl_mapping.gain_loss_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: -disposition_event.sale_proceeds)
+        amount = asset.depreciation_purchase_cost-asset.book_value # temp variable for tracking rounding errors
+        gl_mapping.accumulated_depr_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: amount)
+
+        if asset.book_value > 0
+          gl_mapping.gain_loss_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: asset.book_value)
+        end
+
+        gl_mapping.asset_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: -asset.depreciation_purchase_cost)
+
+        disposition_event = asset.disposition_updates.last
+        if disposition_event.sale_proceeds > 0
+          gl_mapping.gain_loss_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: "#{asset.asset_path} Disposal", amount: -disposition_event.sale_proceeds)
+        end
       end
+
     end
+
+
   end
 
   def prepare
