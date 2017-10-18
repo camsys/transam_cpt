@@ -134,6 +134,10 @@ class ActivityLineItem < ActiveRecord::Base
     (capital_project.notional?)
   end
 
+  def is_agency_planning_complete?
+    CapitalPlanAction.joins([capital_plan: :organization, capital_plan_action_type: :capital_plan_module_type]).where('organizations.id = ? AND capital_plan_action_types.name = "Agency Approval" AND capital_plan_module_types.name = "Constrained Plan"', capital_project.organization_id).first.completed?
+  end
+
   def pinned?
     !notional? && (assets.where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Pinned').id).count > 0)
   end
