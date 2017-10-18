@@ -6,7 +6,7 @@ module Abilities
 
       cannot :manage, [CapitalProject, ActivityLineItem, CapitalPlan, CapitalPlanAction]
 
-      self.merge Abilities::AuthorizedCptAbility.new(user)
+      self.merge Abilities::AuthorizedCptAbility.new(user, Organization.ids)
       self.merge Abilities::ManagerCptAbility.new(user)
 
       # can do anything on capital plans
