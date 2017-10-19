@@ -29,6 +29,8 @@ class CapitalPlanModule < ActiveRecord::Base
   end
 
   def is_undo_allowed?
+    return false if capital_plan_actions.count == capital_plan_actions.select{|x| x.system_action?}.count
+
     (next_module.nil? || next_module.capital_plan_actions.pluck(:completed_at).uniq == [nil]) && (capital_plan_actions.pluck(:completed_at).include? nil) && completed_at.present?
   end
 
