@@ -3,7 +3,7 @@ class ConstrainedCapitalPlanModule < BaseCapitalPlanModule
     set_ali_is_complete_status true
   end
 
-  def undo
+  def undo_complete
     set_ali_is_complete_status false
   end
 
