@@ -32,7 +32,7 @@ class BaseCapitalPlanModule
   end
 
   def undo_pre_process
-    return @capital_plan_module.is_allowed?
+    return @capital_plan_module.is_undo_allowed?
   end
 
   def undo_complete
