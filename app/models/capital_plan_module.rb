@@ -23,8 +23,6 @@ class CapitalPlanModule < ActiveRecord::Base
   end
 
   def is_allowed?
-    return true if capital_plan_actions.count == capital_plan_actions.select{|x| x.system_action?}.count
-
     capital_plan.capital_plan_modules.where('completed_at IS NULL AND sequence < ?', sequence).count == 0 && !(capital_plan_actions.pluck(:completed_at).include? nil) && completed_at.nil?
   end
 
