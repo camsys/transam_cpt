@@ -17,7 +17,7 @@
     .col-sm-6
       %label.control-label.string.required
         * Category
-      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}), :class => 'form-control', :required => true, :include_blank => true
+      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}, @activity_line_item.team_ali_code.try(:parent)), :class => 'form-control', :required => true, :include_blank => true
     .col-sm-6
       = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true, :label => "TEAM ALI Code"
 
