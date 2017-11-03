@@ -56,7 +56,7 @@
       var options = '<option value="">' + blank_text + '</option>';
       for (i = 0; i < result.length; i++) {
         //console.log("result.code = '" + result[i].code + "'");
-        if (result[i].code == selected_val) {
+        if ((result[i].code == selected_val) || (result.length == 1)) {
           options += '<option value="' + result[i].id + '" selected>' + result[i].full_name + '</option>';
         } else {
           options += '<option value="' + result[i].id + '">' + result[i].full_name + '</option>';
