@@ -74,7 +74,7 @@ namespace :transam do
     end
   end
 
-  desc "Build Capital Plan Workflow"
+  desc "Add ALI filters"
   task add_user_activity_line_item_filters: :environment do
     sys_user = User.find_by_first_name('system')
     filters = [
@@ -85,8 +85,7 @@ namespace :transam do
         {name: 'Rail and Locomotive', description: 'Rail and Locomotive', asset_types: AssetType.where(class_name: ['RailCar', 'Locomotive']).pluck(:id).join(',')},
         {name: 'Backlog Assets', description: 'ALIS with assets in Backlog', in_backlog: true},
         {name: 'Planning Year ALIs', description: 'ALIs in this planning fiscal year', planning_year: true},
-        {name: 'Shared Ride Assets', description: 'ALIS with assets with FTA Mode Type Demand Response', asset_query_string: Asset.joins('INNER JOIN assets_fta_mode_types ON assets.id = assets_fta_mode_types.asset_id').where('assets_fta_mode_types.fta_mode_type_id = ?', FtaModeType.find_by(name: 'Demand Response').id).to_sql},
-        {name: 'Agency Funded', description: 'ALIs funded with agency owned funds', funding_bucket_query_string: FundingBucket.agency_owned(nil).to_sql}
+        {name: 'Shared Ride Assets', description: 'ALIS with assets with FTA Mode Type Demand Response', asset_query_string: Asset.joins('INNER JOIN assets_fta_mode_types ON assets.id = assets_fta_mode_types.asset_id').where('assets_fta_mode_types.fta_mode_type_id = ?', FtaModeType.find_by(name: 'Demand Response').id).to_sql}
     ]
 
     # Remove all previous system filters
@@ -95,7 +94,7 @@ namespace :transam do
 
     # Create each one, row by row
     filters.each do |h|
-      QueryParam.find_or_create_by(name: h[:name], description: h[:description], query_string: h[:asset_query_string] || h[:funding_bucket_query_string], class_name: 'UserActivityLineItemFilter', active: true) if h[:asset_query_string] || h[:funding_bucket_query_string]
+      QueryParam.find_or_create_by(name: h[:name], description: h[:description], query_string: h[:asset_query_string], class_name: 'UserActivityLineItemFilter', active: true) if h[:asset_query_string]
       f = UserActivityLineItemFilter.new(h)
       f.users = User.all
       f.creator = sys_user
