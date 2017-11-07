@@ -183,4 +183,4 @@ data.each do |row|
   x.save!
 end
 
-Rake::Task['add_user_activity_line_item_filters'].invoke
+Rake::Task['transam:add_user_activity_line_item_filters'].invoke
