@@ -105,6 +105,11 @@ merge_tables.each do |table_name|
   end
 end
 
+query_params = [
+
+]
+
+
 reports = [
   {
     :active => 1,
@@ -118,7 +123,9 @@ reports = [
     :roles => 'guest,user,manager',
     :description => 'Displays a chart showing the capital needs forecast by fiscal year.',
     :chart_type => 'column',
-    :chart_options => "{is3D : false, isStacked: false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}"
+    :chart_options => "{is3D : false, isStacked: false, fontSize: 10, hAxis: {title: 'Fiscal Year'}, vAxis: {title: '$'}}",
+    :printable => true,
+    :exportable => true
     },
   {
     :active => 0,
@@ -160,7 +167,9 @@ reports = [
     :roles => 'guest,user',
     :description => 'Displays a report showing unconstrained capital projects by fiscal year.',
     :chart_type => '',
-    :chart_options => ""
+    :chart_options => "",
+    :printable => true,
+    :exportable => true
   }
 
 ]
@@ -173,3 +182,5 @@ data.each do |row|
   x.report_type = ReportType.where(:name => row[:type]).first
   x.save!
 end
+
+Rake::Task['add_user_activity_line_item_filters'].invoke
