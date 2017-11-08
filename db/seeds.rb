@@ -182,5 +182,3 @@ data.each do |row|
   x.report_type = ReportType.where(:name => row[:type]).first
   x.save!
 end
-
-load('system_ali_filters_loader.rb')
