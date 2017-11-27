@@ -19,5 +19,8 @@ class ReviewCapitalPlanModule < BaseCapitalPlanModule
       end
     end
 
+    # update archived fiscal year
+    ArchivedFiscalYear.find_or_create_by(organization_id: plan.organization_id, fy_year: plan.fy_year)
+
   end
 end
