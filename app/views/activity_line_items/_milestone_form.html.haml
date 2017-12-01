@@ -13,7 +13,7 @@
     = i_f.input :milestone_type_id, :as => :hidden
   %td.col-md-2
     = i_f.input :milestone_date, :wrapper => :vertical_append, :label => false do
-      = i_f.input_field :milestone_date, :as => :string, :class => 'form-control datepicker', :data => {'behavior' => 'datepicker'}, :value => format_as_date(i_f.object.milestone_date), :required => i_f.object.milestone_type.name == "Contract Completed"
+      = i_f.input_field :milestone_date, :as => :string, :class => i_f.object.milestone_type.name == "Contract Completed" ? 'form-control datepicker contract_completed_date' : 'form-control datepicker', :data => {'behavior' => 'datepicker'}, :value => format_as_date(i_f.object.milestone_date), :required => i_f.object.milestone_type.name == "Contract Completed"
       %span.input-group-addon
         %i.fa.fa-calendar
   %td.col-md-8
