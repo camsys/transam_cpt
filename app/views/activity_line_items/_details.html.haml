@@ -1,5 +1,5 @@
 %ul.nav.nav-tabs
-  - if @activity_line_item.assets.count > 0
+  - if @activity_line_item.sogr?
     %li
       %a{:href => "#asst", :data =>{:toggle => 'tab'}}
         %span.badge.pull-right= @activity_line_item.assets.count
@@ -25,7 +25,7 @@
       = "Tasks"
 
 .tab-content
-  - if @activity_line_item.assets.count > 0
+  - if @activity_line_item.sogr?
     .tab-pane.fade#asst
       .tab-content
         = render 'assets'
