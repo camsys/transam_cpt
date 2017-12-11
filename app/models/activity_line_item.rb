@@ -67,9 +67,9 @@ class ActivityLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   validates :capital_project,   :presence => true
   validates :name,              :presence => true
-  validates :anticipated_cost,  :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :anticipated_cost,  :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}
   validates :team_ali_code,     :presence => true
-  validates :fy_year,           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1900}
+  validates :fy_year,           :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 1900}
 
   #------------------------------------------------------------------------------
   # Scopes

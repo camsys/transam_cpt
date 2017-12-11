@@ -65,7 +65,7 @@ class CapitalProject < ActiveRecord::Base
   validates :title,                             :presence => true
   validates :description,                       :presence => true
   validates :justification,                     :presence => true
-  validates :fy_year,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1900}
+  validates :fy_year,                           :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 1900}
 
   #------------------------------------------------------------------------------
   # Scopes

@@ -16,8 +16,8 @@ class UserActivityLineItemFilter < ActiveRecord::Base
 
   has_and_belongs_to_many :users, :join_table => 'users_user_activity_line_item_filters'
 
-  validates   :name,          :presence => :true
-  validates   :description,   :presence => :true
+  validates   :name,          :presence => true
+  validates   :description,   :presence => true
 
   # Allow selection of active instances
   scope :active, -> { where(:active => true) }
