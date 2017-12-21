@@ -2,9 +2,15 @@
     :remote => true,
     :wrapper => :vertical_form,
     :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
   .row
-    .col-sm-12
-      = f.input :name, :required => true, :minlength => 10
+    .col-sm-6
+      %label.control-label.string.required
+        * Category
+      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}, @activity_line_item.team_ali_code.try(:parent)), :class => 'form-control', :required => true, :include_blank => true
+    .col-sm-6
+      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true, :label => "TEAM ALI Code"
+
   .row
     .col-sm-6
       = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
@@ -13,13 +19,23 @@
         = f.input_field :anticipated_cost, :required => true, :input_html => {:min => 0, :integer => true}, :class => "form-control"
     .col-sm-6
       = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => "Fiscal Year", :disabled => ! @project.multi_year?
+
+  -#.row
+  -#  .col-sm-12
+  -#    = f.input :newUsed, :collection => ['new','used'], :include_blank => false, :label => "New/Used"
+  -#.row
+  -#  .col-sm-12
+  -#    = f.input :count, :required => true, :input_html => {:min => 0, :integer => true}, :class => "form-control"
+  -#.row
+  -#  .col-sm-12
+  -#    = f.input :fuelType, :collection => ['new','used'], :include_blank => false, :label => "New/Used"
+  -#.row
+  -#  .col-sm-12
+  -#    = f.input :length, :required => true, :input_html => {:min => 0, :integer => true}, :class => "form-control"
+
   .row
-    .col-sm-6
-      %label.control-label.string.required
-        * Category
-      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}), :class => 'form-control', :required => true, :include_blank => true
-    .col-sm-6
-      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true, :label => "TEAM ALI Code"
+    .col-sm-12
+      = f.input :name, :required => true, :minlength => 10
 
   = f.submit :class => 'btn btn-primary'
   %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
@@ -56,7 +72,7 @@
       var options = '<option value="">' + blank_text + '</option>';
       for (i = 0; i < result.length; i++) {
         //console.log("result.code = '" + result[i].code + "'");
-        if (result[i].code == selected_val) {
+        if ((result[i].code == selected_val) || (result.length == 1)) {
           options += '<option value="' + result[i].id + '" selected>' + result[i].full_name + '</option>';
         } else {
           options += '<option value="' + result[i].id + '">' + result[i].full_name + '</option>';

@@ -4,7 +4,7 @@
 
 :javascript
 
-  var selected_plan_actions = [];
+  var selected_plan_actions =  JSON.parse('#{CapitalPlanAction.joins(:capital_plan).where(capital_plans: {organization_id: @organization_list}).system_actions.map{|x| x.object_key}.to_json}');
   var unselected_plan_actions = [];
 
   $(document).ready(function() {

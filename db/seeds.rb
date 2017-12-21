@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 # determine if we are using postgres or mysql
-is_mysql = (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'mysql2')
+is_mysql = (ActiveRecord::Base.configurations[Rails.env]['adapter'].include? 'mysql2')
 is_sqlite =  (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'sqlite3')
 sys_user_id = 1
 
@@ -46,7 +46,8 @@ milestone_types = [
 replacement_status_types = [
     {:active => 1, :name => 'By Policy', :description => 'Asset will be replaced following tho policy and planner.'},
     {:active => 1, :name => 'Underway', :description => 'Asset is being replaced this fiscal year.'},
-    {:active => 1, :name => 'None', :description => 'Asset is not being replaced.'}
+    {:active => 1, :name => 'None', :description => 'Asset is not being replaced.'},
+    {:active => 1, :name => 'Pinned', :description => 'Asset replacement is pinned and cannot be moved.'}
 ]
 
 capital_plan_types = [

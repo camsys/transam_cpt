@@ -18,15 +18,40 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
       end
     end
 
-    asset_event_type = AssetEventType.where(:class_name => 'DispositionUpdateEvent').first
-    asset_event = AssetEvent.where(:asset_id => asset.id, :asset_event_type_id => asset_event_type.id).last
-    disposition_type = DispositionType.where(:id => asset_event.disposition_type_id).first
-    asset_already_transferred = asset.disposed disposition_type
+    disposition_event = asset.disposition_updates.last
+    just_disposed_and_transferred = !asset.disposed? && disposition_event.try(:disposition_type_id) == 2
 
     asset.record_disposition
-    if(!asset_already_transferred && asset_event.disposition_type_id == 2)
-      new_asset = asset.transfer asset_event.organization_id
+    if(just_disposed_and_transferred)
+      new_asset = asset.transfer disposition_event.organization_id
       send_asset_transferred_message new_asset
+    end
+
+    if (asset.respond_to? :general_ledger_accounts) && GrantPurchase.sourceable_type == 'Grant' && asset.general_ledger_accounts.count > 0
+      disposal_account = ChartOfAccount.find_by(organization_id: asset.organization_id).general_ledger_accounts.find_by(general_ledger_account_subtype: GeneralLedgerAccountSubtype.find_by(name: 'Disposal Account'))
+
+      amount_not_ledgered = asset.purchase_cost-asset.book_value # temp variable for tracking rounding errors
+      asset.grant_purchases.order(:pcnt_purchase_cost).each_with_index do |grant_purchase, idx|
+        unless idx+1 == asset.grant_purchases.count
+          amount = ((asset.purchase_cost-asset.book_value) * grant_purchase.pcnt_purchase_cost / 100.0).round
+          amount_not_ledgered -= amount
+        else
+          amount = amount_not_ledgered
+        end
+
+        asset.general_ledger_accounts.accumulated_depreciation_accounts.find_by(grant_id: grant_purchase.sourceable_id).general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: amount)
+      end
+
+      if asset.book_value > 0
+        disposal_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: asset.book_value)
+      end
+
+      asset.general_ledger_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: -asset.purchase_cost)
+
+      disposition_event = asset.disposition_updates.last
+      if disposition_event.sales_proceeds > 0
+        disposal_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: -disposition_event.sales_proceeds)
+      end
     end
   end
 

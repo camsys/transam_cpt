@@ -18,6 +18,10 @@ class CapitalPlanAction < ActiveRecord::Base
 
   default_scope { joins(:capital_plan_module).order('capital_plan_modules.sequence', 'capital_plan_actions.sequence') }
 
+  def self.system_actions
+    self.select{|x| x.system_action?}
+  end
+
   def system_action?
     capital_plan_action_type.system_action?
   end

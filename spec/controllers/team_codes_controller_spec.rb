@@ -28,12 +28,12 @@ RSpec.describe TeamCodesController, :type => :controller do
       expect(assigns(:results)).to eq([])
     end
 
-    it 'no children' do
+    it 'no children returns itself' do
       parent = create(:rehabilitation_ali_code)
       child = create(:rehabilitation_ali_code, :parent => parent)
 
       get :children, :id => child.id, :format => :json
-      expect(assigns(:results)).to eq([])
+      expect(assigns(:results)).to eq([child])
     end
   end
 end

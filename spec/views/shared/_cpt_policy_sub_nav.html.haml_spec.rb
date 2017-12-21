@@ -9,7 +9,6 @@ describe "shared/_cpt_policy_sub_nav.html.haml", :type => :view do
 
     expect(rendered).to have_link('Capital Projects')
     expect(rendered).to have_link('Project Planner')
-    expect(rendered).to have_link('New Capital Project')
     expect(rendered).to have_link('SOGR Capital Project Analyzer')
   end
 end

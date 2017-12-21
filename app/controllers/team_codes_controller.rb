@@ -21,6 +21,10 @@ class TeamCodesController < ApplicationController
 
     if code.present?
       @results = code.children
+
+      if @results.empty? # if no children put just own self only
+        @results = [code]
+      end
     else
       @results = []
     end

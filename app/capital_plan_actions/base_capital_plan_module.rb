@@ -28,11 +28,12 @@ class BaseCapitalPlanModule
   end
 
   def post_process
+    Rails.logger.info "Finished running capital plan module #{@capital_plan_module.object_key}"
     @capital_plan_module.update(completed_at: Time.now, completed_by_user_id: @user.id)
   end
 
   def undo_pre_process
-    return @capital_plan_module.is_allowed?
+    return @capital_plan_module.is_undo_allowed?
   end
 
   def undo_complete
@@ -40,6 +41,7 @@ class BaseCapitalPlanModule
   end
 
   def undo_post_process
+    Rails.logger.info "Finished undoing capital plan module #{@capital_plan_module.object_key}"
     @capital_plan_module.update(completed_at: nil, completed_by_user_id: @user.id)
   end
 

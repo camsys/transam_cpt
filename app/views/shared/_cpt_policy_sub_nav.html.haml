@@ -1,14 +1,7 @@
-%li.text-left{(can? :create, CapitalProject) ? {class: 'dropdown-submenu'} : {}}
+%li.text-left
   = link_to capital_projects_path do
     %i.fa.fa-cubes.fa-fw
     = " Capital Projects"
-
-  - if can? :create, CapitalProject
-    %ul.dropdown-menu
-      %li.text-left
-        = link_to new_capital_project_path do
-          %i.fa.fa-plus.fa-fw
-          = " New Capital Project"
 %li.text-left
   = link_to planning_index_path do
     %i.fa.fa-tasks.fa-fw

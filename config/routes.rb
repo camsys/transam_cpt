@@ -59,6 +59,7 @@ Rails.application.routes.draw do
         get 'edit_milestones'
         get 'add_asset'
         delete 'remove_asset'
+        get 'pin'
       end
     end
 

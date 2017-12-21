@@ -59,7 +59,6 @@
         }
 
         // Reset
-        $('#builder_proxy_asset_type_id').val('');
         $('#builder_proxy_start_fy').val(fy_year);
 
         // Set asset types of org only
@@ -70,6 +69,8 @@
             $('#builder_proxy_asset_types_'+type.id).parent().parent().show();
           } else {
             $('#builder_proxy_asset_types_'+type.id).parent().parent().hide(); // hide whole span
+            $('#builder_proxy_asset_types_'+type.id).prop('checked', false);
+
           }
         }
       }

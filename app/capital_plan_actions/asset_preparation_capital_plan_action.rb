@@ -7,7 +7,7 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
   def complete
     report = AuditResultsSummaryReport.new
 
-    notes = ""
+    pcnts_passed = []
     Audit.all.each do |audit|
       audit_results = report.get_data(audit, [@capital_plan_action.capital_plan.organization_id], 'Asset', {disposition_date: nil},{})
       total_assets = 0
@@ -18,17 +18,18 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
       end
       if audit_results[1].length > 0
         pcnt_passed = ((passed_assets / total_assets.to_f) * 100).truncate
-        if notes.length > 0
-          notes += ",#{pcnt_passed}%"
-        else
-          notes += "#{pcnt_passed}%"
-        end
+        pcnts_passed << pcnt_passed
       end
     end
 
-    @capital_plan_action.update(notes: notes, completed_at: Time.now)
+    total_pcnt_passed = pcnts_passed.reduce(:+) / pcnts_passed.size.to_f
+    total_pcnt_passed = (total_pcnt_passed + 0.5).to_i
 
-    if @capital_plan_action.notes.split(',').uniq == ['100%']
+    # this system action is always completed right off the bat even if not at 100 pcnt
+    # to actually go to the next step the "Asset Override" must also be completed - this can be either done by the user or it has to be a 100% (see next code block)
+    @capital_plan_action.update(completed_pcnt: total_pcnt_passed, notes: "#{total_pcnt_passed}%", completed_at: Time.now)
+
+    if @capital_plan_action.completed_pcnt == 100
       @capital_plan_action.capital_plan.capital_plan_actions.find_by(capital_plan_action_type_id: CapitalPlanActionType.find_by(class_name: 'AssetOverridePreparationCapitalPlanAction').id).update(completed_at: Time.now, completed_by_user_id: @user.id)
     end
   end

@@ -67,9 +67,9 @@ class ActivityLineItem < ActiveRecord::Base
   #------------------------------------------------------------------------------
   validates :capital_project,   :presence => true
   validates :name,              :presence => true
-  validates :anticipated_cost,  :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
+  validates :anticipated_cost,  :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}
   validates :team_ali_code,     :presence => true
-  validates :fy_year,           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1900}
+  validates :fy_year,           :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 1900}
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -132,6 +132,18 @@ class ActivityLineItem < ActiveRecord::Base
   # Returns true if the ALI is an future projected ALI
   def notional?
     (capital_project.notional?)
+  end
+
+  def is_agency_planning_complete?
+    CapitalPlanAction.joins([capital_plan: :organization, capital_plan_action_type: :capital_plan_module_type]).where('organizations.id = ? AND capital_plan_action_types.name = "Agency Approval" AND capital_plan_module_types.name = "Constrained Plan"', capital_project.organization_id).first.completed?
+  end
+
+  def pinned?
+    !notional? && (assets.where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Pinned').id).count > 0)
+  end
+
+  def can_pin?
+    !notional? && assets.count > 0
   end
 
   def to_s

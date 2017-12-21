@@ -28,6 +28,7 @@ class BaseCapitalPlanAction
   end
 
   def post_process
+    Rails.logger.info "Finished running capital plan action #{@capital_plan_action.object_key}"
     @capital_plan_action.update(completed_at: Time.now, completed_by_user_id: @user.id)
 
     @capital_plan_action.capital_plan_module.capital_plan_module_type.class_name.constantize.new(capital_plan_module: @capital_plan_action.capital_plan_module, user: @user).run
@@ -42,8 +43,8 @@ class BaseCapitalPlanAction
   end
 
   def undo_post_process
+    Rails.logger.info "Finished undoing capital plan action #{@capital_plan_action.object_key}"
     @capital_plan_action.update(completed_at: nil, completed_by_user_id: @user.id)
-    @capital_plan_action.capital_plan_module.update(completed_at: nil, completed_by_user_id: @user.id)
 
     @capital_plan_action.capital_plan_module.capital_plan_module_type.class_name.constantize.new(capital_plan_module: @capital_plan_action.capital_plan_module, user: @user).run
   end

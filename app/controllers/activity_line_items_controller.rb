@@ -7,7 +7,7 @@ class ActivityLineItemsController < OrganizationAwareController
   add_breadcrumb "Capital Projects", :capital_projects_path
 
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
-                                                    :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets]
+                                                    :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets, :pin]
   before_action :get_capital_project
   before_filter :reformat_date_fields,    :only => [:create, :update]
 
@@ -85,6 +85,23 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Modify"
+
+  end
+
+  def pin
+    if @activity_line_item.pinned?
+      @activity_line_item.assets.update_all(replacement_status_type_id: ReplacementStatusType.find_by(name: 'By Policy').id)
+    else
+      @activity_line_item.assets.update_all(replacement_status_type_id: ReplacementStatusType.find_by(name: 'Pinned').id)
+    end
+
+    respond_to do |format|
+      format.html {
+        notify_user(:notice, "The ALI was successfully #{@activity_line_item.pinned? ? 'pinned' : 'unpinned'}.")
+        redirect_to :back
+      }
+      format.js
+    end
 
   end
 
