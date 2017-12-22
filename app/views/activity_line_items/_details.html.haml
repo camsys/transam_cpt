@@ -1,8 +1,9 @@
 %ul.nav.nav-tabs
-  %li
-    %a{:href => "#asst", :data =>{:toggle => 'tab'}}
-      %span.badge.pull-right= @activity_line_item.assets.count
-      = "Assets"
+  - if @activity_line_item.sogr?
+    %li
+      %a{:href => "#asst", :data =>{:toggle => 'tab'}}
+        %span.badge.pull-right= @activity_line_item.assets.count
+        = "Assets"
   %li
     %a{:href => "#cost", :data =>{:toggle => 'tab'}}
       = "Cost Justification"
@@ -24,9 +25,10 @@
       = "Tasks"
 
 .tab-content
-  .tab-pane.fade#asst
-    .tab-content
-      = render 'assets'
+  - if @activity_line_item.sogr?
+    .tab-pane.fade#asst
+      .tab-content
+        = render 'assets'
   .tab-pane.fade#cost
     .tab-content
       #cost_justification

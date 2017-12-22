@@ -1,3 +1,3 @@
 module TransamCpt
-  VERSION = "0.6.39"
+  VERSION = "0.6.41"
 end
