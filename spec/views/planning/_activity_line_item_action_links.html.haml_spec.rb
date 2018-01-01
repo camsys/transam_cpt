@@ -7,7 +7,6 @@ describe "planning/_activity_line_item_action_links.html.haml", :type => :view d
     render 'planning/activity_line_item_action_links', :project => test_proj, :ali => create(:activity_line_item, :capital_project => test_proj)
 
     expect(rendered).to have_link('Update the expected cost')
-    expect(rendered).to have_link('Modify this ALI')
     expect(rendered).to have_link('Remove this ALI')
   end
 end

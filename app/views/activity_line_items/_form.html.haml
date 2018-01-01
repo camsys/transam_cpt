@@ -2,24 +2,40 @@
     :remote => true,
     :wrapper => :vertical_form,
     :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
+
   .row
-    .col-sm-12
-      = f.input :name, :required => true, :minlength => 10
+    .col-sm-6
+      %label.control-label.string.required
+        * Category
+      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}, @activity_line_item.team_ali_code.try(:parent)), :class => 'form-control', :required => true, :include_blank => 'Select...'
+    .col-sm-6
+      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true, :label => "TEAM ALI Code"
+
   .row
     .col-sm-6
       = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :anticipated_cost, :required => true, :input_html => {:min => 0, :integer => true}, :class => "form-control"
+        = f.input_field :anticipated_cost, :required => true, :input_html => {:min => 0, :integer => true, :max => 100000000}, :class => "form-control"
     .col-sm-6
       = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => "Fiscal Year", :disabled => ! @project.multi_year?
+
   .row
+    .purchased_new_div{:id => "purchased_new_div_id"}
+      .col-sm-6
+        = f.input :purchased_new, :as => :radio_buttons, :required => true, :label => "Replace with New"
     .col-sm-6
-      %label.control-label.string.required
-        * Category
-      = select_tag :category_team_ali_code, options_for_select(@project.team_ali_code.children.map{|x| [x.full_name, x.code]}, @activity_line_item.team_ali_code.try(:parent)), :class => 'form-control', :required => true, :include_blank => true
-    .col-sm-6
-      = f.input :team_ali_code_id, :collection => [], :include_blank => 'Select...', :required => true, :label => "TEAM ALI Code"
+      = f.input :count, :required => true, :value => 0, :input_html => {:min => 0, :integer => true, :max => 1000000}, :class => "form-control"
+  .rolling_stock_specific_div{:id => "rolling_stock_specific_div_id"}
+    .row
+      .col-sm-6
+        = f.input :fuel_type_id, :required => true, :collection => FuelType.active, :include_blank => 'Select...', :label => "Fuel Type"
+      .col-sm-6
+        = f.input :length, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000}, :class => "form-control"
+
+  .row
+    .col-sm-12
+      = f.input :name, :required => true, :minlength => 10
 
   = f.submit :class => 'btn btn-primary'
   %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
@@ -49,6 +65,71 @@
     }
   });
 
+  $('#rolling_stock_specific_div_id').hide();
+  $('#purchased_new_div_id').hide();
+
+
+  $('#category_team_ali_code').change(function(){
+    if($('#category_team_ali_code').val() == '' || $('#category_team_ali_code').val().substring(0, 4) != '11.1')
+    {
+      $('#rolling_stock_specific_div_id').hide();
+      $('#purchased_new_div_id').hide();
+    }else{
+      $('#rolling_stock_specific_div_id').show();
+      $('#purchased_new_div_id').show();
+    }
+
+    reset_default_name();
+
+  });
+
+  $('#activity_line_item_team_ali_code_id').change(function(){
+    reset_default_name();
+  });
+
+  $('#activity_line_item_fuel_type_id').change(function(){
+    reset_default_name();
+  });
+
+  function reset_default_name()
+  {
+    var start_of_category_team_name = $('#category_team_ali_code option:selected').text().indexOf('X')+3;
+
+    if(start_of_category_team_name <= 4)
+    {
+      start_of_category_team_name = $('#category_team_ali_code option:selected').text().indexOf('0')+3;
+    }
+
+    var category_team_name = $('#category_team_ali_code option:selected').text().substring(start_of_category_team_name, $('#category_team_ali_code').text().length);
+
+    var start_of_team_ali_code = $('#activity_line_item_team_ali_code_id option:selected').text().indexOf(' ')+1;
+    var team_ali_code = $('#activity_line_item_team_ali_code_id option:selected').text().substring(start_of_team_ali_code, $('#activity_line_item_team_ali_code_id option:selected').text().length);
+
+    var fuel_type_name = $('#activity_line_item_fuel_type_id option:selected').text();
+
+    var created_name = '';
+
+    if(category_team_name.length > 0)
+    {
+      created_name = category_team_name;
+    }
+
+    if( (category_team_name !== team_ali_code) && (team_ali_code !== 'Select...') && ( $('#activity_line_item_team_ali_code_id option:selected').val() !== "" ) )
+    {
+      created_name = created_name + ' - ' + team_ali_code;
+    }
+
+    if(fuel_type_name.length > 0 && (fuel_type_name !== 'Select...') && ( $('#activity_line_item_fuel_type_id option:selected').val() !== "" ))
+    {
+      created_name = created_name + ' - ' + fuel_type_name;
+    }
+
+    $('#activity_line_item_name').val(created_name);
+
+  };
+
+
+
   // Updates a option select based on the user selecting a different category code
   function update_selector(url, elem_id, blank_text, code, selected_val) {
     //console.log("Selected val = '" + selected_val + "'");
@@ -57,7 +138,7 @@
       for (i = 0; i < result.length; i++) {
         //console.log("result.code = '" + result[i].code + "'");
         if ((result[i].code == selected_val) || (result.length == 1)) {
-          options += '<option value="' + result[i].id + '" selected>' + result[i].full_name + '</option>';
+          options += '<option value="' + result[i].id + '">' + result[i].full_name + '</option>';
         } else {
           options += '<option value="' + result[i].id + '">' + result[i].full_name + '</option>';
         }

@@ -3,7 +3,10 @@
   %p.text-center.bold= ali.name
   %p.text-center= ali.team_ali_code
   %p.text-center
-    = format_as_integer(ali.assets.count)
+    - if is_sogr
+      =format_as_integer(ali.assets.count)
+    -else
+      =format_as_integer(ali.count)
     assets
     - if is_sogr && ali.has_early_replacement_assets?
       %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'top', :title => "Contains early replacement assets"}}

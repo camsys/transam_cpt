@@ -19,3 +19,8 @@ gem 'transam_accounting', :github => 'camsys/transam_accounting', branch: 'maste
 gem 'transam_spatial', :github => 'camsys/transam_spatial', branch: 'master'
 gem 'mysql2', '~> 0.3.20' # lock gem for dummy app
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
+
+# Use jquery as the JavaScript library
+gem 'jquery-rails'
+gem 'jquery-ui-rails', "~> 5.0"
+gem 'jquery-form-rails'
