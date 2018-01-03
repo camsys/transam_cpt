@@ -25,13 +25,13 @@
       .col-sm-6
         = f.input :purchased_new, :as => :radio_buttons, :required => true, :label => "Replace with New"
     .col-sm-6
-      = f.input :count, :required => true, :value => 0, :input_html => {:min => 0, :integer => true, :max => 1000000}, :class => "form-control"
+      = f.input :count, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000, :value => 0}, :class => "form-control"
   .rolling_stock_specific_div{:id => "rolling_stock_specific_div_id"}
     .row
       .col-sm-6
         = f.input :fuel_type_id, :required => true, :collection => FuelType.active, :include_blank => 'Select...', :label => "Fuel Type"
       .col-sm-6
-        = f.input :length, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000}, :class => "form-control"
+        = f.input :length, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000, :value => 0}, :class => "form-control"
 
   .row
     .col-sm-12
@@ -44,6 +44,9 @@
 
   var team_code_lookup_url = '#{children_team_codes_path}';
   var category_code = '#{@activity_line_item.category_team_ali_code}';
+  var scope = '#{@project}';
+
+  console.log('SCOPE =='+scope+'==');
 
   // disable the second code selector
   //transam.disable_element('#activity_line_item_team_ali_code_id');
@@ -65,19 +68,29 @@
     }
   });
 
-  $('#rolling_stock_specific_div_id').hide();
-  $('#purchased_new_div_id').hide();
+
+  // if(scope == '111')
+  // {
+  //   $('#rolling_stock_specific_div_id').show();
+  //   $('#purchased_new_div_id').show();
+  // }
+  // else
+  // {
+  //   $('#rolling_stock_specific_div_id').hide();
+  //   $('#purchased_new_div_id').hide();
+  // }
+
 
 
   $('#category_team_ali_code').change(function(){
-    if($('#category_team_ali_code').val() == '' || $('#category_team_ali_code').val().substring(0, 4) != '11.1')
-    {
-      $('#rolling_stock_specific_div_id').hide();
-      $('#purchased_new_div_id').hide();
-    }else{
-      $('#rolling_stock_specific_div_id').show();
-      $('#purchased_new_div_id').show();
-    }
+    // if($('#category_team_ali_code').val() == '' || $('#category_team_ali_code').val().substring(0, 4) != '11.1')
+    // {
+    //   $('#rolling_stock_specific_div_id').hide();
+    //   $('#purchased_new_div_id').hide();
+    // }else{
+    //   $('#rolling_stock_specific_div_id').show();
+    //   $('#purchased_new_div_id').show();
+    // }
 
     reset_default_name();
 
