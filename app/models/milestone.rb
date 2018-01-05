@@ -24,6 +24,10 @@ class Milestone < ActiveRecord::Base
   #validates :milestone_date,      :presence => true
   #validates :comments,            :presence => true
 
+  # right now assume seed was loaded in the correct order
+  # TODO add sort_order to milestone type
+  default_scope { order(:milestone_type_id) }
+
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :id,
