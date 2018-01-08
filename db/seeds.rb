@@ -36,11 +36,11 @@ capital_project_types = [
 
 milestone_types = [
   {:active => 1, :name => 'Out for Bid',            :is_vehicle_delivery => 0, :description => 'Out for Bid'},
-  {:active => 1, :name => 'Contract Awarded',       :is_vehicle_delivery => 0, :description => 'Contract Awarded'},
+  {:active => 1, :name => 'Contract Award',       :is_vehicle_delivery => 0, :description => 'Contract Award'},
   {:active => 1, :name => 'Notice to Proceed',      :is_vehicle_delivery => 0, :description => 'Notice to Proceed'},
   {:active => 1, :name => 'First Vehicle Delivered',:is_vehicle_delivery => 1, :description => 'Delivery Started'},
   {:active => 1, :name => 'All Vehicles Delivered', :is_vehicle_delivery => 1, :description => 'Delivery Completed'},
-  {:active => 1, :name => 'Contract Completed',     :is_vehicle_delivery => 0, :description => 'Contract Completed'}
+  {:active => 1, :name => 'Contract Complete',     :is_vehicle_delivery => 0, :description => 'Contract Complete'}
 ]
 
 replacement_status_types = [
