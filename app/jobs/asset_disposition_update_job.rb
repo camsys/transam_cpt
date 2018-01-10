@@ -9,14 +9,8 @@
 class AssetDispositionUpdateJob < AbstractAssetUpdateJob
   
   
-  def execute_job(asset)  
-    # remove the asset from ALIs if going to dispose it
+  def execute_job(asset)
     asset = Asset.get_typed_asset(asset)
-    if asset.respond_to?(:activity_line_items) && !asset.disposition_updates.empty?   
-      asset.activity_line_items.each do |ali|
-        ali.assets.destroy(asset) # trigger ALI after_update_callback
-      end
-    end
 
     disposition_event = asset.disposition_updates.last
     just_disposed_and_transferred = !asset.disposed? && disposition_event.try(:disposition_type_id) == 2
@@ -27,32 +21,34 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
       send_asset_transferred_message new_asset
     end
 
-    if (asset.respond_to? :general_ledger_accounts) && GrantPurchase.sourceable_type == 'Grant' && asset.general_ledger_accounts.count > 0
-      disposal_account = ChartOfAccount.find_by(organization_id: asset.organization_id).general_ledger_accounts.find_by(general_ledger_account_subtype: GeneralLedgerAccountSubtype.find_by(name: 'Disposal Account'))
+    if !asset.disposition_updates.empty?
+      if asset.respond_to?(:activity_line_items)
+        asset.activity_line_items.each do |ali|
+          ali.assets.destroy(asset) # trigger ALI after_update_callback
+        end
+      end
 
-      amount_not_ledgered = asset.purchase_cost-asset.book_value # temp variable for tracking rounding errors
-      asset.grant_purchases.order(:pcnt_purchase_cost).each_with_index do |grant_purchase, idx|
-        unless idx+1 == asset.grant_purchases.count
-          amount = ((asset.purchase_cost-asset.book_value) * grant_purchase.pcnt_purchase_cost / 100.0).round
-          amount_not_ledgered -= amount
-        else
-          amount = amount_not_ledgered
+      gl_mapping = asset.general_ledger_mapping
+      if gl_mapping.present?
+
+        amount = asset.adjusted_cost_basis-asset.book_value # temp variable for tracking rounding errors
+        gl_mapping.accumulated_depr_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: " Disposal: #{asset.asset_path}", amount: amount, asset: asset)
+
+        if asset.book_value > 0
+          gl_mapping.gain_loss_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: " Disposal: #{asset.asset_path}", amount: asset.book_value, asset: asset)
         end
 
-        asset.general_ledger_accounts.accumulated_depreciation_accounts.find_by(grant_id: grant_purchase.sourceable_id).general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: amount)
+        gl_mapping.asset_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: " Disposal: #{asset.asset_path}", amount: -asset.adjusted_cost_basis, asset: asset)
+
+        disposition_event = asset.disposition_updates.last
+        if disposition_event.sales_proceeds > 0
+          gl_mapping.gain_loss_account.general_ledger_account_entries.create!(event_date: asset.disposition_date, description: " Disposal: #{asset.asset_path}", amount: -disposition_event.sales_proceeds, asset: asset)
+        end
       end
 
-      if asset.book_value > 0
-        disposal_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: asset.book_value)
-      end
-
-      asset.general_ledger_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: -asset.purchase_cost)
-
-      disposition_event = asset.disposition_updates.last
-      if disposition_event.sales_proceeds > 0
-        disposal_account.general_ledger_account_entries.create!(sourceable_type: 'Asset', sourceable_id: asset.id, description: "#{asset.organization}: #{asset.to_s} Disposal #{asset.disposition_date}", amount: -disposition_event.sales_proceeds)
-      end
     end
+
+
   end
 
   def prepare
