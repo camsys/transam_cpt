@@ -16,7 +16,7 @@
       = f.input :anticipated_cost, :wrapper=> :vertical_prepend, :label => "Cost Estimate" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :anticipated_cost, :required => true, :input_html => {:min => 0, :integer => true, :max => 100000000}, :class => "form-control"
+        = f.input_field :anticipated_cost, :required => true, :input_html => {:min => 0, :integer => true, :max => 100000000, :value => @project.new_record? ? nil : @project.anticipated_cost}, :class => "form-control"
     .col-sm-6
       = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => "Fiscal Year", :disabled => ! @project.multi_year?
 
@@ -25,13 +25,13 @@
       .col-sm-6
         = f.input :purchased_new, :as => :radio_buttons, :required => true, :label => "Replace with New"
     .col-sm-6
-      = f.input :count, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000, :value => 0}, :class => "form-control"
+      = f.input :count, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000}, :class => "form-control"
   - if @project.team_ali_code.rolling_stock?
     .row
       .col-sm-6
         = f.input :fuel_type_id, :required => true, :collection => FuelType.active, :include_blank => 'Select...', :label => "Fuel Type"
       .col-sm-6
-        = f.input :length, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000, :value => 0}, :class => "form-control"
+        = f.input :length, :required => true, :input_html => {:min => 0, :integer => true, :max => 1000000}, :class => "form-control"
 
   .row
     .col-sm-12
