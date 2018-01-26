@@ -13,6 +13,12 @@
   -#  .col-md-6
   -#    = f.input :build_projects, as: :boolean
 
+  .row
+    .col-md-6
+      = f.input :apply_policies, as: :hidden
+    .col-md-6
+      = f.input :build_projects, as: :hidden
+
   = f.submit "Run...", :class => "btn btn-primary", :id => "submit_button"
 
 :javascript
