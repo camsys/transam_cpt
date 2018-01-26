@@ -7,11 +7,11 @@
           :file => :vertical_file_input,
           :boolean => :vertical_boolean}) do |f|
 
-  .row
-    .col-md-6
-      = f.input :apply_policies, as: :boolean
-    .col-md-6
-      = f.input :build_projects, as: :boolean
+  -#.row
+  -#  .col-md-6
+  -#    = f.input :apply_policies, as: :boolean
+  -#  .col-md-6
+  -#    = f.input :build_projects, as: :boolean
 
   = f.submit "Run...", :class => "btn btn-primary", :id => "submit_button"
 
