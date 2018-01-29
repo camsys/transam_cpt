@@ -17,6 +17,10 @@ class PolicyDistributerJob < Job
         parent_rules = subtype_rule.min_allowable_policy_values
 
         subtype_rule.update(subtype_rule.attributes.slice(*parent_rules.stringify_keys.keys).merge(parent_rules.stringify_keys){|key, oldval, newval| [oldval, newval].max})
+
+        mileage_rules = subtype_rule.min_allowable_mileages
+
+        subtype_rule.update(subtype_rule.attributes.slice(*mileage_rules.stringify_keys.keys).merge(mileage_rules.stringify_keys){|key, oldval, newval| [oldval, newval].max})
       end
 
       if policy_distributer_proxy.apply_policies.to_i == 1
