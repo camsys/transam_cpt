@@ -9,6 +9,6 @@
     - else
       - org_list = @organization_list.select{|x| Asset.operational.where(organization_id: x).count > 0}
       - if org_list.count > 0
-        = link_to capital_plan_path(CapitalPlan.current_plan(org_list.first)) do
+        = link_to capital_plan_path(CapitalPlan.current_plan(org_list.first, true)) do
           %i.fa.fa-fw.fa-list
           Status

@@ -49,7 +49,7 @@
           %td.left.planner-project-column
             = render :partial => 'plan_project_detail', :locals => {:project => project}
 
-          - planning_year_locked = CapitalPlan.current_plan(project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id)
+          - planning_year_locked = CapitalPlan.current_plan(project.organization_id) ? CapitalPlan.current_plan(project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id) : false
           - @years.each do |year|
             %td.striped{:class => (planning_year_locked && year == current_planning_year_year) ? '' : 'drop-target', :data => {:year => year}, :id => project.object_key + '-' + year.to_s}
               - next if @display_fy_year != year if !project.multi_year && @display_fy_year

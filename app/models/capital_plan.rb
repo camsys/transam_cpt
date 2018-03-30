@@ -19,12 +19,12 @@ class CapitalPlan < ActiveRecord::Base
   validates :organization, :presence => true
   validates :capital_plan_type, :presence => true
 
-  def self.current_plan(org_id)
+  def self.current_plan(org_id, create_if_nonexistent=false)
     org = Organization.find_by(id: org_id)
     plan = CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: org_id, capital_plan_type_id: org.capital_plan_type_id)
 
     # generate a new plan for the current planning year if DNE
-    if plan.nil?
+    if plan.nil? && create_if_nonexistent
       plan = CapitalPlan.create(fy_year: current_planning_year_year, organization_id: org_id, capital_plan_type_id: org.capital_plan_type_id)
       CapitalPlanModuleType.where(capital_plan_type_id: plan.capital_plan_type_id).each do |module_type|
         CapitalPlanModule.create(capital_plan_id: plan.id, capital_plan_module_type_id: module_type.id, sequence: module_type.sequence)
@@ -32,7 +32,6 @@ class CapitalPlan < ActiveRecord::Base
       CapitalPlanActionType.where(capital_plan_type_id: plan.capital_plan_type_id).each do |action_type|
         CapitalPlanAction.create(capital_plan_id: plan.id, capital_plan_module_id: CapitalPlanModule.find_by(capital_plan_id: plan.id, capital_plan_module_type_id: action_type.capital_plan_module_type.id).id, capital_plan_action_type_id: action_type.id, sequence: action_type.sequence)
       end
-
     end
 
     plan

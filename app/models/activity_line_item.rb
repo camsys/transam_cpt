@@ -139,7 +139,7 @@ class ActivityLineItem < ActiveRecord::Base
   end
 
   def is_agency_planning_complete?
-    CapitalPlanAction.joins([capital_plan: :organization, capital_plan_action_type: :capital_plan_module_type]).where('organizations.id = ? AND capital_plan_action_types.name = "Agency Approval" AND capital_plan_module_types.name = "Constrained Plan"', capital_project.organization_id).first.completed?
+    CapitalPlanAction.joins([capital_plan: :organization, capital_plan_action_type: :capital_plan_module_type]).where('organizations.id = ? AND capital_plan_action_types.name = "Agency Approval" AND capital_plan_module_types.name = "Constrained Plan"', capital_project.organization_id).first.try(:completed?)
   end
 
   def pinned?

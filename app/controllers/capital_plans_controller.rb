@@ -12,7 +12,7 @@ class CapitalPlansController < OrganizationAwareController
     @capital_plans = []
     @organization_list.each do |org|
       if Asset.operational.where(organization_id: org).count > 0
-        plan = CapitalPlan.current_plan(org)
+        plan = CapitalPlan.current_plan(org, true)
         @capital_plans << plan
         run_system_actions(plan)
       end
@@ -32,8 +32,8 @@ class CapitalPlansController < OrganizationAwareController
       @total_rows = org_list.count
       org_idx = org_list.index(@capital_plan.organization_id)
       @row_number = org_idx+1
-      @prev_record_key = CapitalPlan.current_plan(org_list[org_idx-1]).object_key if org_idx > 0
-      @next_record_key = CapitalPlan.current_plan(org_list[org_idx+1]).object_key if org_idx < org_list.count - 1
+      @prev_record_key = CapitalPlan.current_plan(org_list[org_idx-1], true).object_key if org_idx > 0
+      @next_record_key = CapitalPlan.current_plan(org_list[org_idx+1], true).object_key if org_idx < org_list.count - 1
 
       @prev_record_path = @prev_record_key.nil? ? "#" : capital_plan_path(@prev_record_key)
       @next_record_path = @next_record_key.nil? ? "#" : capital_plan_path(@next_record_key)
@@ -106,7 +106,7 @@ class CapitalPlansController < OrganizationAwareController
 
         if org_list.count > 0
           notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
-          redirect_to capital_plan_path(CapitalPlan.current_plan(org_list.first))
+          redirect_to capital_plan_path(CapitalPlan.current_plan(org_list.first, true))
         else
           notify_user(:warning, 'No capital plans for your organization filter. Try changing your filter.')
           redirect_to root_path
