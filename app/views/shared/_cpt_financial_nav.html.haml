@@ -1,4 +1,4 @@
-- if CapitalPlan.count > 0
+- if CapitalPlan.count > 0 && !(SystemConfig.transam_module_names.include? 'funding')
   - if count > 0
     %li.divider
   %li.text-left
