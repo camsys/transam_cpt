@@ -13,3 +13,4 @@ before_install:
 script:
 - bundle exec rake app:transam_cpt:prepare_rspec
 - bundle exec rspec
+bundler_args: --without not_travis

@@ -25,7 +25,9 @@ gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element x
 # them to .git/hooks/old and you can move them back at your leisure. Any hooks
 # checked in to .hooks will be shared among the team. If you need to re-generate
 # the symlinks,you can use 'bundle exec git-hookshot'
-gem "git-hookshot", git: 'https://github.com/brandonweiss/git-hookshot'
+group :not_travis do
+  gem "git-hookshot", git: 'https://github.com/brandonweiss/git-hookshot', branch: :master
+end
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
