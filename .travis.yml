@@ -3,7 +3,8 @@ rvm:
 - 2.2.2
 branches:
   only:
-  - master
+    - master
+    - /quarter\d*/
 before_script:
 - bundle update transam_core transam_transit transam_accounting
 - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
@@ -12,3 +13,4 @@ before_install:
 script:
 - bundle exec rake app:transam_cpt:prepare_rspec
 - bundle exec rspec
+bundler_args: --without not_travis

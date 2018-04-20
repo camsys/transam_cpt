@@ -143,7 +143,7 @@
   };
 
   // Make fiscal years available in front-end
-  var fiscal_years = #{get_fiscal_years_collection.to_h.invert.to_json} || {};
+  var fiscal_years = #{get_fiscal_years_collection.to_h.invert.to_json.html_safe} || {};
   function getFiscalYear(year) {
     return fiscal_years[year] || year;
   }

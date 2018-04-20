@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe "reports/_capital_projects_report_actions.html.haml", :type => :view do
   it 'actions' do
+    allow(controller).to receive(:params).and_return({controller: 'reports'})
     test_org = create(:organization)
     report = CapitalProjectsReport.new
     assign(:report, report)

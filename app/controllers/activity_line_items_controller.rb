@@ -113,7 +113,7 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb "Assets"
 
     @fiscal_years = @activity_line_item.get_fiscal_years
-    if CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id)
+    if CapitalPlan.current_plan(@project.organization_id) && CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id)
       @fiscal_years = @fiscal_years[1..-1]
     end
 

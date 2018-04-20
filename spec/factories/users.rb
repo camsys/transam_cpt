@@ -60,6 +60,7 @@ FactoryGirl.define do
 
     after(:create) do |u|
       u.organizations = [u.organization]
+      u.viewable_organizations = u.organizations
       test_filter = create(:user_organization_filter)
       u.user_organization_filter = test_filter
       u.user_organization_filters << test_filter

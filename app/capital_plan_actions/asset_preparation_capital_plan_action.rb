@@ -22,7 +22,7 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
       end
     end
 
-    total_pcnt_passed = pcnts_passed.reduce(:+) / pcnts_passed.size.to_f
+    total_pcnt_passed = pcnts_passed.empty? ? 0 : (pcnts_passed.reduce(:+) / pcnts_passed.size.to_f)
     total_pcnt_passed = (total_pcnt_passed + 0.5).to_i
 
     # this system action is always completed right off the bat even if not at 100 pcnt
