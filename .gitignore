@@ -34,3 +34,5 @@ TAGS
 
 coverage/
 .idea/
+
+shadowed_views.log
