@@ -10,7 +10,7 @@
     assets
     - if is_sogr && ali.has_early_replacement_assets?
       %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'top', :title => "Contains early replacement assets"}}
-        %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
+        %i.fa.fa-exclamation-triangle.text-danger
   %p.text-center.bold{:id => ali.object_key+'-ali-cost', :data => {:cost => ali.cost}}= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
   %hr.ali
   .button-toolbar.text-center{:role => 'toolbar'}
