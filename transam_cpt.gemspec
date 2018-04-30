@@ -19,8 +19,6 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 4.2.7.1"
-  s.add_dependency 'jquery-ui-rails'
-  s.add_dependency "wicked"
 
   s.add_dependency 'rails-data-migrations'
 
