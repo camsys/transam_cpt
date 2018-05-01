@@ -3,25 +3,13 @@
   %li
     %a{:href => "#note", :data =>{:toggle => 'tab'}}
       = "Description "
-  %li
-    %a{:href => "#alis", :data =>{:toggle => 'tab'}}
-      %span{:style => 'white-space: nowrap !important;'}
-        = "Activity Line Items "
-        %span.badge= alis.count
+  = nav_tab_count_tag("#alis", "Activity Line Items", alis.count)
   -# %li
   -#   %a{:href => "#hist", :data =>{:toggle => 'tab'}}
   -#     %span.badge.pull-right= @project.history.count
   -#     = "History "
-  %li
-    %a{:href => "#docs", :data =>{:toggle => 'tab'}}
-      %span{:style => 'white-space: nowrap !important;'}
-        = "Supporting Documents "
-        %span.badge= @project.documents.count
-  %li
-    %a{:href => "#comm", :data =>{:toggle => 'tab'}}
-      %span{:style => 'white-space: nowrap !important;'}
-        = "Comments "
-        %span.badge= @project.comments.count
+  = nav_tab_count_tag("#docs", "Supporting Documents ", @project.documents.count)
+  = nav_tab_count_tag("#comm", "Comments ", @project.comments.count)
 
 .tab-content
   .tab-pane.fade#note
