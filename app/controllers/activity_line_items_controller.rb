@@ -9,7 +9,7 @@ class ActivityLineItemsController < OrganizationAwareController
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
                                                     :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets, :pin]
   before_action :get_capital_project
-  before_filter :reformat_date_fields,    :only => [:create, :update]
+  before_action :reformat_date_fields,    :only => [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
 

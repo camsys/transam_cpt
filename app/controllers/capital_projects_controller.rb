@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
+  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
