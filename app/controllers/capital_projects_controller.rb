@@ -140,8 +140,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         report_instance = @report.class_name.constantize.new
         @data = report_instance.get_data_from_result_list(@projects)
 
-        @alis = ActivityLineItem.where(capital_project_id: @projects.ids).uniq # override @alis to properly sum costs of capital projects
-        Rails.logger.info "blueberry pie"
+        @alis = ActivityLineItem.where(capital_project_id: @projects.ids).distinct # override @alis to properly sum costs of capital projects
         @total_projects_cost_by_year =@alis.group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
         @total_projects_cost = @total_projects_cost_by_year.map { |k,v| v}.sum
       end
