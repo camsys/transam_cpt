@@ -151,7 +151,7 @@
     // Add a handler for the move action which appends the selected assets to
     // the href
 
-    var fiscal_years = #{@fiscal_years.to_h.invert.to_json} || {};
+    var fiscal_years = #{@fiscal_years.to_h.invert.to_json.html_safe} || {};
     function getFiscalYear(year) {
       return fiscal_years[year] || year;
     }

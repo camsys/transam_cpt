@@ -61,7 +61,7 @@
     }
   });
 
-  var subtype_ids_by_type = JSON.parse('#{subtype_ids_by_type.to_json}');
+  var subtype_ids_by_type = JSON.parse('#{subtype_ids_by_type.to_json.html_safe}');
 
   // update asset subtype list after picking type
   $('#user_activity_line_item_filter_asset_types').on('change', function(event) {
