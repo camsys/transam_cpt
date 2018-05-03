@@ -190,7 +190,7 @@
 
         // early replacemnt SOGR: need to prompt user to provide reason
         if(is_early_replacement) {
-          var msg = "You are moving an ALI from " + getFiscalYear(ali_year) + " to " + getFiscalYear(drop_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
+          var msg = "You are moving an ALI from " + getFiscalYear(ali_year) + " to " + getFiscalYear(drop_year) + ". This action will put some assets in early replacement. Please provide an explanation <span class='text-danger'>(*-required)</span>:";
           transam.bootbox_comment_dialog(msg, function(reason) {
             if(reason == null) {
               return true;
