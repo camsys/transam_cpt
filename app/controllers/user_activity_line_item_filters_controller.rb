@@ -33,7 +33,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
     if @user_activity_line_item_filter.nil?
       notify_user(:alert, 'Record not found!')
 
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
       return
     end
 
@@ -157,7 +157,7 @@ class UserActivityLineItemFiltersController < OrganizationAwareController
         notify_user(:notice, 'Filter was successfully updated.')
         format.html {
           if redirect_to_back
-            redirect_to :back
+            redirect_back(fallback_location: root_path)
           else
             redirect_to [current_user, @user_activity_line_item_filter]
           end

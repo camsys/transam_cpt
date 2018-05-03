@@ -53,7 +53,7 @@ class ActivityLineItemsController < OrganizationAwareController
       @activity_line_item.assets << asset
       notify_user(:notice, "Asset was successfully added to the ALI")
     end
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   def remove_asset
@@ -67,7 +67,7 @@ class ActivityLineItemsController < OrganizationAwareController
       @activity_line_item.save
       notify_user(:notice, "Asset was successfully removed from the ALI")
     end
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   # GET /activity_line_items/new
@@ -98,7 +98,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.html {
         notify_user(:notice, "The ALI was successfully #{@activity_line_item.pinned? ? 'pinned' : 'unpinned'}.")
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       }
       format.js
     end
@@ -195,7 +195,7 @@ class ActivityLineItemsController < OrganizationAwareController
   def restore_cost
     @activity_line_item.restore_estimated_cost
     respond_to do |format|
-      format.html { redirect_to :back }
+      format.html { redirect_back(fallback_location: root_path) }
       format.js
     end
   end
@@ -239,7 +239,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       if @activity_line_item.save
         notify_user(:notice, "The ALI was successfully added to project #{@project.project_number}.")
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_path) }
         format.json { render action: 'show', status: :created, location: @activity_line_item }
       else
         format.html { render action: 'new' }
@@ -265,7 +265,7 @@ class ActivityLineItemsController < OrganizationAwareController
         }
         format.html {
           notify_user(:notice, "The ALI was successfully updated")
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         }
 
       else
@@ -295,7 +295,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
         # check where to redirect to
         if (URI(request.referer || '').path.include?('planning') || URI(request.referer || '').path.include?('scheduler'))
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         else
           redirect_to capital_project_path(@project)
         end

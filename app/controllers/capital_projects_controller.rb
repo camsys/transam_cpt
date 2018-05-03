@@ -266,7 +266,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         @project.update_project_number
         @project.save
         notify_user(:notice, "Capital Project #{@project.name} was successfully updated.")
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_path) }
         format.json { head :no_content }
       else
         format.html { render :action => "edit" }
@@ -286,7 +286,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       format.html {
         # See if we got a view to render
         if params[:view] == "back"
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         elsif params[:view] == "planning"
           redirect_to planning_index_url
         else
