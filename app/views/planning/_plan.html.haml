@@ -33,7 +33,7 @@
                 %button.btn.btn-default.disabled.bold
                   = format_as_fiscal_year(year)
               - else
-                = link_to format_as_fiscal_year(year), planning_path({display_fy_year: year}), class: "btn btn-info bold project-planner-year-link", data: {year: year}, title: "Click to load #{format_as_fiscal_year(year)} projects"
+                = link_to format_as_fiscal_year(year), planning_index_path({display_fy_year: year}), class: "btn btn-info bold project-planner-year-link", data: {year: year}, title: "Click to load #{format_as_fiscal_year(year)} projects"
             - else
               = link_to format_as_fiscal_year(year), "##{year}", class: "btn btn-info bold project-planner-year-link"
             
