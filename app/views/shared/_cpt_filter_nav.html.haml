@@ -27,5 +27,5 @@
 :javascript
 
   $('.filter-link').click(function(event) {
-    bootbox.dialog({ message: "#{loader_panel_tag({:message => 'Processing...', :spinner => 'cog', :html_class => 'filter-loader'})}", closeButton: false });
+    $('#processing_spinner').show();
   });
