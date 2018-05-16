@@ -17,6 +17,10 @@
   var by_policy_replacement_status =  parseInt('#{ReplacementStatusType.find_by(name: "By Policy").id}');
   var underway_replacement_status =  parseInt('#{ReplacementStatusType.find_by(name: "Underway").id}');
 
+  $(document).ready(function() {
+    $('#asset_event_replacement_status_type_id').change();
+  });
+
   $('#asset_event_replacement_status_type_id').on('change', function(event) {
     var id = parseInt($(this).val());
 
