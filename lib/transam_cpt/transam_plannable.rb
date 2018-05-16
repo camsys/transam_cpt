@@ -69,9 +69,6 @@ module TransamPlannable
   def update_methods
     a = []
     a << super
-    [:update_replacement_status].each do |method|
-      a << method
-    end
     a.flatten
   end
 
