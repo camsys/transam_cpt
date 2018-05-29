@@ -2,10 +2,12 @@
   %td.nowrap.col-md-2
     .form-group
       - if i_f.object.milestone_type.name == "Contract Complete"
+        - is_contract = true
         %label.required.control-label
           %abbr{title: 'required'} *
           = "#{i_f.object.milestone_type.name}"
       - else
+        - is_contract = false
         %label.optional.control-label
           = "#{i_f.object.milestone_type.name}"
     = i_f.input :id, :as => :hidden
@@ -13,7 +15,7 @@
     = i_f.input :milestone_type_id, :as => :hidden
   %td.col-md-2
     = i_f.input :milestone_date, :wrapper => :vertical_append, :label => false do
-      = i_f.input_field :milestone_date, :as => :string, :class => i_f.object.milestone_type.name == "Contract Complete" ? 'form-control datepicker contract_completed_date' : 'form-control datepicker', :data => {'behavior' => 'datepicker'}, :value => format_as_date(i_f.object.milestone_date), :required => i_f.object.milestone_type.name == "Contract Complete"
+      = i_f.input_field :milestone_date, :as => :string, :class => is_contract ? 'form-control datepicker contract_completed_date' : 'form-control datepicker', :data => {'date-container' => '.modal'}.merge(is_contract ? {'date-start-date' => "#{format_as_date(Date.today)}"} : {}), :value => format_as_date(i_f.object.milestone_date), :required => is_contract
       %span.input-group-addon
         %i.fa.fa-calendar
   %td.col-md-8
