@@ -55,7 +55,7 @@
       %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
       %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
       - if popup == '1'
-        %th.center{data: {formatter: 'popup_formatter'}}
+        %th.center{data: {formatter: 'popup_formatter_for_date_name'}}
       %th.center{data: {formatter: 'special_icons_formatter'}}
 
     %tfoot
@@ -70,6 +70,8 @@
         - if popup == '1'
           %td
         %td
+
+= render 'shared/table_formatters'
 
 :javascript
 
@@ -279,50 +281,4 @@
     i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
     j = (j = i.length) > 3 ? j % 3 : 0;
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-  }
-
-  function boolean_formatter(value) {
-    if (value) {
-      // add hidden div for exporting
-      return '<i class="fa fa-check"></i><div style = "visibility: hidden;">Yes</div>';
-    } else {
-      return '<div style = "visibility: hidden;">No</div>';
-    }
-  }
-
-  function integer_formatter(value) {
-    if (value) {
-      return format("###,##0.", value);
-    } else {
-      return value;
-    }
-  };
-
-  function currency_formatter(value) {
-    return "$" + formatMoney(value);
-  }
-
-  function popup_formatter(value, data) {
-    return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
-  }
-
-  function special_icons_formatter(value, data) {
-    var special_icons = '';
-    if (data.is_rehabilitated) {
-      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Rehabilitated" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-wrench" style="color: maroon !important;"></i></a>';
-    }
-
-    if (data.is_early_replacement) {
-      special_icons = special_icons + '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle text-danger"></i></a>';
-    }
-
-    if((data.replace_with_subtype) && (data.replace_with_subtype != data.asset_subtype_id)) {
-      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
-    }
-
-    if((data.replace_with_fuel_type) && (data.replace_with_fuel_type != data.fuel_type)) {
-      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
-    }
-
-    return special_icons;
   }

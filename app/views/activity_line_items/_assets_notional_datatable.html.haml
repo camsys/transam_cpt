@@ -37,10 +37,11 @@
 
         %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
 
-        %th.center{data: {formatter: 'ali_fiscal_year_formatter'}} Policy FY
+        %th.center= ali_fiscal_year_formatter(ali.fy_year)
+          Policy FY
         %th.right{data: {field: 'estimated_cost', formatter: 'currency_formatter'}} Est. Cost
         - if popup == '1'
-          %th{data: {formatter: 'popup_formatter'}}
+          %th{data: {formatter: 'popup_formatter_for_date_name'}}
 
     %tfoot
       %tr
@@ -48,6 +49,8 @@
         %td.right= format_as_currency(ali.estimated_cost)
         - if popup == '1'
           %td
+
+= render 'shared/table_formatters'
 
 :javascript
 
@@ -89,6 +92,7 @@
     return '<div id="popup-'+ div_id +'">Loading...</div>';
   }
 
+  //TODO this is a var that gets set I'm not sure that it should be this way
   var formatMoney = function(n, c, d, t) {
     var c = isNaN(c = Math.abs(c)) ? 0 : c,
     d = d == undefined ? "." : d,
@@ -99,58 +103,6 @@
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
   }
 
-  function description_formatter(value, data) {
-    if (value) {
-      if (is_rehabilitation) {
-        str = "Rehabilitation";
-      } else {
-        str = "Replacement";
-      }
-      return str + " for " + data.asset_subtype_id + " " + data.fuel_type + " " + value + " replaced in " + data.scheduled_replacement_year;
-    } else {
-      return "";
-    }
-  };
-
-  function integer_formatter(value) {
-    if (value) {
-      return format("###,##0.", value);
-    } else {
-      return value;
-    }
-  };
-
-  function ali_fiscal_year_formatter(value) {
-    return "#{format_as_fiscal_year(ali.fy_year)}";
-  };
-
-  function currency_formatter(value) {
-    return "$" + formatMoney(value);
-  }
-
-  function popup_formatter(value, data) {
-    return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
-  }
-
-  function replace_with_subtype_formatter(value, data) {
-    if (value) {
-      return value;
-    } else if (data) {
-      return data.asset_subtype_id
-    } else {
-      return "";
-    }
-  }
-
-  function replace_with_fuel_type_formatter(value, data) {
-    if (value) {
-      return value;
-    } else if (data) {
-      return data.fuel_type
-    } else {
-      return "";
-    }
-  }
 
 
 

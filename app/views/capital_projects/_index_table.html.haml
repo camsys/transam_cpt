@@ -129,36 +129,3 @@
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
   }
 
-  function boolean_formatter(value) {
-    if (value) {
-      // add hidden div for exporting
-      return '<i class="fa fa-check"></i><div style = "visibility: hidden;">Yes</div>';
-    } else {
-      return '<div style = "visibility: hidden;">No</div>';
-    }
-  }
-
-  function currency_formatter(value) {
-    return "$" + formatMoney(value);
-  }
-
-  function popup_formatter(value, data) {
-    if(value) {
-      return '<a class="transam-popover" data-container="body" data-content="' + value + '" data-html="true" data-placement="left" data-title="' + data.project_number + ': Activity Line Items" data-toggle="popover" tabindex="0" data-original-title="" title=""><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
-    } else {
-      return "";
-    }
-  }
-
-  function early_replacement_flag_formatter(value) {
-    if(value) {
-      return '<a class="transam-tooltip" data-placement="left" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-exclamation-triangle text-danger"></i></a>';
-    } else {
-      return "";
-    }
-  }
-
-  function total_cost_formatter(value) {
-    return '#{format_as_currency(@total_projects_cost)}';
-  }
-
