@@ -12,10 +12,10 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
-gem 'transam_core', :github => 'camsys/transam_core', branch: :quarter2
-gem 'transam_reporting', :github => 'camsys/transam_reporting', branch: :quarter2
-gem 'transam_transit', :github => 'camsys/transam_transit', branch: :quarter2
-gem 'transam_accounting', :github => 'camsys/transam_accounting', branch: :quarter2
+gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter2
+gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter2
+gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter2
+gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :quarter2
 gem 'mysql2', '~> 0.3.20' # lock gem for dummy app
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
 
@@ -25,7 +25,9 @@ gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element x
 # them to .git/hooks/old and you can move them back at your leisure. Any hooks
 # checked in to .hooks will be shared among the team. If you need to re-generate
 # the symlinks,you can use 'bundle exec git-hookshot'
-gem "git-hookshot", github: "brandonweiss/git-hookshot"
+group :not_travis do
+  gem "git-hookshot", git: 'https://github.com/brandonweiss/git-hookshot', branch: :master
+end
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'

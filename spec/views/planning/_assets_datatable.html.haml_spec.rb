@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe "planning/_assets_datatable.html.haml", :type => :view do
   it 'table' do
+    allow(controller).to receive(:params).and_return({controller: 'planning'})
     if AssetType.count == 0 || AssetSubtype.count == 0
       AssetType.first
       AssetSubtype.first

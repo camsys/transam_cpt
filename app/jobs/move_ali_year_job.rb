@@ -14,9 +14,11 @@ class MoveAliYearJob < Job
   attr_accessor :early_replacement_reason
 
   def run
-
-    Rails.logger.debug "Moving ali #{activity_line_item} to new FY #{fy_year}"
+    msg = "Moving ali #{activity_line_item} to new FY #{fy_year}"
     CapitalProjectBuilder.new.move_ali_to_planning_year(activity_line_item, fy_year, early_replacement_reason)
+
+    # Add a row into the activity table
+    ActivityLog.create({:organization_id => activity_line_item.capital_project.organization.id, :user_id => creator.id, :item_type => "CapitalProjectBuilder", :activity => msg, :activity_time => Time.now})
 
     event_url = Rails.application.routes.url_helpers.planning_index_path
     move_ali_notification = Notification.create!(text: "The ALI #{activity_line_item.name} (#{activity_line_item.team_ali_code}) was successfully moved to #{fy_year}. Click here to see the updated Project Planner.", link: event_url, notifiable_type: 'Organization', notifiable_id: activity_line_item.capital_project.organization_id)

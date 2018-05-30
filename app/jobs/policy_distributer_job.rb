@@ -52,6 +52,9 @@ class PolicyDistributerJob < Job
     msg += ' Assets updated for new policy.' if policy_distributer_proxy.apply_policies.to_i == 1
     msg += ' SOGR projects built.' if policy_distributer_proxy.build_projects.to_i == 1
 
+    # Add a row into the activity table
+    ActivityLog.create({:organization_id =>policy_distributer_proxy.policy.organization_id, :user_id => creator.id, :item_type => "Policy Distributor", :activity => msg, :activity_time => Time.now})
+
     policy_notification = Notification.create(text: msg, link: event_url, notifiable_type: 'Organization', notifiable_id: policy_distributer_proxy.policy.organization_id)
     UserNotification.create(user: creator, notification: policy_notification)
 

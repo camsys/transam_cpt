@@ -18,7 +18,7 @@ function <%= "chart_func_#{@funding_source.object_key}" %>() {
   chart_data.addColumn('number', '<%= col %>');
   <% end %>
   <% @data[:data].each do |row| %>
-  chart_data.addRow(<%= raw row.to_json %>);
+  chart_data.addRow(<%= raw row.to_json.html_safe %>);
   <% end %>
   
   var formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, fractionDigits: 0});

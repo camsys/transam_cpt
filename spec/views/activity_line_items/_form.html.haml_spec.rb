@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe "activity_line_items/_form.html.haml", :type => :view do
   it 'fields' do
+    allow(controller).to receive(:params).and_return({controller: 'activity_line_items'})
     assign(:project, create(:capital_project, :multi_year => true))
     assign(:activity_line_item, create(:activity_line_item))
     render

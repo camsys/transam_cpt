@@ -9,7 +9,7 @@ class ActivityLineItemsController < OrganizationAwareController
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
                                                     :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets, :pin]
   before_action :get_capital_project
-  before_filter :reformat_date_fields,    :only => [:create, :update]
+  before_action :reformat_date_fields,    :only => [:create, :update]
 
   INDEX_KEY_LIST_VAR    = "activity_line_item_key_list_cache_var"
 
@@ -53,7 +53,7 @@ class ActivityLineItemsController < OrganizationAwareController
       @activity_line_item.assets << asset
       notify_user(:notice, "Asset was successfully added to the ALI")
     end
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   def remove_asset
@@ -67,7 +67,7 @@ class ActivityLineItemsController < OrganizationAwareController
       @activity_line_item.save
       notify_user(:notice, "Asset was successfully removed from the ALI")
     end
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   # GET /activity_line_items/new
@@ -98,7 +98,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.html {
         notify_user(:notice, "The ALI was successfully #{@activity_line_item.pinned? ? 'pinned' : 'unpinned'}.")
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       }
       format.js
     end
@@ -195,7 +195,7 @@ class ActivityLineItemsController < OrganizationAwareController
   def restore_cost
     @activity_line_item.restore_estimated_cost
     respond_to do |format|
-      format.html { redirect_to :back }
+      format.html { redirect_back(fallback_location: root_path) }
       format.js
     end
   end
@@ -239,7 +239,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       if @activity_line_item.save
         notify_user(:notice, "The ALI was successfully added to project #{@project.project_number}.")
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_path) }
         format.json { render action: 'show', status: :created, location: @activity_line_item }
       else
         format.html { render action: 'new' }
@@ -265,7 +265,7 @@ class ActivityLineItemsController < OrganizationAwareController
         }
         format.html {
           notify_user(:notice, "The ALI was successfully updated")
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         }
 
       else
@@ -295,7 +295,7 @@ class ActivityLineItemsController < OrganizationAwareController
 
         # check where to redirect to
         if (URI(request.referer || '').path.include?('planning') || URI(request.referer || '').path.include?('scheduler'))
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         else
           redirect_to capital_project_path(@project)
         end
