@@ -50,8 +50,24 @@ replacement_status_types = [
     {:active => 1, :name => 'Pinned', :description => 'Asset replacement is pinned and cannot be moved.'}
 ]
 
+system_config_extensions = [
+    {class_name: 'CapitalProject', extension_name: 'TransamKeywordSearchable', active: true},
+    {class_name: 'ActivityLineItem', extension_name: 'TransamKeywordSearchable', active: true},
+    {class_name: 'RevenueVehicle', extension_name: 'TransamPlannable', active: true},
+    {class_name: 'ServiceVehicle', extension_name: 'TransamPlannable', active: true},
+    {class_name: 'CapitalEquipment', extension_name: 'TransamPlannable', active: true},
+    {class_name: 'FacilityComponent', extension_name: 'TransamPlannable', active: true},
+    {class_name: 'Facility', extension_name: 'TransamPlannable', active: true},
+    {class_name: 'TransitOperator', extension_name: 'TransamPlanningOrganization', active: true},
+    {class_name: 'Grantor', extension_name: 'TransamPlanningOrganization', active: true},
+    {class_name: 'CapitalProject', extension_name: 'TransamFundableCapitalProject', active: true},
+    {class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true},
+    {class_name: 'User', extension_name: 'TransamPlanningFilters', active: true}
+
+]
+
 replace_tables = %w{ milestone_types capital_project_types replacement_status_types }
-merge_tables = %w{ roles asset_event_types }
+merge_tables = %w{ roles asset_event_types system_config_extensions }
 
 replace_tables.each do |table_name|
   puts "  Loading #{table_name}"

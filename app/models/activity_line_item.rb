@@ -62,6 +62,10 @@ class ActivityLineItem < ActiveRecord::Base
 
   has_many    :tasks,       :as => :taskable,     :dependent => :destroy
 
+
+
+  # Need to support creating keyword_searchables, which require an org
+  delegate :organization, :organization_id, to: :capital_project
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
