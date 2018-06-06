@@ -2,7 +2,7 @@
   -is_sogr = ali.capital_project.sogr?
 
   = format_field("Project",  link_to(ali.capital_project.project_number, ali.capital_project))
-  = format_field("Fiscal Year", ali.capital_project.fiscal_year)
+  = format_field(get_fiscal_year_label, ali.capital_project.fiscal_year)
   = format_field("Scope", ali.team_ali_code)
   = format_field("SOGR", format_as_yes_no(ali.capital_project.sogr?))
   = format_field("Type", ali.capital_project.capital_project_type)
@@ -28,7 +28,7 @@
 .hidden-lg
   .col-sm-4
     = format_field("Project",  link_to(ali.capital_project.project_number, ali.capital_project))
-    = format_field("Fiscal Year", ali.capital_project.fiscal_year)
+    = format_field(get_fiscal_year_label, ali.capital_project.fiscal_year)
     = format_field("Scope", ali.team_ali_code)
     = format_field("SOGR dasdasd", format_as_yes_no(ali.capital_project.sogr?))
     = format_field("Type", ali.capital_project.capital_project_type)

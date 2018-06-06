@@ -26,7 +26,7 @@ class CashFlowForecast < AbstractReport
     years = (start_year..last_year).to_a
     
     # Generate the column labels and rows for each metric. 
-    labels = ['FY', 'Granted', 'Spent', 'Committed', 'Balance']
+    labels = [get_fy_label, 'Granted', 'Spent', 'Committed', 'Balance']
         
     # Store the results
     a = []

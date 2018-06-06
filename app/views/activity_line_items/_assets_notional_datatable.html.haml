@@ -38,7 +38,7 @@
         %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
 
         %th.center= ali_fiscal_year_formatter(ali.fy_year)
-          Policy FY
+          Policy #{get_fy_label}
         %th.right{data: {field: 'estimated_cost', formatter: 'currency_formatter'}} Est. Cost
         - if popup == '1'
           %th{data: {formatter: 'popup_formatter_for_date_name'}}

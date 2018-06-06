@@ -14,7 +14,7 @@ class MoveAliYearJob < Job
   attr_accessor :early_replacement_reason
 
   def run
-    msg = "Moving ali #{activity_line_item} to new FY #{fy_year}"
+    msg = "Moving ali #{activity_line_item} to new #{get_fy_label} #{fy_year}"
     CapitalProjectBuilder.new.move_ali_to_planning_year(activity_line_item, fy_year, early_replacement_reason)
 
     # Add a row into the activity table

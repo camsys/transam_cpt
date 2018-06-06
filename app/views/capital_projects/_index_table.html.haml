@@ -45,7 +45,7 @@
       %tr
         - if @organization_list.count > 1
           %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}} Agency
-        %th.center.nowrap{data: {field: 'fy_year'}} FY
+        %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
         %th.left.nowrap{data: {field: 'project_number'}} Project
         %th.center.nowrap{data: {field: 'scope'}} Scope
         %th.center{data: {field: 'is_emergency', formatter: 'boolean_formatter'}} Emgcy

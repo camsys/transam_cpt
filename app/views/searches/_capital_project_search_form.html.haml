@@ -16,7 +16,7 @@
                   %a{:data => {:compare => "1"}} Greater Than
               = f.input_field :total_cost_comparator, :as => :hidden, :value => '-1'
             = f.input_field :total_cost, :class => "form-control"
-          = f.input :fy_year, :wrapper => :vertical_prepend, :label => "Fiscal Year" do
+          = f.input :fy_year, :wrapper => :vertical_prepend, :label => get_fiscal_year_label do
             .input-group-btn
               %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
               %ul.dropdown-menu{:role => "menu"}

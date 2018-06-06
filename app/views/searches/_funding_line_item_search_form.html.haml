@@ -5,7 +5,7 @@
         %legend.panel-legend Appropriation
         .col-sm-4
           = f.input :organization_id, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name' unless @organization_list.count < 2
-          = f.input :fy_year, :collection => get_fiscal_years, :label => "Fiscal Year"
+          = f.input :fy_year, :collection => get_fiscal_years, :label => get_fiscal_year_label
           = f.input :funding_line_item_type, :collection => FundingLineItemType.active, :label => "Funding Line Item Type"
         .col-sm-4
           = f.input :amount, :wrapper => :vertical_prepend, :label => "Appropriation Amount" do

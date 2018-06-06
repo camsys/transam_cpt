@@ -136,9 +136,9 @@
   		over: function(ev,ui) {
   		  var drop_year = parseInt($(this).data('year'));
   		  if ( $('#move').length ) {
-  		    $('#move').html("Move to FY " + (drop_year-2000) + "-" + (drop_year-1999));
+  		    $('#move').html("Move to #{get_fy_label} " + (drop_year-2000) + "-" + (drop_year-1999));
           } else {
-            $(ui.helper).first().append("<div id='move'>Move to FY " + (drop_year-2000) + "-" + (drop_year-1999)+"</div>");
+            $(ui.helper).first().append("<div id='move'>Move to #{get_fy_label} " + (drop_year-2000) + "-" + (drop_year-1999)+"</div>");
           }
         },
   		drop : function(ev, ui) {

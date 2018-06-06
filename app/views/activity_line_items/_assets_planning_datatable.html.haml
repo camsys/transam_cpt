@@ -50,7 +50,7 @@
       %th.right{data: {field: 'reported_mileage', formatter: 'integer_formatter'}} Mileage
       %th.center{data: {field: 'reported_condition_rating'}} Cond.
 
-      %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy FY
+      %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy #{get_fy_label}
       %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter'}} Orig. Cost
       %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
       %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
