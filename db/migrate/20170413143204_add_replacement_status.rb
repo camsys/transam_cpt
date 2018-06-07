@@ -1,4 +1,4 @@
-class AddReplacementStatus < ActiveRecord::Migration
+class AddReplacementStatus < ActiveRecord::Migration[4.2]
   def change
     add_column :asset_events, :replacement_status_type_id, :string, after: :replacement_reason_type_id
     add_column :assets, :replacement_status_type_id, :string, after: :replacement_reason_type_id

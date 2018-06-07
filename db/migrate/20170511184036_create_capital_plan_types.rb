@@ -1,4 +1,4 @@
-class CreateCapitalPlanTypes < ActiveRecord::Migration
+class CreateCapitalPlanTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :capital_plan_types do |t|
       t.string :name
