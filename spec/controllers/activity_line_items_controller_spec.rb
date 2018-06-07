@@ -50,14 +50,14 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   end
   it 'GET edit' do
     allow_any_instance_of(ActivityLineItemsController).to receive(:render).and_return ""
-    get :edit, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
+    get :edit, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, format: :js}
 
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:activity_line_item)).to eq(test_ali)
   end
   it 'GET assets' do
     allow_any_instance_of(ActivityLineItemsController).to receive(:render).and_return ""
-    get :assets, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, :format => :json}
+    get :assets, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, format: :json}
 
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:activity_line_item)).to eq(test_ali)
@@ -65,7 +65,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   end
   it 'GET edit_cost' do
     allow_any_instance_of(ActivityLineItemsController).to receive(:render).and_return ""
-    get :edit_cost, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
+    get :edit_cost, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, format: :js}
 
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:activity_line_item)).to eq(test_ali)
@@ -75,7 +75,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
       allow_any_instance_of(ActivityLineItemsController).to receive(:render).and_return ""
     end
     it 'vehicle delivery' do
-      get :edit_milestones, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
+      get :edit_milestones, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, format: :js}
 
       expect(assigns(:project)).to eq(test_project)
       expect(assigns(:activity_line_item)).to eq(test_ali)
@@ -83,7 +83,7 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
     end
     it 'not vehicle delivery' do
       test_ali.update!(:team_ali_code => create(:rehabilitation_ali_code, :parent => create(:rehabilitation_ali_code)))
-      get :edit_milestones, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
+      get :edit_milestones, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, format: :js}
 
       expect(assigns(:project)).to eq(test_project)
       expect(assigns(:activity_line_item)).to eq(test_ali)

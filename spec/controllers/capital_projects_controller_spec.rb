@@ -19,7 +19,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
   it 'GET load_view' do
     allow_any_instance_of(CapitalProjectsController).to receive(:render).and_return ""
-    get :load_view, params:{:id => test_project.object_key}
+    get :load_view, params:{:id => test_project.object_key, format: :js}
 
     expect(assigns(:project)).to eq(test_project)
   end

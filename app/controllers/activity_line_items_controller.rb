@@ -86,8 +86,6 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
     add_breadcrumb "Modify"
 
-    redirect_back(fallback_location: root_path)
-
   end
 
   def pin
@@ -170,7 +168,6 @@ class ActivityLineItemsController < OrganizationAwareController
       }
     end
 
-    redirect_back(fallback_location: root_path)
   end
 
   def get_asset_summary
@@ -192,8 +189,6 @@ class ActivityLineItemsController < OrganizationAwareController
     # If they have not updated the cost before, we copy the estimated cost
     # to the anticipated cost
     @activity_line_item.anticipated_cost == @activity_line_item.cost
-
-    redirect_back(fallback_location: root_path)
 
   end
 
@@ -225,8 +220,6 @@ class ActivityLineItemsController < OrganizationAwareController
         @activity_line_item.milestones.create(:milestone_type_id => mt.id)
       end
     end
-
-    redirect_back(fallback_location: root_path)
 
   end
 
