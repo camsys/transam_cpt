@@ -8,7 +8,7 @@ class AddCptSystemConfigExtensions < ActiveRecord::DataMigration
         {class_name: 'ServiceVehicle', extension_name: 'TransamAssetPlannable', active: true},
         {class_name: 'CapitalEquipment', extension_name: 'TransamAssetPlannable', active: true},
         {class_name: 'FacilityComponent', extension_name: 'TransamAssetPlannable', active: true},
-        {class_name: 'Facility', extension_name: 'TransamAssetlannable', active: true},
+        {class_name: 'Facility', extension_name: 'TransamAssetPlannable', active: true},
 
         {class_name: 'TransitOperator', extension_name: 'TransamPlanningOrganization', active: true},
         {class_name: 'Grantor', extension_name: 'TransamPlanningOrganization', active: true},
@@ -19,7 +19,7 @@ class AddCptSystemConfigExtensions < ActiveRecord::DataMigration
     ]
 
     system_config_extensions.each do |extension|
-      SystemConfigExetnsion.create!(extension)
+      SystemConfigExtension.create!(extension)
     end
   end
 end
