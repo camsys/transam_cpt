@@ -11,7 +11,7 @@ RSpec.describe TeamCodesController, :type => :controller do
       parent = create(:rehabilitation_ali_code)
       child = create(:rehabilitation_ali_code, :parent => parent)
 
-      get :children, :id => parent.id, :format => :json
+      get :children, params:{:id => parent.id, :format => :json}
       expect(assigns(:results)).to include(child)
     end
     it 'get by code' do
@@ -20,11 +20,11 @@ RSpec.describe TeamCodesController, :type => :controller do
 
       puts parent.children.inspect
 
-      get :children, :code => parent.code, :format => :json
+      get :children, params:{:code => parent.code, :format => :json}
       expect(assigns(:results)).to include(child)
     end
     it 'no ali' do
-      get :children, :format => :json
+      get :children, params:{:format => :json}
       expect(assigns(:results)).to eq([])
     end
 
@@ -32,7 +32,7 @@ RSpec.describe TeamCodesController, :type => :controller do
       parent = create(:rehabilitation_ali_code)
       child = create(:rehabilitation_ali_code, :parent => parent)
 
-      get :children, :id => child.id, :format => :json
+      get :children, params:{:id => child.id, :format => :json}
       expect(assigns(:results)).to eq([child])
     end
   end
