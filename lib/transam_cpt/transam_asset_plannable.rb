@@ -84,6 +84,16 @@ module TransamAssetPlannable
     replacement_status_type == ReplacementStatusType.find_by(name: 'None')
   end
 
+  def formatted_early_replacement_reason
+    if replacement_underway?
+      "Replacement is Early and Underway."
+    elsif early_disposition_requests.count > 0
+      early_disposition_requests.last.comments
+    else
+      '(Reason not provided)'
+    end
+  end
+
   # Returns the list of capital projects that this asset paricitpates in
   def capital_projects
 
