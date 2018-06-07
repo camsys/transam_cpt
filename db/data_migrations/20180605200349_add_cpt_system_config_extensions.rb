@@ -12,8 +12,6 @@ class AddCptSystemConfigExtensions < ActiveRecord::DataMigration
 
         {class_name: 'TransitOperator', extension_name: 'TransamPlanningOrganization', active: true},
         {class_name: 'Grantor', extension_name: 'TransamPlanningOrganization', active: true},
-        {class_name: 'CapitalProject', extension_name: 'TransamFundableCapitalProject', active: true},
-        {class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true},
         {class_name: 'User', extension_name: 'TransamPlanningFilters', active: true}
 
     ]
