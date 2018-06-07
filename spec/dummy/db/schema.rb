@@ -211,6 +211,13 @@ ActiveRecord::Schema.define(version: 20180330151633) do
   add_index "asset_tags", ["asset_id"], name: "asset_tags_idx1", using: :btree
   add_index "asset_tags", ["user_id"], name: "asset_tags_idx2", using: :btree
 
+  create_table "asset_fleet_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "class_name"
+    t.text "groups"
+    t.text "custom_groups"
+    t.boolean "active"
+  end
+
   create_table "asset_types", force: :cascade do |t|
     t.string  "name",              limit: 64,  null: false
     t.string  "class_name",        limit: 64,  null: false
