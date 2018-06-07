@@ -34,3 +34,4 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails', "~> 5.0"
 gem 'jquery-form-rails'
 gem 'rails-controller-testing'
+gem 'awesome_print'
