@@ -339,10 +339,10 @@ class CapitalProject < ActiveRecord::Base
   def after_update_callback
     unless self.sogr?
       # If a multiyear project is changed to a single year project, all ALIs must be shifted to the Project FY.
-      update_all_ali_fy = true if self.multi_year_changed? && !self.multi_year
+      update_all_ali_fy = true if self.saved_change_to_multi_year? && !self.multi_year
 
       # After the FY change, Any ALI in a year PRIOR to the Project FY should be shifted to the new Project FY.
-      update_prior_project_fy_ali_fy = true if self.fy_year_changed?
+      update_prior_project_fy_ali_fy = true if self.saved_change_to_fy_year?
 
       proj_fy_year = self.fy_year
       to_update_alis = if update_all_ali_fy
