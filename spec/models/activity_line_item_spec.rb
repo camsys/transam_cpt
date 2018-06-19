@@ -198,7 +198,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       test_line_item.assets << test_asset
       # Fake a re-estimation based on changed capital project
       # by updating asset and then changing project
-      allow(test_line_item).to receive(:total_asset_cost)
+      expect(test_line_item).to receive(:total_asset_cost)
       test_line_item.fy_year = 2015
       test_line_item.save!
     end
