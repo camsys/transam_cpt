@@ -87,7 +87,7 @@ query_params = [
 
 reports = [
   {
-    :active => 1,
+    :active => false,
     :belongs_to => 'report_type',
     :type => "Capital Needs Report",
     :name => 'Capital Needs Forecast',
