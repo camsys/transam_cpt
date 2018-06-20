@@ -4,11 +4,7 @@ class AddCptSystemConfigExtensions < ActiveRecord::DataMigration
         {class_name: 'CapitalProject', extension_name: 'TransamKeywordSearchable', active: true},
         {class_name: 'ActivityLineItem', extension_name: 'TransamKeywordSearchable', active: true},
 
-        {class_name: 'RevenueVehicle', extension_name: 'TransamAssetPlannable', active: true},
-        {class_name: 'ServiceVehicle', extension_name: 'TransamAssetPlannable', active: true},
-        {class_name: 'CapitalEquipment', extension_name: 'TransamAssetPlannable', active: true},
-        {class_name: 'FacilityComponent', extension_name: 'TransamAssetPlannable', active: true},
-        {class_name: 'Facility', extension_name: 'TransamAssetPlannable', active: true},
+        {class_name: 'TransamAsset', extension_name: 'TransamAssetPlannable', active: true},
 
         {class_name: 'TransitOperator', extension_name: 'TransamPlanningOrganization', active: true},
         {class_name: 'Grantor', extension_name: 'TransamPlanningOrganization', active: true},
