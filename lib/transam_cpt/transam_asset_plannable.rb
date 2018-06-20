@@ -33,7 +33,7 @@ module TransamAssetPlannable
     has_many   :replacement_status_updates, -> {where :asset_event_type_id => ReplacementStatusUpdateEvent.asset_event_type.id }, :class_name => "ReplacementStatusUpdateEvent",  :foreign_key => :transam_asset_id
 
     # belongs to 0 or 1 activity_line_items
-    has_and_belongs_to_many    :activity_line_items,  :foreign_key => 'transam_asset_id'
+    has_and_belongs_to_many    :activity_line_items,  :join_table => :activity_line_items_assets, :foreign_key => 'transam_asset_id'
 
     scope :in_replacement_cycle, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id != ?', ReplacementStatusType.find_by(name: 'None').id) }
     scope :replacement_by_policy, -> { where('replacement_status_type_id IS NULL OR replacement_status_type_id = ?', ReplacementStatusType.find_by(name: 'By Policy').id) }
