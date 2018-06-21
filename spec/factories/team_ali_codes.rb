@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :team_ali_code do
     name 'Team ALI code 1'
