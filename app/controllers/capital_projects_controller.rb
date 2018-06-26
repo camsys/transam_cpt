@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_filter :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
+  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -140,8 +140,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         report_instance = @report.class_name.constantize.new
         @data = report_instance.get_data_from_result_list(@projects)
 
-        @alis = ActivityLineItem.where(capital_project_id: @projects.ids).uniq # override @alis to properly sum costs of capital projects
-        Rails.logger.info "blueberry pie"
+        @alis = ActivityLineItem.where(capital_project_id: @projects.ids).distinct # override @alis to properly sum costs of capital projects
         @total_projects_cost_by_year =@alis.group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
         @total_projects_cost = @total_projects_cost_by_year.map { |k,v| v}.sum
       end
@@ -267,7 +266,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         @project.update_project_number
         @project.save
         notify_user(:notice, "Capital Project #{@project.name} was successfully updated.")
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_path) }
         format.json { head :no_content }
       else
         format.html { render :action => "edit" }
@@ -287,7 +286,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       format.html {
         # See if we got a view to render
         if params[:view] == "back"
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         elsif params[:view] == "planning"
           redirect_to planning_index_url
         else

@@ -1,6 +1,6 @@
 .hidden-md.hidden-sm.hidden-xs
   = format_field("Project Number", @project.project_number)
-  = format_field("Fiscal Year", @project.fiscal_year)
+  = format_field(get_fiscal_year_label, @project.fiscal_year)
   = format_field("Scope", @project.team_ali_code.scope)
   = format_field("Total Cost", format_as_currency(@project.total_cost))
 
@@ -16,7 +16,7 @@
 .hidden-lg
   .col-sm-4
     = format_field("Project Number", @project.project_number)
-    = format_field("Fiscal Year", @project.fiscal_year)
+    = format_field(get_fiscal_year_label, @project.fiscal_year)
     = format_field("Scope", @project.team_ali_code.scope)
     = format_field("Total Cost", format_as_currency(@project.total_cost))
   .col-sm-4

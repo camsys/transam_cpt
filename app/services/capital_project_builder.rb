@@ -549,7 +549,7 @@ class CapitalProjectBuilder
       # if there is an exisiting ALI, see if the asset is in it
       if ali
         Rails.logger.debug "Using existing ALI #{ali.object_key}"
-        unless asset.activity_line_items.exists?(ali)
+        unless asset.activity_line_items.exists?(ali.id)
           Rails.logger.debug "asset not in ALI, adding it"
           ali.assets << asset
         else

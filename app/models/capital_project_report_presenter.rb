@@ -7,7 +7,8 @@ class CapitalProjectReportPresenter
   attr_accessor :emergency_flag
 
   include TransamFormatHelper
-
+  include FiscalYearHelper
+  
   def organization_ids
     if projects.blank?
       []
@@ -24,7 +25,7 @@ class CapitalProjectReportPresenter
   def[](index)
     case index.to_s
       when 'labels'
-        ['Org', 'FY', 'Project', 'Title', 'Scope', 'Cost', '# ALIs', '# Assets', 'Type', 'Emgcy', 'SOGR', 'Shadow', 'Multi Year']
+        ['Org', get_fy_label, 'Project', 'Title', 'Scope', 'Cost', '# ALIs', '# Assets', 'Type', 'Emgcy', 'SOGR', 'Shadow', 'Multi Year']
       when 'data'
         data = []
         projects_by_organization.each do |org, projects|

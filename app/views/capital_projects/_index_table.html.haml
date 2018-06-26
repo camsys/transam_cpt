@@ -30,7 +30,6 @@
     :search => 'false',
     :show_columns => 'true',
     :toolbar => "#projects_table_actions",
-    :show_export => 'true',
     :row_style => 'row_style',
     :click_to_select => 'true',
     :query_params => "query_params",
@@ -46,7 +45,7 @@
       %tr
         - if @organization_list.count > 1
           %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}} Agency
-        %th.center.nowrap{data: {field: 'fy_year'}} FY
+        %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
         %th.left.nowrap{data: {field: 'project_number'}} Project
         %th.center.nowrap{data: {field: 'scope'}} Scope
         %th.center{data: {field: 'is_emergency', formatter: 'boolean_formatter'}} Emgcy
@@ -128,38 +127,5 @@
     i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
     j = (j = i.length) > 3 ? j % 3 : 0;
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-  }
-
-  function boolean_formatter(value) {
-    if (value) {
-      // add hidden div for exporting
-      return '<i class="fa fa-check"></i><div style = "visibility: hidden;">Yes</div>';
-    } else {
-      return '<div style = "visibility: hidden;">No</div>';
-    }
-  }
-
-  function currency_formatter(value) {
-    return "$" + formatMoney(value);
-  }
-
-  function popup_formatter(value, data) {
-    if(value) {
-      return '<a class="transam-popover" data-container="body" data-content="' + value + '" data-html="true" data-placement="left" data-title="' + data.project_number + ': Activity Line Items" data-toggle="popover" tabindex="0" data-original-title="" title=""><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
-    } else {
-      return "";
-    }
-  }
-
-  function early_replacement_flag_formatter(value) {
-    if(value) {
-      return '<a class="transam-tooltip" data-placement="left" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
-    } else {
-      return "";
-    }
-  }
-
-  function total_cost_formatter(value) {
-    return '#{format_as_currency(@total_projects_cost)}';
   }
 

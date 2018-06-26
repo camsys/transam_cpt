@@ -201,7 +201,7 @@ class PlanningController < AbstractCapitalProjectsController
       if @activity_line_item.assets.count > 25
         @status = 'job'
         Delayed::Job.enqueue MoveAliYearJob.new(@activity_line_item, new_fy_year, current_user, params[:early_replacement_reason]), :priority => 0
-        notify_user :notice, "Moving ali #{@activity_line_item} to new FY #{new_fy_year}. You will be notified when the process is complete."
+        notify_user :notice, "Moving ali #{@activity_line_item} to new #{get_fy_label} #{new_fy_year}. You will be notified when the process is complete."
       else
         # update project planner by JS for just the single ALI moved
         @status = 'js_update'
@@ -286,12 +286,19 @@ class PlanningController < AbstractCapitalProjectsController
     #    - for single year project, use fy_year == @display_fy_year
     @display_projects = @projects
     
-    @display_projects = @display_projects.where("
-      (capital_projects.multi_year != 1 AND capital_projects.fy_year = ?) OR 
-      (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?)", 
-      @display_fy_year, @display_fy_year) if @display_fy_year
+    @display_projects = if @display_fy_year
+      @display_projects.where("
+        (capital_projects.multi_year != 1 AND capital_projects.fy_year = ?) OR 
+        (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?)", 
+                              @display_fy_year, @display_fy_year)
+    else
+      @display_projects.where('
+        (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?) OR
+        (capital_projects.fy_year >= ?)',
+                              @years.first, @years.first)
+    end
     
-    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a FY to see projects for that year.", now: true) if @project_display_threshold_reached 
+    notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a #{get_fy_label} to see projects for that year.", now: true) if @project_display_threshold_reached 
   end
 
   #-----------------------------------------------------------------------------

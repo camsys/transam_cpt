@@ -186,10 +186,9 @@ RSpec.describe ActivityLineItem, :type => :model do
     it '.after_update_callback capital_project updated' do
       test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
       test_line_item.assets << test_asset
-                          
       # Fake a re-estimation based on changed capital project
       # by updating asset and then changing project
-      expect(test_line_item).to receive(:total_asset_cost)
+      allow(test_line_item).to receive(:total_asset_cost)
       test_cp = create(:capital_project, fy_year: 2015)
       test_line_item.capital_project = test_cp
       test_line_item.save!

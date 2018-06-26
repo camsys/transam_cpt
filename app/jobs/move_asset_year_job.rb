@@ -45,6 +45,9 @@ class MoveAssetYearJob < Job
 
     end
 
+    # Add a row into the activity table
+    ActivityLog.create({:organization_id => activity_line_item.capital_project.organization.id, :user_id => creator.id, :item_type => "CapitalProjectBuilder", :activity => "Moved #{assets_count} assets in #{activity_line_item} to #{fiscal_year(fy_year)}", :activity_time => Time.now})
+
     event_url = Rails.application.routes.url_helpers.planning_index_path
     move_assets_notification = Notification.create!(text: "Moved #{assets_count} assets to #{fiscal_year(fy_year)}. Click here to see the updated Project Planner.", link: event_url, notifiable_type: 'Organization', notifiable_id: activity_line_item.capital_project.organization_id)
     UserNotification.create!(user: creator, notification: move_assets_notification)

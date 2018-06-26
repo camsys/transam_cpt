@@ -1,4 +1,4 @@
-class CreateCapitalPlanModuleTypes < ActiveRecord::Migration
+class CreateCapitalPlanModuleTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :capital_plan_module_types do |t|
       t.integer :capital_plan_type_id, index: true

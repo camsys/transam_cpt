@@ -12,7 +12,7 @@ class CapitalNeedsForecast < AbstractReport
     # Capital Needs by year
     state_names = CapitalProject.state_names
     a = []
-    labels = ['Fiscal Year']
+    labels = [get_fiscal_year_label]
     state_names.each do |name|
       labels << name.humanize
     end

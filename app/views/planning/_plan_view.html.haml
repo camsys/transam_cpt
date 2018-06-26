@@ -69,28 +69,6 @@
     border-top: 1px solid darken($complete_project_color, 10%);
   }
 
-  .modal-backdrop {
-    display: none;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .ajax-loader-message {
-    font-size: 20px;
-  }
-  .ajax-loader {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    //width: 100%;
-    margin-left: -50px;
-    margin-top: -50px;
-    padding: 20px;
-    z-index: 1099;
-    background-color: #FFF;
-    border: 1px solid #EEE;
-    border-radius:5px;
-  }
-
   .ui-state-disabled {
     opacity: 1;
   }
@@ -158,9 +136,9 @@
   		over: function(ev,ui) {
   		  var drop_year = parseInt($(this).data('year'));
   		  if ( $('#move').length ) {
-  		    $('#move').html("Move to FY " + (drop_year-2000) + "-" + (drop_year-1999));
+  		    $('#move').html("Move to #{get_fy_label} " + (drop_year-2000) + "-" + (drop_year-1999));
           } else {
-            $(ui.helper).first().append("<div id='move'>Move to FY " + (drop_year-2000) + "-" + (drop_year-1999)+"</div>");
+            $(ui.helper).first().append("<div id='move'>Move to #{get_fy_label} " + (drop_year-2000) + "-" + (drop_year-1999)+"</div>");
           }
         },
   		drop : function(ev, ui) {
@@ -190,7 +168,7 @@
 
         // early replacemnt SOGR: need to prompt user to provide reason
         if(is_early_replacement) {
-          var msg = "You are moving an ALI from " + getFiscalYear(ali_year) + " to " + getFiscalYear(drop_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
+          var msg = "You are moving an ALI from " + getFiscalYear(ali_year) + " to " + getFiscalYear(drop_year) + ". This action will put some assets in early replacement. Please provide an explanation <span class='text-danger'>(*-required)</span>:";
           transam.bootbox_comment_dialog(msg, function(reason) {
             if(reason == null) {
               return true;

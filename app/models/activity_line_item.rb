@@ -329,7 +329,7 @@ class ActivityLineItem < ActiveRecord::Base
 
   def after_update_callback
     # Use update_columns to prevent recursive callbacks
-    update_columns(estimated_cost: total_asset_cost) if self.capital_project_id_changed? || self.fy_year_changed?
+    update_columns(estimated_cost: total_asset_cost) if self.saved_change_to_capital_project_id? || self.saved_change_to_fy_year?
   end
   
   # Set resonable defaults for a new activity line item

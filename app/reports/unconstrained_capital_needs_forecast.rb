@@ -23,7 +23,7 @@ class UnconstrainedCapitalNeedsForecast < AbstractReport
 
     # Capital Needs by year
     a = []
-    labels = ['Fiscal Year']
+    labels = [get_fiscal_year_label]
     labels << "Capital Needs"
 
     # Get a unique list of capital project ids

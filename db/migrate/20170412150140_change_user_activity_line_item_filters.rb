@@ -1,4 +1,4 @@
-class ChangeUserActivityLineItemFilters < ActiveRecord::Migration
+class ChangeUserActivityLineItemFilters < ActiveRecord::Migration[4.2]
   def change
     rename_column :user_activity_line_item_filters, :team_ali_code_id, :team_ali_codes
     change_column :user_activity_line_item_filters, :team_ali_codes, :string

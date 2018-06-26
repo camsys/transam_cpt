@@ -11,7 +11,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
 
   it 'GET fire_workflow_event' do
     request.env["HTTP_REFERER"] = capital_projects_path
-    get :fire_workflow_event, :id => test_project.object_key, :event => 'submit'
+    get :fire_workflow_event, params:{:id => test_project.object_key, :event => 'submit'}
     test_project.reload
 
     expect(test_project.state).to eq('pending_review')
@@ -19,7 +19,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
   it 'GET load_view' do
     allow_any_instance_of(CapitalProjectsController).to receive(:render).and_return ""
-    get :load_view, :id => test_project.object_key
+    get :load_view, params:{:id => test_project.object_key, format: :js}
 
     expect(assigns(:project)).to eq(test_project)
   end
@@ -39,7 +39,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'GET show' do
-    get :show, :id => test_project.object_key
+    get :show, params:{:id => test_project.object_key}
 
 
     expect(assigns(:project)).to eq(test_project)
@@ -52,7 +52,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
     expect(assigns(:fiscal_years))
   end
   it 'GET edit' do
-    get :edit, :id => test_project.object_key
+    get :edit, params:{:id => test_project.object_key}
 
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:fiscal_years))
@@ -66,7 +66,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   it 'POST create' do
     test_type = CapitalProjectType.first
     test_ali = create(:replacement_ali_code, :parent => create(:replacement_ali_code))
-    post :create, :capital_project => attributes_for(:capital_project, :organization => nil, :capital_project_type_id => test_type.id, :team_ali_code_id => test_ali.id)
+    post :create, params:{ :capital_project => attributes_for(:capital_project, :organization => nil, :capital_project_type_id => test_type.id, :team_ali_code_id => test_ali.id)}
 
     expect(assigns(:organization).capital_projects.count).to eq(1)
   end
@@ -74,7 +74,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   it 'POST update' do
     request.env["HTTP_REFERER"] = root_path
     
-    post :update, :id => test_project.object_key, :capital_project => {:title => 'captial project title 222'}
+    post :update, params: {:id => test_project.object_key, :capital_project => {:title => 'captial project title 222'}}
     test_project.reload
 
     expect(assigns(:project)).to eq(test_project)
@@ -83,7 +83,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'DELETE destroy' do
-    delete :destroy, :id => test_project.object_key
+    delete :destroy, params:{ :id => test_project.object_key}
 
     expect(CapitalProject.find_by(:object_key=>test_project.object_key)).to be nil
   end

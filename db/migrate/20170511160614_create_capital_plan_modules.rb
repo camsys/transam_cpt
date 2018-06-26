@@ -1,4 +1,4 @@
-class CreateCapitalPlanModules < ActiveRecord::Migration
+class CreateCapitalPlanModules < ActiveRecord::Migration[4.2]
   def change
     create_table :capital_plan_modules do |t|
       t.string :object_key, limit: 12

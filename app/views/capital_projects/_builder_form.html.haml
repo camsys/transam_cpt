@@ -15,7 +15,7 @@
     .col-md-6
       = f.input :asset_types, :required => true,   :collection => @asset_types.map{|type| [type[:name], type[:id]]}, :multiple => true, :as => :check_boxes, :input_html => { :checked => true }
     .col-md-6
-      = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting Fiscal Year"
+      = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
 
   - builder_warning_style = "display: none;"
   - builder_warning_style = "" if @organization_list.count == 1 && Organization.get_typed_organization(Organization.find_by(id: @organization_list.first)).has_sogr_projects?
@@ -29,7 +29,7 @@
 :javascript
   $(function(){
     var org_id = 0;
-    var asset_types = JSON.parse('#{@asset_types.to_json}');
+    var asset_types = JSON.parse('#{@asset_types.to_json.html_safe}');
     var current_planning_year = #{current_planning_year_year};
     var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
     var have_sogr_locked_list = #{(@has_locked_sogr_this_fiscal_year || {}).to_json.html_safe};

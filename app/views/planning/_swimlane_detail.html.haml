@@ -30,13 +30,13 @@
                 = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @next_year, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Move to next fiscal year." do
                   %i.fa.fa-arrow-right
-                  Move ALI to Next FY
+                  Move ALI to Next #{get_fy_label}
             - if @prev_year > 0
               %li
                 = link_to ali_action_planning_index_path(:ali => ali.object_key, :invoke => PlanningController::ALI_MOVE_YEAR_ACTION, :new_year => @prev_year, :fiscal_year => @fiscal_year),
                   :remote => true, :method => 'post', :title => "Move to previous fiscal year." do
                   %i.fa.fa-arrow-left
-                  Move ALI to Previous FY
+                  Move ALI to Previous #{get_fy_label}
             %li.divider
             - if can? :destroy, ali
               %li
