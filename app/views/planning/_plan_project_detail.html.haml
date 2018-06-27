@@ -1,5 +1,8 @@
 = link_to project.project_number, capital_project_path(project), title: project.title
 %span.project-early-replacement-warning
+  - if project.has_early_replacement_assets?
+    = link_to '#', :class => 'transam-tooltip', :data => {:placement => 'top', :title => 'Contains early replacement assets', :toggle => 'tooltip'} do
+      %i.fa.fa-exclamation-triangle.text-danger
 %span.project-total-cost= format_field("Total Cost", format_as_currency(project.total_cost))
 = format_field("Type", project.capital_project_type)
 = format_field("Emergency", format_as_yes_no(project.emergency?)) if project.emergency?
