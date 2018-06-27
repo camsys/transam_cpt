@@ -35,7 +35,7 @@
               - else
                 = link_to format_as_fiscal_year(year), planning_index_path({display_fy_year: year}), class: "btn btn-info bold project-planner-year-link", data: {year: year}, title: "Click to load #{format_as_fiscal_year(year)} projects"
             - else
-              = link_to format_as_fiscal_year(year), "##{year}", class: "btn btn-info bold project-planner-year-link"
+              = link_to format_as_fiscal_year(year), "##{year}", class: "btn btn-info bold"
             
             %br
             .well.well-sm.bold{:id => 'fy-sum-'+year.to_s, :data => {:cost => cost_by_year[year].nil? ? '0' : cost_by_year[year]} }= format_as_currency(cost_by_year[year])
@@ -85,15 +85,6 @@
               '<a class="transam-tooltip" data-placement="top" data-title="Contains early replacement assets" data-toggle="tooltip" tabindex="0" data-original-title="" title="">' +
               '<i class="fa fa-exclamation-triangle text-danger"></i></a>');
 
-  - if @project_display_threshold_reached
-    :javascript
-      $(function() {
-        $('.project-planner-year-link').click(function() {
-          var year = $(this).data('year');
-          var current_url = window.location.href;
-        });
-      });
-
 :javascript
 
   var org_filter = #{@org_filter || []};
@@ -109,6 +100,11 @@
         // keep the floating head below the header
         return $('nav.navbar.navbar-fixed-top').height();
       }
+  });
+
+  $('.project-planner-year-link').click(function() {
+    var year = $(this).data('year');
+    var current_url = window.location.href;
   });
 
 
