@@ -59,6 +59,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         @asset_types << {id: type.id, name: type.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
       end
     end
+    @fta_asset_categories = FtaAssetCategory.where(id: TransitAsset.where(organization_id:  @organization_list).distinct.pluck(:fta_asset_category_id))
 
     @fiscal_years = get_fiscal_years
     @builder_proxy = BuilderProxy.new
@@ -100,7 +101,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
       org = Organization.get_typed_organization(Organization.find(org_id))
 
-      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.asset_types, @builder_proxy.start_fy, current_user), :priority => 0
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.fta_asset_categories, @builder_proxy.start_fy, current_user), :priority => 0
 
       # Let the user know the results
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."

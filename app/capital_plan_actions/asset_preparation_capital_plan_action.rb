@@ -9,7 +9,7 @@ class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
 
     pcnts_passed = []
     Audit.all.each do |audit|
-      audit_results = report.get_data(audit, [@capital_plan_action.capital_plan.organization_id], 'Asset', {disposition_date: nil},{})
+      audit_results = report.get_data(audit, [@capital_plan_action.capital_plan.organization_id], Rails.application.config.plannable, {disposition_date: nil},{})
       total_assets = 0
       passed_assets = 0
       audit_results[1].each do |row|

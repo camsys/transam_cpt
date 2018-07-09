@@ -14,8 +14,10 @@ class ReviewCapitalPlanModule < BaseCapitalPlanModule
       # mark all assets as under replacement
       ali.assets.each do |asset|
         ReplacementStatusUpdateEvent.create(replacement_year: plan.fy_year, replacement_status_type_id: ReplacementStatusType.find_by(name: 'Underway').id, comments: "The #{format_as_fiscal_year(plan.fy_year)} capital plan includes the replacement of this asset.")
-        asset.update_replacement_status
-        asset.update_sogr
+
+        # use try as new profiles don't have update_methods
+        asset.try(:update_replacement_status)
+        asset.try(:update_sogr)
       end
     end
 

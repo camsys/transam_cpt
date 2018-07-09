@@ -43,6 +43,9 @@ class ActivityLineItemsController < OrganizationAwareController
 
   end
 
+  #
+  # Not used
+  # -----------------------------------------------------------------------------
   # Add the specified asset to this ALI
   def add_asset
     asset = Asset.find_by_object_key(params[:asset])
@@ -69,6 +72,7 @@ class ActivityLineItemsController < OrganizationAwareController
     end
     redirect_back(fallback_location: root_path)
   end
+  # -----------------------------------------------------------------------------
 
   # GET /activity_line_items/new
   def new
@@ -141,7 +145,7 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.js
       format.json {
-        assets_json = Asset.where(id: @activity_line_item.assets.ids).joins('LEFT JOIN fuel_types ON assets.fuel_type_id = fuel_types.id').limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
+        assets_json = @activity_line_item.assets.joins('LEFT JOIN fuel_types ON assets.fuel_type_id = fuel_types.id').limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
             fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
@@ -171,7 +175,7 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   def get_asset_summary
-    a = Asset.find_by(object_key: params[:asset_object_key])
+    a = Rails.application.config.plannable.constantize.find_by(object_key: params[:asset_object_key])
 
     respond_to do |format|
       #format.json { render json: {'html' => render_to_string(partial: 'assets/summary', locals: { :asset => a } ) } }

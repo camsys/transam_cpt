@@ -6,7 +6,7 @@
 # for the organization.
 #
 #-------------------------------------------------------------------------------
-class CapitalProjectBuilder
+class CapitalProjectBuilderOld
 
   REPLACEMENT_PROJECT_TYPE    = 1
   EXPANSION_PROJECT_TYPE      = 2
@@ -46,7 +46,9 @@ class CapitalProjectBuilder
   end
 
   def update_asset_schedule(asset)
-    a = asset
+
+    # Make sure the asset is strongly typed
+    a = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
 
     # Run the update
     unless a.replacement_pinned?
@@ -118,7 +120,7 @@ class CapitalProjectBuilder
         # Take each asset, update the scheduled activity year and re-run it
         projects_and_alis = []
         ali.assets.each do |x|
-          x = asset
+          asset = Asset.get_typed_asset(x)
           Rails.logger.debug "Processing #{asset}"
           if project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE
             # Set the scheduled replacement year
@@ -232,7 +234,7 @@ class CapitalProjectBuilder
     Rails.logger.debug "options = #{options.inspect}"
 
     # Get the options. There must be at least one type of asset to process
-    asset_type_ids = options[:asset_subtype_ids].blank? ? Rails.application.config.plannable.constantize.operational.where(organization_id: organization.id) : options[:asset_type_ids]
+    asset_type_ids = options[:asset_type_ids].blank? ? organization.asset_type_counts.keys : options[:asset_type_ids]
     # User must set the start fy year as well otherwise we use the first planning year
     if options[:start_fy].to_i > 0
       @start_year = options[:start_fy].to_i
@@ -271,32 +273,37 @@ class CapitalProjectBuilder
 
     # store policy rules in a hash for reference later
 
-    # Find all the matching assets for this organization.
-    # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-    assets = Rails.application.config.plannable.constantize.replacement_by_policy.where(options.except(:start_fy)).where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+    AssetType.where(id: asset_type_ids).each do |asset_type|
 
-    assets += Rails.application.config.plannable.constantize.replacement_underway.where('organization_id = ?', organization.id)
+      # Find all the matching assets for this organization.
+      # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
+      assets = asset_type.class_name.constantize.replacement_by_policy.where('asset_type_id = ? AND organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', asset_type.id, organization.id, @start_year)
 
-    # Process each asset in turn...
-    assets.each do |a|
-      policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
-      if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
-        policy_analyzer =
-            policy_type_rules[a.asset_subtype.asset_type_id].attributes
-                .merge(
-                    policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
-                )
-                .merge(
-                    policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
-                )
+      assets += asset_type.class_name.constantize.replacement_underway.where('asset_type_id = ? AND organization_id = ?', asset_type.id, organization.id)
+
+      # Process each asset in turn...
+      assets.each do |a|
+        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
+        if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
+          policy_analyzer =
+              policy_type_rules[asset_type.id].attributes
+                  .merge(
+                      policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
+                  )
+                  .merge(
+                      policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
+                  )
+        end
+        # reset scheduled replacement year
+        a.scheduled_replacement_year = nil if a.replacement_by_policy?
+        a.update_early_replacement_reason
+
+        # do the work...
+        process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type, policy_analyzer)
+        #a.reload
       end
-      # reset scheduled replacement year
-      a.scheduled_replacement_year = nil if a.replacement_by_policy?
-      a.update_early_replacement_reason
 
-      # do the work...
-      process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type, policy_analyzer)
-      #a.reload
+      # Get the next asset type
     end
 
 
