@@ -46,7 +46,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :fuel_type
 
   # Has 0 or more assets
-  has_and_belongs_to_many    :assets, :join_table => :activity_line_items_assets, :foreign_key => Rails.application.config.plannable.foreign_key, :class_name => Rails.application.config.plannable
+  has_and_belongs_to_many    :assets, :join_table => :activity_line_items_assets, :class_name => Rails.application.config.plannable
 
   # Has 0 or more milestones
   has_many    :milestones, :dependent => :destroy
