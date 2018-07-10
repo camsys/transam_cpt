@@ -298,12 +298,9 @@ class ActivityLineItem < ActiveRecord::Base
 
     return if asset.disposed?
 
-    # Make sure we are working with a concrete asset class
-    typed_asset = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
-
     # create an instance of the calculator class and call the method
     calculator_instance = replacement_cost_calculation_type.class_name.constantize.new
-    (calculator_instance.calculate_on_date(typed_asset, on_date)+0.5).to_i #round
+    (calculator_instance.calculate_on_date(asset, on_date)+0.5).to_i #round
 
   end
 

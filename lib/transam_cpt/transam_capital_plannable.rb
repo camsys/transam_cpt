@@ -90,8 +90,8 @@ module TransamCapitalPlannable
   def formatted_early_replacement_reason
     if replacement_underway?
       "Replacement is Early and Underway."
-    elsif early_disposition_requests.count > 0
-      early_disposition_requests.last.comments
+    elsif early_replacement_reason.present?
+      early_replacement_reason
     else
       '(Reason not provided)'
     end
