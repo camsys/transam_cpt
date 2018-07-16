@@ -1,1 +1,0 @@
-Rails.application.config.plannable = 'TransamAsset'

@@ -175,7 +175,7 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   def get_asset_summary
-    a = Rails.application.config.plannable.constantize.find_by(object_key: params[:asset_object_key])
+    a = Rails.application.config.asset_base_class_name.constantize.find_by(object_key: params[:asset_object_key])
 
     respond_to do |format|
       #format.json { render json: {'html' => render_to_string(partial: 'assets/summary', locals: { :asset => a } ) } }

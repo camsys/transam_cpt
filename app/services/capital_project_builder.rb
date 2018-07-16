@@ -231,7 +231,7 @@ class CapitalProjectBuilder
     Rails.logger.debug "options = #{options.inspect}"
 
     # Get the options. There must be at least one type of asset to process
-    asset_type_ids = options[:asset_subtype_ids].blank? ? Rails.application.config.plannable.constantize.operational.where(organization_id: organization.id) : options[:asset_type_ids]
+    asset_type_ids = options[:asset_subtype_ids].blank? ? Rails.application.config.asset_base_class_name.constantize.operational.where(organization_id: organization.id) : options[:asset_type_ids]
     # User must set the start fy year as well otherwise we use the first planning year
     if options[:start_fy].to_i > 0
       @start_year = options[:start_fy].to_i
@@ -272,9 +272,9 @@ class CapitalProjectBuilder
 
     # Find all the matching assets for this organization.
     # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-    assets = Rails.application.config.plannable.constantize.replacement_by_policy.where(options.except(:start_fy)).where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+    assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.where(options.except(:start_fy)).where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
 
-    assets += Rails.application.config.plannable.constantize.replacement_underway.where('organization_id = ?', organization.id)
+    assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where('organization_id = ?', organization.id)
 
     # Process each asset in turn...
     assets.each do |asset|
@@ -363,12 +363,12 @@ class CapitalProjectBuilder
       asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
         if ali.capital_project.sogr?
           Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
-          ali.assets.delete asset.send(Rails.application.config.plannable.underscore)
+          ali.assets.delete asset.send(Rails.application.config.asset_base_class_name.underscore)
         end
       end
     else
       Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{current_ali.object_key}"
-      current_ali.assets.delete asset.send(Rails.application.config.plannable.underscore)
+      current_ali.assets.delete asset.send(Rails.application.config.asset_base_class_name.underscore)
     end
 
     # Can't build projects for assets that have been scheduled for disposition or already disposed
@@ -496,7 +496,7 @@ class CapitalProjectBuilder
         Rails.logger.debug "Using existing ALI #{ali.object_key}"
         unless asset.activity_line_items.exists?(ali.id)
           Rails.logger.debug "asset not in ALI, adding it"
-          ali.assets << asset.send(Rails.application.config.plannable.underscore)
+          ali.assets << asset.send(Rails.application.config.asset_base_class_name.underscore)
         else
           Rails.logger.debug "asset already in ALI, not adding it"
         end
@@ -511,7 +511,7 @@ class CapitalProjectBuilder
         ali.save
 
         # Now add the asset to it if there is one
-        ali.assets << (asset.send(Rails.application.config.plannable.underscore))
+        ali.assets << (asset.send(Rails.application.config.asset_base_class_name.underscore))
         Rails.logger.debug "Created new ALI #{ali.object_key}"
       end
     end
