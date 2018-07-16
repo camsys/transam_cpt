@@ -230,8 +230,6 @@ class CapitalProjectBuilder
 
     Rails.logger.debug "options = #{options.inspect}"
 
-    # Get the options. There must be at least one type of asset to process
-    asset_type_ids = options[:asset_subtype_ids].blank? ? Rails.application.config.asset_base_class_name.constantize.operational.where(organization_id: organization.id) : options[:asset_type_ids]
     # User must set the start fy year as well otherwise we use the first planning year
     if options[:start_fy].to_i > 0
       @start_year = options[:start_fy].to_i
