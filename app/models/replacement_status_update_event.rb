@@ -6,7 +6,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
       
   # Callbacks
   after_initialize :set_defaults
-  after_save       :update_asset_replacement_status
+  after_save       :update_asset
 
   # Associations
   belongs_to  :replacement_status_type
@@ -58,7 +58,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
   
   protected
 
-  def update_asset_replacement_status
+  def update_asset
     Rails.logger.debug "Updating replacement status for asset = #{transam_asset.object_key}"
 
     if transam_asset.replacement_status_updates.empty?
