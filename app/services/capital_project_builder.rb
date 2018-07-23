@@ -271,9 +271,11 @@ class CapitalProjectBuilder
 
     # Find all the matching assets for this organization.
     # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-    assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.where(options.except(:start_fy)).where('organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', organization.id, @start_year)
+    assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.very_specific
+                 .where(options.except(:start_fy).merge({organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil}))
+                 .where('transam_assets.scheduled_replacement_year >= ?', @start_year)
 
-    assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where('organization_id = ?', organization.id)
+    assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where(organization_id: organization.id)
 
     # Process each asset in turn...
     assets.each do |asset|
