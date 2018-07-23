@@ -46,7 +46,7 @@ class CapitalProjectBuilder
   end
 
   def update_asset_schedule(asset)
-    a = asset
+    a = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(asset)
 
     # Run the update
     unless a.replacement_pinned?
@@ -64,11 +64,11 @@ class CapitalProjectBuilder
   #-----------------------------------------------------------------------------
   def move_ali_to_planning_year(ali, fy_year, early_replacement_reason)
     unless ali.present?
-      Rails.logger.warning "Missing ALI"
+      Rails.logger.warn "Missing ALI"
       return nil
     end
     unless fy_year.present?
-      Rails.logger.warning "Missing fy_year"
+      Rails.logger.warn "Missing fy_year"
       return nil
     end
 
@@ -118,6 +118,7 @@ class CapitalProjectBuilder
         # Take each asset, update the scheduled activity year and re-run it
         projects_and_alis = []
         ali.assets.each do |asset|
+          asset = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(asset)
           Rails.logger.debug "Processing #{asset}"
           if project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE
             # Set the scheduled replacement year
@@ -276,7 +277,7 @@ class CapitalProjectBuilder
 
     # Process each asset in turn...
     assets.each do |asset|
-      a = asset.very_specific
+      a = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(asset)
       policy_analyzer = policy_type_rules[a.asset_subtype.asset_type_id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
       if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
         policy_analyzer =
@@ -361,12 +362,12 @@ class CapitalProjectBuilder
       asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
         if ali.capital_project.sogr?
           Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
-          ali.assets.delete asset.send(Rails.application.config.asset_base_class_name.underscore)
+          ali.assets.delete ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
         end
       end
     else
       Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{current_ali.object_key}"
-      current_ali.assets.delete asset.send(Rails.application.config.asset_base_class_name.underscore)
+      current_ali.assets.delete ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
     end
 
     # Can't build projects for assets that have been scheduled for disposition or already disposed
@@ -494,7 +495,7 @@ class CapitalProjectBuilder
         Rails.logger.debug "Using existing ALI #{ali.object_key}"
         unless asset.activity_line_items.exists?(ali.id)
           Rails.logger.debug "asset not in ALI, adding it"
-          ali.assets << asset.send(Rails.application.config.asset_base_class_name.underscore)
+          ali.assets << ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
         else
           Rails.logger.debug "asset already in ALI, not adding it"
         end
@@ -509,7 +510,7 @@ class CapitalProjectBuilder
         ali.save
 
         # Now add the asset to it if there is one
-        ali.assets << (asset.send(Rails.application.config.asset_base_class_name.underscore))
+        ali.assets << ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
         Rails.logger.debug "Created new ALI #{ali.object_key}"
       end
     end

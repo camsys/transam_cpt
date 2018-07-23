@@ -145,13 +145,13 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.js
       format.json {
-        assets_json = @activity_line_item.assets.joins('LEFT JOIN fuel_types ON assets.fuel_type_id = fuel_types.id').limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
+        assets_json = @activity_line_item.assets.very_specific.limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
-            fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
+            fuel_type: p.try(:fuel_type).try(:code),
             age: p.age,
             in_backlog: p.in_backlog,
-            reported_mileage: p.reported_mileage,
+            reported_mileage: p.try(:reported_mileage),
             policy_replacement_year: p.policy_replacement_year,
             policy_replacement_fiscal_year: fiscal_year(p.policy_replacement_year),
             scheduled_cost: @activity_line_item.rehabilitation_ali? ? p.estimated_rehabilitation_cost : p.scheduled_replacement_cost,

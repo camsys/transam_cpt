@@ -115,7 +115,7 @@ class PlanningController < AbstractCapitalProjectsController
           Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
         end
 
-        @alis_touched = assets.first.asset_type.class_name.constantize.where(object_key: assets_touched).map(&:activity_line_items).flatten!.uniq
+        @alis_touched = Rails.application.config.asset_base_class_name.constantize.where(object_key: assets_touched).very_specific.map(&:activity_line_items).flatten!.uniq
 
         @job_finished = true
         notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
