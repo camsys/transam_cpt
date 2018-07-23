@@ -140,7 +140,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # dont impose ALI/asset conditions unless they were in the params
     @projects = CapitalProject.active.includes(:capital_project_type,:team_ali_code)
     unless no_ali_or_asset_params_exist
-      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
+      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.distinct(:capital_project_id).pluck(:capital_project_id))
     end
 
     # org id is not tied to ALI filter
