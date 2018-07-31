@@ -53,7 +53,7 @@
       $.ajax({
           url: href,
           type: 'GET',
-          dataType: 'json',
+          dataType: 'js',
           data: { targets: selected_plan_actions.join(','), undo_targets: unselected_plan_actions.join(',')},
           complete: function(data, status) {
             console.log(data);
