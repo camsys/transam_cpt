@@ -61,7 +61,8 @@ class CapitalPlansController < OrganizationAwareController
 
     respond_to do |format|
       format.html { redirect_back(fallback_location: root_path) }
-      format.js { render text: URI(request.referer) }
+      format.js
+      format.json
     end
   end
 

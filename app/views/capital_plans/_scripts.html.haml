@@ -53,12 +53,12 @@
       $.ajax({
           url: href,
           type: 'GET',
-          dataType: 'js',
+          dataType: 'json',
           data: { targets: selected_plan_actions.join(','), undo_targets: unselected_plan_actions.join(',')},
           complete: function(data, status) {
             console.log(data);
             // data.redirect contains the string URL to redirect to
-            window.location.href = data.responseText;
+            location.reload(false);
           }
       });
 
