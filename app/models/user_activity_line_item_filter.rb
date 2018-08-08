@@ -35,6 +35,7 @@ class UserActivityLineItemFilter < ActiveRecord::Base
       :team_ali_codes,
       :asset_types,
       :asset_subtypes,
+      :fta_asset_classes,
       :districts,
       :in_backlog
   ]

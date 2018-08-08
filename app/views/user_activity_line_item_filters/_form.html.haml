@@ -30,7 +30,10 @@
         = f.input :districts, :collection => District.active, :label_method => :to_s, :label => 'Project Location'
         .row
           .col-sm-6
-            = f.input :asset_types, :collection => AssetType.active, :label => 'Asset Type'
+            - if Rails.application.config.asset_base_class_name == 'Asset'
+              = f.input :asset_types, :collection => AssetType.active, :label => 'Asset Type'
+            - else
+              = f.input :fta_asset_classes, collection: FtaAssetCategory.active, as: :grouped_select, group_method: :fta_asset_classes, :label => 'FTA Asset Class'
           .col-sm-6
             = f.input :asset_subtypes, :collection => AssetSubtype.active.map{|x| [x.to_s, x.id, {style: 'display:none;'}]}, :label => 'Asset Subtype'
 
