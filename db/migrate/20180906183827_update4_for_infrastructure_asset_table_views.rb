@@ -1,8 +1,81 @@
-class Update1ForCapitalEquipmentAssetTableViews < ActiveRecord::Migration[5.2]
+class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
   def up
     self.connection.execute %Q(
-      CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
+      CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
       SELECT
+        i.id,
+        i.id AS 'infrastructure_id',
+        i.cant AS 'infrastructure_cant',
+        i.cant_gradient AS 'infrastructure_cant_gradient',
+        i.cant_gradient_unit AS 'infrastructure_cant_gradient_unit',
+        i.cant_unit AS 'infrastructure_cant_unit',
+        i.created_at AS 'infrastructure_created_at',
+        i.crosslevel AS 'infrastructure_crosslevel',
+        i.crosslevel_unit AS 'infrastructure_crosslevel_unit',
+        i.direction AS 'infrastructure_direction',
+        i.from_line AS 'infrastructure_from_line',
+        i.from_location_name AS 'infrastructure_from_location_name',
+        i.from_segment AS 'infrastructure_from_segment',
+        i.gauge AS 'infrastructure_gauge',
+        i.gauge_unit AS 'infrastructure_gauge_unit',
+        i.height AS 'infrastructure_height',
+        i.height_unit AS 'infrastructure_height_unit',
+        i.horizontal_alignment AS 'infrastructure_horizontal_alignment',
+        i.horizontal_alignment_unit AS 'infrastructure_horizontal_alignment_unit',
+        i.infrastructure_bridge_type_id AS 'infrastructure_infrastructure_bridge_type_id',
+        i.infrastructure_chain_type_id AS 'infrastructure_infrastructure_chain_type_id',
+        i.infrastructure_control_system_type_id AS 'infrastructure_infrastructure_control_system_type_id',
+        i.infrastructure_crossing_id AS 'infrastructure_infrastructure_crossing_id',
+        i.infrastructure_division_id AS 'infrastructure_infrastructure_division_id',
+        i.infrastructure_gauge_type_id AS 'infrastructure_infrastructure_gauge_type_id',
+        i.infrastructure_operation_method_type_id AS 'infrastructure_infrastructure_operation_method_type_id',
+        i.infrastructure_reference_rail_id AS 'infrastructure_infrastructure_reference_rail_id',
+        i.infrastructure_segment_type_id AS 'infrastructure_infrastructure_segment_type_id',
+        i.infrastructure_segment_unit_type_id AS 'infrastructure_infrastructure_segment_unit_type_id',
+        i.infrastructure_subdivision_id AS 'infrastructure_infrastructure_subdivision_id',
+        i.infrastructure_track_id AS 'infrastructure_infrastructure_track_id',
+        i.land_ownership_organization_id AS 'infrastructure_land_ownership_organization_id',
+        i.length AS 'infrastructure_length',
+        i.length_unit AS 'infrastructure_length_unit',
+        i.location_name AS 'infrastructure_location_name',
+        i.max_permissible_speed AS 'infrastructure_max_permissible_speed',
+        i.max_permissible_speed_unit AS 'infrastructure_max_permissible_speed_unit',
+        i.nearest_city AS 'infrastructure_nearest_city',
+        i.nearest_state AS 'infrastructure_nearest_state',
+        i.num_decks AS 'infrastructure_num_decks',
+        i.num_spans AS 'infrastructure_num_spans',
+        i.num_tracks AS 'infrastructure_num_tracks',
+        i.other_land_ownership_organization AS 'infrastructure_other_land_ownership_organization',
+        i.relative_location AS 'infrastructure_relative_location',
+        i.relative_location_direction AS 'infrastructure_relative_location_direction',
+        i.relative_location_unit AS 'infrastructure_relative_location_unit',
+        i.segment_unit AS 'infrastructure_segment_unit',
+        i.shared_capital_responsibility_organization_id AS 'infrastructure_shared_capital_responsibility_organization_id',
+        i.to_line AS 'infrastructure_to_line',
+        i.to_location_name AS 'infrastructure_to_location_name',
+        i.to_segment AS 'infrastructure_to_segment',
+        i.track_curvature AS 'infrastructure_track_curvature',
+        i.track_curvature_degree AS 'infrastructure_track_curvature_degree',
+        i.track_gradient AS 'infrastructure_track_gradient',
+        i.track_gradient_degree AS 'infrastructure_track_gradient_degree',
+        i.track_gradient_pcnt AS 'infrastructure_track_gradient_pcnt',
+        i.track_gradient_unit AS 'infrastructure_track_gradient_unit',
+        i.updated_at AS 'infrastructure_updated_at',
+        i.vertical_alignment AS 'infrastructure_vertical_alignment',
+        i.vertical_alignment_unit AS 'infrastructure_vertical_alignment_unit',
+        i.warp_parameter AS 'infrastructure_warp_parameter',
+        i.warp_parameter_unit AS 'infrastructure_warp_parameter_unit',
+        i.width AS 'infrastructure_width',
+        i.width_unit AS 'infrastructure_width_unit',
+
+        infra_division.name AS 'infrastructure_infrastructure_division_name',
+
+        infra_gauge.name AS 'infrastructure_infrastructure_gauge_type_name',
+
+        infra_track.name AS 'infrastructure_infrastructure_track_name',
+
+        infra_segment_type.name AS'infrastructure_infrastructure_segment_name',
+
         transitAs.asset_id AS 'transit_asset_asset_id',
         transitAs.contract_num AS 'transit_asset_contract_num',
         transitAs.contract_type_id AS 'transit_asset_contract_type_id',
@@ -19,6 +92,8 @@ class Update1ForCapitalEquipmentAssetTableViews < ActiveRecord::Migration[5.2]
         transitAs.transit_assetible_type AS 'transit_asset_transit_assetible_type',
         transitAs.updated_at AS 'transit_asset_updated_at',
         transitAs.warranty_date AS 'transit_asset_warranty_date',
+
+        fmt.name AS 'primary_mode_type',
 
         fta_asset_class.active AS 'transit_asset_fta_asset_class_active',
         fta_asset_class.class_name AS 'transit_asset_fta_asset_class_class_name',
@@ -189,7 +264,14 @@ class Update1ForCapitalEquipmentAssetTableViews < ActiveRecord::Migration[5.2]
 
         most_recent_early_replacement_event.replacement_status_type_id AS 'most_recent_early_replacement_event_replacement_status_type_id',
         replacement_status.name AS 'most_recent_early_replacement_event_replacement_status_type_name'
-      FROM transit_assets AS transitAs
+
+      FROM infrastructures AS i
+      LEFT JOIN transit_assets AS transitAs ON transitAs.transit_assetible_id = i.id AND transit_assetible_type = 'Infrastructure'
+      LEFT JOIN infrastructure_divisions AS infra_division ON infra_division.id = i.infrastructure_division_id
+      LEFT JOIN infrastructure_gauge_types AS infra_gauge ON infra_gauge.id = i.infrastructure_gauge_type_id
+      LEFT JOIN infrastructure_tracks AS infra_track ON infra_track.id = i.infrastructure_track_id
+      LEFT JOIN infrastructure_segment_types AS infra_segment_type ON infra_segment_type.id = i.infrastructure_segment_type_id
+
       LEFT JOIN transam_assets AS transamAs ON transamAs.transam_assetible_id = transitAs.id
         AND transamAs.transam_assetible_type = 'TransitAsset'
 
@@ -249,13 +331,11 @@ class Update1ForCapitalEquipmentAssetTableViews < ActiveRecord::Migration[5.2]
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
       LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
-      LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
-      WHERE transitAs.fta_type_type = 'FtaEquipmentType';
+      LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
     )
   end
 
   def down
-    self.connection.execute "DROP VIEW if exists capital_equipment_asset_table_views;"
+    self.connection.execute "DROP VIEW if exists infrastructure_asset_table_views;"
   end
 end
-
