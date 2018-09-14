@@ -43,7 +43,7 @@ class Update10FacilityPrimaryAssetTableViews < ActiveRecord::Migration[5.2]
 
           ct.name AS 'facility_component_type_name',
 
-          cst.name AS 'facility_subcomponent_type_name',
+          cst.name AS 'facility_component_subtype_name',
 
           transitAs.asset_id AS 'transit_asset_asset_id',
           transitAs.contract_num AS 'transit_asset_contract_num',
