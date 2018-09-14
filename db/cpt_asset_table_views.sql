@@ -327,6 +327,11 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
 
           ct.name AS 'facility_component_type_name',
 
+          cst.name AS 'facility_component_subtype_name',
+
+          -- TODO Assed to fix sandbox and QA should be removed longer term
+          cst.name AS 'facility_subcomponent_type_name',
+
           transitAs.asset_id AS 'transit_asset_asset_id',
           transitAs.contract_num AS 'transit_asset_contract_num',
           transitAs.contract_type_id AS 'transit_asset_contract_type_id',
@@ -350,13 +355,12 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
           fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
           fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-          fta_vehicle_type.active AS 'transit_asset_fta_type_active',
-          fta_vehicle_type.code AS 'transit_asset_fta_type_code',
-          fta_vehicle_type.default_useful_life_benchmark AS 'transit_asset_fta_type_default_useful_life_benchmark',
-          fta_vehicle_type.description AS 'transit_asset_fta_type_description',
-          fta_vehicle_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-          fta_vehicle_type.name AS 'transit_asset_fta_type_name',
-          fta_vehicle_type.useful_life_benchmark_unit AS 'transit_asset_fta_type_useful_life_benchmark_unit',
+          fta_facility_type.active AS 'transit_asset_fta_type_active',
+          fta_facility_type.description AS 'transit_asset_fta_type_description',
+          fta_facility_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
+          fta_facility_type.name AS 'transit_asset_fta_type_name',
+          fta_facility_type.class_name AS 'transit_asset_fta_type_class_name',
+
 
           transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
           transamAs.asset_tag AS 'asset_tag',
@@ -524,11 +528,12 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
 
       LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
       LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
+
       LEFT JOIN assets_asset_fleets AS aafleet ON aafleet.transam_asset_id = transamAs.id
       LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
 
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-      LEFT JOIN fta_vehicle_types AS fta_vehicle_type ON fta_vehicle_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_facility_types AS fta_facility_type ON fta_facility_type.id = transitAs.fta_type_id
       LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
       LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
       LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
@@ -582,7 +587,9 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
       LEFT JOIN transam_assets AS cTransamAs ON cTransamAs.parent_id = transamAs.id
       LEFT JOIN transit_assets AS cTransitAs ON cTransitAs.id = cTransamAs.transam_assetible_id
       LEFT JOIN components AS c ON c.id = cTransitAs.transit_assetible_id
-      LEFT JOIN component_types AS ct ON ct.id = c.component_type_id;
+      LEFT JOIN component_types AS ct ON ct.id = c.component_type_id
+      LEFT JOIN component_subtypes As cst on cst.id = c.component_subtype_id;
+
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
