@@ -183,7 +183,15 @@ class Update10FacilityPrimaryAssetTableViews < ActiveRecord::Migration[5.2]
           rae_mileage.asset_event_id AS 'mileage_event_id',
           rae_early_replacement_status.asset_event_id AS 'early_replacement_status_event_id',
 
-          asset_group_names AS 'asset_group_name',
+          ag.active AS 'asset_group_active',
+          ag.code AS 'asset_group_code',
+          ag.created_at AS 'asset_group_created_at',
+          ag.description AS 'asset_group_description',
+          ag.id AS 'asset_group_id',
+          ag.name AS 'asset_group_name',
+          ag.object_key AS 'asset_group_object_key',
+          ag.organization_id AS 'asset_group_organization_id',
+          ag.updated_at AS 'asset_group_updated_at',
 
           fleets.agency_fleet_id AS 'fleet_agency_fleet_id',
           fleets.asset_fleet_type_id AS 'fleet_asset_fleet_type_id',
@@ -233,8 +241,6 @@ class Update10FacilityPrimaryAssetTableViews < ActiveRecord::Migration[5.2]
 
       LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
       LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
-
-
 
       LEFT JOIN assets_asset_fleets AS aafleet ON aafleet.transam_asset_id = transamAs.id
       LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
@@ -294,8 +300,8 @@ class Update10FacilityPrimaryAssetTableViews < ActiveRecord::Migration[5.2]
       LEFT JOIN transam_assets AS cTransamAs ON cTransamAs.parent_id = transamAs.id
       LEFT JOIN transit_assets AS cTransitAs ON cTransitAs.id = cTransamAs.transam_assetible_id
       LEFT JOIN components AS c ON c.id = cTransitAs.transit_assetible_id
-      LEFT JOIN component_types AS ct ON ct.id = c.component_type_id;
-      LEFT JOIN component_subtypes As cst on cst.id = c.component_sub_type_id;
+      LEFT JOIN component_types AS ct ON ct.id = c.component_type_id
+      LEFT JOIN component_subtypes As cst on cst.id = c.component_subtype_id;
     )
   end
 
