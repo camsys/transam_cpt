@@ -46,7 +46,7 @@ class ActivityLineItem < ActiveRecord::Base
   belongs_to  :fuel_type
 
   # Has 0 or more assets
-  has_and_belongs_to_many    :assets #, :after_add => :after_add_asset_callback, :after_remove => :after_remove_asset_callback
+  has_and_belongs_to_many    :assets, :join_table => :activity_line_items_assets, :class_name => Rails.application.config.asset_base_class_name
 
   # Has 0 or more milestones
   has_many    :milestones, :dependent => :destroy
@@ -62,6 +62,10 @@ class ActivityLineItem < ActiveRecord::Base
 
   has_many    :tasks,       :as => :taskable,     :dependent => :destroy
 
+
+
+  # Need to support creating keyword_searchables, which require an org
+  delegate :organization, :organization_id, to: :capital_project
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -294,12 +298,9 @@ class ActivityLineItem < ActiveRecord::Base
 
     return if asset.disposed?
 
-    # Make sure we are working with a concrete asset class
-    typed_asset = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
-
     # create an instance of the calculator class and call the method
     calculator_instance = replacement_cost_calculation_type.class_name.constantize.new
-    (calculator_instance.calculate_on_date(typed_asset, on_date)+0.5).to_i #round
+    (calculator_instance.calculate_on_date(asset, on_date)+0.5).to_i #round
 
   end
 

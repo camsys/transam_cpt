@@ -10,12 +10,12 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
   
   
   def execute_job(asset)
-    asset = Asset.get_typed_asset(asset)
 
     disposition_event = asset.disposition_updates.last
     just_disposed_and_transferred = !asset.disposed? && disposition_event.try(:disposition_type_id) == 2
 
-    asset.record_disposition
+    Rails.application.config.asset_base_class_name.constantize.find_by(object_key: asset.object_key).update_columns(disposition_date: disposition_event.try(:event_date))
+
     if(just_disposed_and_transferred)
       new_asset = asset.transfer disposition_event.organization_id
       send_asset_transferred_message new_asset
@@ -24,7 +24,7 @@ class AssetDispositionUpdateJob < AbstractAssetUpdateJob
     if !asset.disposition_updates.empty?
       if asset.respond_to?(:activity_line_items)
         asset.activity_line_items.each do |ali|
-          ali.assets.destroy(asset) # trigger ALI after_update_callback
+          ali.assets.destroy((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore)) # trigger ALI after_update_callback
         end
       end
 

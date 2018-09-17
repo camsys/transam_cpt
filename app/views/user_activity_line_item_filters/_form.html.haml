@@ -30,9 +30,12 @@
         = f.input :districts, :collection => District.active, :label_method => :to_s, :label => 'Project Location'
         .row
           .col-sm-6
-            = f.input :asset_types, :collection => AssetType.active, :label => 'Asset Type'
+            - if Rails.application.config.asset_base_class_name == 'Asset'
+              = f.input :asset_types, :collection => AssetType.active, :label => 'Asset Type'
+            - else
+              = f.input :fta_asset_classes, collection: FtaAssetCategory.active, as: :grouped_select, group_method: :fta_asset_classes, :label => 'FTA Asset Class'
           .col-sm-6
-            = f.input :asset_subtypes, :collection => AssetSubtype.active.map{|x| [x.to_s, x.id, {style: 'display:none;'}]}, :label => 'Asset Subtype'
+            = f.input :asset_subtypes, :collection => AssetSubtype.active.map{|x| [x.to_s, x.id]}, :label => 'Asset Subtype'
 
         = f.input :in_backlog
 
@@ -58,27 +61,5 @@
     },
     submitHandler: function(form) {
       form.submit();
-    }
-  });
-
-  var subtype_ids_by_type = JSON.parse('#{subtype_ids_by_type.to_json.html_safe}');
-
-  // update asset subtype list after picking type
-  $('#user_activity_line_item_filter_asset_types').on('change', function(event) {
-
-    $('#user_activity_line_item_filter_asset_subtypes').val('');
-    $('#user_activity_line_item_filter_asset_subtypes option').hide();
-    $('#user_activity_line_item_filter_asset_subtypes option[value=""]').show();
-    $('#user_activity_line_item_filter_asset_subtypes option[value=""]').attr('selected','selected');
-
-    asset_type_id = parseInt($(this).val());
-    if (asset_type_id > 0) {
-      var subtype_ids = subtype_ids_by_type[asset_type_id];
-      $('#user_activity_line_item_filter_asset_subtypes option').each(function() {
-        var val = $(this).val();
-        if(val && subtype_ids != undefined && subtype_ids.indexOf(parseInt(val)) >= 0) {
-          $(this).show();
-        }
-      });
     }
   });

@@ -58,7 +58,7 @@
           complete: function(data, status) {
             console.log(data);
             // data.redirect contains the string URL to redirect to
-            window.location.href = data.responseText;
+            location.reload(false);
           }
       });
 

@@ -95,39 +95,46 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     #-----------------------------------------------------------------------------
 
     # Filter by asset type and subtype. Requires joining across CP <- ALI <- ALI-Assets <- Assets
-    asset_conditions  = []
-    asset_values      = []
+    asset_search = Hash.new
+    asset_table = Rails.application.config.asset_base_class_name.constantize.table_name
+    asset_search[asset_table.to_sym] = Hash.new
+
     if @user_activity_line_item_filter.try(:asset_subtypes).present?
       @asset_subtype_filter = @user_activity_line_item_filter.asset_subtypes.split(',')
-      asset_conditions << 'assets.asset_subtype_id IN (?)'
-      asset_values << @asset_subtype_filter
+
+      asset_search[asset_table.to_sym][:asset_subtype_id] = @asset_subtype_filter
       no_ali_or_asset_params_exist = false
-    elsif @user_activity_line_item_filter.try(:asset_types).present?
+    elsif @user_activity_line_item_filter.try(:asset_types).present? && (Rails.application.config.asset_base_class_name.constantize.column_names.include? :asset_type_id)
       @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_types.split(',')).pluck(:id)
-      asset_conditions << 'assets.asset_subtype_id IN (?)'
-      asset_values << @asset_subtype_filter
+      asset_search[asset_table.to_sym][:asset_subtype_id] = @asset_subtype_filter
+      no_ali_or_asset_params_exist = false
+    end
+
+    if @user_activity_line_item_filter.try(:fta_asset_classes).present?
+      asset_search[:transit_assets] = {fta_asset_class_id: @user_activity_line_item_filter.fta_asset_classes.split(',')}
       no_ali_or_asset_params_exist = false
     end
 
     # filter by backlog
     if @user_activity_line_item_filter.try(:in_backlog)
-      asset_conditions << 'assets.in_backlog = ?'
-      asset_values << true
+      asset_search[asset_table.to_sym][:in_backlog] = true
       no_ali_or_asset_params_exist = false
     end
 
     if @user_activity_line_item_filter.try(:asset_query_string)
-      asset_conditions << 'assets.object_key IN (?)'
-      asset_values << Asset.find_by_sql(@user_activity_line_item_filter.asset_query_string).map{|x| x.object_key}
+      asset_search[asset_table.to_sym][:object_key] = Rails.application.config.asset_base_class_name.constantize.find_by_sql(@user_activity_line_item_filter.asset_query_string).map{|x| x.object_key}
       no_ali_or_asset_params_exist = false
     end
 
-    unless asset_conditions.empty?
-      # always filter assets by org params
-      asset_conditions << 'assets.organization_id IN (?)'
-      asset_values << @organization_list
+    unless asset_search[asset_table.to_sym].empty?
 
-      @alis = @alis.joins(:assets).where(asset_conditions.join(' AND '), *asset_values)
+      asset_search[asset_table.to_sym][:organization_id] = @organization_list
+
+      @alis = @alis.joins(:assets).where(asset_search)
+
+      if Rails.application.config.asset_base_class_name == 'TransamAsset'
+        @alis = @alis.joins("INNER JOIN `transit_assets` ON `transam_assets`.`transam_assetible_id` = `transit_assets`.`id` AND `transam_assets`.`transam_assetible_type` = 'TransitAsset'")
+      end
     end
     #-----------------------------------------------------------------------------
 
@@ -140,7 +147,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     # dont impose ALI/asset conditions unless they were in the params
     @projects = CapitalProject.active.includes(:capital_project_type,:team_ali_code)
     unless no_ali_or_asset_params_exist
-      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
+      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.distinct(:capital_project_id).pluck(:capital_project_id))
     end
 
     # org id is not tied to ALI filter

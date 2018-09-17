@@ -13,7 +13,7 @@
         = f.input :organization_id, :required => true, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name'
   .row
     .col-md-6
-      = f.input :asset_types, :required => true,   :collection => @asset_types.map{|type| [type[:name], type[:id]]}, :multiple => true, :as => :check_boxes, :input_html => { :checked => true }
+      = f.input :fta_asset_categories, :required => true,   :collection => @fta_asset_categories, :multiple => true, :as => :check_boxes, :input_html => { :checked => true }
     .col-md-6
       = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
 

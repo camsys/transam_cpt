@@ -12,8 +12,7 @@ class BuilderProxy < Proxy
   # Type of asset type to process
   attr_accessor     :asset_types
 
-  # Basic validations. Just checking that the form is complete
-  validates :asset_types, :start_fy, :presence => true
+  attr_accessor     :fta_asset_categories
 
   def initialize(attrs = {})
     super

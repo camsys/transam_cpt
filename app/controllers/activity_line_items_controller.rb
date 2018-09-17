@@ -43,6 +43,9 @@ class ActivityLineItemsController < OrganizationAwareController
 
   end
 
+  #
+  # Not used
+  # -----------------------------------------------------------------------------
   # Add the specified asset to this ALI
   def add_asset
     asset = Asset.find_by_object_key(params[:asset])
@@ -69,6 +72,7 @@ class ActivityLineItemsController < OrganizationAwareController
     end
     redirect_back(fallback_location: root_path)
   end
+  # -----------------------------------------------------------------------------
 
   # GET /activity_line_items/new
   def new
@@ -141,13 +145,13 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.js
       format.json {
-        assets_json = Asset.where(id: @activity_line_item.assets.ids).joins('LEFT JOIN fuel_types ON assets.fuel_type_id = fuel_types.id').limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
+        assets_json = @activity_line_item.assets.very_specific.limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
-            fuel_type: FuelType.find_by(id: p.fuel_type_id).try(:code),
+            fuel_type: p.try(:fuel_type).try(:code),
             age: p.age,
             in_backlog: p.in_backlog,
-            reported_mileage: p.reported_mileage,
+            reported_mileage: p.try(:reported_mileage),
             policy_replacement_year: p.policy_replacement_year,
             policy_replacement_fiscal_year: fiscal_year(p.policy_replacement_year),
             scheduled_cost: @activity_line_item.rehabilitation_ali? ? p.estimated_rehabilitation_cost : p.scheduled_replacement_cost,
@@ -171,7 +175,7 @@ class ActivityLineItemsController < OrganizationAwareController
   end
 
   def get_asset_summary
-    a = Asset.find_by(object_key: params[:asset_object_key])
+    a = Rails.application.config.asset_base_class_name.constantize.find_by(object_key: params[:asset_object_key])
 
     respond_to do |format|
       #format.json { render json: {'html' => render_to_string(partial: 'assets/summary', locals: { :asset => a } ) } }

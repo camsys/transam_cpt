@@ -306,7 +306,7 @@ class CapitalProject < ActiveRecord::Base
 
   # check if project has any early replacement assets
   def has_early_replacement_assets?
-    sogr? && !notional? && !activity_line_items.joins(:assets).where("assets.policy_replacement_year is not NULL and assets.scheduled_replacement_year is not NULL and assets.scheduled_replacement_year < assets.policy_replacement_year").empty?
+    sogr? && !notional? && !activity_line_items.joins(:assets).where("policy_replacement_year is not NULL and scheduled_replacement_year is not NULL and scheduled_replacement_year < policy_replacement_year").empty?
   end
 
   #------------------------------------------------------------------------------

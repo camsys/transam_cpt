@@ -6,7 +6,7 @@
 # for the organization.
 #
 #-------------------------------------------------------------------------------
-class CapitalProjectBuilder
+class CapitalProjectBuilderOld
 
   REPLACEMENT_PROJECT_TYPE    = 1
   EXPANSION_PROJECT_TYPE      = 2
@@ -46,7 +46,9 @@ class CapitalProjectBuilder
   end
 
   def update_asset_schedule(asset)
-    a = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(asset)
+
+    # Make sure the asset is strongly typed
+    a = asset.is_typed? ? asset : Asset.get_typed_asset(asset)
 
     # Run the update
     unless a.replacement_pinned?
@@ -64,11 +66,11 @@ class CapitalProjectBuilder
   #-----------------------------------------------------------------------------
   def move_ali_to_planning_year(ali, fy_year, early_replacement_reason)
     unless ali.present?
-      Rails.logger.warn "Missing ALI"
+      Rails.logger.warning "Missing ALI"
       return nil
     end
     unless fy_year.present?
-      Rails.logger.warn "Missing fy_year"
+      Rails.logger.warning "Missing fy_year"
       return nil
     end
 
@@ -117,8 +119,8 @@ class CapitalProjectBuilder
         # internally managed while non-SOGR projects are not.
         # Take each asset, update the scheduled activity year and re-run it
         projects_and_alis = []
-        ali.assets.each do |asset|
-          asset = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(asset)
+        ali.assets.each do |x|
+          asset = Asset.get_typed_asset(x)
           Rails.logger.debug "Processing #{asset}"
           if project.capital_project_type_id == REPLACEMENT_PROJECT_TYPE
             # Set the scheduled replacement year
@@ -219,7 +221,7 @@ class CapitalProjectBuilder
     deleted_alis.destroy_all
 
     # update cost of all other ALIs
-    ActivityLineItem.joins(:assets).where("organization_id = ?",organization.id).group("activity_line_items.id").each{ |ali| ali.update_estimated_cost}
+    ActivityLineItem.joins(:assets).where("assets.organization_id = ?",organization.id).group("activity_line_items.id").each{ |ali| ali.update_estimated_cost}
 
     # destroy all empty capital projects
     CapitalProject.where(:organization_id => organization.id, :sogr => true).joins('LEFT OUTER JOIN activity_line_items ON capital_projects.id = activity_line_items.capital_project_id').where('activity_line_items.capital_project_id IS NULL').destroy_all
@@ -231,6 +233,8 @@ class CapitalProjectBuilder
 
     Rails.logger.debug "options = #{options.inspect}"
 
+    # Get the options. There must be at least one type of asset to process
+    asset_type_ids = options[:asset_type_ids].blank? ? organization.asset_type_counts.keys : options[:asset_type_ids]
     # User must set the start fy year as well otherwise we use the first planning year
     if options[:start_fy].to_i > 0
       @start_year = options[:start_fy].to_i
@@ -264,42 +268,42 @@ class CapitalProjectBuilder
 
     # Loop through the list of asset type ids
     policy = Policy.find_by(organization_id: organization.id)
-    policy_type_rules = Hash[*PolicyAssetTypeRule.where(policy_id: policy.id).map{ |p| [p.asset_type_id, p] }.flatten]
+    policy_type_rules = Hash[*PolicyAssetTypeRule.where(policy_id: policy.id, asset_type_id: asset_type_ids).map{ |p| [p.asset_type_id, p] }.flatten]
     policy_subtype_rules = Hash[*PolicyAssetSubtypeRule.where(policy_id: policy.id).map{ |p| ["#{p.asset_subtype_id}, #{p.fuel_type_id}", p] }.flatten]
 
     # store policy rules in a hash for reference later
 
-    # Find all the matching assets for this organization.
-    # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-    assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.very_specific
-                 .where(options.except(:start_fy).merge({organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil}))
-                 .where('transam_assets.scheduled_replacement_year >= ?', @start_year)
+    AssetType.where(id: asset_type_ids).each do |asset_type|
 
-    assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where(organization_id: organization.id)
+      # Find all the matching assets for this organization.
+      # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
+      assets = asset_type.class_name.constantize.replacement_by_policy.where('asset_type_id = ? AND organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', asset_type.id, organization.id, @start_year)
 
-    # Process each asset in turn...
-    assets.each do |asset|
-      a = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(asset)
-      policy_analyzer = policy_type_rules[a.asset_subtype.asset_type_id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
-      if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
-        policy_analyzer =
-            policy_type_rules[a.asset_subtype.asset_type_id].attributes
-                .merge(
-                    policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
-                )
-                .merge(
-                    policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
-                )
+      assets += asset_type.class_name.constantize.replacement_underway.where('asset_type_id = ? AND organization_id = ?', asset_type.id, organization.id)
+
+      # Process each asset in turn...
+      assets.each do |a|
+        policy_analyzer = policy_type_rules[asset_type.id].attributes.merge(policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes)
+        if policy_analyzer['replace_asset_subtype_id'].present? || policy_analyzer['replace_fuel_type_id'].present?
+          policy_analyzer =
+              policy_type_rules[asset_type.id].attributes
+                  .merge(
+                      policy_subtype_rules["#{a.asset_subtype_id}, #{a.fuel_type_id}"].attributes.select{|k,v| k.starts_with?("replace_")}
+                  )
+                  .merge(
+                      policy_subtype_rules["#{(policy_analyzer['replace_asset_subtype_id'] || a.asset_subtype_id)}, #{(policy_analyzer['replace_fuel_type_id'] || a.fuel_type_id)}"].attributes.select{|k,v| !k.starts_with?("replace_")}
+                  )
+        end
+        # reset scheduled replacement year
+        a.scheduled_replacement_year = nil if a.replacement_by_policy?
+        a.update_early_replacement_reason
+
+        # do the work...
+        process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type, policy_analyzer)
+        #a.reload
       end
-      # reset scheduled replacement year
-      if a.replacement_by_policy?
-        a.scheduled_replacement_year = a.policy_replacement_year < current_planning_year_year ? current_planning_year_year : a.policy_replacement_year
-      end
-      a.update_early_replacement_reason
 
-      # do the work...
-      process_asset(a, @start_year, @last_year, @replacement_project_type, @rehabilitation_project_type, policy_analyzer)
-      #a.reload
+      # Get the next asset type
     end
 
 
@@ -364,18 +368,28 @@ class CapitalProjectBuilder
       asset.activity_line_items.where('fy_year >= ?', [start_year, start_fy_year].min).each do |ali|
         if ali.capital_project.sogr?
           Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{ali.object_key}"
-          ali.assets.delete ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
+          ali.assets.delete asset
         end
       end
     else
       Rails.logger.debug "deleting asset #{asset.object_key} from ALI #{current_ali.object_key}"
-      current_ali.assets.delete ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
+      current_ali.assets.delete asset
     end
 
     # Can't build projects for assets that have been scheduled for disposition or already disposed
     if asset.disposed? or asset.scheduled_for_disposition? or asset.no_replacement?
       Rails.logger.info "Asset #{asset.object_key} has been scheduled for disposition or no replacement. Nothing to do."
       return
+    end
+
+    #---------------------------------------------------------------------------
+    # Step 1: Data consistency check
+    #---------------------------------------------------------------------------
+    unless asset.replacement_underway?
+      unless asset_data_consistency_check(asset, start_year, policy_analyzer['replace_with_new'])
+        Rails.logger.info "Asset #{asset.object_key} did not pass data consistency check."
+        return
+      end
     end
 
     #---------------------------------------------------------------------------
@@ -412,7 +426,6 @@ class CapitalProjectBuilder
     min_service_life_years += extended_years
 
     Rails.logger.debug "Replacement year = #{year}, min_service_life_years = #{min_service_life_years} for asset #{asset.object_key}"
-
     unless year < start_year or year > last_year
 
       #-------------------------------------------------------------------------
@@ -457,6 +470,47 @@ class CapitalProjectBuilder
   end
 
   #-----------------------------------------------------------------------------
+  # Data consistency check
+  #
+  # Make sure that the asset has a in service date and a scheduled replacement year.
+  # If the scheduled replacement year is not set, default it to the policy replacement year
+  # or the first planning year if the asset is in backlog
+  #
+  # start year is the first planning year
+  #
+  #-----------------------------------------------------------------------------
+  def asset_data_consistency_check(asset, start_year, asset_replace_with_new)
+    # Set the schedule replacement year to the policy year if it is not already
+    # set
+    if asset.scheduled_replacement_year.blank?
+      # if no scheduled replacement year is set then use the default. If the
+      # asset is in backlog set the to start year
+      asset.update_column(:scheduled_replacement_year, asset.policy_replacement_year < current_planning_year_year ? current_planning_year_year : asset.policy_replacement_year)
+    elsif asset.scheduled_replacement_year < current_planning_year_year
+      asset.update_column(:scheduled_replacement_year, current_planning_year_year)
+    end
+
+    asset.update_column(:scheduled_replace_with_new, asset_replace_with_new) if asset.scheduled_replace_with_new.blank?
+
+    !([asset.in_service_date, asset.policy_replacement_year, asset.scheduled_replacement_year, asset.scheduled_replace_with_new, asset.scheduled_replacement_cost].include? nil)
+
+    # COMMENT OUT FOR NOW
+    # Check to see if the asset has a scheduled rehabilitation year and if so
+    # make sure it is rational ie. must be before the replacement year
+    # if asset.scheduled_rehabilitation_year.present?
+    #   # is it scheduled in the replacement year
+    #   if asset.scheduled_rehabilitation_year == asset.scheduled_replacement_year
+    #     # Clear the rehab year and let the system recalculate it as needed
+    #     asset.scheduled_rehabilitation_year = nil
+    #   elsif asset.scheduled_rehabilitation_year < start_year
+    #     # it is scheduled before the start year so it is in backlog
+    #     asset.scheduled_rehabilitation_year = start_year
+    #   end
+    # end
+
+  end
+
+  #-----------------------------------------------------------------------------
   # Adds an asset to a capital project. If the project does not
   # exist it is created first. Future projects are projects generated by a
   # replacement of a replacement or rehab of a replacement -- these are dependent
@@ -485,7 +539,7 @@ class CapitalProjectBuilder
 
 
     if asset.present?
-      not_pinned_alis = ActivityLineItem.distinct.joins(:assets).where('replacement_status_type_id != 4 OR replacement_status_type_id IS NULL')
+      not_pinned_alis = ActivityLineItem.distinct.joins(:assets).where('assets.replacement_status_type_id != 4 OR assets.replacement_status_type_id IS NULL')
       if asset.fuel_type_id.present?
         ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ? AND activity_line_items.fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
       else
@@ -497,12 +551,7 @@ class CapitalProjectBuilder
         Rails.logger.debug "Using existing ALI #{ali.object_key}"
         unless asset.activity_line_items.exists?(ali.id)
           Rails.logger.debug "asset not in ALI, adding it"
-
-          if Rails.application.config.asset_base_class_name.constantize == 'Asset'
-            ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
-          else
-            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.transam_asset)
-          end
+          ali.assets << asset
         else
           Rails.logger.debug "asset already in ALI, not adding it"
         end
@@ -517,11 +566,7 @@ class CapitalProjectBuilder
         ali.save
 
         # Now add the asset to it if there is one
-        if Rails.application.config.asset_base_class_name.constantize == 'Asset'
-          ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
-        else
-          ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.transam_asset)
-        end
+        ali.assets << asset
         Rails.logger.debug "Created new ALI #{ali.object_key}"
       end
     end

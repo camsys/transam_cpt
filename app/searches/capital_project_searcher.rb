@@ -110,11 +110,11 @@ class CapitalProjectSearcher < BaseSearcher
   end
 
   def asset_type_conditions
-    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}).uniq unless asset_type.blank?
+    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_type_id: asset_type}).distinct unless asset_type.blank?
   end
 
   def asset_subtype_conditions
-    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}).uniq unless asset_subtype.blank?
+    CapitalProject.joins(:activity_line_items => :assets).where(:assets => {asset_subtype_id: asset_subtype}).distinct unless asset_subtype.blank?
   end
 
   def team_ali_code_conditions
