@@ -77,7 +77,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
       #transam_asset.update_early_replacement_reason("Replacement is Early and Underway.")
     end
 
-    transam_asset.save
+    transam_asset.save(validate: false)
   end
 
   # Set resonable defaults for a new condition update event
