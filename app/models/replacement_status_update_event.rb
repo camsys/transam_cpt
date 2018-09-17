@@ -73,7 +73,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
     if transam_asset.replacement_by_policy?
       transam_asset.scheduled_replacement_year = transam_asset.policy_replacement_year < current_planning_year_year ? current_planning_year_year : transam_asset.policy_replacement_year
     elsif transam_asset.replacement_underway?
-      transam_asset.scheduled_replacement_year = replacement_status_updates.last.replacement_year
+      transam_asset.scheduled_replacement_year = transam_asset.replacement_status_updates.last.replacement_year
       #transam_asset.update_early_replacement_reason("Replacement is Early and Underway.")
     end
 
