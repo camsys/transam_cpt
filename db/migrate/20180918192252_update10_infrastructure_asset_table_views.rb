@@ -101,8 +101,8 @@ CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
         fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
         fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-        fta_guidway_type.active AS 'transit_asset_fta_guidway_type_active',
-        fta_guidway_type.name AS 'transit_asset_fta_guidway_type_name',
+        fta_guideway_type.active AS 'transit_asset_fta_guideway_type_active',
+        fta_guideway_type.name AS 'transit_asset_fta_guideway_type_name',
 
         fta_power_type.active AS 'transit_asset_fta_power_and_signal_type_active',
         fta_power_type.name AS 'transit_asset_fta_power_and_signal_type_name',
@@ -284,7 +284,7 @@ CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
 
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
 
-      LEFT JOIN fta_guideway_types AS fta_guidway_type ON fta_guidway_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_guideway_types AS fta_guideway_type ON fta_guideway_type.id = transitAs.fta_type_id
       LEFT JOIN fta_power_signal_types AS fta_power_type ON fta_power_type.id = transitAs.fta_type_id
       LEFT JOIN fta_track_types AS fta_track_type ON fta_track_type.id = transitAs.fta_type_id
 
