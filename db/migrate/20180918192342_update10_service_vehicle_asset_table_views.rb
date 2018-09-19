@@ -58,13 +58,8 @@ class Update10ServiceVehicleAssetTableViews < ActiveRecord::Migration[5.2]
           fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
           fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-          fta_vehicle_type.active AS 'transit_asset_fta_type_active',
-          fta_vehicle_type.code AS 'transit_asset_fta_type_code',
-          fta_vehicle_type.default_useful_life_benchmark AS 'transit_asset_fta_type_default_useful_life_benchmark',
-          fta_vehicle_type.description AS 'transit_asset_fta_type_description',
-          fta_vehicle_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-          fta_vehicle_type.name AS 'transit_asset_fta_type_name',
-          fta_vehicle_type.useful_life_benchmark_unit AS 'transit_asset_fta_type_useful_life_benchmark_unit',
+          fta_support_vehicle_type.active AS 'transit_asset_fta_type_active',
+          fta_support_vehicle_type.name AS 'transit_asset_fta_type_name',
 
           transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
           transamAs.asset_tag AS 'asset_tag',
@@ -235,7 +230,7 @@ class Update10ServiceVehicleAssetTableViews < ActiveRecord::Migration[5.2]
       LEFT JOIN chasses AS chassis ON chassis.id = sv.chassis_id
       LEFT JOIN fuel_types AS fuel_type ON fuel_type.id = sv.fuel_type_id
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-      LEFT JOIN fta_vehicle_types AS fta_vehicle_type ON fta_vehicle_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_support_vehicle_types AS fta_support_vehicle_type ON fta_support_vehicle_type.id = transitAs.fta_type_id
       LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
       LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
       LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
