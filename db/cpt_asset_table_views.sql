@@ -56,13 +56,8 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
         fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
         fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-        fta_vehicle_type.active AS 'transit_asset_fta_type_active',
-        fta_vehicle_type.code AS 'transit_asset_fta_type_code',
-        fta_vehicle_type.default_useful_life_benchmark AS 'transit_asset_fta_type_default_useful_life_benchmark',
-        fta_vehicle_type.description AS 'transit_asset_fta_type_description',
-        fta_vehicle_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-        fta_vehicle_type.name AS 'transit_asset_fta_type_name',
-        fta_vehicle_type.useful_life_benchmark_unit AS 'transit_asset_fta_type_useful_life_benchmark_unit',
+        fta_equipment_type.active AS 'transit_asset_fta_type_active',
+        fta_equipment_type.name AS 'transit_asset_fta_type_name',
 
         transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
         transamAs.asset_tag AS 'asset_tag',
@@ -158,6 +153,7 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
         policy.depreciation_interval_type_id AS 'transam_asset_org_policy_depreciation_interval_type_id',
         policy.description AS 'transam_asset_org_policy_description',
         policy.id AS 'transam_asset_org_policy_id',
+        policy.id AS 'policy_id',
         policy.object_key AS 'transam_asset_org_policy_object_key',
         policy.organization_id AS 'transam_asset_org_policy_organization_id',
         policy.parent_id AS 'transam_asset_org_policy_parent_id',
@@ -229,7 +225,7 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
       LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
 
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-      LEFT JOIN fta_vehicle_types AS fta_vehicle_type ON fta_vehicle_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_equipment_types AS fta_equipment_type ON fta_equipment_type.id = transitAs.fta_type_id
       LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
       LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
       LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
@@ -281,6 +277,7 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
       LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
       WHERE transitAs.fta_type_type = 'FtaEquipmentType';
+
 -- ----------------------------------------------------------------------------------------------------------------      
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
@@ -600,7 +597,7 @@ SELECT
 
 DROP VIEW if exists infrastructure_asset_table_views;
 CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
-      SELECT
+SELECT
         i.id,
         i.id AS 'infrastructure_id',
         i.cant AS 'infrastructure_cant',
@@ -699,13 +696,14 @@ CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
         fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
         fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-        fta_vehicle_type.active AS 'transit_asset_fta_type_active',
-        fta_vehicle_type.code AS 'transit_asset_fta_type_code',
-        fta_vehicle_type.default_useful_life_benchmark AS 'transit_asset_fta_type_default_useful_life_benchmark',
-        fta_vehicle_type.description AS 'transit_asset_fta_type_description',
-        fta_vehicle_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-        fta_vehicle_type.name AS 'transit_asset_fta_type_name',
-        fta_vehicle_type.useful_life_benchmark_unit AS 'transit_asset_fta_type_useful_life_benchmark_unit',
+        fta_guideway_type.active AS 'transit_asset_fta_guideway_type_active',
+        fta_guideway_type.name AS 'transit_asset_fta_guideway_type_name',
+
+        fta_power_type.active AS 'transit_asset_fta_power_and_signal_type_active',
+        fta_power_type.name AS 'transit_asset_fta_power_and_signal_type_name',
+
+        fta_track_type.active AS 'transit_asset_fta_track_type_active',
+        fta_track_type.name AS 'transit_asset_fta_track_type_name',
 
         transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
         transamAs.asset_tag AS 'asset_tag',
@@ -801,6 +799,7 @@ CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
         policy.depreciation_interval_type_id AS 'transam_asset_org_policy_depreciation_interval_type_id',
         policy.description AS 'transam_asset_org_policy_description',
         policy.id AS 'transam_asset_org_policy_id',
+        policy.id AS 'policy_id',
         policy.object_key AS 'transam_asset_org_policy_object_key',
         policy.organization_id AS 'transam_asset_org_policy_organization_id',
         policy.parent_id AS 'transam_asset_org_policy_parent_id',
@@ -879,7 +878,11 @@ CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
       LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
 
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-      LEFT JOIN fta_vehicle_types AS fta_vehicle_type ON fta_vehicle_type.id = transitAs.fta_type_id
+
+      LEFT JOIN fta_guideway_types AS fta_guideway_type ON fta_guideway_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_power_signal_types AS fta_power_type ON fta_power_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_track_types AS fta_track_type ON fta_track_type.id = transitAs.fta_type_id
+
       LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
       LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
       LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
@@ -935,7 +938,7 @@ CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 DROP VIEW if exists revenue_vehicle_asset_table_views;
-CREATE OR REPLACE VIEW revenue_vehicle_asset_table_views AS
+      CREATE OR REPLACE VIEW revenue_vehicle_asset_table_views AS
       SELECT
         rv.id,
         rv.id AS 'revenue_vehicle_id',
@@ -1109,6 +1112,7 @@ CREATE OR REPLACE VIEW revenue_vehicle_asset_table_views AS
         policy.depreciation_interval_type_id AS 'transam_asset_org_policy_depreciation_interval_type_id',
         policy.description AS 'transam_asset_org_policy_description',
         policy.id AS 'transam_asset_org_policy_id',
+        policy.id AS 'policy_id',
         policy.object_key AS 'transam_asset_org_policy_object_key',
         policy.organization_id AS 'transam_asset_org_policy_organization_id',
         policy.parent_id AS 'transam_asset_org_policy_parent_id',
@@ -1300,13 +1304,8 @@ CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
           fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
           fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-          fta_vehicle_type.active AS 'transit_asset_fta_type_active',
-          fta_vehicle_type.code AS 'transit_asset_fta_type_code',
-          fta_vehicle_type.default_useful_life_benchmark AS 'transit_asset_fta_type_default_useful_life_benchmark',
-          fta_vehicle_type.description AS 'transit_asset_fta_type_description',
-          fta_vehicle_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-          fta_vehicle_type.name AS 'transit_asset_fta_type_name',
-          fta_vehicle_type.useful_life_benchmark_unit AS 'transit_asset_fta_type_useful_life_benchmark_unit',
+          fta_support_vehicle_type.active AS 'transit_asset_fta_type_active',
+          fta_support_vehicle_type.name AS 'transit_asset_fta_type_name',
 
           transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
           transamAs.asset_tag AS 'asset_tag',
@@ -1402,6 +1401,7 @@ CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
           policy.depreciation_interval_type_id AS 'transam_asset_org_policy_depreciation_interval_type_id',
           policy.description AS 'transam_asset_org_policy_description',
           policy.id AS 'transam_asset_org_policy_id',
+          policy.id AS 'policy_id',
           policy.object_key AS 'transam_asset_org_policy_object_key',
           policy.organization_id AS 'transam_asset_org_policy_organization_id',
           policy.parent_id AS 'transam_asset_org_policy_parent_id',
@@ -1476,7 +1476,7 @@ CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
       LEFT JOIN chasses AS chassis ON chassis.id = sv.chassis_id
       LEFT JOIN fuel_types AS fuel_type ON fuel_type.id = sv.fuel_type_id
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-      LEFT JOIN fta_vehicle_types AS fta_vehicle_type ON fta_vehicle_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_support_vehicle_types AS fta_support_vehicle_type ON fta_support_vehicle_type.id = transitAs.fta_type_id
       LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
       LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
       LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
