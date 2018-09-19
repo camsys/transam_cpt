@@ -56,7 +56,7 @@
   $(function() {
     var last_tab = transam.get_ui_key_value('capital_project_index_tab');
     if (last_tab) {
-      $('a[href='+last_tab+']').tab('show');
+      $('a[href="'+last_tab+'"]').tab('show');
     } else {
       // Default to the firsdt tab if no tab is stored
       $('a[data-toggle="tab"]:first').tab('show');
