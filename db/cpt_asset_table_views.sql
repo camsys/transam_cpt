@@ -286,7 +286,7 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
 -- ----------------------------------------------------------------------------------------------------------------
 DROP VIEW if exists facility_primary_asset_table_views;
 CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
-      SELECT
+SELECT
         f.id,
         f.id AS 'facility_id',
           f.ada_accessible AS 'facility_ada_accessible',
@@ -323,7 +323,8 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
 
           esl_category.name AS 'facility_esl_category_name',
 
-          c.component_type_id AS 'facility_component_type_id',
+		  component.id AS 'component_id',
+          component.component_type_id AS 'facility_component_type_id',
 
           ct.name AS 'facility_component_type_name',
 
@@ -456,6 +457,7 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
           policy.depreciation_interval_type_id AS 'transam_asset_org_policy_depreciation_interval_type_id',
           policy.description AS 'transam_asset_org_policy_description',
           policy.id AS 'transam_asset_org_policy_id',
+          policy.id AS 'policy_id',
           policy.object_key AS 'transam_asset_org_policy_object_key',
           policy.organization_id AS 'transam_asset_org_policy_organization_id',
           policy.parent_id AS 'transam_asset_org_policy_parent_id',
@@ -517,14 +519,18 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
 
           most_recent_early_replacement_event.replacement_status_type_id AS 'most_recent_early_replacement_event_replacement_status_type_id',
           replacement_status.name AS 'most_recent_early_replacement_event_replacement_status_type_name'
-      FROM facilities AS f
+
+
+	  FROM transam_assets AS transamAs
+	  LEFT JOIN transit_assets AS transitAs ON transitAs.id = transamAs.transam_assetible_id
+-- 	AND transamAs.transam_assetible_type = 'TransitAsset'
+
+	  LEFT JOIN facilities AS f ON (transamAs.parent_id > 0 AND f.id = transamAs.parent_id) OR (transamAs.parent_id IS NULL AND f.id = transitAs.transit_assetible_id)
+									AND transitAs.transit_assetible_type = 'Facility'
+	  LEFT JOIN components AS component ON component.id = transitAs.transit_assetible_id
+		AND transitAs.transit_assetible_type = 'Component'
 
       LEFT JOIN esl_categories AS esl_category ON esl_category.id = f.esl_category_id
-
-      LEFT JOIN transit_assets AS transitAs ON transitAs.transit_assetible_id = f.id
-        AND transitAs.transit_assetible_type = 'Facility'
-      LEFT JOIN transam_assets AS transamAs ON transamAs.transam_assetible_id = transitAs.id
-        AND transamAs.transam_assetible_type = 'TransitAsset'
 
       LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
       LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
@@ -584,11 +590,9 @@ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
       LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
 
-      LEFT JOIN transam_assets AS cTransamAs ON cTransamAs.parent_id = transamAs.id
-      LEFT JOIN transit_assets AS cTransitAs ON cTransitAs.id = cTransamAs.transam_assetible_id
-      LEFT JOIN components AS c ON c.id = cTransitAs.transit_assetible_id
-      LEFT JOIN component_types AS ct ON ct.id = c.component_type_id
-      LEFT JOIN component_subtypes As cst on cst.id = c.component_subtype_id;
+      LEFT JOIN component_types AS ct ON ct.id = component.component_type_id
+      LEFT JOIN component_subtypes As cst on cst.id = component.component_subtype_id
+      WHERE transamAs.transam_assetible_type = 'TransitAsset' AND (f.id >0 OR component.id > 0);
 
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
