@@ -3,7 +3,7 @@
     %i.fa.fa-filter
     = " #{session[:user_activity_line_item_filter].to_s[0..31]}#{session[:user_activity_line_item_filter].to_s.length > 32 ? '...' : ''}"
     %b.caret
-  %ul.dropdown-menu.columns-2
+  %ul.dropdown-menu.dropdown-menu-right.multi-column.columns-2{role: "menu", style: "overflow-y:scroll;max-height:400px;"}
     .row
       .col-sm-6
         %ul.multi-column-dropdown

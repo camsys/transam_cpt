@@ -48,10 +48,10 @@
         %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
         %th.left.nowrap{data: {field: 'project_number'}} Project
         %th.center.nowrap{data: {field: 'scope'}} Scope
-        %th.center{data: {field: 'is_emergency', formatter: 'boolean_formatter'}} Emgcy
-        %th.center{data: {field: 'is_sogr', formatter: 'boolean_formatter'}} SOGR
-        %th.center{data: {field: 'is_notional', formatter: 'boolean_formatter'}} Shadow
-        %th.center{data: {field: 'is_multi_year', formatter: 'boolean_formatter'}} Multi Year
+        %th.center{data: {field: 'is_emergency', formatter: 'raw_boolean_formatter'}} Emgcy
+        %th.center{data: {field: 'is_sogr', formatter: 'raw_boolean_formatter'}} SOGR
+        %th.center{data: {field: 'is_notional', formatter: 'raw_boolean_formatter'}} Shadow
+        %th.center{data: {field: 'is_multi_year', formatter: 'raw_boolean_formatter'}} Multi Year
 
         %th.center{data: {field: 'type'}} Type
         %th.left{data: {field: 'title'}} Title
