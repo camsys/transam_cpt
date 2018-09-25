@@ -45,7 +45,7 @@ class FixBptFtaOwnershipText < ActiveRecord::DataMigration
 
       if(fta.code == 'LRPE')
         fta.name = 'Leased or borrowed from related parties by a private entity'
-        fta.code = 'LRPA'
+        fta.code = 'LRPE'
         fta.description = 'Leased or borrowed from related parties by a private entity'
         fta.save
       end
