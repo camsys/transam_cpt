@@ -327,7 +327,7 @@ SELECT
 
           cst.name AS 'facility_component_subtype_name',
 
-          -- TODO Assed to fix sandbox and QA should be removed longer term
+          -- TODO Added to fix sandbox and QA should be removed longer term
           cst.name AS 'facility_subcomponent_type_name',
 
           transitAs.asset_id AS 'transit_asset_asset_id',
