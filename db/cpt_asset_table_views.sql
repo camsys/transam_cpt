@@ -673,11 +673,11 @@ SELECT
 
         infra_segment_type.name AS'infrastructure_infrastructure_segment_name',
 
-        assets_fta_mode_types.id AS 'assets_fta_mode_types_id',
-        assets_fta_mode_types.asset_id AS 'assets_fta_mode_types_asset_id',
-        assets_fta_mode_types.transam_asset_id AS 'assets_fta_mode_types_transam_asset_id',
-        assets_fta_mode_types.fta_mode_type_id AS 'assets_fta_mode_types_fta_mode_type_id',
-        assets_fta_mode_types.is_primary AS 'assets_fta_mode_types_is_primary',
+        afmt.id AS 'assets_fta_mode_types_id',
+        afmt.asset_id AS 'assets_fta_mode_types_asset_id',
+        afmt.transam_asset_id AS 'assets_fta_mode_types_transam_asset_id',
+        afmt.fta_mode_type_id AS 'assets_fta_mode_types_fta_mode_type_id',
+        afmt.is_primary AS 'assets_fta_mode_types_is_primary',
 
         transitAs.asset_id AS 'transit_asset_asset_id',
         transitAs.contract_num AS 'transit_asset_contract_num',
