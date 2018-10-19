@@ -327,7 +327,7 @@ SELECT
 
           cst.name AS 'facility_component_subtype_name',
 
-          -- TODO Assed to fix sandbox and QA should be removed longer term
+          -- TODO Added to fix sandbox and QA should be removed longer term
           cst.name AS 'facility_subcomponent_type_name',
 
           transitAs.asset_id AS 'transit_asset_asset_id',
@@ -665,11 +665,19 @@ SELECT
 
         infra_division.name AS 'infrastructure_infrastructure_division_name',
 
+        infra_subdivision.name AS 'infrastructure_infrastructure_subdivision_name',
+
         infra_gauge.name AS 'infrastructure_infrastructure_gauge_type_name',
 
         infra_track.name AS 'infrastructure_infrastructure_track_name',
 
         infra_segment_type.name AS'infrastructure_infrastructure_segment_name',
+
+        afmt.id AS 'assets_fta_mode_types_id',
+        afmt.asset_id AS 'assets_fta_mode_types_asset_id',
+        afmt.transam_asset_id AS 'assets_fta_mode_types_transam_asset_id',
+        afmt.fta_mode_type_id AS 'assets_fta_mode_types_fta_mode_type_id',
+        afmt.is_primary AS 'assets_fta_mode_types_is_primary',
 
         transitAs.asset_id AS 'transit_asset_asset_id',
         transitAs.contract_num AS 'transit_asset_contract_num',
@@ -865,6 +873,7 @@ SELECT
       FROM infrastructures AS i
       LEFT JOIN transit_assets AS transitAs ON transitAs.transit_assetible_id = i.id AND transit_assetible_type = 'Infrastructure'
       LEFT JOIN infrastructure_divisions AS infra_division ON infra_division.id = i.infrastructure_division_id
+      LEFT JOIN infrastructure_subdivisions AS infra_subdivision ON infra_subdivision.id = i.infrastructure_subdivision_id
       LEFT JOIN infrastructure_gauge_types AS infra_gauge ON infra_gauge.id = i.infrastructure_gauge_type_id
       LEFT JOIN infrastructure_tracks AS infra_track ON infra_track.id = i.infrastructure_track_id
       LEFT JOIN infrastructure_segment_types AS infra_segment_type ON infra_segment_type.id = i.infrastructure_segment_type_id
@@ -931,7 +940,7 @@ SELECT
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = i.id AND afmt.is_primary AND afmt.asset_id IS NULL
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
 
 -- ----------------------------------------------------------------------------------------------------------------
