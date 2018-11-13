@@ -39,7 +39,7 @@
       - if move_assets_action == '1'
         %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
       %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
-      %th.left{data: {field: 'asset_tag'}} Tag
+      %th.left{data: {field: 'asset_tag', formatter: 'asset_tag_formatter'}} Tag
       %th.left{data: {field: 'asset_subtype'}} Asset Subtype
       %th.center{data: {field: 'fuel_type'}} Fuel
       %th.left{data: {field: 'description'}} Description
@@ -84,6 +84,10 @@
     };
   };
 
+  function asset_tag_formatter(value, data) {
+    return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
+  };
+
   $(document).ready(function() {
 
     // Disable the package actions
@@ -93,7 +97,7 @@
 
     $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
       $('.transam-popover').popover({
-        trigger: 'hover',
+        trigger: 'focus',
         container: 'body',
         placement: 'left',
         content: function(){
@@ -199,10 +203,7 @@
     enable_disable_asset_actions();
   });
 
-  $("##{table_dom_id}").on('click-row.bs.table', function (e, row, $element) {
-    var url = path.replace("x", row['object_key']);
-    document.location.href = url;
-  }).on('check.bs.table', function(e, row) {
+  $("##{table_dom_id}").on('check.bs.table', function(e, row) {
     update_selected();
   }).on('uncheck.bs.table', function(e, row) {
     update_selected();
