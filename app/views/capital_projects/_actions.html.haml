@@ -15,7 +15,7 @@
       -# - @project.allowable_events.each do |evt|
       -#   %li
       -#     = link_to fire_workflow_event_capital_project_path(@project, :event => evt) do
-      -#       %i.fa.fa-fw{:class => get_event_icon(evt)}
+      -#       %i.fa.fa-fw{:class => get_workflow_event_icon(evt)}
       -#       = "#{evt} this project"
       - count = 0
       - if can? :update, @project
