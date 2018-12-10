@@ -936,7 +936,7 @@ SELECT
       LEFT JOIN condition_types AS condition_type ON condition_type.id = most_recent_condition_event.condition_type_id
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = i.id AND afmt.is_primary = 1
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = i.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'Infrastructure'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
 
 -- ----------------------------------------------------------------------------------------------------------------
