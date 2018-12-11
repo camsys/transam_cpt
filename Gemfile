@@ -7,6 +7,9 @@ source "https://rubygems.org"
 
 # To use debugger
 # gem 'debugger'
+
+gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
+
 gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter4
 gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter4
 gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter4
