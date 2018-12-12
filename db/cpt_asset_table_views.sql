@@ -281,8 +281,8 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
 -- ----------------------------------------------------------------------------------------------------------------      
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
-DROP VIEW if exists facility_primary_asset_table_views;
-CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
+ DROP VIEW if exists facility_primary_asset_table_views;
+ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
 SELECT
         f.id,
         f.id AS 'facility_id',
@@ -520,10 +520,11 @@ SELECT
 
 	  FROM transam_assets AS transamAs
 	  LEFT JOIN transit_assets AS transitAs ON transitAs.id = transamAs.transam_assetible_id
--- 	AND transamAs.transam_assetible_type = 'TransitAsset'
 
-	  LEFT JOIN facilities AS f ON (transamAs.parent_id > 0 AND f.id = transamAs.parent_id) OR (transamAs.parent_id IS NULL AND f.id = transitAs.transit_assetible_id)
+      LEFT JOIN transit_assets AS parentAs ON parentAs.id = transamAs.parent_id
+      LEFT JOIN facilities AS f ON (transamAs.parent_id > 0 AND f.id = parentAs.transit_assetible_id) OR (transamAs.parent_id IS NULL AND f.id = transitAs.transit_assetible_id)
 									AND transitAs.transit_assetible_type = 'Facility'
+
 	  LEFT JOIN components AS component ON component.id = transitAs.transit_assetible_id
 		AND transitAs.transit_assetible_type = 'Component'
 
