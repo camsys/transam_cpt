@@ -44,6 +44,7 @@ RSpec.describe AliAssetMatcherService, :type => :service do
       expect(test_service.match(test_ali)).to include(test_asset)
     end
     it 'cannot include current assets of ALI' do
+      skip 'Assumes transam_asset. Not yet testable.'
       test_ali.team_ali_code = create(:rehabilitation_ali_code)
       test_policy = create(:policy, :organization => test_ali.capital_project.organization)
       test_rule = create(:policy_asset_subtype_rule, :policy => test_policy, :rehabilitation_code => test_ali.team_ali_code.code)

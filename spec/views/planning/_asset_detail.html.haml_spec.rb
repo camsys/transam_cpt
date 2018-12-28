@@ -1,7 +1,10 @@
 require 'rails_helper'
 
 describe "planning/_asset_detail.html.haml", :type => :view do
+
   it 'asset' do
+    skip 'Assumes transam_asset or asset with mixin for replacement status type. Not yet testable.'
+
     allow(controller).to receive(:params).and_return({controller: 'planning'})
     if AssetType.count == 0 || AssetSubtype.count == 0
       AssetType.first

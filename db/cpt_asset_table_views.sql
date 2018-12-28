@@ -1,31 +1,35 @@
 -- RUN THIS. IF YOU HAVE TRANSIT DO NOT RUN THE TABLE VIEWS CREATION SCRIPT THERE BECAUSE THIS ONE IS BETTER!!!!!!!
 -- ----------------------------------------------------------------------------------------------------------------
+
 DROP VIEW if exists recent_asset_events_views;
 CREATE OR REPLACE VIEW recent_asset_events_views AS
-      SELECT aet.id AS asset_event_type_id, aet.name AS asset_event_name, Max(ae.created_at) AS asset_event_created_time, ae.transam_asset_id, Max(ae.id) AS asset_event_id
+      SELECT aet.id AS asset_event_type_id, aet.name AS asset_event_name, Max(ae.created_at) AS asset_event_created_time, ae.base_transam_asset_id, Max(ae.id) AS asset_event_id
       FROM asset_events AS ae
       LEFT JOIN asset_event_types AS aet ON aet.id = ae.asset_event_type_id
-      LEFT JOIN transam_assets AS ta  ON ta.id = ae.transam_asset_id
-      GROUP BY aet.id, ae.transam_asset_id;
+      LEFT JOIN transam_assets AS ta  ON ta.id = ae.base_transam_asset_id
+      GROUP BY aet.id, ae.base_transam_asset_id;
 
 DROP VIEW if exists all_assets_most_recent_asset_event_view;
 CREATE OR REPLACE VIEW all_assets_most_recent_asset_event_view AS
       SELECT
-        ae.transam_asset_id, Max(ae.created_at) AS asset_event_created_time,  Max(ae.id) AS asset_event_id
+        ae.base_transam_asset_id, Max(ae.created_at) AS asset_event_created_time,  Max(ae.id) AS asset_event_id
       FROM asset_events AS ae
       LEFT JOIN asset_event_types AS aet ON aet.id = ae.asset_event_type_id
-      LEFT JOIN transam_assets AS ta  ON ta.id = ae.transam_asset_id
-      GROUP BY ae.transam_asset_id;
+      LEFT JOIN transam_assets AS ta  ON ta.id = ae.base_transam_asset_id
+      GROUP BY ae.base_transam_asset_id;
 
 DROP VIEW if exists all_assets_recent_asset_events_for_type_view;
 CREATE OR REPLACE VIEW all_assets_recent_asset_events_for_type_view AS
       SELECT
-        aet.id AS asset_event_type_id, aet.name AS asset_event_name, Max(ae.created_at) AS asset_event_created_time, ae.transam_asset_id, Max(ae.id) AS asset_event_id
+        aet.id AS asset_event_type_id, aet.name AS asset_event_name, Max(ae.created_at) AS asset_event_created_time, ae.base_transam_asset_id, Max(ae.id) AS asset_event_id
       FROM asset_events AS ae
       LEFT JOIN asset_event_types AS aet ON aet.id = ae.asset_event_type_id
-      LEFT JOIN transam_assets AS ta  ON ta.id = ae.transam_asset_id
-      WHERE aet.id IN ( 1, 2, 6, 8, 10, 19, 21)
-      GROUP BY aet.id, ae.transam_asset_id;
+      LEFT JOIN transam_assets AS ta  ON ta.id = ae.base_transam_asset_id
+      WHERE aet.id IN (
+			SELECT id FROM asset_event_types WHERE NAME IN ('Condition', 'Maintenance provider type', 'Service status',
+					'Rebuild/rehabilitation', 'Mileage', 'Replacement status', 'Performance restrictions')
+      )
+      GROUP BY aet.id, ae.base_transam_asset_id;
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
@@ -247,19 +251,19 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
             AND identifiable_id = transamAs.id
               LIMIT 1)
 
-      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.transam_asset_id = transamAs.id
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.transam_asset_id = transamAs.id
-        AND rae_condition.asset_event_type_id = 1
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
       -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-      -- 	AND rae_maintenance.asset_event_type_id = 2
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.transam_asset_id = transamAs.id
-        AND rae_service_status.asset_event_type_id = 6
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.transam_asset_id = transamAs.id
-        AND rae_rebuild.asset_event_type_id = 8
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.transam_asset_id = transamAs.id
-        AND rae_mileage.asset_event_type_id = 10
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.transam_asset_id = transamAs.id
-        AND rae_early_replacement_status.asset_event_type_id = 19
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
       LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
       LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
@@ -274,15 +278,15 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = transitAs.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'TransitAsset'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
       WHERE transitAs.fta_type_type = 'FtaEquipmentType';
 
 -- ----------------------------------------------------------------------------------------------------------------      
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
-DROP VIEW if exists facility_primary_asset_table_views;
-CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
+ DROP VIEW if exists facility_primary_asset_table_views;
+ CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
 SELECT
         f.id,
         f.id AS 'facility_id',
@@ -520,10 +524,11 @@ SELECT
 
 	  FROM transam_assets AS transamAs
 	  LEFT JOIN transit_assets AS transitAs ON transitAs.id = transamAs.transam_assetible_id
--- 	AND transamAs.transam_assetible_type = 'TransitAsset'
 
-	  LEFT JOIN facilities AS f ON (transamAs.parent_id > 0 AND f.id = transamAs.parent_id) OR (transamAs.parent_id IS NULL AND f.id = transitAs.transit_assetible_id)
+      LEFT JOIN transit_assets AS parentAs ON parentAs.id = transamAs.parent_id
+      LEFT JOIN facilities AS f ON (transamAs.parent_id > 0 AND f.id = parentAs.transit_assetible_id) OR (transamAs.parent_id IS NULL AND f.id = transitAs.transit_assetible_id)
 									AND transitAs.transit_assetible_type = 'Facility'
+
 	  LEFT JOIN components AS component ON component.id = transitAs.transit_assetible_id
 		AND transitAs.transit_assetible_type = 'Component'
 
@@ -558,19 +563,19 @@ SELECT
               LIMIT 1)
 
 
-      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.transam_asset_id = transamAs.id
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.transam_asset_id = transamAs.id
-        AND rae_condition.asset_event_type_id = 1
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
       -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-      -- 	AND rae_maintenance.asset_event_type_id = 2
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.transam_asset_id = transamAs.id
-        AND rae_service_status.asset_event_type_id = 6
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.transam_asset_id = transamAs.id
-        AND rae_rebuild.asset_event_type_id = 8
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.transam_asset_id = transamAs.id
-        AND rae_mileage.asset_event_type_id = 10
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.transam_asset_id = transamAs.id
-        AND rae_early_replacement_status.asset_event_type_id = 19
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
       LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
       LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
@@ -584,7 +589,7 @@ SELECT
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = f.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'Facility'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
 
       LEFT JOIN component_types AS ct ON ct.id = component.component_type_id
@@ -756,7 +761,6 @@ SELECT
         transamAs.purchased_new AS 'transam_asset_purchased_new',
         transamAs.quantity AS 'transam_asset_quantity',
         transamAs.quantity_unit AS 'transam_asset_quantity_unit',
-        transamAs.replacement_status_type_id AS 'transam_asset_replacement_status_type_id',
         transamAs.salvage_value AS 'transam_asset_salvage_value',
         transamAs.scheduled_disposition_year AS 'transam_asset_scheduled_disposition_year',
         transamAs.scheduled_rehabilitation_year AS 'transam_asset_scheduled_rehabilitation_year',
@@ -865,10 +869,8 @@ SELECT
         most_recent_rebuild_event.updated_at AS 'most_recent_rebuild_event_updated_at',
 
         most_recent_mileage_event.current_mileage AS 'most_recent_mileage_event_current_mileage',
-        most_recent_mileage_event.updated_at AS 'most_recent_mileage_event_updated_at',
+        most_recent_mileage_event.updated_at AS 'most_recent_mileage_event_updated_at'
 
-        most_recent_early_replacement_event.replacement_status_type_id AS 'most_recent_early_replacement_event_replacement_status_type_id',
-        replacement_status.name AS 'most_recent_early_replacement_event_replacement_status_type_name'
 
       FROM infrastructures AS i
       LEFT JOIN transit_assets AS transitAs ON transitAs.transit_assetible_id = i.id AND transit_assetible_type = 'Infrastructure'
@@ -913,19 +915,19 @@ SELECT
             AND identifiable_id = transamAs.id
               LIMIT 1)
 
-      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.transam_asset_id = transamAs.id
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.transam_asset_id = transamAs.id
-        AND rae_condition.asset_event_type_id = 1
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
       -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-      -- 	AND rae_maintenance.asset_event_type_id = 2
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.transam_asset_id = transamAs.id
-        AND rae_service_status.asset_event_type_id = 6
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.transam_asset_id = transamAs.id
-        AND rae_rebuild.asset_event_type_id = 8
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.transam_asset_id = transamAs.id
-        AND rae_mileage.asset_event_type_id = 10
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.transam_asset_id = transamAs.id
-        AND rae_early_replacement_status.asset_event_type_id = 19
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
       LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
       LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
@@ -938,9 +940,8 @@ SELECT
       LEFT JOIN asset_event_types AS asset_event_type ON asset_event_type.id = most_recent_asset_event.asset_event_type_id
       LEFT JOIN condition_types AS condition_type ON condition_type.id = most_recent_condition_event.condition_type_id
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
-      LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = i.id AND afmt.is_primary AND afmt.asset_id IS NULL
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = i.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'Infrastructure'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
 
 -- ----------------------------------------------------------------------------------------------------------------
@@ -1222,19 +1223,19 @@ DROP VIEW if exists revenue_vehicle_asset_table_views;
             AND identifiable_id = transamAs.id
               LIMIT 1)
 
-      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.transam_asset_id = transamAs.id
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.transam_asset_id = transamAs.id
-        AND rae_condition.asset_event_type_id = 1
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
       -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-      -- 	AND rae_maintenance.asset_event_type_id = 2
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.transam_asset_id = transamAs.id
-        AND rae_service_status.asset_event_type_id = 6
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.transam_asset_id = transamAs.id
-        AND rae_rebuild.asset_event_type_id = 8
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.transam_asset_id = transamAs.id
-        AND rae_mileage.asset_event_type_id = 10
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.transam_asset_id = transamAs.id
-        AND rae_early_replacement_status.asset_event_type_id = 19
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
       LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
       LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
@@ -1249,7 +1250,7 @@ DROP VIEW if exists revenue_vehicle_asset_table_views;
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = transitAs.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'ServiceVehicle'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
 
 -- ----------------------------------------------------------------------------------------------------------------
@@ -1507,19 +1508,19 @@ CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
             AND identifiable_id = transamAs.id
               LIMIT 1)
 
-      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.transam_asset_id = transamAs.id
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.transam_asset_id = transamAs.id
-        AND rae_condition.asset_event_type_id = 1
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
       -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-      -- 	AND rae_maintenance.asset_event_type_id = 2
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.transam_asset_id = transamAs.id
-        AND rae_service_status.asset_event_type_id = 6
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.transam_asset_id = transamAs.id
-        AND rae_rebuild.asset_event_type_id = 8
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.transam_asset_id = transamAs.id
-        AND rae_mileage.asset_event_type_id = 10
-      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.transam_asset_id = transamAs.id
-        AND rae_early_replacement_status.asset_event_type_id = 19
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
       LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
       LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
@@ -1534,5 +1535,5 @@ CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = transitAs.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'ServiceVehicle'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;

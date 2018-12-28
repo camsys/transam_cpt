@@ -26,12 +26,15 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   end
 
   it 'GET add_asset' do
+    skip 'Assumes transam_asset. Not yet testable.'
     request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
     post :add_asset, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, :asset => test_asset.object_key}
 
     expect(test_ali.assets).to include(test_asset)
   end
   it 'DELETE remove_asset' do
+    skip 'Assumes transam_asset. Not yet testable.'
+
     request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
     test_ali.assets << test_asset
     test_ali.save!

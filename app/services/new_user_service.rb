@@ -26,6 +26,9 @@ class NewUserService
 
     user.update_user_organization_filters
 
+    user.viewable_organizations = user.user_organization_filter.try(:get_organizations) || []
+    user.save!
+
     sys_user = User.find_by(first_name: 'system')
     user.user_activity_line_item_filters = UserActivityLineItemFilter.where(created_by_user_id: sys_user.id)
     user.user_activity_line_item_filter = UserActivityLineItemFilter.find_by(name: 'All ALIs', created_by_user_id: sys_user.id)

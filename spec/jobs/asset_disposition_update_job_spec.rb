@@ -5,6 +5,7 @@ RSpec.describe AssetDispositionUpdateJob, :type => :job do
   let(:test_asset) { create(:buslike_asset, scheduled_replacement_cost: 123) }
   let(:test_line_item) { create(:activity_line_item) }
 
+  before { skip 'Assumes transam_asset. Not yet testable.' }
 
   it '.run' do
     test_event = test_asset.disposition_updates.create!(attributes_for(:disposition_update_event))
