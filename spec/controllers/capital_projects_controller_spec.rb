@@ -25,6 +25,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'GET builder' do
+    skip 'Needs transam_asset. Not yet testable.'
     get :builder
   end
 
