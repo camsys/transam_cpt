@@ -48,18 +48,18 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     add_breadcrumb "SOGR Capital Project Analyzer"
 
-    # Select the asset types that they are allowed to build. This is narrowed down to only
-    # asset types they own and those which are fta vehicles
-    builder = CapitalProjectBuilder.new
-    #@asset_types = builder.eligible_asset_types(@organization)
-    @asset_types = []
-    AssetType.all.each do |type|
-      assets = Asset.where(asset_type: type)
+    # Select the asset types that they are allowed to build
+
+    @asset_seed = []
+    typed_asset = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(Rails.application.config.asset_base_class_name.constantize.first)
+    typed_asset.class.asset_seed_class_name.constantize.active.each do |seed|
+      assets = (Rails.application.config.asset_base_class_name == 'TransamAsset' ? 'TransitAsset' : Rails.application.config.asset_base_class_name).constantize.where(fta_asset_class: seed)
       if assets.where(organization: @organization_list).count > 0
-        @asset_types << {id: type.id, name: type.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
+        @asset_seed << {id: seed.id, name: seed.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
+      else
+        @asset_seed << {id: seed.id, name: seed.to_s, orgs: []}
       end
     end
-    @fta_asset_categories = FtaAssetCategory.where(id: TransitAsset.where(organization_id:  @organization_list).distinct.pluck(:fta_asset_category_id))
 
     @fiscal_years = get_fiscal_years
     @builder_proxy = BuilderProxy.new
@@ -101,7 +101,28 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
       org = Organization.get_typed_organization(Organization.find(org_id))
 
-      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.fta_asset_categories, @builder_proxy.start_fy, current_user), :priority => 0
+      # set class names whether primary or components are selected
+      class_names = FtaAssetClass.where(id: @builder_proxy.fta_asset_classes).distinct.pluck(:class_name)
+      ['Facility', 'Infrastructure'].each do |klass|
+        if params["#{klass.downcase}_primary"].to_i == 1
+          if ["#{klass.downcase}_component"].to_i == 1
+            class_names << "#{klass}Component"
+          else
+            # do nothing Facility class already added from FTA asset class
+          end
+        else
+          if params["#{klass.downcase}_component"].to_i == 1
+            class_names << "#{klass}Component"
+            class_names.delete(klass)
+          else
+            # this case can't happen but if it does
+            class_names.delete(klass)
+          end
+        end
+      end
+
+
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, current_user), :priority => 0
 
       # Let the user know the results
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."

@@ -12,7 +12,9 @@ class BuilderProxy < Proxy
   # Type of asset type to process
   attr_accessor     :asset_types
 
-  attr_accessor     :fta_asset_categories
+  attr_accessor     :class_names
+
+  attr_accessor     :fta_asset_classes
 
   def initialize(attrs = {})
     super
