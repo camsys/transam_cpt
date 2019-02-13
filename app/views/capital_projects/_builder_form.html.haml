@@ -47,8 +47,32 @@
   $('.fta-category-checkbox').on('click', function(event) {
     if ($(this).is(':checked')) {
       $(this).parent().parent().parent().find('input[type="checkbox"]:not(.not-checked)').prop('checked', true);
+      $(this).parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', false);
+        $(this).parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', false);
     } else {
       $(this).parent().parent().parent().find('input[type="checkbox"]:not(.not-checked)').prop('checked', false);
+      $(this).parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', true);
+      $(this).parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', true);
+    }
+  });
+
+  $('.builder_proxy_fta_asset_classes input').on('click', function(event) {
+
+    if ($(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input:checked').length == 0) {
+      $(this).parent().parent().parent().parent().find('input[type="checkbox"]').prop('checked', false);
+      $(this).parent().parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', true);
+      $(this).parent().parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', true);
+    } else if ($(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input:checked').length == 1) {
+      $(this).parent().parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', false);
+      $(this).parent().parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', false);
+      $(this).parent().parent().parent().parent().find('.facility_primary_component_checkboxes').first().prop('checked', true);
+      $(this).parent().parent().parent().parent().find('.infrastructure_primary_component_checkboxes').first().prop('checked', true);
+    }
+
+    if ($(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input[type="checkbox"]:checked').length == $(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input[type="checkbox"]').length) {
+      $(this).parent().parent().parent().parent().find('.fta-category-checkbox').prop('checked', true);
+    } else {
+      $(this).parent().parent().parent().parent().find('.fta-category-checkbox').prop('checked', false);
     }
   });
 
