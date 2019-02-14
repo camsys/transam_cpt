@@ -528,7 +528,7 @@ SELECT
         AND transitAs.transit_assetible_type = 'Facility'
 
 	  LEFT JOIN transit_components AS component ON component.id = transitAs.transit_assetible_id
-		    AND transitAs.transit_assetible_type = 'Component'
+		    AND transitAs.transit_assetible_type = 'TransitComponent'
 
     LEFT JOIN esl_categories AS esl_category ON esl_category.id = f.esl_category_id
 
