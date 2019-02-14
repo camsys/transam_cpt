@@ -105,7 +105,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       class_names = FtaAssetClass.where(id: @builder_proxy.fta_asset_classes).distinct.pluck(:class_name)
       ['Facility', 'Infrastructure'].each do |klass|
         if params["#{klass.downcase}_primary"].to_i == 1
-          if ["#{klass.downcase}_component"].to_i == 1
+          if params["#{klass.downcase}_component"].to_i == 1
             class_names << "#{klass}Component"
           else
             # do nothing Facility class already added from FTA asset class
