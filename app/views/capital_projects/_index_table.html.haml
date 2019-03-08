@@ -58,7 +58,7 @@
         -#%th.center Status
         %th{data: {field: 'total_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter', align: 'right'}} Cost
 
-        %th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
+        -#%th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
         %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
 
 = render 'shared/table_formatters'
