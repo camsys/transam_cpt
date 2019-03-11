@@ -11,7 +11,7 @@
       -#%th.center Status
       %th.right Cost
 
-      %th.center
+      -#%th.center
 
   %tbody
 
@@ -29,8 +29,8 @@
 
         %td.right= format_as_currency(p.total_cost)
 
-        %td.center
-          %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
+        -#%td.center
+        -#  %i.fa.fa-info-circle.text-info.popup-details{:data => {:title => "#{p.project_number}: Activity Line Items", :content => "#{raw render :partial => 'capital_projects/activity_line_items_table', :locals => {:project => p, :popup => false}}"}}
 
 :javascript
   $('.popup-details').popover({
