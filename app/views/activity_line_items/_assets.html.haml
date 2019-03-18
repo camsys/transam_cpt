@@ -8,9 +8,9 @@
       %p There are no assets for this activity line item.
     - else
       - if @activity_line_item.notional?
-        = render :partial => 'assets_notional_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
+        = render :partial => 'assets_notional_datatable', :locals => {:ali => @activity_line_item, :popup => '0'}
       - else
-        = render :partial => 'assets_planning_datatable', :locals => {:ali => @activity_line_item, :popup => '1'}
+        = render :partial => 'assets_planning_datatable', :locals => {:ali => @activity_line_item, :popup => '0'}
 
 :javascript
   $('.popup-details').popover({

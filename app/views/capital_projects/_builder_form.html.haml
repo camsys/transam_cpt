@@ -9,13 +9,29 @@
 
   - if @organization_list.count > 1
     .row
-      .col-md-12
+      .col-md-9
         = f.input :organization_id, :required => true, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name'
+      .col-md-3
+        = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
   .row
-    .col-md-6
-      = f.input :fta_asset_categories, :required => true,   :collection => @fta_asset_categories, :multiple => true, :as => :check_boxes, :input_html => { :checked => true }
-    .col-md-6
-      = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
+    - FtaAssetCategory.active.each do |fta_category|
+      .col-md-3.fta-category-div{id: fta_category.name.parameterize.underscore}
+        %span.checkbox
+          %label
+            = check_box_tag fta_category.name.parameterize.underscore, 1, true, class: 'fta-category-checkbox'
+            %strong= fta_category
+        = f.input :fta_asset_classes, collection: fta_category.fta_asset_classes, as: :check_boxes, label: false, :input_html => { :checked => true }
+        - if FtaAssetCategory.where(name: ['Facilities', 'Infrastructure']).include? fta_category
+          .col-md-offset-1
+            %span.checkbox
+              %label
+                = check_box_tag "#{fta_category.name.singularize.downcase}_primary", 1, true, class: "#{fta_category.name.singularize.downcase}_primary_component_checkboxes"
+                Primary
+            %span.checkbox
+              %label
+                = check_box_tag "#{fta_category.name.singularize.downcase}_component", 1, fta_category.name == 'Infrastructure', class: "#{fta_category.name.singularize.downcase}_primary_component_checkboxes #{fta_category.name == 'Infrastructure' ? '' : 'not-checked'}"
+                Component / Sub-Component
+
 
   - builder_warning_style = "display: none;"
   - builder_warning_style = "" if @organization_list.count == 1 && Organization.get_typed_organization(Organization.find_by(id: @organization_list.first)).has_sogr_projects?
@@ -27,9 +43,55 @@
 
 
 :javascript
+
+  $('.fta-category-checkbox').on('click', function(event) {
+    if ($(this).is(':checked')) {
+      $(this).parent().parent().parent().find('input[type="checkbox"]:not(.not-checked)').prop('checked', true);
+      $(this).parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', false);
+        $(this).parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', false);
+    } else {
+      $(this).parent().parent().parent().find('input[type="checkbox"]:not(.not-checked)').prop('checked', false);
+      $(this).parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', true);
+      $(this).parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', true);
+    }
+  });
+
+  $('.builder_proxy_fta_asset_classes input').on('click', function(event) {
+
+    if ($(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input:checked').length == 0) {
+      $(this).parent().parent().parent().parent().find('input[type="checkbox"]').prop('checked', false);
+      $(this).parent().parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', true);
+      $(this).parent().parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', true);
+    } else if ($(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input:checked').length == 1) {
+      $(this).parent().parent().parent().parent().find('.facility_primary_component_checkboxes').attr('disabled', false);
+      $(this).parent().parent().parent().parent().find('.infrastructure_primary_component_checkboxes').attr('disabled', false);
+      $(this).parent().parent().parent().parent().find('.facility_primary_component_checkboxes').first().prop('checked', true);
+      $(this).parent().parent().parent().parent().find('.infrastructure_primary_component_checkboxes').first().prop('checked', true);
+    }
+
+    if ($(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input[type="checkbox"]:checked').length == $(this).parent().parent().parent().parent().find('.builder_proxy_fta_asset_classes input[type="checkbox"]').length) {
+      $(this).parent().parent().parent().parent().find('.fta-category-checkbox').prop('checked', true);
+    } else {
+      $(this).parent().parent().parent().parent().find('.fta-category-checkbox').prop('checked', false);
+    }
+  });
+
+  $('.facility_primary_component_checkboxes').on('click', function(event) {
+    ensure_at_least_one_checked('.facility_primary_component_checkboxes');
+  });
+  $('.infrastructure_primary_component_checkboxes').on('click', function(event) {
+    ensure_at_least_one_checked('.infrastructure_primary_component_checkboxes');
+  });
+  function ensure_at_least_one_checked(checkbox_identifier) {
+    if ($(checkbox_identifier + ':checked').length < 1) {
+      $(checkbox_identifier).first().prop('checked', true);
+    }
+  }
+
+
   $(function(){
     var org_id = 0;
-    var asset_types = JSON.parse('#{@asset_types.to_json.html_safe}');
+    var asset_seed = JSON.parse('#{@asset_seed.to_json.html_safe}');
     var current_planning_year = #{current_planning_year_year};
     var has_sogr_project_org_list = #{ (@has_sogr_project_org_list || {}).to_json.html_safe };
     var have_sogr_locked_list = #{(@has_locked_sogr_this_fiscal_year || {}).to_json.html_safe};
@@ -62,17 +124,24 @@
         $('#builder_proxy_start_fy').val(fy_year);
 
         // Set asset types of org only
-        for (var j = 0; j < asset_types.length; j++){
-          type = asset_types[j]
+        for (var j = 0; j < asset_seed.length; j++){
+          type = asset_seed[j]
 
           if ($.inArray( parseInt(id), type.orgs ) >= 0) {
-            $('#builder_proxy_asset_types_'+type.id).parent().parent().show();
+            $('#builder_proxy_fta_asset_classes_'+type.id).parent().parent().show();
           } else {
-            $('#builder_proxy_asset_types_'+type.id).parent().parent().hide(); // hide whole span
-            $('#builder_proxy_asset_types_'+type.id).prop('checked', false);
+            $('#builder_proxy_fta_asset_classes_'+type.id).parent().parent().hide(); // hide whole span
+            $('#builder_proxy_fta_asset_classes_'+type.id).prop('checked', false);
 
           }
         }
+
+        $('.fta-category-div').show();
+        $.each(JSON.parse('#{FtaAssetCategory.active.map{|fta_category| fta_category.name.parameterize.underscore}.to_json.html_safe}'), function( index, value ) {
+          if ($('#'+value+'.fta-category-div .builder_proxy_fta_asset_classes span.checkbox:visible').length == 0) {
+            $('#'+value+'.fta-category-div').hide();
+          }
+        });
       }
     });
 
