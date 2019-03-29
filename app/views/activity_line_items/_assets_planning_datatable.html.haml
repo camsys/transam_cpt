@@ -37,7 +37,7 @@
   %thead
     %tr
       - if move_assets_action == '1'
-        %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+        %th.bs-checkbox{:data => {:checkbox => 'true'}}
       %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
       %th.left{data: {field: 'asset_tag', formatter: 'asset_tag_formatter'}} Tag
       %th.left{data: {field: 'asset_subtype'}} Asset Subtype
