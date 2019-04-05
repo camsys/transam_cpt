@@ -181,7 +181,9 @@ class CapitalProjectsController < AbstractCapitalProjectsController
           :rows =>  projects_json
         }
       }
-      format.xls
+      format.xlsx do
+        response.headers['Content-Disposition'] = "attachment; filename=Capital Projects Table Export.xlsx"
+      end
     end
   end
 

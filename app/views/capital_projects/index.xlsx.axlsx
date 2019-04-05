@@ -1,0 +1,51 @@
+require 'rubyXL'
+
+wb = xlsx_package.workbook
+
+wb.styles do |style|
+
+    # Define styles
+    table_header = style.add_style(bg_color: "BFBFBF", b: true, font_name: "Calibri (body)", :border => { :style => :thin, :color => "00000000" })
+    column_header = style.add_style(b: true, font_name: "Calibri (body)")
+    table_data = style.add_style(font_name: "Calibri (body)")
+
+    # Add worksheet
+    wb.add_worksheet(name: "Capital Projects") do |sheet|
+
+        # Define columns [column header, data value]
+        columns = {
+            project_id:             ["Project ID", "project.project_number.to_s.split('#').last"],
+            organization:           ["Organization", "project.organization.short_name"],
+            year:                   ["Year", "format_as_fiscal_year(project.fy_year)"],
+            title:                  ["Title", "project.title"],
+            scope:                  ["Scope", "project.team_ali_code.scope"],
+            ali:                    ["ALI", "project.team_ali_code"],
+            project_type:           ["Project Type", "project.capital_project_type"],
+            sogr:                   ["SOGR", "format_as_yes_no(project.sogr?)"],
+            shadow:                 ["Shadow", "format_as_yes_no(project.notional?)"],
+            emergency_project:      ["Emergency Project", "format_as_yes_no(project.emergency?)"],
+            cost:                   ["Cost", "project.total_cost"],
+            project_description:    ["Project Description", "project.description"],
+            project_justification:  ["Project Justification", "project.justification"]
+        }
+
+        # Merge table header cells and add padding
+        sheet.merge_cells "A1:#{RubyXL::Reference.ind2ref(0, columns.length - 1)}"
+
+        table_header_cells = ["Capital Project Data"]
+        (columns.length - 1).times do
+            table_header_cells << ""
+        end
+
+        # Add table header
+        sheet.add_row table_header_cells, style: table_header
+
+        # Add column headers
+        sheet.add_row columns.map{|key, value| value[0]}, style: column_header
+
+        # Add data
+        @projects.each do |project|
+            sheet.add_row columns.map{|key, value| eval(value[1])}, style: table_data
+        end
+    end
+end
