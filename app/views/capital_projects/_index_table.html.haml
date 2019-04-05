@@ -11,11 +11,39 @@
       border: none;
   }
 
-#projects_table_actions.btn-group
+  .bs-bars.pull-left {
+    float: none !important;
+    display: inline-block;
+    width: 91%;
+  }
+
+#projects_table_actions.row
   - if can? :create, CapitalProject
-    = link_to new_capital_project_path, :class => 'btn btn-default' do
+    = link_to new_capital_project_path, :class => 'btn btn-default', :style => 'margin-left: 5px;' do
       %i.fa.fa-plus.fa-fw
       = " New Capital Project"
+  .navbar-form.pull-right{:style => 'margin-top: 0px;'}
+    %button.btn.btn-primary.btn-md.dropdown-toggle{:data => {:toggle => 'dropdown'}, :style => 'vertical-align: top;'}
+      %i.fa.fa-file
+      = " Export"
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu', :style => 'padding-top: 0px;'}
+      %li{:style => "background-color: #f5f5f5; padding-left: 20px;  border-bottom: 1px solid black;"}
+        Export Projects
+      %li
+        = link_to 'CSV', current_url(format: :csv), target: '_blank', title: 'Export all rows and columns to CSV'
+      %li
+        = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
+      %li{:style => 'border-bottom: 1px solid black;'}
+        = link_to 'XLSX', current_url(format: :xlsx), target: '_blank', title: 'Export all rows and columns to XLSX'
+      %li{:style => "background-color: #f5f5f5; padding-left: 20px; padding-right: 20px; border-bottom: 1px solid black; border-top: 1px solid black"}
+        Export Activity Line Items
+      %li
+        = link_to 'CSV', current_url(format: :csv), target: '_blank', title: 'Export all rows and columns to CSV'
+      %li
+        = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
+      %li
+        = link_to 'XLSX', current_url(format: :xlsx), target: '_blank', title: 'Export all rows and columns to XLSX'
 
 #capital_projects_table_div.table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
