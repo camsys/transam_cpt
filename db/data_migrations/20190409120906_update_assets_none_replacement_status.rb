@@ -3,7 +3,9 @@ class UpdateAssetsNoneReplacementStatus < ActiveRecord::DataMigration
     service = CapitalProjectBuilder.new
 
     TransamAsset.where(replacement_status_type_id: ReplacementStatusType.find_by(name: 'None').id).each do |asset|
-      service.update_asset_schedule(asset)
+      if asset.activity_line_items.count > 0
+        service.update_asset_schedule(asset)
+      end
     end
 
 
