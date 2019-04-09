@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
+  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -339,6 +339,20 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @organization_distrcits = result
     respond_to do |format|
       format.json { render json: result.to_json }
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # Get all ALIs for selected projects.
+  #-----------------------------------------------------------------------------
+  def activity_line_items
+
+    get_projects
+
+    respond_to do |format|
+      format.xlsx do
+        response.headers['Content-Disposition'] = "attachment; filename=Activity Line Items Table Export.xlsx"
+      end
     end
   end
 

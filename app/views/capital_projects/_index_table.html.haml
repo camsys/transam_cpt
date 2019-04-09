@@ -43,7 +43,7 @@
       -#%li
       -#  = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
       %li
-        = link_to 'XLSX', current_url(format: :xlsx), target: '_blank', title: 'Export all rows and columns to XLSX'
+        = link_to 'XLSX', {controller: 'capital_projects', action: 'activity_line_items', format: :xlsx}, target: '_blank', title: 'Export all rows and columns to XLSX'
 
 #capital_projects_table_div.table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',

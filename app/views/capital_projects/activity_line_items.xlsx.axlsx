@@ -1,0 +1,53 @@
+require 'rubyXL'
+
+wb = xlsx_package.workbook
+
+wb.styles do |style|
+
+    # Define styles
+    table_header = style.add_style(bg_color: "BFBFBF", b: true, font_name: "Calibri (body)", :border => { :style => :thin, :color => "00000000" })
+    column_header = style.add_style(b: true, font_name: "Calibri (body)")
+    table_data = style.add_style(font_name: "Calibri (body)")
+
+    # Add worksheet
+    wb.add_worksheet(name: "Activity Line Items") do |sheet|
+
+        # Define columns [column header, data value]
+        columns = {
+            project_id:         ["Project ID", "ali.capital_project.to_s.split('#').last"],
+            organization:       ["Organization", "ali.organization"],
+            project_year:       ["Project Year", "format_as_fiscal_year(ali.capital_project.fy_year)"],
+            project_title:      ["Project Title", "ali.capital_project.title"],
+            scope:              ["Scope", "ali.team_ali_code.scope"],
+            project_type:       ["Project Type", "ali.capital_project.capital_project_type"],
+            sogr:               ["SOGR", "format_as_yes_no(ali.sogr?)"],
+            shadow:             ["Shadow", "format_as_yes_no(ali.notional?)"],
+            emergency_project:  ["Emergency Project", "format_as_yes_no(ali.capital_project.emergency?)"],
+            ali_year:           ["ALI Year", "ali.fy_year"],
+            name:               ["Name", "ali.name"],
+            ali:                ["ALI", "ali.team_ali_code"],
+            cost:               ["Cost", "ali.cost"],
+            count:              ["No. of Assets", "ali.count.nil? || ali.count == 0 ? '' : ali.count"],
+            pinned:             ["Pinned", "format_as_yes_no(ali.pinned?)"]
+        }
+
+        # Merge table header cells and add padding
+        sheet.merge_cells "A1:#{RubyXL::Reference.ind2ref(0, columns.length - 1)}"
+
+        table_header_cells = ["Activity Line Item Data"]
+        (columns.length - 1).times do
+            table_header_cells << ""
+        end
+
+        # Add table header
+        sheet.add_row table_header_cells, style: table_header
+
+        # Add column headers
+        sheet.add_row columns.map{|key, value| value[0]}, style: column_header
+
+        # Add data
+        @alis.each do |ali|
+            sheet.add_row columns.map{|key, value| eval(value[1])}, style: table_data
+        end
+    end
+end
