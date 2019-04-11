@@ -1,7 +1,6 @@
 class RunSogrBuilderAll < ActiveRecord::DataMigration
   def up
-    org = TransitOperator.find_by(short_name: args[:org_short_name])
-    orgs = org.nil? ? TransitOperator.all : [org]
+    orgs = TransitOperator.all
 
     orgs.each do |o|
       builder = CapitalProjectBuilder.new
