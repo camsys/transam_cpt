@@ -33,9 +33,10 @@ CREATE OR REPLACE VIEW all_assets_recent_asset_events_for_type_view AS
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
+DROP VIEW if exists capital_equipment_asset_table_views;
 
-DROP VIEW if exists capital_equipment_asset_table_views;     
-CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
+DROP VIEW if exists capital_equipment_asset_table_views_view;
+CREATE OR REPLACE VIEW capital_equipment_asset_table_views_view AS
       SELECT
         transitAs.asset_id AS 'transit_asset_asset_id',
         transitAs.contract_num AS 'transit_asset_contract_num',
@@ -285,8 +286,9 @@ CREATE OR REPLACE VIEW capital_equipment_asset_table_views AS
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
- DROP VIEW if exists facility_primary_asset_table_views;
-CREATE OR REPLACE VIEW facility_primary_asset_table_views AS
+DROP VIEW if exists facility_primary_asset_table_views;
+DROP VIEW if exists facility_primary_asset_table_views_view;
+CREATE OR REPLACE VIEW facility_primary_asset_table_views_view AS
 SELECT
         f.id,
         f.id AS 'facility_id',
@@ -599,7 +601,8 @@ SELECT
 -- ----------------------------------------------------------------------------------------------------------------
 
 DROP VIEW if exists infrastructure_asset_table_views;
-CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
+DROP VIEW if exists infrastructure_asset_table_views_view;
+CREATE OR REPLACE VIEW infrastructure_asset_table_views_view AS
 SELECT
         i.id,
         i.id AS 'infrastructure_id',
@@ -946,7 +949,8 @@ SELECT
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 DROP VIEW if exists revenue_vehicle_asset_table_views;
-      CREATE OR REPLACE VIEW revenue_vehicle_asset_table_views AS
+DROP VIEW if exists revenue_vehicle_asset_table_views_view;
+CREATE OR REPLACE VIEW revenue_vehicle_asset_table_views_view AS
       SELECT
         rv.id,
         rv.id AS 'revenue_vehicle_id',
@@ -1255,7 +1259,8 @@ DROP VIEW if exists revenue_vehicle_asset_table_views;
 -- ----------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------------------------------------------
 DROP VIEW if exists service_vehicle_asset_table_views;
-CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
+DROP VIEW if exists service_vehicle_asset_table_views_view;
+CREATE OR REPLACE VIEW service_vehicle_asset_table_views_view AS
       SELECT
         sv.ada_accessible AS 'service_vehicle_ada_accessible',
           sv.chassis_id AS 'service_vehicle_chassis_id',
@@ -1535,3 +1540,47 @@ CREATE OR REPLACE VIEW service_vehicle_asset_table_views AS
 
       LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = transitAs.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'ServiceVehicle'
       LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
+
+-- ----------------------------------------------------------------------------------------------------------------
+CREATE TABLE temp_capital_equipment_asset_table_views SELECT * FROM capital_equipment_asset_table_views_view;
+
+CREATE TABLE temp_facility_primary_asset_table_views SELECT * FROM facility_primary_asset_table_views_view;
+
+CREATE TABLE temp_infrastructure_asset_table_views SELECT * FROM infrastructure_asset_table_views_view;
+
+CREATE TABLE temp_revenue_vehicle_asset_table_views SELECT * FROM revenue_vehicle_asset_table_views_view;
+
+CREATE TABLE temp_service_vehicle_asset_table_views SELECT * FROM service_vehicle_asset_table_views_view;
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE capital_equipment_asset_table_views SELECT * FROM capital_equipment_asset_table_views_view;
+
+CREATE TABLE facility_primary_asset_table_views SELECT * FROM facility_primary_asset_table_views_view;
+
+CREATE TABLE infrastructure_asset_table_views SELECT * FROM infrastructure_asset_table_views_view;
+
+CREATE TABLE revenue_vehicle_asset_table_views SELECT * FROM revenue_vehicle_asset_table_views_view;
+
+CREATE TABLE service_vehicle_asset_table_views SELECT * FROM service_vehicle_asset_table_views_view;
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------
+
+RENAME TABLE capital_equipment_asset_table_views TO temp_delete_capital_equipment_asset_table_views,
+	temp_capital_equipment_asset_table_views TO capital_equipment_asset_table_views;
+
+RENAME TABLE facility_primary_asset_table_views TO temp_delete_facility_primary_asset_table_views,
+	temp_facility_primary_asset_table_views TO facility_primary_asset_table_views;
+
+RENAME TABLE infrastructure_asset_table_views TO temp_delete_infrastructure_asset_table_views,
+	temp_infrastructure_asset_table_views TO infrastructure_asset_table_views;
+
+RENAME TABLE revenue_vehicle_asset_table_views TO temp_delete_revenue_vehicle_asset_table_views,
+	temp_revenue_vehicle_asset_table_views TO revenue_vehicle_asset_table_views;
+
+RENAME TABLE service_vehicle_asset_table_views TO temp_delete_service_vehicle_asset_table_views,
+	temp_service_vehicle_asset_table_views TO service_vehicle_asset_table_views;
+
+-- ----------------------------------------------------------------------------------------------------------------------------------------------------
+DROP TABLE temp_delete_capital_equipment_asset_table_views;
+DROP TABLE temp_delete_facility_primary_asset_table_views;
+DROP TABLE temp_delete_infrastructure_asset_table_views;
+DROP TABLE temp_delete_revenue_vehicle_asset_table_views;
+DROP TABLE temp_delete_service_vehicle_asset_table_views;
