@@ -5,11 +5,11 @@ DROP VIEW if exists revenue_vehicle_asset_table_views;
 DROP VIEW if exists service_vehicle_asset_table_views;
 
 
-CREATE TABLE IF NOT EXISTS capital_equipment_asset_table_views SELECT object_key FROM revenue_vehicles;
-CREATE TABLE IF NOT EXISTS infrastructure_asset_table_views SELECT object_key FROM revenue_vehicles;
-CREATE TABLE IF NOT EXISTS facility_primary_asset_table_views SELECT object_key FROM revenue_vehicles;
-CREATE TABLE IF NOT EXISTS revenue_vehicle_asset_table_views SELECT object_key FROM revenue_vehicles;
-CREATE TABLE IF NOT EXISTS service_vehicle_asset_table_views SELECT object_key FROM revenue_vehicles;
+CREATE TABLE IF NOT EXISTS capital_equipment_asset_table_views SELECT id FROM revenue_vehicles;
+CREATE TABLE IF NOT EXISTS infrastructure_asset_table_views SELECT id FROM revenue_vehicles;
+CREATE TABLE IF NOT EXISTS facility_primary_asset_table_views SELECT id FROM revenue_vehicles;
+CREATE TABLE IF NOT EXISTS revenue_vehicle_asset_table_views SELECT id FROM revenue_vehicles;
+CREATE TABLE IF NOT EXISTS service_vehicle_asset_table_views SELECT id FROM revenue_vehicles;
 
 SET GLOBAL event_scheduler = ON;
 
