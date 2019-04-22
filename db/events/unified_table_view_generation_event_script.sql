@@ -15,7 +15,7 @@ SET GLOBAL event_scheduler = ON;
 
 delimiter |
 
-CREATE EVENT IF NOT EXISTS capital_equipment_asset_table_view_generator_v1
+CREATE EVENT IF NOT EXISTS capital_equipment_asset_table_view_generator
 ON SCHEDULE
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'
@@ -275,7 +275,7 @@ BEGIN
 
 END |
 
-CREATE EVENT IF NOT EXISTS facility_primary_asset_table_view_generator_v1
+CREATE EVENT IF NOT EXISTS facility_primary_asset_table_view_generator
 ON SCHEDULE
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'
@@ -595,58 +595,94 @@ BEGIN
 
 END |
 
-CREATE EVENT IF NOT EXISTS infrastructure_asset_table_view_generator_v1
+CREATE EVENT IF NOT EXISTS infrastructure_asset_table_view_generator
 ON SCHEDULE
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
-	CREATE TABLE IF NOT EXISTS temp_facility_primary_asset_table_views
+	CREATE TABLE IF NOT EXISTS temp_infrastructure_asset_table_views
 		SELECT
-        f.id,
-        f.id AS 'facility_id',
-		f.ada_accessible AS 'facility_ada_accessible',
-        f.address1 AS 'facility_address1',
-        f.address2 AS 'facility_address2',
-        f.city AS 'facility_city',
-        f.country AS 'facility_country',
-        f.county AS 'facility_county',
-        f.created_at AS 'facility_created_at',
-        f.esl_category_id AS 'facility_esl_category_id***',
-        f.facility_capacity_type_id AS 'facility_facility_capacity_type_id',
-        f.facility_name AS 'facility_facility_name',
-        f.facility_ownership_organization_id AS 'facility_facility_ownership_organization_id',
-        f.facility_size AS 'facility_facility_size',
-        f.facility_size_unit AS 'facility_facility_size_unit',
-        f.fta_private_mode_type_id AS 'facility_fta_private_mode_type_id',
-        f.land_ownership_organization_id AS 'facility_land_ownership_organization_id',
-        f.leed_certification_type_id AS 'facility_leed_certification_type_id',
-        f.lot_size AS 'facility_lot_size',
-        f.lot_size_unit AS 'facility_lot_size_unit',
-        f.ntd_id AS 'facility_ntd_id',
-        f.num_elevators AS 'facility_num_elevators',
-        f.num_escalators AS 'facility_num_escalators',
-        f.num_floors AS 'facility_num_floors',
-        f.num_parking_spaces_private AS 'facility_num_parking_spaces_private',
-        f.num_parking_spaces_public AS 'facility_num_parking_spaces_public',
-        f.num_structures AS 'facility_num_structures',
-        f.other_facility_ownership_organization AS 'facility_other_facility_ownership_organization',
-        f.other_land_ownership_organization AS 'facility_other_land_ownership_organization',
-        f.section_of_larger_facility AS 'facility_section_of_larger_facility',
-        f.state AS 'facility_state',
-        f.updated_at AS 'facility_updated_at',
-        f.zip AS 'facility_zip',
+        i.id,
+        i.id AS 'infrastructure_id',
+        i.cant AS 'infrastructure_cant',
+        i.cant_gradient AS 'infrastructure_cant_gradient',
+        i.cant_gradient_unit AS 'infrastructure_cant_gradient_unit',
+        i.cant_unit AS 'infrastructure_cant_unit',
+        i.created_at AS 'infrastructure_created_at',
+        i.crosslevel AS 'infrastructure_crosslevel',
+        i.crosslevel_unit AS 'infrastructure_crosslevel_unit',
+        i.direction AS 'infrastructure_direction',
+        i.from_line AS 'infrastructure_from_line',
+        i.from_location_name AS 'infrastructure_from_location_name',
+        i.from_segment AS 'infrastructure_from_segment',
+        i.gauge AS 'infrastructure_gauge',
+        i.gauge_unit AS 'infrastructure_gauge_unit',
+        i.height AS 'infrastructure_height',
+        i.height_unit AS 'infrastructure_height_unit',
+        i.horizontal_alignment AS 'infrastructure_horizontal_alignment',
+        i.horizontal_alignment_unit AS 'infrastructure_horizontal_alignment_unit',
+        i.infrastructure_bridge_type_id AS 'infrastructure_infrastructure_bridge_type_id',
+        i.infrastructure_chain_type_id AS 'infrastructure_infrastructure_chain_type_id',
+        i.infrastructure_control_system_type_id AS 'infrastructure_infrastructure_control_system_type_id',
+        i.infrastructure_crossing_id AS 'infrastructure_infrastructure_crossing_id',
+        i.infrastructure_division_id AS 'infrastructure_infrastructure_division_id',
+        i.infrastructure_gauge_type_id AS 'infrastructure_infrastructure_gauge_type_id',
+        i.infrastructure_operation_method_type_id AS 'infrastructure_infrastructure_operation_method_type_id',
+        i.infrastructure_reference_rail_id AS 'infrastructure_infrastructure_reference_rail_id',
+        i.infrastructure_segment_type_id AS 'infrastructure_infrastructure_segment_type_id',
+        i.infrastructure_segment_unit_type_id AS 'infrastructure_infrastructure_segment_unit_type_id',
+        i.infrastructure_subdivision_id AS 'infrastructure_infrastructure_subdivision_id',
+        i.infrastructure_track_id AS 'infrastructure_infrastructure_track_id',
+        i.land_ownership_organization_id AS 'infrastructure_land_ownership_organization_id',
+        i.length AS 'infrastructure_length',
+        i.length_unit AS 'infrastructure_length_unit',
+        i.location_name AS 'infrastructure_location_name',
+        i.max_permissible_speed AS 'infrastructure_max_permissible_speed',
+        i.max_permissible_speed_unit AS 'infrastructure_max_permissible_speed_unit',
+        i.nearest_city AS 'infrastructure_nearest_city',
+        i.nearest_state AS 'infrastructure_nearest_state',
+        i.num_decks AS 'infrastructure_num_decks',
+        i.num_spans AS 'infrastructure_num_spans',
+        i.num_tracks AS 'infrastructure_num_tracks',
+        i.other_land_ownership_organization AS 'infrastructure_other_land_ownership_organization',
+        i.relative_location AS 'infrastructure_relative_location',
+        i.relative_location_direction AS 'infrastructure_relative_location_direction',
+        i.relative_location_unit AS 'infrastructure_relative_location_unit',
+        i.segment_unit AS 'infrastructure_segment_unit',
+        i.shared_capital_responsibility_organization_id AS 'infrastructure_shared_capital_responsibility_organization_id',
+        i.to_line AS 'infrastructure_to_line',
+        i.to_location_name AS 'infrastructure_to_location_name',
+        i.to_segment AS 'infrastructure_to_segment',
+        i.track_curvature AS 'infrastructure_track_curvature',
+        i.track_curvature_degree AS 'infrastructure_track_curvature_degree',
+        i.track_gradient AS 'infrastructure_track_gradient',
+        i.track_gradient_degree AS 'infrastructure_track_gradient_degree',
+        i.track_gradient_pcnt AS 'infrastructure_track_gradient_pcnt',
+        i.track_gradient_unit AS 'infrastructure_track_gradient_unit',
+        i.updated_at AS 'infrastructure_updated_at',
+        i.vertical_alignment AS 'infrastructure_vertical_alignment',
+        i.vertical_alignment_unit AS 'infrastructure_vertical_alignment_unit',
+        i.warp_parameter AS 'infrastructure_warp_parameter',
+        i.warp_parameter_unit AS 'infrastructure_warp_parameter_unit',
+        i.width AS 'infrastructure_width',
+        i.width_unit AS 'infrastructure_width_unit',
 
-        esl_category.name AS 'facility_esl_category_name',
+        infra_division.name AS 'infrastructure_infrastructure_division_name',
 
-		    component.id AS 'component_id',
-        component.component_type_id AS 'facility_component_type_id',
+        infra_subdivision.name AS 'infrastructure_infrastructure_subdivision_name',
 
-        ct.name AS 'facility_component_type_name',
+        infra_gauge.name AS 'infrastructure_infrastructure_gauge_type_name',
 
-        cst.name AS 'facility_component_subtype_name',
-        -- TODO Added to fix sandbox and QA should be removed longer term
-        cst.name AS 'facility_subcomponent_type_name',
+        infra_track.name AS 'infrastructure_infrastructure_track_name',
+
+        infra_segment_type.name AS'infrastructure_infrastructure_segment_name',
+
+        afmt.id AS 'assets_fta_mode_types_id',
+        afmt.asset_id AS 'assets_fta_mode_types_asset_id',
+        afmt.transam_asset_id AS 'assets_fta_mode_types_transam_asset_id',
+        afmt.fta_mode_type_id AS 'assets_fta_mode_types_fta_mode_type_id',
+        afmt.is_primary AS 'assets_fta_mode_types_is_primary',
 
         transitAs.asset_id AS 'transit_asset_asset_id',
         transitAs.contract_num AS 'transit_asset_contract_num',
@@ -672,18 +708,22 @@ BEGIN
         transitAs.title_number AS 'transit_asset_title_number',
 		    transitAs.title_ownership_organization_id AS 'transit_asset_title_ownership_organization_id',
 
+        fmt.name AS 'primary_mode_type',
+
         fta_asset_class.active AS 'transit_asset_fta_asset_class_active',
         fta_asset_class.class_name AS 'transit_asset_fta_asset_class_class_name',
         fta_asset_class.display_icon_name AS 'transit_asset_fta_asset_class_display_icon_name',
         fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
         fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-        fta_facility_type.active AS 'transit_asset_fta_type_active',
-        fta_facility_type.description AS 'transit_asset_fta_type_description',
-        fta_facility_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-        fta_facility_type.name AS 'transit_asset_fta_type_name',
-        fta_facility_type.class_name AS 'transit_asset_fta_type_class_name',
+        fta_guideway_type.active AS 'transit_asset_fta_guideway_type_active',
+        fta_guideway_type.name AS 'transit_asset_fta_guideway_type_name',
 
+        fta_power_type.active AS 'transit_asset_fta_power_and_signal_type_active',
+        fta_power_type.name AS 'transit_asset_fta_power_and_signal_type_name',
+
+        fta_track_type.active AS 'transit_asset_fta_track_type_active',
+        fta_track_type.name AS 'transit_asset_fta_track_type_name',
 
         transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
         transamAs.asset_tag AS 'asset_tag',
@@ -692,7 +732,7 @@ BEGIN
         transamAs.created_at AS 'transam_asset_created_at',
         transamAs.current_depreciation_date AS 'transam_asset_current_depreciation_date',
         transamAs.depreciable AS 'transam_asset_depreciable',
-		    transamAs.depreciation_purchase_cost AS 'transam_asset_depreciation_purchase_cost',
+        transamAs.depreciation_purchase_cost AS 'transam_asset_depreciation_purchase_cost',
         transamAs.depreciation_start_date AS 'transam_asset_depreciation_start_date',
         transamAs.depreciation_useful_life AS 'transam_asset_depreciation_useful_life',
         transamAs.description AS 'transam_asset_description',
@@ -723,7 +763,6 @@ BEGIN
         transamAs.purchased_new AS 'transam_asset_purchased_new',
         transamAs.quantity AS 'transam_asset_quantity',
         transamAs.quantity_unit AS 'transam_asset_quantity_unit',
-        transamAs.replacement_status_type_id AS 'transam_asset_replacement_status_type_id',
         transamAs.salvage_value AS 'transam_asset_salvage_value',
         transamAs.scheduled_disposition_year AS 'transam_asset_scheduled_disposition_year',
         transamAs.scheduled_rehabilitation_year AS 'transam_asset_scheduled_rehabilitation_year',
@@ -762,6 +801,7 @@ BEGIN
         org.short_name AS 'transam_asset_organization_short_name',
         org.grantor_id AS 'transam_asset_organization_grantor_id',
         org.organization_type_id AS 'transam_asset_organization_type_id',
+
 
         policy.active AS 'transam_asset_org_policy_active',
         policy.condition_estimation_type_id AS 'transam_asset_org_policy_condition_estimation_type_id',
@@ -828,94 +868,89 @@ BEGIN
 
         most_recent_mileage_event.current_mileage AS 'most_recent_mileage_event_current_mileage',
         most_recent_mileage_event.updated_at AS 'most_recent_mileage_event_updated_at',
-
-        most_recent_early_replacement_event.replacement_status_type_id AS 'most_recent_early_replacement_event_replacement_status_type_id',
-        replacement_status.name AS 'most_recent_early_replacement_event_replacement_status_type_name',
-			  NOW() AS 'table_created_at'
+        NOW() AS 'table_created_at'
 
 
-	  FROM transam_assets AS transamAs
-	  LEFT JOIN transit_assets AS transitAs ON transitAs.id = transamAs.transam_assetible_id
+      FROM infrastructures AS i
+      LEFT JOIN transit_assets AS transitAs ON transitAs.transit_assetible_id = i.id AND transit_assetible_type = 'Infrastructure'
+      LEFT JOIN infrastructure_divisions AS infra_division ON infra_division.id = i.infrastructure_division_id
+      LEFT JOIN infrastructure_subdivisions AS infra_subdivision ON infra_subdivision.id = i.infrastructure_subdivision_id
+      LEFT JOIN infrastructure_gauge_types AS infra_gauge ON infra_gauge.id = i.infrastructure_gauge_type_id
+      LEFT JOIN infrastructure_tracks AS infra_track ON infra_track.id = i.infrastructure_track_id
+      LEFT JOIN infrastructure_segment_types AS infra_segment_type ON infra_segment_type.id = i.infrastructure_segment_type_id
 
-    LEFT JOIN transit_assets AS parentAs ON parentAs.id = transamAs.parent_id
-    LEFT JOIN facilities AS f ON (transamAs.parent_id > 0 AND f.id = parentAs.transit_assetible_id) OR (transamAs.parent_id IS NULL AND f.id = transitAs.transit_assetible_id)
-        AND transitAs.transit_assetible_type = 'Facility'
+      LEFT JOIN transam_assets AS transamAs ON transamAs.transam_assetible_id = transitAs.id
+        AND transamAs.transam_assetible_type = 'TransitAsset'
 
-	  LEFT JOIN transit_components AS component ON component.id = transitAs.transit_assetible_id
-		    AND transitAs.transit_assetible_type = 'TransitComponent'
+      LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
+      LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
+      LEFT JOIN assets_asset_fleets AS aafleet ON aafleet.transam_asset_id = transamAs.id
+      LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
 
-    LEFT JOIN esl_categories AS esl_category ON esl_category.id = f.esl_category_id
+      LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
 
-    LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
-    LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
+      LEFT JOIN fta_guideway_types AS fta_guideway_type ON fta_guideway_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_power_signal_types AS fta_power_type ON fta_power_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_track_types AS fta_track_type ON fta_track_type.id = transitAs.fta_type_id
 
-    LEFT JOIN assets_asset_fleets AS aafleet ON aafleet.transam_asset_id = transamAs.id
-    LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
-
-    LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-    LEFT JOIN fta_facility_types AS fta_facility_type ON fta_facility_type.id = transitAs.fta_type_id
-    LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
-    LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
-    LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
-    LEFT JOIN manufacturer_models AS model ON model.id = transamAs.manufacturer_model_id
-    LEFT JOIN organizations AS operator ON operator.id = transitAs.operator_id
-    LEFT JOIN organizations AS org ON org.id = transamAs.organization_id
-    LEFT JOIN organization_types AS org_type ON org_type.id = org.organization_type_id
-    -- I am not thrilled about adding this business logic here but it was the only way to ensure we got the right policy.
-    LEFT JOIN policies AS policy ON policy.id = (
-        SELECT policies.id
-        FROM policies
-        WHERE IF(org_type.name='Planning Partner', org.grantor_id, org.id) = policies.organization_id
+      LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
+      LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
+      LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
+      LEFT JOIN manufacturer_models AS model ON model.id = transamAs.manufacturer_model_id
+      LEFT JOIN organizations AS operator ON operator.id = transitAs.operator_id
+      LEFT JOIN organizations AS org ON org.id = transamAs.organization_id
+      LEFT JOIN organization_types AS org_type ON org_type.id = org.organization_type_id
+      -- I am not thrilled about adding this business logic here but it was the only way to ensure we got the right policy.
+      LEFT JOIN policies AS policy ON policy.id = (
+          SELECT policies.id
+              FROM policies
+              WHERE IF(org_type.name='Planning Partner', org.grantor_id, org.id) = policies.organization_id
               LIMIT 1)
-    LEFT JOIN serial_numbers AS serial_number ON serial_number.id = (
-        SELECT id
-        FROM serial_numbers
-        WHERE identifiable_type = 'TransamAsset'
+
+      LEFT JOIN serial_numbers AS serial_number ON serial_number.id = (
+          SELECT id
+              FROM serial_numbers
+              WHERE identifiable_type = 'TransamAsset'
             AND identifiable_id = transamAs.id
               LIMIT 1)
 
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
+      -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
-    LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
-    LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
-      AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
-    -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-    -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
-    LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
-      AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
-    LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
-      AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
-    LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
-      AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
-    LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
-      AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
+      LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
+      LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
+      -- LEFT JOIN asset_events AS most_recent_maintenance_event ON most_recent_condition_event.id = rae_maintenance.asset_event_id
+      LEFT JOIN asset_events AS most_recent_service_status_event ON most_recent_service_status_event.id = rae_service_status.asset_event_id
+      LEFT JOIN asset_events AS most_recent_rebuild_event ON most_recent_rebuild_event.id = rae_rebuild.asset_event_id
+      LEFT JOIN asset_events AS most_recent_mileage_event ON most_recent_mileage_event.id = rae_mileage.asset_event_id
+      LEFT JOIN asset_events AS most_recent_early_replacement_event ON most_recent_early_replacement_event.id = rae_early_replacement_status.asset_event_id
 
-    LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
-    LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
-    LEFT JOIN asset_events AS most_recent_service_status_event ON most_recent_service_status_event.id = rae_service_status.asset_event_id
-    LEFT JOIN asset_events AS most_recent_rebuild_event ON most_recent_rebuild_event.id = rae_rebuild.asset_event_id
-    LEFT JOIN asset_events AS most_recent_mileage_event ON most_recent_mileage_event.id = rae_mileage.asset_event_id
-    LEFT JOIN asset_events AS most_recent_early_replacement_event ON most_recent_early_replacement_event.id = rae_early_replacement_status.asset_event_id
+      LEFT JOIN asset_event_types AS asset_event_type ON asset_event_type.id = most_recent_asset_event.asset_event_type_id
+      LEFT JOIN condition_types AS condition_type ON condition_type.id = most_recent_condition_event.condition_type_id
+      LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
 
-    LEFT JOIN asset_event_types AS asset_event_type ON asset_event_type.id = most_recent_asset_event.asset_event_type_id
-    LEFT JOIN condition_types AS condition_type ON condition_type.id = most_recent_condition_event.condition_type_id
-    LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
-    LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = transitAs.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'Infrastructure'
+      LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
 
-    LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = f.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'Facility'
-    LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
+    RENAME TABLE infrastructure_asset_table_views TO temp_delete_infrastructure_asset_table_views,
+	temp_infrastructure_asset_table_views TO infrastructure_asset_table_views;
 
-    LEFT JOIN component_types AS ct ON ct.id = component.component_type_id
-    LEFT JOIN component_subtypes As cst on cst.id = component.component_subtype_id
-    WHERE transamAs.transam_assetible_type = 'TransitAsset' AND (f.id >0 OR component.id > 0);
-
-	  RENAME TABLE facility_primary_asset_table_views TO temp_delete_facility_primary_asset_table_views,
-	temp_facility_primary_asset_table_views TO facility_primary_asset_table_views;
-
-	  DROP TABLE temp_delete_facility_primary_asset_table_views;
+	  DROP TABLE temp_delete_infrastructure_asset_table_views;
 
 END |
 
-CREATE EVENT IF NOT EXISTS revenue_vehicle_table_view_generator_v1
+CREATE EVENT IF NOT EXISTS revenue_vehicle_table_view_generator
 ON SCHEDULE
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'
@@ -1232,7 +1267,7 @@ BEGIN
 
 END |
 
-CREATE EVENT IF NOT EXISTS service_vehicle_table_view_generator_v1
+CREATE EVENT IF NOT EXISTS service_vehicle_table_view_generator
 ON SCHEDULE
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'

@@ -2,9 +2,11 @@ CREATE TABLE IF NOT EXISTS facility_primary_asset_table_views SELECT object_key 
 
 SET GLOBAL event_scheduler = ON;
 
+DROP EVENT IF EXISTS facility_primary_asset_table_view_generator;
+
 delimiter |
 
-CREATE EVENT IF NOT EXISTS facility_primary_asset_table_view_generator_v1
+CREATE EVENT IF NOT EXISTS facility_primary_asset_table_view_generator
 ON SCHEDULE 
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'
