@@ -27,7 +27,7 @@ wb.styles do |style|
             name:               ["Name", "ali.name"],
             ali:                ["ALI", "ali.team_ali_code"],
             cost:               ["Cost", "ali.cost"],
-            count:              ["No. of Assets", "ali.count.nil? || ali.count == 0 ? '' : ali.count"],
+            count:              ["No. of Assets", "ali.assets.count.nil? || ali.assets.count == 0 ? '' : ali.assets.count"],
             pinned:             ["Pinned", "format_as_yes_no(ali.pinned?)"]
         }
 
