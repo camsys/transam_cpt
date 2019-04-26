@@ -26,6 +26,10 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'GET builder' do
+    test_asset_type = create(:asset_type)
+    test_parent_policy = create(:parent_policy, type: test_asset_type.id, subtype: create(:asset_subtype, asset_type: test_asset_type).id)
+    test_policy = create(:policy, organization: test_project.organization, parent: test_parent_policy)
+    test_asset = create(:transam_asset, :organization => test_policy.organization, :asset_subtype => test_parent_policy.policy_asset_subtype_rules.first.asset_subtype, :scheduled_replacement_year => test_project.fy_year)
     get :builder
 
     expected_first_year = Date.today.month < 7 ? Date.today.year : Date.today.year + 1
