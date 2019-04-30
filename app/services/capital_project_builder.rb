@@ -301,7 +301,7 @@ class CapitalProjectBuilder
       end
       # reset scheduled replacement year
       if a.replacement_by_policy?
-        a.scheduled_replacement_year = a.policy_replacement_year < current_planning_year_year ? current_planning_year_year : a.policy_replacement_year
+        (a.try(:transam_asset) || a).update_columns(scheduled_replacement_year: a.policy_replacement_year < current_planning_year_year ? current_planning_year_year : a.policy_replacement_year)
       end
       a.update_early_replacement_reason
 

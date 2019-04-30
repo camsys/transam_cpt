@@ -14,9 +14,9 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   it 'GET show' do
     Organization.get_typed_organization(test_ali.capital_project.organization).service_provider_types << ServiceProviderType.find_by_name('Urban')
     test_ali.capital_project.organization.save!
-    test_policy = create(:policy, :organization => test_ali.capital_project.organization)
-    test_rule = create(:policy_asset_subtype_rule, :policy => test_policy, :purchase_replacement_code => test_ali.team_ali_code.code)
-    test_asset = create(:buslike_asset, :organization => test_ali.capital_project.organization, :asset_subtype => test_rule.asset_subtype, :scheduled_replacement_year => test_ali.capital_project.fy_year)
+    test_parent_policy = create(:parent_policy, :organization => test_ali.capital_project.organization, type: create(:asset_type).id, subtype: create(:asset_subtype).id, replacement_code: test_ali.team_ali_code)
+    test_policy = create(:policy, organization: test_parent_policy.organization, parent: test_parent_policy)
+    test_asset = create(:buslike_asset, :organization => test_ali.capital_project.organization, :asset_type => test_parent_policy.policy_asset_type_rules.first.asset_type, :asset_subtype => test_parent_policy.policy_asset_subtype_rules.first.asset_subtype, :scheduled_replacement_year => test_ali.capital_project.fy_year)
     get :show, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
 
     expect(assigns(:project)).to eq(test_project)

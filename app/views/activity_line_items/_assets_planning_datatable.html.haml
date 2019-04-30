@@ -33,13 +33,14 @@
   :cookie => 'true',
   :cookie_id_table => "ali_assets_planning_id",
   :cookie_expire => "1y",
-  :classes => 'table-no-bordered'}}
+  :classes => 'table-no-bordered',
+  :show_footer => 'true'}}
   %thead
     %tr
       - if move_assets_action == '1'
         %th.bs-checkbox{:data => {:checkbox => 'true'}}
       %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
-      %th.left{data: {field: 'asset_tag', formatter: 'asset_tag_formatter'}} Tag
+      %th.left{data: {width:150, field: 'asset_tag', formatter: 'asset_tag_formatter', footer_formatter: 'total_count_formatter'}} Tag
       %th.left{data: {field: 'asset_subtype'}} Asset Subtype
       %th.center{data: {field: 'fuel_type'}} Fuel
       %th.left{data: {field: 'description'}} Description
@@ -51,25 +52,12 @@
       %th.center{data: {field: 'reported_condition_rating'}} Cond.
 
       %th.center{data: {field: 'policy_replacement_fiscal_year'}} Policy #{get_fy_label}
-      %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter'}} Orig. Cost
-      %th.right{data: {field: 'book_value', formatter: 'currency_formatter'}} Book Val.
-      %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter'}} Sch. Cost
+      %th.right{data: {field: 'purchase_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter'}} Orig. Cost
+      %th.right{data: {field: 'book_value', formatter: 'currency_formatter', footer_formatter: 'total_book_value_formatter'}} Book Val.
+      %th.right{data: {field: 'scheduled_cost', formatter: 'currency_formatter', footer_formatter: 'total_sched_cost_formatter'}} Sch. Cost
       - if popup == '1'
         %th.center{data: {formatter: 'popup_formatter_for_date_name'}}
       %th.center{data: {formatter: 'special_icons_formatter'}}
-
-    %tfoot
-      %tr
-        - if move_assets_action == '1'
-          %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
-        - else
-          %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
-        %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
-        %td.right= format_as_currency(ali.assets.sum(:book_value))
-        %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
-        - if popup == '1'
-          %td
-        %td
 
 = render 'shared/table_formatters'
 
@@ -87,6 +75,19 @@
   function asset_tag_formatter(value, data) {
     return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
   };
+
+  function total_count_formatter(value) {
+    return "Totals for #{ali.assets.count} assets";
+  }
+  function total_cost_formatter(value) {
+    return '#{format_as_currency(ali.assets.sum(:purchase_cost))}';
+  }
+  function total_book_value_formatter(value) {
+    return '#{format_as_currency(ali.assets.sum(:book_value))}';
+  }
+  function total_sched_cost_formatter(value) {
+    return '#{format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))}';
+  }
 
   $(document).ready(function() {
 

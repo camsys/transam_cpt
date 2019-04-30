@@ -1,4 +1,5 @@
 require 'rails_helper'
+include FiscalYear
 
 RSpec.describe CapitalProjectsController, :type => :controller do
 
@@ -25,8 +26,15 @@ RSpec.describe CapitalProjectsController, :type => :controller do
   end
 
   it 'GET builder' do
-    skip 'Needs transam_asset. Not yet testable.'
+    test_asset_type = create(:asset_type)
+    test_parent_policy = create(:parent_policy, type: test_asset_type.id, subtype: create(:asset_subtype, asset_type: test_asset_type).id)
+    test_policy = create(:policy, organization: test_project.organization, parent: test_parent_policy)
+    test_asset = create(:transam_asset, :organization => test_policy.organization, :asset_subtype => test_parent_policy.policy_asset_subtype_rules.first.asset_subtype, :scheduled_replacement_year => test_project.fy_year)
     get :builder
+
+    expected_first_year = Date.today.month < 7 ? Date.today.year : Date.today.year + 1
+    expected_last_year = (expected_first_year - 1) + SystemConfig.instance.num_forecasting_years
+    expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year), expected_first_year]).and end_with([fiscal_year(expected_last_year), expected_last_year])
   end
 
   it 'POST runner' do
@@ -35,8 +43,57 @@ RSpec.describe CapitalProjectsController, :type => :controller do
     post :runner
   end
 
-  it 'GET index' do
-    get :index
+  describe 'GET index' do
+    expected_first_year = Date.today.month < 7 ? Date.today.year : Date.today.year + 1
+    expected_last_year = (expected_first_year - 1) + SystemConfig.instance.num_forecasting_years
+    it 'nil fy_year config (automatic rollover)' do
+      get :index
+      expect(assigns(:first_year)).to eq(expected_first_year)
+      expect(assigns(:last_year)).to eq(expected_last_year)
+      expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year), expected_first_year]).and end_with([fiscal_year(expected_last_year), expected_last_year])
+      expect(assigns(:data)[:data][0][0]).to eq(fiscal_year(expected_first_year))
+      expect(assigns(:data)[:data][-1][0]).to eq(fiscal_year(expected_last_year))
+    end
+
+    it 'config fy_year (manual rollover)' do
+      SystemConfig.instance.update(fy_year: expected_first_year - 1)
+      get :index
+      expect(assigns(:first_year)).to eq(expected_first_year)
+      expect(assigns(:last_year)).to eq(expected_last_year)
+      expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year), expected_first_year]).and end_with([fiscal_year(expected_last_year), expected_last_year])
+      expect(assigns(:data)[:data][0][0]).to eq(fiscal_year(expected_first_year))
+      expect(assigns(:data)[:data][-1][0]).to eq(fiscal_year(expected_last_year))
+    end
+
+    it 'rollover fy_year' do
+      SystemConfig.instance.update(fy_year: expected_first_year)
+      get :index
+      expect(assigns(:first_year)).to eq(expected_first_year + 1)
+      expect(assigns(:last_year)).to eq(expected_last_year + 1)
+      expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year + 1), expected_first_year + 1]).and end_with([fiscal_year(expected_last_year + 1), expected_last_year + 1])
+      expect(assigns(:data)[:data][0][0]).to eq(fiscal_year(expected_first_year + 1))
+      expect(assigns(:data)[:data][-1][0]).to eq(fiscal_year(expected_last_year + 1))
+    end
+
+    it 'config fy_year too far behind (manual rollover)' do
+      SystemConfig.instance.update(fy_year: expected_first_year - 3)
+      get :index
+      expect(assigns(:first_year)).to eq(expected_first_year)
+      expect(assigns(:last_year)).to eq(expected_last_year)
+      expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year), expected_first_year]).and end_with([fiscal_year(expected_last_year), expected_last_year])
+      expect(assigns(:data)[:data][0][0]).to eq(fiscal_year(expected_first_year))
+      expect(assigns(:data)[:data][-1][0]).to eq(fiscal_year(expected_last_year))
+    end
+
+    it 'reset config (automatic rollover)' do
+      SystemConfig.instance.update(fy_year: nil)
+      get :index
+      expect(assigns(:first_year)).to eq(expected_first_year)
+      expect(assigns(:last_year)).to eq(expected_last_year)
+      expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year), expected_first_year]).and end_with([fiscal_year(expected_last_year), expected_last_year])
+      expect(assigns(:data)[:data][0][0]).to eq(fiscal_year(expected_first_year))
+      expect(assigns(:data)[:data][-1][0]).to eq(fiscal_year(expected_last_year))
+    end
   end
 
   it 'GET show' do
