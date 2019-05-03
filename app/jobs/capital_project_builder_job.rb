@@ -23,7 +23,7 @@ class CapitalProjectBuilderJob < Job
     class_names.each do |class_name|
       assets << class_name.constantize.replacement_by_policy
                     .where(fta_asset_class_id: fta_asset_classes, organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil)
-                    .where('transam_assets.scheduled_replacement_year >= ?', @start_year)
+                    .where('transam_assets.scheduled_replacement_year >= ?', start_fy)
 
       assets << class_name.constantize.replacement_underway.where(fta_asset_class_id: fta_asset_classes, organization_id: organization.id)
     end

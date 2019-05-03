@@ -3,7 +3,6 @@ namespace :transam do
   task :build_sogr_projects, [:org_short_name] => [:environment] do |t, args|
     org = TransitOperator.find_by(short_name: args[:org_short_name])
     orgs = org.nil? ? TransitOperator.all : [org]
-    CapitalProject.where(organization: orgs).destroy_all
 
     orgs.each do |o|
       builder = CapitalProjectBuilder.new
