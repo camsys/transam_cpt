@@ -509,7 +509,7 @@ class CapitalProjectBuilder
           if Rails.application.config.asset_base_class_name.constantize == 'Asset'
             ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
           else
-            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.transam_asset)
+            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
           end
         else
           Rails.logger.debug "asset already in ALI, not adding it"
@@ -528,7 +528,7 @@ class CapitalProjectBuilder
         if Rails.application.config.asset_base_class_name.constantize == 'Asset'
           ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
         else
-          ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.transam_asset)
+          ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
         end
         Rails.logger.debug "Created new ALI #{ali.object_key}"
       end
