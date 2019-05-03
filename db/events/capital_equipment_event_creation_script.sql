@@ -1,6 +1,9 @@
+-- DEVS NEED TO MAKE SURTE THEIR GLOBAL EVENT SCHEDULER IS ON
+-- SET GLOBAL event_scheduler = ON;
+
 CREATE TABLE IF NOT EXISTS capital_equipment_asset_table_views SELECT object_key FROM revenue_vehicles;
 
-SET GLOBAL event_scheduler = ON;
+
 
 DROP EVENT IF EXISTS capital_equipment_asset_table_view_generator;
 

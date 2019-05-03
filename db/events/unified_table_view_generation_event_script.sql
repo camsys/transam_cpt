@@ -1,3 +1,6 @@
+-- Uncomment the line below this if running locally.
+-- SET GLOBAL event_scheduler = ON;
+
 DROP VIEW if exists capital_equipment_asset_table_views;
 DROP VIEW if exists facility_primary_asset_table_views;
 DROP VIEW if exists infrastructure_asset_table_views;
@@ -11,13 +14,19 @@ CREATE TABLE IF NOT EXISTS facility_primary_asset_table_views SELECT id FROM rev
 CREATE TABLE IF NOT EXISTS revenue_vehicle_asset_table_views SELECT id FROM revenue_vehicles;
 CREATE TABLE IF NOT EXISTS service_vehicle_asset_table_views SELECT id FROM revenue_vehicles;
 
-SET GLOBAL event_scheduler = ON;
+DROP EVENT IF EXISTS capital_equipment_asset_table_view_generator;
+DROP EVENT IF EXISTS infrastructure_asset_table_view_generator;
+DROP EVENT IF EXISTS facility_primary_asset_table_view_generator;
+DROP EVENT IF EXISTS revenue_vehicle_asset_table_view_generator;
+DROP EVENT IF EXISTS service_vehicle_asset_table_view_generator;
 
 delimiter |
 
+
 CREATE EVENT IF NOT EXISTS capital_equipment_asset_table_view_generator
 ON SCHEDULE
-	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	-- EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	EVERY 5 minute STARTS '2018-04-04-00:03:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
@@ -277,7 +286,8 @@ END |
 
 CREATE EVENT IF NOT EXISTS facility_primary_asset_table_view_generator
 ON SCHEDULE
-	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	-- EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	EVERY 5 minute STARTS '2018-04-04-00:03:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
@@ -597,7 +607,8 @@ END |
 
 CREATE EVENT IF NOT EXISTS infrastructure_asset_table_view_generator
 ON SCHEDULE
-	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	-- EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	EVERY 5 minute STARTS '2018-04-04-00:03:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
@@ -952,7 +963,8 @@ END |
 
 CREATE EVENT IF NOT EXISTS revenue_vehicle_table_view_generator
 ON SCHEDULE
-	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	-- EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	EVERY 5 minute STARTS '2018-04-04-00:03:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
@@ -1269,7 +1281,8 @@ END |
 
 CREATE EVENT IF NOT EXISTS service_vehicle_table_view_generator
 ON SCHEDULE
-	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	-- EVERY 5 minute STARTS '2018-04-04-00:00:00'
+	EVERY 5 minute STARTS '2018-04-04-00:03:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN

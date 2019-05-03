@@ -1,6 +1,7 @@
-CREATE TABLE IF NOT EXISTS service_vehicle_asset_table_views SELECT object_key FROM revenue_vehicles;
+-- DEVS NEED TO MAKE SURTE THEIR GLOBAL EVENT SCHEDULER IS ON
+-- SET GLOBAL event_scheduler = ON;
 
-SET GLOBAL event_scheduler = ON;
+CREATE TABLE IF NOT EXISTS service_vehicle_asset_table_views SELECT object_key FROM revenue_vehicles;
 
 DROP EVENT IF EXISTS service_vehicle_table_view_generator;
 
