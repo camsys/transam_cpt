@@ -4,10 +4,11 @@
 CREATE TABLE IF NOT EXISTS revenue_vehicle_asset_table_views SELECT object_key FROM revenue_vehicles;
 
 DROP EVENT IF EXISTS revenue_vehicle_table_view_generator;
+DROP EVENT IF EXISTS revenue_vehicle_asset_table_view_generator;
 
 delimiter |
 
-CREATE EVENT IF NOT EXISTS revenue_vehicle_table_view_generator
+CREATE EVENT IF NOT EXISTS revenue_vehicle_asset_table_view_generator
 ON SCHEDULE 
 	EVERY 5 minute STARTS '2018-04-04-00:00:00'
 COMMENT 'Regenerates the view table every 5 minutes'
