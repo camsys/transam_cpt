@@ -255,7 +255,7 @@ BEGIN
       LEFT JOIN policies AS policy ON policy.id = (
           SELECT policies.id
               FROM policies
-              WHERE IF(org_type.name='Planning Partner', org.grantor_id, org.id) = policies.organization_id
+              WHERE IF(org_type.class_name='Planning Partner', org.grantor_id, org.id) = policies.organization_id
               LIMIT 1)
 
       LEFT JOIN serial_numbers AS serial_number ON serial_number.id = (
