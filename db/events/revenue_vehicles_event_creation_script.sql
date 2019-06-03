@@ -204,16 +204,6 @@ BEGIN
 			rae_mileage.asset_event_id AS 'mileage_event_id',
 			rae_early_replacement_status.asset_event_id AS 'early_replacement_status_event_id',
 
-			ag.active AS 'asset_group_active',
-			ag.code AS 'asset_group_code',
-			ag.created_at AS 'asset_group_created_at',
-			ag.description AS 'asset_group_description',
-			ag.id AS 'asset_group_id',
-			ag.name AS 'asset_group_name',
-			ag.object_key AS 'asset_group_object_key',
-			ag.organization_id AS 'asset_group_organization_id',
-			ag.updated_at AS 'asset_group_updated_at',
-
 			fleets.agency_fleet_id AS 'fleet_agency_fleet_id',
 			fleets.asset_fleet_type_id AS 'fleet_asset_fleet_type_id',
 			fleets.created_at AS 'fleet_created_at',
@@ -269,8 +259,6 @@ BEGIN
 		  LEFT JOIN transam_assets AS transamAs ON transamAs.transam_assetible_id = transitAs.id
 			AND transamAs.transam_assetible_type = 'TransitAsset'
 
-		  LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
-		  LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
 		  LEFT JOIN assets_asset_fleets AS aafleet ON aafleet.transam_asset_id = transamAs.id
 		  LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
 		  LEFT JOIN esl_categories AS esl_cat ON esl_cat.id = rv.esl_category_id
