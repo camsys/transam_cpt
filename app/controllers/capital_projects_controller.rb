@@ -48,12 +48,13 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     add_breadcrumb "SOGR Capital Project Analyzer"
 
-    # Select the asset types that they are allowed to build
+    # Select the asset seed that they are allowed to build
 
     @asset_seed = []
-    typed_asset = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(Rails.application.config.asset_base_class_name.constantize.first)
-    typed_asset.class.asset_seed_class_name.constantize.active.each do |seed|
-      assets = (Rails.application.config.asset_base_class_name == 'TransamAsset' ? 'TransitAsset' : Rails.application.config.asset_base_class_name).constantize.where(fta_asset_class: seed)
+    asset_class_name = Rails.application.config.asset_base_class_name == 'TransamAsset' ? 'TransitAsset' : Rails.application.config.asset_base_class_name
+
+    asset_class_name.constantize.asset_seed_class_name.constantize.active.each do |seed|
+      assets = asset_class_name.constantize.where(seed.class.to_s.underscore => seed)
       if assets.where(organization: @organization_list).count > 0
         @asset_seed << {id: seed.id, name: seed.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
       else
