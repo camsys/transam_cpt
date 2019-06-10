@@ -46,8 +46,8 @@ delimiter |
 
 CREATE EVENT IF NOT EXISTS capital_equipment_asset_table_view_generator
 ON SCHEDULE
-	-- EVERY 5 minute STARTS '2018-04-04-00:00:00'
-	EVERY 5 minute STARTS '2018-04-04-00:03:00'
+	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+-- 	EVERY 5 minute STARTS '2018-04-04-00:03:00'
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
