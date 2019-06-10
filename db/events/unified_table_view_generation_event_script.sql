@@ -1,12 +1,24 @@
 -- Uncomment the line below this if running locally.
 -- SET GLOBAL event_scheduler = ON;
 
-DROP VIEW if exists capital_equipment_asset_table_views;
-DROP VIEW if exists facility_primary_asset_table_views;
-DROP VIEW if exists infrastructure_asset_table_views;
-DROP VIEW if exists revenue_vehicle_asset_table_views;
-DROP VIEW if exists service_vehicle_asset_table_views;
+-- IF running on a new instance that might have these views drop the views
+DROP VIEW if EXISTS capital_equipment_asset_table_views;
+DROP VIEW if EXISTS facility_primary_asset_table_views;
+DROP VIEW if EXISTS infrastructure_asset_table_views;
+DROP VIEW if EXISTS revenue_vehicle_asset_table_views;
+DROP VIEW if EXISTS service_vehicle_asset_table_views;
 
+DROP VIEW IF EXISTS temp_capital_equipment_asset_table_views;
+DROP VIEW IF EXISTS temp_facility_primary_asset_table_views;
+DROP VIEW IF EXISTS temp_infrastructure_asset_table_views;
+DROP VIEW IF EXISTS temp_revenue_vehicle_asset_table_views;
+DROP VIEW IF EXISTS temp_service_vehicle_asset_table_views;
+
+DROP TABLE IF EXISTS temp_capital_equipment_asset_table_views;
+DROP TABLE IF EXISTS temp_facility_primary_asset_table_views;
+DROP TABLE IF EXISTS temp_infrastructure_asset_table_views;
+DROP TABLE IF EXISTS temp_revenue_vehicle_asset_table_views;
+DROP TABLE IF EXISTS temp_service_vehicle_asset_table_views;
 
 CREATE TABLE IF NOT EXISTS capital_equipment_asset_table_views SELECT id FROM revenue_vehicles;
 CREATE TABLE IF NOT EXISTS infrastructure_asset_table_views SELECT id FROM revenue_vehicles;
@@ -26,6 +38,8 @@ DROP EVENT IF EXISTS infrastructure_asset_table_view_generator;
 DROP EVENT IF EXISTS infrastructure_asset_table_view_generator_v1;
 DROP EVENT IF EXISTS facility_primary_asset_table_view_generator;
 DROP EVENT IF EXISTS facility_primary_asset_table_view_generator_v1;
+
+
 
 delimiter |
 
