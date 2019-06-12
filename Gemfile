@@ -10,10 +10,10 @@ source "https://rubygems.org"
 
 gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
 
-gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter2
-gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter2
-gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter2
-gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :quarter2
+gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter3
+gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter3
+gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter3
+gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :quarter3
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
 gem 'rails-controller-testing'
 
