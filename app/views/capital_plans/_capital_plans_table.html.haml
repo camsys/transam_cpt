@@ -1,3 +1,8 @@
+:css
+  thead td {
+    font-weight: bold;
+  }
+
 :ruby
   show_actions ||= 0
   table_dom_id ||= SecureRandom.hex
@@ -34,23 +39,23 @@
         - if lookup_context.template_exists?(view_component, 'capital_plans', true)
           = render :partial => "capital_plans/#{view_component}"
       %tr
-        %th.left
+        %td.left
         - capital_plan_type.capital_plan_module_types.each do |m|
           - m.capital_plan_action_types.each do |a|
-            %th.left= a
+            %td.left= a
 
         - view_component = "app_capital_plans_table_head"
         - if lookup_context.template_exists?(view_component, 'capital_plans', true)
           = render :partial => "capital_plans/#{view_component}"
 
       %tr
-        %th.left
+        %td.left
           Select All
         - col_idx = 0
         - capital_plan_type.capital_plan_module_types.each do |m|
           - m.capital_plan_action_types.each_with_index do |a, idx|
             - col_idx += 1
-            %th
+            %td
               - unless a.system_action? || a.name == 'Archive'
                 %input{type: 'checkbox', data: {col_index: col_idx}, value: a.id, class: 'capital-plan-action-grp-checkbox'}
 
