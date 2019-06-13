@@ -11,6 +11,9 @@ FactoryBot.define do
       code { '11.14.XX' }
     end
 
+    factory :parent_ali_code do
+      code { '11.XX.XX' }
+    end
   end
 
 end

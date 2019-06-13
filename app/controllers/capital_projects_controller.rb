@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
+  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -48,12 +48,13 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     add_breadcrumb "SOGR Capital Project Analyzer"
 
-    # Select the asset types that they are allowed to build
+    # Select the asset seed that they are allowed to build
 
     @asset_seed = []
-    typed_asset = Rails.application.config.asset_base_class_name.constantize.get_typed_asset(Rails.application.config.asset_base_class_name.constantize.first)
-    typed_asset.class.asset_seed_class_name.constantize.active.each do |seed|
-      assets = (Rails.application.config.asset_base_class_name == 'TransamAsset' ? 'TransitAsset' : Rails.application.config.asset_base_class_name).constantize.where(fta_asset_class: seed)
+    asset_class_name = Rails.application.config.asset_base_class_name == 'TransamAsset' ? 'TransitAsset' : Rails.application.config.asset_base_class_name
+
+    asset_class_name.constantize.asset_seed_class_name.constantize.active.each do |seed|
+      assets = asset_class_name.constantize.where(seed.class.to_s.underscore => seed)
       if assets.where(organization: @organization_list).count > 0
         @asset_seed << {id: seed.id, name: seed.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
       else
@@ -181,7 +182,9 @@ class CapitalProjectsController < AbstractCapitalProjectsController
           :rows =>  projects_json
         }
       }
-      format.xls
+      format.xlsx do
+        response.headers['Content-Disposition'] = "attachment; filename=Capital Projects Table Export.xlsx"
+      end
     end
   end
 
@@ -337,6 +340,20 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @organization_distrcits = result
     respond_to do |format|
       format.json { render json: result.to_json }
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # Get all ALIs for selected projects.
+  #-----------------------------------------------------------------------------
+  def activity_line_items
+
+    get_projects
+
+    respond_to do |format|
+      format.xlsx do
+        response.headers['Content-Disposition'] = "attachment; filename=Activity Line Items Table Export.xlsx"
+      end
     end
   end
 

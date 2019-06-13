@@ -11,7 +11,7 @@ class CapitalPlansController < OrganizationAwareController
 
     @capital_plans = []
     @organization_list.each do |org|
-      if Asset.operational.where(organization_id: org).count > 0
+      if Rails.application.config.asset_base_class_name.constantize.operational.where(organization_id: org).count > 0
         plan = CapitalPlan.current_plan(org, true)
         @capital_plans << plan
         run_system_actions(plan)
@@ -23,7 +23,7 @@ class CapitalPlansController < OrganizationAwareController
     authorize! :read, @capital_plan
 
     # pagination if needed
-    org_list = @organization_list.select{ |o| Asset.operational.where(organization_id: o).count > 0 }
+    org_list = @organization_list.select{ |o| Rails.application.config.asset_base_class_name.constantize.operational.where(organization_id: o).count > 0 }
     if org_list.count > 1
       if can? :read_all, CapitalPlan
         add_breadcrumb 'Capital Plans', capital_plans_path
@@ -103,7 +103,7 @@ class CapitalPlansController < OrganizationAwareController
       if CapitalPlan.find_by(object_key: params[:id], :organization_id => current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}).nil?
         redirect_to '/404'
       else
-        org_list = @organization_list.select{|x| Asset.operational.where(organization_id: x).count > 0}
+        org_list = @organization_list.select{|x| Rails.application.config.asset_base_class_name.constantize.operational.where(organization_id: x).count > 0}
 
         if org_list.count > 0
           notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')

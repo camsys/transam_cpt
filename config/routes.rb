@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       get   'get_dashboard_summary'
       get   'find_districts'
       post  'runner'
+      get   'activity_line_items'
     end
 
     member do
