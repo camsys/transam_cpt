@@ -1,6 +1,6 @@
 = form_tag report_path(@report), :class => "navbar-form navbar-right", :method => :get, :id => 'report_filter_form', :role => "form" do
   .form-group
-    = select_tag(:fy_year, options_for_select(get_planning_fiscal_years_collection, :selected => @data.fy_year), :include_blank => "Any #{get_fy_label}...", :class => "form-control")
+    = select_tag(:fy_year, options_for_select(get_planning_fiscal_years(start_of_fiscal_year(current_fiscal_year_year)), :selected => @data.fy_year), :include_blank => "Any #{get_fy_label}...", :class => "form-control")
   .form-group
     = select_tag(:emergency_flag, options_for_select([['Any', 0], ['Emergency', 1], ['Non-Emergency', 2]], :selected => @data.emergency_flag), :class => "form-control")
   .form-group
