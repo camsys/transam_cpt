@@ -53,7 +53,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
 
   # This must be overriden otherwise a stack error will occur  
   def get_update
-    "Replacement status: #{replacement_status_type}."
+    "Replacement status: #{replacement_status_type}"
   end
   
   protected
