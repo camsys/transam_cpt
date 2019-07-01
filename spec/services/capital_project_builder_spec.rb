@@ -93,24 +93,28 @@ RSpec.describe CapitalProjectBuilder do
   end
 
   it "moves an ALI to a new planning year which does not have a CP yet" do
+    cps = CapitalProject.where(organization: organization).order(:fy_year)
+    expect(cps.count).to eq(0)
+
     project_count = @cpb.build(organization, asset_subtype_id: test_asset1.asset_subtype.id)
 
     cp = CapitalProject.where(organization: organization).order(:fy_year).first
     ali = cp.activity_line_items.first
 
     result = @cpb.move_ali_to_planning_year(ali, cp.fy_year + 1, "testing")
+    expect(result[:deleted_alis].first.first.fy_year).to eq(Date.today < start_of_fiscal_year(Date.today.year) ? Date.today.year : 1.year.from_now.year)
 
     cps = organization.capital_projects.order(:fy_year)
     #expect(cps.count).to eq(2)
     #expect(cps.count).to eq(4)
-    expect(cps[0].fy_year).to eq(1.year.from_now.year)
-    expect(cps[1].fy_year).to eq(2.years.from_now.year)
+    expect(cps[0].fy_year).to eq(Date.today < start_of_fiscal_year(Date.today.year) ? 1.year.from_now.year : 2.years.from_now.year)
+    # expect(cps[1].fy_year).to eq(2.years.from_now.year)
     # expect(cps[2].fy_year).to eq(11.years.from_now.year)
     # # Note we only moved one of the ALIs, not both. This year doesn't change
     # expect(cps[3].fy_year).to eq(12.years.from_now.year)
 
     expect(cps[0].activity_line_items.first.assets.first).to eq(test_asset1)
-    expect(cps[1].activity_line_items.first.assets.first).to eq(test_asset2)
+    # expect(cps[1].activity_line_items.first.assets.first).to eq(test_asset2)
     # expect(cps[2].activity_line_items.first.assets.first).to eq(asset)
     # expect(cps[3].activity_line_items.first.assets.first).to eq(asset2)
 
