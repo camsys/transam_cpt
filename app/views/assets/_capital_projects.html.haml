@@ -3,4 +3,4 @@
     - if @asset.capital_projects.empty?
       %p This asset is not associated with any capital projects
     - else
-      = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => @asset.capital_projects}
+      = render :partial => 'capital_projects/summary_index_table', :locals => {:projects => @asset.capital_projects.sort_by { |p| -p.fy_year }}
