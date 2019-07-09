@@ -256,7 +256,7 @@ class PlanningController < AbstractCapitalProjectsController
       drag_drop_conditions << "handler LIKE ?"
       drag_drop_values << "%organization_id: #{org_id}%"
     end
-    @drag_drop_enabled = (Delayed::Job.where(drag_drop_conditions.join(' OR '), *drag_drop_values).where("failed_at IS NULL AND (handler LIKE ? OR handler LIKE ?)","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
+    @drag_drop_enabled = (Delayed::Job.where(drag_drop_conditions.join(' OR '), *drag_drop_values).where("failed_at IS NULL AND (handler LIKE ? OR handler LIKE ? OR handler LIKE ?)","%MoveAliYearJob%", "%MoveAssetYearJob%", "%CapitalProjectBuilderJob%").count == 0)
 
     # check if reaches threshold
     @project_display_threshold_reached = @projects.count > max_projects_display_threshold
