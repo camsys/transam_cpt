@@ -35,7 +35,7 @@ RSpec.describe CapitalProjectsController, :type => :controller do
                         :scheduled_replacement_year => test_project.fy_year)
     get :builder
 
-    expected_first_year = Date.today.month < 7 ? Date.today.year : Date.today.year + 1
+    expected_first_year = Date.today.month < 7 ? Date.today.year-1 : Date.today.year
     expected_last_year = (expected_first_year - 1) + SystemConfig.instance.num_forecasting_years
     expect(assigns(:fiscal_years)).to start_with([fiscal_year(expected_first_year), expected_first_year]).and end_with([fiscal_year(expected_last_year), expected_last_year])
   end
