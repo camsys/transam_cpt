@@ -62,7 +62,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
     end
 
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = get_fiscal_years(Date.today)
     @range_fiscal_years = ((1..14).to_a + (3..10).to_a.map{|x| x * 5}).map{|x| ["#{x} years", x]}
     @builder_proxy = BuilderProxy.new
 
@@ -72,11 +72,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       if @has_locked_sogr_this_fiscal_year && (@has_locked_sogr_this_fiscal_year.include? @organization_list.first)
         @fiscal_years = @fiscal_years[1..-1]
       end
-      if Organization.get_typed_organization(Organization.find_by(id: @organization_list.first)).has_sogr_projects?
-        @builder_proxy.start_fy = current_planning_year_year + 3
-      else
-        @builder_proxy.start_fy = current_planning_year_year
-      end
+      @builder_proxy.start_fy = current_planning_year_year
     else
       @has_sogr_project_org_list = CapitalProject.joins(:organization).where(organization_id: @organization_list).sogr.group(:organization_id).count
     end
