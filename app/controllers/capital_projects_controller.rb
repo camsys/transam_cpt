@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts]
+  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -48,20 +48,22 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     add_breadcrumb "SOGR Capital Project Analyzer"
 
-    # Select the asset types that they are allowed to build. This is narrowed down to only
-    # asset types they own and those which are fta vehicles
-    builder = CapitalProjectBuilder.new
-    #@asset_types = builder.eligible_asset_types(@organization)
-    @asset_types = []
-    AssetType.all.each do |type|
-      assets = Asset.where(asset_type: type)
+    # Select the asset seed that they are allowed to build
+
+    @asset_seed = []
+    asset_class_name = Rails.application.config.asset_base_class_name == 'TransamAsset' ? 'TransitAsset' : Rails.application.config.asset_base_class_name
+
+    asset_class_name.constantize.asset_seed_class_name.constantize.active.each do |seed|
+      assets = asset_class_name.constantize.where(seed.class.to_s.underscore => seed)
       if assets.where(organization: @organization_list).count > 0
-        @asset_types << {id: type.id, name: type.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
+        @asset_seed << {id: seed.id, name: seed.to_s, orgs: @organization_list.select{|o| assets.where(organization_id: o).count > 0}}
+      else
+        @asset_seed << {id: seed.id, name: seed.to_s, orgs: []}
       end
     end
-    @fta_asset_categories = FtaAssetCategory.where(id: TransitAsset.where(organization_id:  @organization_list).distinct.pluck(:fta_asset_category_id))
 
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = get_fiscal_years(Date.today)
+    @range_fiscal_years = ((1..14).to_a + (3..10).to_a.map{|x| x * 5}).map{|x| ["#{x} years", x]}
     @builder_proxy = BuilderProxy.new
 
     @has_locked_sogr_this_fiscal_year = CapitalPlanModule.joins(:capital_plan_module_type, :capital_plan).where(capital_plan_module_types: {name: ['Unconstrained Plan', 'Constrained Plan']}, capital_plans: {organization_id: @organization_list, fy_year: current_planning_year_year}).where('capital_plan_modules.completed_at IS NOT NULL').pluck('capital_plans.organization_id')
@@ -70,11 +72,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       if @has_locked_sogr_this_fiscal_year && (@has_locked_sogr_this_fiscal_year.include? @organization_list.first)
         @fiscal_years = @fiscal_years[1..-1]
       end
-      if Organization.get_typed_organization(Organization.find_by(id: @organization_list.first)).has_sogr_projects?
-        @builder_proxy.start_fy = current_planning_year_year + 3
-      else
-        @builder_proxy.start_fy = current_planning_year_year
-      end
+      @builder_proxy.start_fy = current_planning_year_year
     else
       @has_sogr_project_org_list = CapitalProject.joins(:organization).where(organization_id: @organization_list).sogr.group(:organization_id).count
     end
@@ -101,7 +99,28 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       end
       org = Organization.get_typed_organization(Organization.find(org_id))
 
-      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, @builder_proxy.fta_asset_categories, @builder_proxy.start_fy, current_user), :priority => 0
+      # set class names whether primary or components are selected
+      class_names = FtaAssetClass.where(id: @builder_proxy.fta_asset_classes).distinct.pluck(:class_name)
+      ['Facility', 'Infrastructure'].each do |klass|
+        if params["#{klass.downcase}_primary"].to_i == 1
+          if params["#{klass.downcase}_component"].to_i == 1
+            class_names << "#{klass}Component"
+          else
+            # do nothing Facility class already added from FTA asset class
+          end
+        else
+          if params["#{klass.downcase}_component"].to_i == 1
+            class_names << "#{klass}Component"
+            class_names.delete(klass)
+          else
+            # this case can't happen but if it does
+            class_names.delete(klass)
+          end
+        end
+      end
+
+
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, @builder_proxy.start_fy.to_i + @builder_proxy.range_fys.to_i, current_user), :priority => 0
 
       # Let the user know the results
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."
@@ -160,7 +179,9 @@ class CapitalProjectsController < AbstractCapitalProjectsController
           :rows =>  projects_json
         }
       }
-      format.xls
+      format.xlsx do
+        response.headers['Content-Disposition'] = "attachment; filename=Capital Projects Table Export.xlsx"
+      end
     end
   end
 
@@ -316,6 +337,20 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @organization_distrcits = result
     respond_to do |format|
       format.json { render json: result.to_json }
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # Get all ALIs for selected projects.
+  #-----------------------------------------------------------------------------
+  def activity_line_items
+
+    get_projects
+
+    respond_to do |format|
+      format.xlsx do
+        response.headers['Content-Disposition'] = "attachment; filename=Activity Line Items Table Export.xlsx"
+      end
     end
   end
 

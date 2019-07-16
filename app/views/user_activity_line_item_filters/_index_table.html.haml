@@ -12,9 +12,9 @@
 %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
   :card_view => "false",
   :pagination => 'true',
-  :page_list => "[5, 10, 20, 50, 100, 200]",
+  :page_list => "5, 10, 20, 50, 100, 200, 10000]",
   :page_size => current_user.num_table_rows,
-  :show_pagination_switch => 'true',
+  :show_pagination_switch => 'false',
   :search => 'false',
   :toolbar => "#table_actions",
   :show_columns => 'true',
@@ -22,9 +22,9 @@
   :show_toggle => 'true',
   :resizable => 'true',
   :search => 'false',
-  :state_save => 'true',
-  :state_save_id_table => "user_ali_filters_id",
-  :state_save_expire => "1y"}}
+  :cookie => 'true',
+  :cookie_id_table => "user_ali_filters_id",
+  :cookie_expire => "1y"}}
   %thead
     %tr
       %th.left{:data => {:visible => 'false'}} Object Key

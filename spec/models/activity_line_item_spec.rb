@@ -173,7 +173,8 @@ RSpec.describe ActivityLineItem, :type => :model do
 
       expect(test_line_item.estimated_cost).to eq(123)
     end
-    it '.after_remove_asset_callback', :skip do
+    it '.after_remove_asset_callback' do
+      skip 'Assumes transam_asset. Not yet testable.'
       test_asset = create(:buslike_asset, :scheduled_replacement_cost => 123)
       test_line_item.assets << test_asset
       test_line_item.save!
@@ -184,6 +185,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       expect(test_line_item.estimated_cost).to eq(0)
     end
     it '.after_update_callback capital_project updated' do
+      skip 'Assumes transam_asset. Not yet testable.'
       test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
       test_line_item.assets << test_asset
       # Fake a re-estimation based on changed capital project
@@ -194,6 +196,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       test_line_item.save!
     end
     it '.after_update_callback fy_year updated' do
+      skip 'Assumes transam_asset. Not yet testable.'
       test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
       test_line_item.assets << test_asset
       # Fake a re-estimation based on changed capital project
@@ -203,6 +206,7 @@ RSpec.describe ActivityLineItem, :type => :model do
       test_line_item.save!
     end
     it '.after_update_callback name updated' do
+      skip 'Assumes transam_asset. Not yet testable.'
       # Changing another field should not force a re-estimation
       test_asset = create(:buslike_asset, :estimated_replacement_cost => 123)
       test_line_item.assets << test_asset

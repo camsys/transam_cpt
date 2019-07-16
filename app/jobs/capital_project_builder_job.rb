@@ -8,16 +8,29 @@
 class CapitalProjectBuilderJob < Job
 
   attr_accessor :organization
-  attr_accessor :fta_asset_categories
+  attr_accessor :class_names
+  attr_accessor :fta_asset_classes
   attr_accessor :start_fy
+  attr_accessor :end_fy
   attr_accessor :creator
 
   def run
 
     # Run the builder
     options = {}
-    options[:fta_asset_category_ids] = fta_asset_categories
     options[:start_fy] = start_fy
+    options[:end_fy] = end_fy
+
+    assets = []
+    class_names.each do |class_name|
+      assets << class_name.constantize.replacement_by_policy
+                    .where(fta_asset_class_id: fta_asset_classes, organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil)
+                    .where('transam_assets.scheduled_replacement_year >= ?', start_fy)
+
+      assets << class_name.constantize.replacement_underway.where(fta_asset_class_id: fta_asset_classes, organization_id: organization.id)
+    end
+    options[:assets] = assets.flatten
+
     builder = CapitalProjectBuilder.new
     num_created = builder.build(organization, options)
 
@@ -42,16 +55,19 @@ class CapitalProjectBuilderJob < Job
 
   def check
     raise ArgumentError, "organization can't be blank " if organization.nil?
-    raise ArgumentError, "fta_asset_categories can't be blank " if fta_asset_categories.nil?
+    raise ArgumentError, "class_names can't be blank " if class_names.nil?
+    raise ArgumentError, "fta_asset_classes can't be blank " if fta_asset_classes.nil?
     raise ArgumentError, "start_fy can't be blank " if start_fy.nil?
     raise ArgumentError, "creator can't be blank " if creator.nil?
   end
 
-  def initialize(organization, fta_asset_categories, start_fy, creator)
+  def initialize(organization, class_names, fta_asset_classes, start_fy, end_fy, creator)
     super
     self.organization = organization
-    self.fta_asset_categories = fta_asset_categories
+    self.class_names = class_names
+    self.fta_asset_classes = fta_asset_classes
     self.start_fy = start_fy
+    self.end_fy = end_fy
     self.creator = creator
   end
 

@@ -6,48 +6,42 @@
   .modal-lg {
     width: 80%;
   }
-.table-responsive
-  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
-    :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
-    :card_view => "false",
-    :pagination => 'true',
-    :side_pagination => 'server',
-    :show_pagination_switch => 'true',
-    :page_number => '1',
-    :page_list => "[10, 20, 50, 100, 200]",
-    :page_size => current_user.num_table_rows,
-    :search => 'false',
-    :striped => 'true',
-    :single_select => 'false',
-    :show_columns => 'false',
-    :toolbar => "#asset-actions",
-    :row_style => 'row_style',
-    :click_to_select => 'false',
-    :show_export => 'false',
-    :id_field => 'object_key',
-    :state_save => 'true',
-    :state_save_id_table => "ali_assets_notional_id",
-    :state_save_expire => "1y",
-    :classes => 'table-no-bordered'}}
-    %thead
-      %tr
-        %th.left{data: {width: 100, field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}} Asset Subtype
-        %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}} Fuel
-        %th.left{data: {width: 400, field: 'description', formatter: 'description_formatter'}} Description
 
-        %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
+%table.table-responsive.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+  :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
+  :card_view => "false",
+  :pagination => 'true',
+  :side_pagination => 'server',
+  :show_pagination_switch => 'true',
+  :page_number => '1',
+  :page_list => "[10, 20, 50, 100, 200]",
+  :page_size => current_user.num_table_rows,
+  :search => 'false',
+  :striped => 'true',
+  :single_select => 'false',
+  :show_columns => 'false',
+  :toolbar => "#asset-actions",
+  :row_style => 'row_style',
+  :click_to_select => 'false',
+  :show_export => 'false',
+  :id_field => 'object_key',
+  :cookie => 'true',
+  :cookie_id_table => "ali_assets_notional_id",
+  :cookie_expire => "1y",
+  :classes => 'table-no-bordered',
+  :show_footer => 'true'}}
+  %thead
+    %tr
+      %th.left{data: {width: 150, field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter', footer_formatter: 'total_count_formatter'}} Asset Subtype
+      %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}} Fuel
+      %th.left{data: {width: 400, field: 'description', formatter: 'description_formatter'}} Description
 
-        %th.center= "#{format_as_fiscal_year(ali.fy_year)} Policy #{get_fy_label}"
-        %th.right{data: {field: 'estimated_cost', formatter: 'currency_formatter'}} Est. Cost
-        - if popup == '1'
-          %th{data: {formatter: 'popup_formatter_for_date_name'}}
+      %th.center{data: {field: 'min_service_life', formatter: 'integer_formatter'}} Age
 
-    %tfoot
-      %tr
-        %td{:colspan => 5}= "Totals for #{ali.assets.count} assets"
-        %td.right= format_as_currency(ali.estimated_cost)
-        - if popup == '1'
-          %td
+      %th.center{data: {field: 'policy_replacement_year', formatter: 'notional_policy_fiscal_year'}}= "Policy #{get_fy_label}"
+      %th.right{data: {field: 'estimated_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter'}} Est. Cost
+      - if popup == '1'
+        %th{data: {formatter: 'popup_formatter_for_date_name'}}
 
 = render 'shared/table_formatters'
 
@@ -60,13 +54,24 @@
     is_rehabilitation = false;
   }
 
+  function notional_policy_fiscal_year(value, data) {
+    return "#{format_as_fiscal_year(ali.fy_year)}";
+  }
+
+  function total_count_formatter(value) {
+    return "Totals for #{ali.assets.count} assets";
+  }
+  function total_cost_formatter(value) {
+    return '#{format_as_currency(ali.estimated_cost)}';
+  }
+
   $(document).ready(function() {
 
     $("##{table_dom_id}").bootstrapTable();
 
     $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
       $('.transam-popover').popover({
-        trigger: 'hover',
+        trigger: 'focus',
         container: 'body',
         placement: 'left',
         content: function(){

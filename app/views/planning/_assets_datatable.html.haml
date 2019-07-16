@@ -72,7 +72,7 @@
           %td.center= a.age
           %td.center= format_as_boolean(a.in_backlog)
           %td.right= format_as_integer(a.reported_mileage)
-          %td.center= format_as_decimal(a.reported_condition_rating, 1)
+          %td.center= format_as_decimal(a.reported_condition_rating, 2)
 
           %td.center= format_as_fiscal_year(a.policy_replacement_year)
           %td.right= format_as_currency(a.cost)

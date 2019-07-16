@@ -33,7 +33,7 @@ module TransamCapitalPlannable
 
     belongs_to  :replacement_status_type
 
-    has_many   :replacement_status_updates, -> {where :asset_event_type_id => ReplacementStatusUpdateEvent.asset_event_type.id }, :class_name => "ReplacementStatusUpdateEvent",  :foreign_key => Rails.application.config.asset_base_class_name.foreign_key
+    has_many   :replacement_status_updates, -> {where :asset_event_type_id => ReplacementStatusUpdateEvent.asset_event_type.id }, :class_name => "ReplacementStatusUpdateEvent",  :as => Rails.application.config.asset_base_class_name.underscore.to_sym
 
     # belongs to 0 or 1 activity_line_items
     has_and_belongs_to_many    :activity_line_items,  :join_table => :activity_line_items_assets, :foreign_key => Rails.application.config.asset_base_class_name.foreign_key

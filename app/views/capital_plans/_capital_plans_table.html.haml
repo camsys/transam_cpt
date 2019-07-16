@@ -19,9 +19,9 @@
     :toolbar => "#table_actions",
     :export_types => "['csv', 'txt', 'excel']",
     :id_field => 'object_key',
-    :state_save => 'true',
-    :state_save_id_table => "capital_plans_id",
-    :state_save_expire => "1y",
+    :cookie => 'true',
+    :cookie_id_table => "capital_plans_id",
+    :cookie_expire => "1y",
     :single_select => 'true'}}
 
     %thead
@@ -60,7 +60,7 @@
 
     %tbody
       - @capital_plans.each_with_index do |plan, row_idx|
-        %tr{data: {index: row_idx, object_key: plan.object_key}}
+        %tr{data: {object_key: plan.object_key}}
           %td
             = link_to plan.organization.short_name, capital_plan_path(plan)
           - plan.capital_plan_actions.includes(:capital_plan_action_type).each_with_index do |a, col_idx|

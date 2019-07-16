@@ -10,7 +10,7 @@ describe "capital_projects/_builder_form.html.haml", :type => :view do
     render
 
     expect(rendered).to have_field('builder_proxy_organization_id')
-    expect(rendered).to have_xpath('//input[@name="builder_proxy[asset_types][]"]')
+    expect(rendered).to have_xpath('//input[@name="builder_proxy[fta_asset_classes][]"]')
     expect(rendered).to have_field('builder_proxy_start_fy')
   end
 end

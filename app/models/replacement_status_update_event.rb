@@ -53,7 +53,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
 
   # This must be overriden otherwise a stack error will occur  
   def get_update
-    "Replacement status: #{replacement_status_type}."
+    "Replacement status: #{replacement_status_type}"
   end
   
   protected
@@ -78,6 +78,10 @@ class ReplacementStatusUpdateEvent < AssetEvent
     end
 
     transam_asset.save(validate: false)
+
+    # update asset and cost(s) in project planner
+    service = CapitalProjectBuilder.new
+    service.update_asset_schedule(transam_asset)
   end
 
   # Set resonable defaults for a new condition update event

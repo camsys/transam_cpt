@@ -30,22 +30,6 @@ module TransamCptHelper
     end
   end
 
-  # Returns the correct icon for a workflow asset
-  def get_event_icon(event_name)
-
-    if event_name == 'retract'
-      'fa-reply'
-    elsif event_name == 'submit'
-      'fa-share'
-    elsif event_name == 'approve'
-      'fa-plus-square'
-    elsif event_name == 'return'
-      'fa-chevron-circle-left'
-    else
-      ''
-    end
-  end
-
   # Returns the correct cost for a swimlane/asset/year
   def get_swimlane_activity_cost(asset, year)
 

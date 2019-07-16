@@ -236,6 +236,10 @@ class CapitalProjectBuilder
       @start_year = options[:start_fy].to_i
     end
 
+    if options[:end_fy].to_i > 0
+      @last_year = options[:end_fy].to_i
+    end
+
     #---------------------------------------------------------------------------
     # Basic Algorithm:
     #
@@ -271,11 +275,19 @@ class CapitalProjectBuilder
 
     # Find all the matching assets for this organization.
     # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-    assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.very_specific
-                 .where(options.except(:start_fy).merge({organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil}))
-                 .where('transam_assets.scheduled_replacement_year >= ?', @start_year)
+    if options[:assets]
+      assets = options[:assets]
+    else
+      assets = []
 
-    assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where(organization_id: organization.id)
+      assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.very_specific
+                   .where(options.except(:start_fy).merge({organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil}))
+                   .where('transam_assets.scheduled_replacement_year >= ?', @start_year)
+
+      assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where(options.except(:start_fy).merge({organization_id: organization.id}))
+    end
+
+
 
     # Process each asset in turn...
     assets.each do |asset|
@@ -293,7 +305,7 @@ class CapitalProjectBuilder
       end
       # reset scheduled replacement year
       if a.replacement_by_policy?
-        a.scheduled_replacement_year = a.policy_replacement_year < current_planning_year_year ? current_planning_year_year : a.policy_replacement_year
+        (a.try(:transam_asset) || a).update_columns(scheduled_replacement_year: a.policy_replacement_year < current_planning_year_year ? current_planning_year_year : a.policy_replacement_year)
       end
       a.update_early_replacement_reason
 
@@ -501,7 +513,7 @@ class CapitalProjectBuilder
           if Rails.application.config.asset_base_class_name.constantize == 'Asset'
             ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
           else
-            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.transam_asset)
+            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
           end
         else
           Rails.logger.debug "asset already in ALI, not adding it"
@@ -520,7 +532,7 @@ class CapitalProjectBuilder
         if Rails.application.config.asset_base_class_name.constantize == 'Asset'
           ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
         else
-          ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.transam_asset)
+          ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
         end
         Rails.logger.debug "Created new ALI #{ali.object_key}"
       end

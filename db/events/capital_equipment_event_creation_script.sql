@@ -1,81 +1,22 @@
-class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
-  def up
-    self.connection.execute %Q(
-      CREATE OR REPLACE VIEW infrastructure_asset_table_views AS
+-- DEVS NEED TO MAKE SURTE THEIR GLOBAL EVENT SCHEDULER IS ON
+-- SET GLOBAL event_scheduler = ON;
+
+CREATE TABLE IF NOT EXISTS capital_equipment_asset_table_views SELECT object_key FROM revenue_vehicles;
+
+
+
+DROP EVENT IF EXISTS capital_equipment_asset_table_view_generator;
+
+delimiter |
+
+CREATE EVENT IF NOT EXISTS capital_equipment_asset_table_view_generator
+ON SCHEDULE 
+	EVERY 5 minute STARTS '2018-04-04-00:00:00'
+COMMENT 'Regenerates the view table every 5 minutes'
+DO
+BEGIN
+  CREATE TABLE IF NOT EXISTS temp_capital_equipment_asset_table_views
       SELECT
-        i.id,
-        i.id AS 'infrastructure_id',
-        i.cant AS 'infrastructure_cant',
-        i.cant_gradient AS 'infrastructure_cant_gradient',
-        i.cant_gradient_unit AS 'infrastructure_cant_gradient_unit',
-        i.cant_unit AS 'infrastructure_cant_unit',
-        i.created_at AS 'infrastructure_created_at',
-        i.crosslevel AS 'infrastructure_crosslevel',
-        i.crosslevel_unit AS 'infrastructure_crosslevel_unit',
-        i.direction AS 'infrastructure_direction',
-        i.from_line AS 'infrastructure_from_line',
-        i.from_location_name AS 'infrastructure_from_location_name',
-        i.from_segment AS 'infrastructure_from_segment',
-        i.gauge AS 'infrastructure_gauge',
-        i.gauge_unit AS 'infrastructure_gauge_unit',
-        i.height AS 'infrastructure_height',
-        i.height_unit AS 'infrastructure_height_unit',
-        i.horizontal_alignment AS 'infrastructure_horizontal_alignment',
-        i.horizontal_alignment_unit AS 'infrastructure_horizontal_alignment_unit',
-        i.infrastructure_bridge_type_id AS 'infrastructure_infrastructure_bridge_type_id',
-        i.infrastructure_chain_type_id AS 'infrastructure_infrastructure_chain_type_id',
-        i.infrastructure_control_system_type_id AS 'infrastructure_infrastructure_control_system_type_id',
-        i.infrastructure_crossing_id AS 'infrastructure_infrastructure_crossing_id',
-        i.infrastructure_division_id AS 'infrastructure_infrastructure_division_id',
-        i.infrastructure_gauge_type_id AS 'infrastructure_infrastructure_gauge_type_id',
-        i.infrastructure_operation_method_type_id AS 'infrastructure_infrastructure_operation_method_type_id',
-        i.infrastructure_reference_rail_id AS 'infrastructure_infrastructure_reference_rail_id',
-        i.infrastructure_segment_type_id AS 'infrastructure_infrastructure_segment_type_id',
-        i.infrastructure_segment_unit_type_id AS 'infrastructure_infrastructure_segment_unit_type_id',
-        i.infrastructure_subdivision_id AS 'infrastructure_infrastructure_subdivision_id',
-        i.infrastructure_track_id AS 'infrastructure_infrastructure_track_id',
-        i.land_ownership_organization_id AS 'infrastructure_land_ownership_organization_id',
-        i.length AS 'infrastructure_length',
-        i.length_unit AS 'infrastructure_length_unit',
-        i.location_name AS 'infrastructure_location_name',
-        i.max_permissible_speed AS 'infrastructure_max_permissible_speed',
-        i.max_permissible_speed_unit AS 'infrastructure_max_permissible_speed_unit',
-        i.nearest_city AS 'infrastructure_nearest_city',
-        i.nearest_state AS 'infrastructure_nearest_state',
-        i.num_decks AS 'infrastructure_num_decks',
-        i.num_spans AS 'infrastructure_num_spans',
-        i.num_tracks AS 'infrastructure_num_tracks',
-        i.other_land_ownership_organization AS 'infrastructure_other_land_ownership_organization',
-        i.relative_location AS 'infrastructure_relative_location',
-        i.relative_location_direction AS 'infrastructure_relative_location_direction',
-        i.relative_location_unit AS 'infrastructure_relative_location_unit',
-        i.segment_unit AS 'infrastructure_segment_unit',
-        i.shared_capital_responsibility_organization_id AS 'infrastructure_shared_capital_responsibility_organization_id',
-        i.to_line AS 'infrastructure_to_line',
-        i.to_location_name AS 'infrastructure_to_location_name',
-        i.to_segment AS 'infrastructure_to_segment',
-        i.track_curvature AS 'infrastructure_track_curvature',
-        i.track_curvature_degree AS 'infrastructure_track_curvature_degree',
-        i.track_gradient AS 'infrastructure_track_gradient',
-        i.track_gradient_degree AS 'infrastructure_track_gradient_degree',
-        i.track_gradient_pcnt AS 'infrastructure_track_gradient_pcnt',
-        i.track_gradient_unit AS 'infrastructure_track_gradient_unit',
-        i.updated_at AS 'infrastructure_updated_at',
-        i.vertical_alignment AS 'infrastructure_vertical_alignment',
-        i.vertical_alignment_unit AS 'infrastructure_vertical_alignment_unit',
-        i.warp_parameter AS 'infrastructure_warp_parameter',
-        i.warp_parameter_unit AS 'infrastructure_warp_parameter_unit',
-        i.width AS 'infrastructure_width',
-        i.width_unit AS 'infrastructure_width_unit',
-
-        infra_division.name AS 'infrastructure_infrastructure_division_name',
-
-        infra_gauge.name AS 'infrastructure_infrastructure_gauge_type_name',
-
-        infra_track.name AS 'infrastructure_infrastructure_track_name',
-
-        infra_segment_type.name AS'infrastructure_infrastructure_segment_name',
-
         transitAs.asset_id AS 'transit_asset_asset_id',
         transitAs.contract_num AS 'transit_asset_contract_num',
         transitAs.contract_type_id AS 'transit_asset_contract_type_id',
@@ -92,8 +33,13 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         transitAs.transit_assetible_type AS 'transit_asset_transit_assetible_type',
         transitAs.updated_at AS 'transit_asset_updated_at',
         transitAs.warranty_date AS 'transit_asset_warranty_date',
-
-        fmt.name AS 'primary_mode_type',
+        transitAs.lienholder_id AS 'transit_asset_lienholder_id',
+        transitAs.operator_id AS 'transit_asset_operator_id',
+        transitAs.other_lienholder AS 'transit_asset_other_lienholder',
+		transitAs.other_operator AS 'transit_asset_other_operator',
+        transitAs.other_title_ownership_organization AS 'transit_asset_other_title_ownership_organization',
+        transitAs.title_number AS 'transit_asset_title_number',
+        transitAs.title_ownership_organization_id AS 'transit_asset_title_ownership_organization_id',
 
         fta_asset_class.active AS 'transit_asset_fta_asset_class_active',
         fta_asset_class.class_name AS 'transit_asset_fta_asset_class_class_name',
@@ -101,13 +47,8 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         fta_asset_class.fta_asset_category_id AS 'transit_asset_fta_asset_class_fta_asset_category_id',
         fta_asset_class.name AS 'transit_asset_fta_asset_class_name',
 
-        fta_vehicle_type.active AS 'transit_asset_fta_type_active',
-        fta_vehicle_type.code AS 'transit_asset_fta_type_code',
-        fta_vehicle_type.default_useful_life_benchmark AS 'transit_asset_fta_type_default_useful_life_benchmark',
-        fta_vehicle_type.description AS 'transit_asset_fta_type_description',
-        fta_vehicle_type.fta_asset_class_id AS 'transit_asset_fta_type_fta_asset_class_id',
-        fta_vehicle_type.name AS 'transit_asset_fta_type_name',
-        fta_vehicle_type.useful_life_benchmark_unit AS 'transit_asset_fta_type_useful_life_benchmark_unit',
+        fta_equipment_type.active AS 'transit_asset_fta_type_active',
+        fta_equipment_type.name AS 'transit_asset_fta_type_name',
 
         transamAs.asset_subtype_id AS 'transam_asset_asset_subtype_id',
         transamAs.asset_tag AS 'asset_tag',
@@ -127,7 +68,6 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         transamAs.id AS 'transam_asset_id',
         transamAs.in_backlog AS 'transam_asset_in_backlog',
         transamAs.in_service_date AS 'transam_asset_in_service_date',
-        transamAs.lienholder_id AS 'transam_asset_lienholder_id',
         transamAs.location_id AS 'transam_asset_location_id',
         transamAs.location_reference AS 'transam_asset_location_reference',
         transamAs.location_reference_type_id AS 'transam_asset_location_reference_type_id',
@@ -136,14 +76,10 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         transamAs.manufacture_year AS 'transam_asset_manufacture_year',
         transamAs.object_key AS 'object_key',
         transamAs.object_key AS 'transam_asset_object_key',
-        transamAs.operator_id AS 'transam_asset_operator_id',
         transamAs.organization_id AS 'organization_id',
         transamAs.organization_id AS 'transam_asset_organization_id',
-        transamAs.other_lienholder AS 'transam_asset_other_lienholder',
         transamAs.other_manufacturer AS 'transam_asset_other_manufacturer',
         transamAs.other_manufacturer_model AS 'transam_asset_other_manufacturer_model',
-        transamAs.other_operator AS 'transam_asset_other_operator',
-        transamAs.other_title_ownership_organization AS 'transam_asset_other_title_ownership_organization',
         transamAs.other_vendor AS 'transam_asset_other_vendor',
         transamAs.parent_id AS 'transam_asset_parent_id',
         transamAs.policy_replacement_year AS 'transam_asset_policy_replacement_year',
@@ -158,8 +94,6 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         transamAs.scheduled_rehabilitation_year AS 'transam_asset_scheduled_rehabilitation_year',
         transamAs.scheduled_replacement_cost AS 'transam_asset_scheduled_replacement_cost',
         transamAs.scheduled_replacement_year AS 'transam_asset_scheduled_replacement_year',
-        transamAs.title_number AS 'transam_asset_title_number',
-        transamAs.title_ownership_organization_id AS 'transam_asset_title_ownership_organization_id',
         transamAs.transam_assetible_id AS 'transam_asset_transam_assetible_id',
         transamAs.transam_assetible_type AS 'transam_asset_transam_assetible_type',
         transamAs.updated_at AS 'transam_asset_updated_at',
@@ -203,6 +137,7 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         policy.depreciation_interval_type_id AS 'transam_asset_org_policy_depreciation_interval_type_id',
         policy.description AS 'transam_asset_org_policy_description',
         policy.id AS 'transam_asset_org_policy_id',
+        policy.id AS 'policy_id',
         policy.object_key AS 'transam_asset_org_policy_object_key',
         policy.organization_id AS 'transam_asset_org_policy_organization_id',
         policy.parent_id AS 'transam_asset_org_policy_parent_id',
@@ -217,21 +152,10 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         rae_mileage.asset_event_id AS 'mileage_event_id',
         rae_early_replacement_status.asset_event_id AS 'early_replacement_status_event_id',
 
-        ag.active AS 'asset_group_active',
-        ag.code AS 'asset_group_code',
-        ag.created_at AS 'asset_group_created_at',
-        ag.description AS 'asset_group_description',
-        ag.id AS 'asset_group_id',
-        ag.name AS 'asset_group_name',
-        ag.object_key AS 'asset_group_object_key',
-        ag.organization_id AS 'asset_group_organization_id',
-        ag.updated_at AS 'asset_group_updated_at',
-
         fleets.agency_fleet_id AS 'fleet_agency_fleet_id',
         fleets.asset_fleet_type_id AS 'fleet_asset_fleet_type_id',
         fleets.created_at AS 'fleet_created_at',
         fleets.created_by_user_id AS 'fleet_created_by_user_id',
-        fleets.estimated_cost AS 'fleet_estimated_cost',
         fleets.fleet_name AS 'fleet_fleet_name',
         fleets.id AS 'fleet_id',
         fleets.notes AS 'fleet_notes',
@@ -239,7 +163,6 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         fleets.object_key AS 'fleet_object_key',
         fleets.organization_id AS 'fleet_organization_id',
         fleets.updated_at AS 'fleet_updated_at',
-        fleets.year_estimated_cost AS 'fleets_year_estimated_cost',
 
         most_recent_asset_event.asset_event_type_id AS 'most_recent_event_asset_event_type_id',
         most_recent_asset_event.updated_at AS 'most_recent_asset_event_updated_at',
@@ -263,37 +186,30 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
         most_recent_mileage_event.updated_at AS 'most_recent_mileage_event_updated_at',
 
         most_recent_early_replacement_event.replacement_status_type_id AS 'most_recent_early_replacement_event_replacement_status_type_id',
-        replacement_status.name AS 'most_recent_early_replacement_event_replacement_status_type_name'
+        replacement_status.name AS 'most_recent_early_replacement_event_replacement_status_type_name',
+			  NOW() AS 'table_created_at'
 
-      FROM infrastructures AS i
-      LEFT JOIN transit_assets AS transitAs ON transitAs.transit_assetible_id = i.id AND transit_assetible_type = 'Infrastructure'
-      LEFT JOIN infrastructure_divisions AS infra_division ON infra_division.id = i.infrastructure_division_id
-      LEFT JOIN infrastructure_gauge_types AS infra_gauge ON infra_gauge.id = i.infrastructure_gauge_type_id
-      LEFT JOIN infrastructure_tracks AS infra_track ON infra_track.id = i.infrastructure_track_id
-      LEFT JOIN infrastructure_segment_types AS infra_segment_type ON infra_segment_type.id = i.infrastructure_segment_type_id
-
+      FROM transit_assets AS transitAs
       LEFT JOIN transam_assets AS transamAs ON transamAs.transam_assetible_id = transitAs.id
         AND transamAs.transam_assetible_type = 'TransitAsset'
 
-      LEFT JOIN asset_groups_assets AS ada ON ada.transam_asset_id = transamAs.id
-      LEFT JOIN asset_groups AS ag ON ag.id = ada.asset_group_id
       LEFT JOIN assets_asset_fleets AS aafleet ON aafleet.transam_asset_id = transamAs.id
       LEFT JOIN asset_fleets AS fleets ON fleets.id = aafleet.asset_fleet_id
 
       LEFT JOIN fta_asset_classes AS fta_asset_class ON fta_asset_class.id = transitAs.fta_asset_class_id
-      LEFT JOIN fta_vehicle_types AS fta_vehicle_type ON fta_vehicle_type.id = transitAs.fta_type_id
+      LEFT JOIN fta_equipment_types AS fta_equipment_type ON fta_equipment_type.id = transitAs.fta_type_id
       LEFT JOIN asset_subtypes AS ast ON ast.id = transamAs.asset_subtype_id
       LEFT JOIN transam_assets AS location ON location.id = transamAs.location_id
       LEFT JOIN manufacturers AS manufacturer ON manufacturer.id = transamAs.manufacturer_id
       LEFT JOIN manufacturer_models AS model ON model.id = transamAs.manufacturer_model_id
-      LEFT JOIN organizations AS operator ON operator.id = transamAs.operator_id
+      LEFT JOIN organizations AS operator ON operator.id = transitAs.operator_id
       LEFT JOIN organizations AS org ON org.id = transamAs.organization_id
       LEFT JOIN organization_types AS org_type ON org_type.id = org.organization_type_id
       -- I am not thrilled about adding this business logic here but it was the only way to ensure we got the right policy.
       LEFT JOIN policies AS policy ON policy.id = (
           SELECT policies.id
               FROM policies
-              WHERE IF(org_type.name='Planning Partner', org.grantor_id, org.id) = policies.organization_id
+              WHERE IF(org_type.class_name='Planning Partner', org.grantor_id, org.id) = policies.organization_id
               LIMIT 1)
 
       LEFT JOIN serial_numbers AS serial_number ON serial_number.id = (
@@ -303,19 +219,19 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
             AND identifiable_id = transamAs.id
               LIMIT 1)
 
-      LEFT JOIN most_recent_asset_event_view AS mrAev ON mrAev.transam_asset_id = transamAs.id
-      LEFT JOIN recent_asset_events_for_type_view AS rae_condition ON rae_condition.transam_asset_id = transamAs.id
-        AND rae_condition.asset_event_type_id = 1
+      LEFT JOIN all_assets_most_recent_asset_event_view AS mrAev ON mrAev.base_transam_asset_id = transamAs.id
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_condition ON rae_condition.base_transam_asset_id = transamAs.id
+        AND rae_condition.asset_event_type_id = (SELECT id FROM asset_event_types WHERE NAME IN ('Condition') )
       -- LEFT JOIN recent_asset_events_for_type_view AS rae_maintenance ON rae_maintenance.transam_asset_id = transamAs.id
-      -- 	AND rae_maintenance.asset_event_type_id = 2
-      LEFT JOIN recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.transam_asset_id = transamAs.id
-        AND rae_service_status.asset_event_type_id = 6
-      LEFT JOIN recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.transam_asset_id = transamAs.id
-        AND rae_rebuild.asset_event_type_id = 8
-      LEFT JOIN recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.transam_asset_id = transamAs.id
-        AND rae_mileage.asset_event_type_id = 10
-      LEFT JOIN recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.transam_asset_id = transamAs.id
-        AND rae_early_replacement_status.asset_event_type_id = 19
+      -- 	AND rae_maintenance.asset_event_type_id =  SELECT id FROM asset_event_types WHERE NAME IN ('Maintenance provider type')
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_service_status ON rae_service_status.base_transam_asset_id = transamAs.id
+        AND rae_service_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Service status') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_rebuild ON rae_rebuild.base_transam_asset_id = transamAs.id
+        AND rae_rebuild.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Rebuild/rehabilitation') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_mileage ON rae_mileage.base_transam_asset_id = transamAs.id
+        AND rae_mileage.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Mileage') )
+      LEFT JOIN all_assets_recent_asset_events_for_type_view AS rae_early_replacement_status ON rae_early_replacement_status.base_transam_asset_id = transamAs.id
+        AND rae_early_replacement_status.asset_event_type_id = ( SELECT id FROM asset_event_types WHERE NAME IN ('Replacement status') )
 
       LEFT JOIN asset_events AS most_recent_asset_event ON most_recent_asset_event.id = mrAev.asset_event_id
       LEFT JOIN asset_events AS most_recent_condition_event ON most_recent_condition_event.id = rae_condition.asset_event_id
@@ -330,12 +246,17 @@ class Update4ForInfrastructureAssetTableViews < ActiveRecord::Migration[5.2]
       LEFT JOIN service_status_types AS service_status_type ON service_status_type.id = most_recent_service_status_event.service_status_type_id
       LEFT JOIN replacement_status_types AS replacement_status ON replacement_status.id = most_recent_early_replacement_event.replacement_status_type_id
 
-      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.asset_id = transamAs.id AND afmt.is_primary
-      LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id;
-    )
-  end
+      LEFT JOIN assets_fta_mode_types AS afmt ON afmt.transam_asset_id = transitAs.id AND afmt.is_primary = 1 AND afmt.transam_asset_type = 'TransitAsset'
+      LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
+      WHERE transitAs.fta_type_type = 'FtaEquipmentType';
+          
+	  RENAME TABLE capital_equipment_asset_table_views TO temp_delete_capital_equipment_asset_table_views,
+	temp_capital_equipment_asset_table_views TO capital_equipment_asset_table_views;
+	
+	  DROP TABLE temp_delete_capital_equipment_asset_table_views;
 
-  def down
-    self.connection.execute "DROP VIEW if exists infrastructure_asset_table_views;"
-  end
-end
+END |
+
+delimiter ;
+
+SHOW EVENTS;
