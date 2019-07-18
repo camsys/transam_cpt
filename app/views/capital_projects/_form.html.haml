@@ -34,7 +34,7 @@
   - unless @project.sogr?
     .row
       .col-md-4
-        = f.input :fy_year, :collection => @fiscal_years, :include_blank => false, :label => get_fiscal_year_label
+        = f.input :fy_year, :collection => @fiscal_years, :selected => current_planning_year_year, :include_blank => false, :label => get_fiscal_year_label
       .col-md-4
         = f.association :team_ali_code, :disabled => !@project.new_record?, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
     .row

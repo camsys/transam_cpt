@@ -25,7 +25,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   #-----------------------------------------------------------------------------
   def load_view
 
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
     render params[:view]
 
   end
@@ -215,7 +215,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     add_breadcrumb "New", new_capital_project_path
 
     @project = CapitalProject.new
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
 
   end
 
@@ -227,7 +227,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb "Modify", edit_capital_project_path(@project)
 
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
 
   end
 
@@ -281,7 +281,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb "Modify", edit_capital_project_path(@project)
-    @fiscal_years = get_fiscal_years
+    @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
 
     respond_to do |format|
       if @project.update_attributes(form_params)
