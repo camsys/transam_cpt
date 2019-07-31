@@ -12,6 +12,7 @@ FactoryBot.define do
     organization_type { OrganizationType.find_by(:class_name => 'TransitOperator') rescue Rails.logger.info "ERROR: No seed data." }
     sequence(:name) { |n| "Org #{n}" }
     short_name {name}
+    legal_name {name}
     license_holder { true }
   end
 

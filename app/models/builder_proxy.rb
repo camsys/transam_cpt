@@ -23,7 +23,7 @@ class BuilderProxy < Proxy
       self.send "#{k}=", v
     end
     self.asset_types ||= []
-    self.range_fys = 12 unless self.range_fys.to_i > 0
+    self.range_fys = 11 unless self.range_fys.to_i > 0 # the default should be 12 years which is 11 for the range + 1 for the starting year
   end
 
 end
