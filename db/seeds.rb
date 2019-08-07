@@ -21,6 +21,7 @@ roles = [
     {name: 'approver_two', weight: 12, role_parent_id: Role.find_by(name: 'manager').id, :show_in_user_mgmt => true, privilege: true, label: 'Approver 2'},
     {name: 'approver_three', weight: 13, role_parent_id: Role.find_by(name: 'manager').id, :show_in_user_mgmt => true, privilege: true, label: 'Approver 3'},
     {name: 'approver_four', weight: 14, role_parent_id: Role.find_by(name: 'manager').id, :show_in_user_mgmt => true, privilege: true, label: 'Approver 4'},
+    {name: 'project_manager', :show_in_user_mgmt => true, privilege: true, label: 'Project Planning Lead'},
 ]
 
 asset_event_types = [
