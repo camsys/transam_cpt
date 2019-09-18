@@ -18,7 +18,7 @@
           %i.fa.fa-usd
         = f.input_field :anticipated_cost, :required => true, :min => 0, :integer => true, :value => @activity_line_item.new_record? ? nil : @activity_line_item.anticipated_cost, :class => "form-control"
     .col-sm-6
-      = f.input :fy_year, :collection => get_project_fiscal_years(@project), :include_blank => false, :label => get_fiscal_year_label, :disabled => ! @project.multi_year?
+      = f.input :fy_year, :collection => get_project_fiscal_years(@project), :selected => @project.fy_year, :include_blank => false, :label => get_fiscal_year_label, :disabled => ! @project.multi_year?
 
   .row
     - if @project.team_ali_code.rolling_stock?

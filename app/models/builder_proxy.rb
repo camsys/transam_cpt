@@ -6,8 +6,9 @@ class BuilderProxy < Proxy
   # organization
   attr_accessor     :organization_id
 
-  # Starting FY to generate projects for
+  # FYs to generate projects for
   attr_accessor     :start_fy
+  attr_accessor     :range_fys
 
   # Type of asset type to process
   attr_accessor     :asset_types
@@ -22,6 +23,7 @@ class BuilderProxy < Proxy
       self.send "#{k}=", v
     end
     self.asset_types ||= []
+    self.range_fys = 11 unless self.range_fys.to_i > 0 # the default should be 12 years which is 11 for the range + 1 for the starting year
   end
 
 end

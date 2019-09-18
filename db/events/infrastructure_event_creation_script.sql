@@ -13,6 +13,8 @@ ON SCHEDULE
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
+    SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;
+
 	CREATE TABLE IF NOT EXISTS temp_infrastructure_asset_table_views
 		SELECT
         i.id,
@@ -347,6 +349,8 @@ BEGIN
 	temp_infrastructure_asset_table_views TO infrastructure_asset_table_views;
 	
 	  DROP TABLE temp_delete_infrastructure_asset_table_views;
+
+      SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;
 
 END |
 

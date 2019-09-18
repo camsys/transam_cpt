@@ -122,7 +122,9 @@ class ActivityLineItemsController < OrganizationAwareController
     end
 
     # enable dragging/dropping only if no background jobs
-    @drag_drop_enabled = (Delayed::Job.where("failed_at IS NULL AND handler LIKE ? AND (handler LIKE ? OR handler LIKE ?)", "%organization_id: #{@project.organization_id}%","%MoveAliYearJob%", "%MoveAssetYearJob%").count == 0)
+    @drag_drop_enabled = (Delayed::Job.where("failed_at IS NULL AND (handler LIKE ? OR handler LIKE ? OR handler LIKE ?)", "%MoveAliYearJob%", "%MoveAssetYearJob%", "%CapitalProjectBuilderJob%")
+                              .map { |j| YAML.load(j.handler) })
+                             .none? { |y| @project.organization_id == (y.instance_of?(CapitalProjectBuilderJob) ? y.organization.id : y.activity_line_item.organization_id) }
 
     # map sorting to correct fields
     sort_clause = ""

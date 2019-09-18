@@ -9,14 +9,19 @@
 
   - if @organization_list.count > 1
     .row
-      .col-md-9
+      .col-md-6
         = f.input :organization_id, :required => true, :collection => Organization.where(id: @organization_list), :label_method => 'coded_name'
       .col-md-3
         = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
+      .col-md-3
+        = f.input :range_fys, :required => true,      :collection => @range_fiscal_years, :label => "Range of Years"
   - else
     .row
       .col-md-3
         = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
+      .col-md-3
+        = f.input :range_fys, :required => true,      :collection => @range_fiscal_years, :label => "Range of Years"
+
   .row
     - FtaAssetCategory.active.each do |fta_category|
       .col-md-3.fta-category-div{id: fta_category.name.parameterize.underscore}

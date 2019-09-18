@@ -17,7 +17,7 @@ module TransamCptHelper
       []
     elsif project.multi_year?
       a = []
-      get_fiscal_years.each do |fy|
+      (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }.each do |fy|
         if fy[1] < project.fy_year
           next
         else

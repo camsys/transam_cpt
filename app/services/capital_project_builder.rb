@@ -236,6 +236,10 @@ class CapitalProjectBuilder
       @start_year = options[:start_fy].to_i
     end
 
+    if options[:end_fy].to_i > 0
+      @last_year = options[:end_fy].to_i
+    end
+
     #---------------------------------------------------------------------------
     # Basic Algorithm:
     #
