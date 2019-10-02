@@ -14,6 +14,8 @@ ON SCHEDULE
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
+    SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;
+
 	CREATE TABLE IF NOT EXISTS temp_service_vehicle_asset_table_views
 		SELECT
         sv.ada_accessible AS 'service_vehicle_ada_accessible',
@@ -287,6 +289,8 @@ BEGIN
 	temp_service_vehicle_asset_table_views TO service_vehicle_asset_table_views;
 	
 	  DROP TABLE temp_delete_service_vehicle_asset_table_views;
+
+      SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;
 
 END |
 

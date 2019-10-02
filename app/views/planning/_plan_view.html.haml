@@ -178,7 +178,7 @@
             }
           });
         } else {
-          var msg = "Move ALI from " + ali_year + " to " + drop_year + "?";
+          var msg = "Move ALI from " + getFiscalYear(ali_year) + " to " + getFiscalYear(drop_year) + "?";
           bootbox.confirm(msg, function(result) {
             if (result) {
               move_ali(url, ali, action, drop_year, project);

@@ -15,6 +15,8 @@ ON SCHEDULE
 COMMENT 'Regenerates the view table every 5 minutes'
 DO
 BEGIN
+    SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;
+
 	CREATE TABLE IF NOT EXISTS temp_revenue_vehicle_asset_table_views
 		SELECT			
 			rv.id,
@@ -325,6 +327,8 @@ BEGIN
 			temp_revenue_vehicle_asset_table_views TO revenue_vehicle_asset_table_views;
 	
 	  DROP TABLE temp_delete_revenue_vehicle_asset_table_views;
+
+      SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ ;
 
 END |
 
