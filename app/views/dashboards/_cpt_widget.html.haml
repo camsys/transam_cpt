@@ -2,7 +2,7 @@
   .panel-heading
     Capital Projects
     .pull-right
-      = select_tag(:capital_projects_fy, options_for_select(get_fiscal_years, :selected => params[:capital_projects_fy] || current_fiscal_year_year ), :class => "form-control", :style => 'margin-top: -5px;')
+      = select_tag(:capital_projects_fy, options_for_select(get_fiscal_years.unshift(fiscal_year(current_fiscal_year_year)), :selected => params[:capital_projects_fy] || current_planning_year_year ), :class => "form-control", :style => 'margin-top: -5px;')
   #capital-projects-widget.panel-body
 
 :javascript
