@@ -290,8 +290,8 @@ class PlanningController < AbstractCapitalProjectsController
     else
       @display_projects.where('
         (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?) OR
-        (capital_projects.fy_year >= ?)',
-                              @years.first, @years.first)
+        (capital_projects.fy_year >= ? AND capital_projects.fy_year <= ?)',
+                              @years.first, @years.first, @years.last)
     end
     
     notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a #{get_fy_label} to see projects for that year.", now: true) if @project_display_threshold_reached 
