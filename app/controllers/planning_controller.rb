@@ -238,7 +238,7 @@ class PlanningController < AbstractCapitalProjectsController
 
     if action == ALI_MOVE_YEAR_ACTION
       get_planning_years
-      @new_alis = @new_alis.select{|x| x <= @years.last} if @new_alis
+      @new_alis = @new_alis.select{|x| x.fy_year <= @years.last} if @new_alis
     else
       prepare_projects_display
     end
