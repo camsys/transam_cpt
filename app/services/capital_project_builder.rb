@@ -50,7 +50,7 @@ class CapitalProjectBuilder
 
     # Run the update
     unless a.replacement_pinned?
-      process_asset(a, @start_year, @start_year + a.organization.capital_projects_range_fys, @replacement_project_type, @rehabilitation_project_type)
+      process_asset(a, @start_year, @start_year + (a.organization.capital_projects_range_fys || (SystemConfig.instance.num_forecasting_years - 1)), @replacement_project_type, @rehabilitation_project_type)
     end
 
     # Cleanup any empty projects and AL Is
@@ -130,7 +130,7 @@ class CapitalProjectBuilder
           end
           asset.save(:validate => false)
 
-          projects_and_alis += process_asset(asset, @start_year, @start_year + asset.organization.capital_projects_range_fys, @replacement_project_type, @rehabilitation_project_type)
+          projects_and_alis += process_asset(asset, @start_year, @start_year + (asset.organization.capital_projects_range_fys || (SystemConfig.instance.num_forecasting_years - 1)), @replacement_project_type, @rehabilitation_project_type)
         end
         ali.reload
         project.reload
