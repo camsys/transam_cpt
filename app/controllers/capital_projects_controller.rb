@@ -70,7 +70,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     if @organization_list.count == 1
       if @has_locked_sogr_this_fiscal_year && (@has_locked_sogr_this_fiscal_year.include? @organization_list.first)
-        @fiscal_years = @fiscal_years[1..-1]
+        @fiscal_years = @fiscal_years[(@fiscal_years.index{|x| x[1]==current_planning_year_year}+1)..-1]
       end
       @builder_proxy.start_fy = current_planning_year_year
     else
@@ -286,7 +286,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
 
     respond_to do |format|
-      if @project.update_attributes(form_params)
+      if @project.update(form_params)
         @project.update_project_number
         @project.save
         notify_user(:notice, "Capital Project #{@project.name} was successfully updated.")

@@ -116,8 +116,10 @@
         var is_sogr_locked = $.inArray(parseInt(org_id), have_sogr_locked_list);
         if(is_sogr_locked >= 0) {
           $("#builder_proxy_start_fy option[value='"+(current_planning_year)+"']").hide();
+          $("#builder_proxy_start_fy option[value='"+(parseInt(current_planning_year)-1)+"']").hide();
         } else{
           $("#builder_proxy_start_fy option[value='"+(current_planning_year)+"']").show();
+          $("#builder_proxy_start_fy option[value='"+(parseInt(current_planning_year)-1)+"']").show();
         }
 
         var org_has_sogr_project = has_sogr_project_org_list[org_id];
