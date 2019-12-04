@@ -50,11 +50,7 @@ class CapitalProjectBuilder
 
     # Run the update
     unless a.replacement_pinned?
-      range_fiscal_years = ((1..14).to_a + (3..10).to_a.map{|x| x * 5}).map{|x| x-1}
-      max_cp_fy_year = CapitalProject.where(organization_id: asset.organization_id).maximum(:fy_year)
-      calculated_last_year = @start_year + range_fiscal_years.find{|x| x>= (max_cp_fy_year-@start_year)}
-
-      process_asset(a, @start_year, calculated_last_year, @replacement_project_type, @rehabilitation_project_type)
+      process_asset(a, @start_year, @start_year + (a.organization.capital_projects_range_fys || (SystemConfig.instance.num_forecasting_years - 1)), @replacement_project_type, @rehabilitation_project_type)
     end
 
     # Cleanup any empty projects and AL Is
@@ -134,10 +130,7 @@ class CapitalProjectBuilder
           end
           asset.save(:validate => false)
 
-          range_fiscal_years = ((1..14).to_a + (3..10).to_a.map{|x| x * 5}).map{|x| x-1}
-          max_cp_fy_year = CapitalProject.where(organization_id: asset.organization_id).maximum(:fy_year)
-          calculated_last_year = @start_year + range_fiscal_years.find{|x| x>= (max_cp_fy_year-@start_year)}
-          projects_and_alis += process_asset(asset, @start_year, calculated_last_year, @replacement_project_type, @rehabilitation_project_type)
+          projects_and_alis += process_asset(asset, @start_year, @start_year + (asset.organization.capital_projects_range_fys || (SystemConfig.instance.num_forecasting_years - 1)), @replacement_project_type, @rehabilitation_project_type)
         end
         ali.reload
         project.reload

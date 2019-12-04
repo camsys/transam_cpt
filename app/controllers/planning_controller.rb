@@ -71,6 +71,8 @@ class PlanningController < AbstractCapitalProjectsController
   #-----------------------------------------------------------------------------
   def move_assets
 
+    get_planning_years
+
     @job_finished = false
 
     @activity_line_item = ActivityLineItem.find_by(:object_key => params[:ali])
@@ -115,7 +117,7 @@ class PlanningController < AbstractCapitalProjectsController
           Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
         end
 
-        @alis_touched = Rails.application.config.asset_base_class_name.constantize.where(object_key: assets_touched).very_specific.map(&:activity_line_items).flatten!.uniq
+        @alis_touched = Rails.application.config.asset_base_class_name.constantize.where(object_key: assets_touched).very_specific.map{|asset| asset.activity_line_items.where('fy_year <= ?', @years.last)}.flatten!.uniq
 
         @job_finished = true
         notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
@@ -233,7 +235,13 @@ class PlanningController < AbstractCapitalProjectsController
       notify_user :notice,  "The ALI was successfully removed from project #{@project.project_number}."
     end
 
-    prepare_projects_display unless action == ALI_MOVE_YEAR_ACTION
+
+    if action == ALI_MOVE_YEAR_ACTION
+      get_planning_years
+      @new_alis = @new_alis.select{|x| x.fy_year <= @years.last} if @new_alis
+    else
+      prepare_projects_display
+    end
 
     respond_to do |format|
       format.js
@@ -290,8 +298,8 @@ class PlanningController < AbstractCapitalProjectsController
     else
       @display_projects.where('
         (capital_projects.multi_year = 1 AND capital_projects.fy_year <= ?) OR
-        (capital_projects.fy_year >= ?)',
-                              @years.first, @years.first)
+        (capital_projects.fy_year >= ? AND capital_projects.fy_year <= ?)',
+                              @years.first, @years.first, @years.last)
     end
     
     notify_user(:notice, "Showing projects for #{fiscal_year(@display_fy_year)}. Click a #{get_fy_label} to see projects for that year.", now: true) if @project_display_threshold_reached 

@@ -70,7 +70,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     if @organization_list.count == 1
       if @has_locked_sogr_this_fiscal_year && (@has_locked_sogr_this_fiscal_year.include? @organization_list.first)
-        @fiscal_years = @fiscal_years[1..-1]
+        @fiscal_years = @fiscal_years[(@fiscal_years.index{|x| x[1]==current_planning_year_year}+1)..-1]
       end
       @builder_proxy.start_fy = current_planning_year_year
     else
@@ -119,8 +119,10 @@ class CapitalProjectsController < AbstractCapitalProjectsController
         end
       end
 
+      # save range of FYs for the org
+      org.update(capital_projects_range_fys: @builder_proxy.range_fys.to_i)
 
-      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, @builder_proxy.start_fy.to_i + @builder_proxy.range_fys.to_i, current_user), :priority => 0
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, current_planning_year_year + @builder_proxy.range_fys.to_i, current_user), :priority => 0
 
       # Let the user know the results
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."
@@ -284,7 +286,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
     @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
 
     respond_to do |format|
-      if @project.update_attributes(form_params)
+      if @project.update(form_params)
         @project.update_project_number
         @project.save
         notify_user(:notice, "Capital Project #{@project.name} was successfully updated.")

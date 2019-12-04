@@ -227,7 +227,7 @@ class AbstractCapitalProjectsController < OrganizationAwareController
     #-----------------------------------------------------------------------------
 
     # final results
-    @projects = @projects.where(conditions.join(' AND '), *values).order(:fy_year, :project_number)
+    @projects = @projects.joins(:organization).where(conditions.join(' AND '), *values).order('organizations.short_name', :fy_year, :project_number)
 
     @alis = ActivityLineItem.where(capital_project_id: @projects.ids)
   end

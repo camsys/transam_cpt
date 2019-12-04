@@ -26,7 +26,7 @@ class NewUserService
 
     user.update_user_organization_filters
 
-    user.viewable_organizations = user.user_organization_filter.try(:get_organizations) || []
+    user.viewable_organizations = user.user_organization_filters.system_filters.sorted.first.try(:get_organizations) || []
     user.save!
 
     unless assume_user_exists
