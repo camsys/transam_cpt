@@ -71,8 +71,6 @@ BEGIN
         i.track_curvature AS 'infrastructure_track_curvature',
         i.track_curvature_degree AS 'infrastructure_track_curvature_degree',
         i.track_gradient AS 'infrastructure_track_gradient',
-        i.track_gradient_degree AS 'infrastructure_track_gradient_degree',
-        i.track_gradient_pcnt AS 'infrastructure_track_gradient_pcnt',
         i.track_gradient_unit AS 'infrastructure_track_gradient_unit',
         i.updated_at AS 'infrastructure_updated_at',
         i.vertical_alignment AS 'infrastructure_vertical_alignment',
