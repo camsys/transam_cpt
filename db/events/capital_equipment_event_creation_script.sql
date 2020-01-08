@@ -1,6 +1,11 @@
 -- DEVS NEED TO MAKE SURTE THEIR GLOBAL EVENT SCHEDULER IS ON
 -- SET GLOBAL event_scheduler = ON;
 
+-- IF running on a new instance that might have these views drop the views
+DROP VIEW if EXISTS capital_equipment_asset_table_views;
+DROP VIEW IF EXISTS temp_capital_equipment_asset_table_views;
+DROP TABLE IF EXISTS temp_capital_equipment_asset_table_views;
+
 CREATE TABLE IF NOT EXISTS capital_equipment_asset_table_views SELECT id FROM revenue_vehicles;
 
 
