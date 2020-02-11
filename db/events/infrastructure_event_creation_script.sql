@@ -1,6 +1,11 @@
 -- DEVS NEED TO MAKE SURTE THEIR GLOBAL EVENT SCHEDULER IS ON
 -- SET GLOBAL event_scheduler = ON;
 
+-- IF running on a new instance that might have these views drop the views
+DROP VIEW if EXISTS infrastructure_asset_table_views;
+DROP VIEW IF EXISTS temp_infrastructure_asset_table_views;
+DROP TABLE IF EXISTS temp_infrastructure_asset_table_views;
+
 CREATE TABLE IF NOT EXISTS infrastructure_asset_table_views SELECT id FROM revenue_vehicles;
 
 DROP EVENT IF EXISTS infrastructure_asset_table_view_generator;
@@ -71,8 +76,6 @@ BEGIN
         i.track_curvature AS 'infrastructure_track_curvature',
         i.track_curvature_degree AS 'infrastructure_track_curvature_degree',
         i.track_gradient AS 'infrastructure_track_gradient',
-        i.track_gradient_degree AS 'infrastructure_track_gradient_degree',
-        i.track_gradient_pcnt AS 'infrastructure_track_gradient_pcnt',
         i.track_gradient_unit AS 'infrastructure_track_gradient_unit',
         i.updated_at AS 'infrastructure_updated_at',
         i.vertical_alignment AS 'infrastructure_vertical_alignment',

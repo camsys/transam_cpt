@@ -1,8 +1,3 @@
-TransamCore::Engine.load_seed
-TransamTransit::Engine.load_seed
-TransamAccounting::Engine.load_seed
-TransamCpt::Engine.load_seed
-
 puts "  Processing system_config"
 SystemConfig.find_or_create_by(:customer_id => 1,
   :start_of_fiscal_year => '07-01',
@@ -32,3 +27,8 @@ User.find_or_create_by(
   :email => "admin@email.com",
   :num_table_rows => 10,
   )
+
+TransamCore::Engine.load_seed
+TransamTransit::Engine.load_seed
+TransamAccounting::Engine.load_seed
+TransamCpt::Engine.load_seed
