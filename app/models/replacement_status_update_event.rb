@@ -59,8 +59,7 @@ class ReplacementStatusUpdateEvent < AssetEvent
   ######## API Serializer ##############
   def api_json(options={})
     super.merge({
-      replacement_year: replacement_year,
-      replacement_status_type:replacement_status_type
+      replacement_status_type:replacement_status_type.api_json
     })
   end
   

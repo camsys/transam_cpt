@@ -7,4 +7,8 @@ class ReplacementStatusType < ActiveRecord::Base
     name
   end
 
+  def api_json(options={})
+    as_json(options)
+  end
+
 end
