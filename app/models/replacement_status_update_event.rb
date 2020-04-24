@@ -55,6 +55,13 @@ class ReplacementStatusUpdateEvent < AssetEvent
   def get_update
     "Replacement status: #{replacement_status_type}"
   end
+
+  ######## API Serializer ##############
+  def api_json(options={})
+    super.merge({
+      replacement_status_type:replacement_status_type.api_json
+    })
+  end
   
   protected
 

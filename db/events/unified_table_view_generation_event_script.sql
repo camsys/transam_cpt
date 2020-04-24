@@ -597,7 +597,7 @@ BEGIN
     LEFT JOIN fta_mode_types AS fmt ON fmt.id = afmt.fta_mode_type_id
 
     LEFT JOIN component_types AS ct ON ct.id = component.component_type_id
-    LEFT JOIN component_subtypes As cst on cst.id = component.component_subtype_id
+    LEFT JOIN component_elements As cst on cst.id = component.component_element_id
     WHERE transamAs.transam_assetible_type = 'TransitAsset' AND (f.id >0 OR component.id > 0);
 
 	  RENAME TABLE facility_primary_asset_table_views TO temp_delete_facility_primary_asset_table_views,
