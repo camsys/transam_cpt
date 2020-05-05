@@ -1,160 +1,145 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
-:css
-  #capital_projects_table_div .fixed-table-footer {
-      border-top: none;
-  }
+-#:css
+-#  #capital_projects_table_div .fixed-table-footer {
+-#      border-top: none;
+-#  }
+-#
+-#  #capital_projects_table_div .bootstrap-table .fixed-table-footer tbody>tr>td {
+-#      padding: 0 !important;
+-#      border: none;
+-#  }
+-#
+-#  .bs-bars.pull-left {
+-#    float: none !important;
+-#    display: inline-block;
+-#    width: 91%;
+-#  }
 
-  #capital_projects_table_div .bootstrap-table .fixed-table-footer tbody>tr>td {
-      padding: 0 !important;
-      border: none;
-  }
+:ruby
+  table_dom_id = SecureRandom.hex
+  show_actions ||= 0
 
-  .bs-bars.pull-left {
-    float: none !important;
-    display: inline-block;
-    width: 91%;
-  }
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => table_dom_id,
+  :use => 'true',
+  :data => {:use => 'true',
+    :side => 'server',
+    :current_page => '0',
+    :current_page_size => '10',
+    :page_sizes => "10,20,50,100,200,10000",
+    :search => 'server',
+    :export => "['csv', 'txt', 'excel']",
+    :columns => "Project ID,,
+                Organization,,
+                Title,,
+                Scope,,
+                Project Type,,
+                SOGR,,
+                Shadow,,
+                Multi-Year,,
+                Emergency Project,,
+                Year,,
+                Name,,
+                ALI,,
+                Requested,,
+                Allocated,,",
+    :selected_columns => "Project ID,
+                          Organization,
+                          Title,
+                          Scope,
+                          Project Type,
+                          SOGR,
+                          Shadow,
+                          Multi-Year,
+                          Emergency Project,
+                          Year,
+                          Name,
+                          ALI,
+                          Requested,
+                          Allocated",
+    :cookies => 'true',
+    :sort => 'server',
+    :sort_params => '',
+    :url => capital_projects_path(:format => :json) }}
 
-#projects_table_actions.row
-  - if can? :create, CapitalProject
-    = link_to new_capital_project_path, :class => 'btn btn-default', :style => 'margin-left: 5px;' do
-      %i.fa.fa-plus.fa-fw
-      = " New Capital Project"
-  .navbar-form.pull-right{:style => 'margin-top: 0px;'}
-    %button.btn.btn-primary.btn-md.dropdown-toggle{:data => {:toggle => 'dropdown'}, :style => 'vertical-align: top;'}
-      %i.fa.fa-file
-      = " Export"
-      %span.caret
-    %ul.dropdown-menu{:role => 'menu', :style => 'padding-top: 0px;'}
-      %li{:style => "background-color: #f5f5f5; padding-left: 20px;  border-bottom: 1px solid black;"}
-        Export Projects
-      -#%li
-      -#  = link_to 'CSV', current_url(format: :csv), target: '_blank', title: 'Export all rows and columns to CSV'
-      -#%li
-      -#  = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
-      %li{:style => 'border-bottom: 1px solid black;'}
-        = link_to 'XLSX', current_url(format: :xlsx), target: '_blank', title: 'Export all rows and columns to XLSX'
-      %li{:style => "background-color: #f5f5f5; padding-left: 20px; padding-right: 20px; border-bottom: 1px solid black; border-top: 1px solid black"}
-        Export Activity Line Items
-      -#%li
-      -#  = link_to 'CSV', current_url(format: :csv), target: '_blank', title: 'Export all rows and columns to CSV'
-      -#%li
-      -#  = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
-      %li
-        = link_to 'XLSX', {controller: 'capital_projects', action: 'activity_line_items', format: :xlsx}, target: '_blank', title: 'Export all rows and columns to XLSX'
 
-#capital_projects_table_div.table-responsive
-  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
-    :url => capital_projects_path(format: :json),
-    :card_view => "false",
-    :pagination => 'true',
-    :side_pagination => 'server',
-    :show_pagination_switch => 'false',
-    :page_number => '1',
-    :page_list => "5, 10, 20, 50, 100, 200, 10000]",
-    :page_size => current_user.num_table_rows,
-    :search => 'false',
-    :show_columns => 'true',
-    :toolbar => "#projects_table_actions",
-    :row_style => 'row_style',
-    :click_to_select => 'true',
-    :query_params => "query_params",
-    :show_export => 'true',
-    :id_field => 'object_key',
-    :export_types => "['csv', 'txt', 'excel']",
-    :cookie => 'true',
-    :cookie_id_table => "capital_projects_id",
-    :cookie_expire => "1y",
-    :single_select => 'true',
-    :show_footer => 'true'}}
-    %thead
-      %tr
-        - if @organization_list.count > 1
-          %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}} Agency
-        %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
-        %th.left.nowrap{data: {field: 'project_number'}} Project
-        %th.center.nowrap{data: {field: 'scope'}} Scope
-        %th.center{data: {field: 'is_emergency', formatter: 'raw_boolean_formatter'}} Emgcy
-        %th.center{data: {field: 'is_sogr', formatter: 'raw_boolean_formatter'}} SOGR
-        %th.center{data: {field: 'is_notional', formatter: 'raw_boolean_formatter'}} Shadow
-        %th.center{data: {field: 'is_multi_year', formatter: 'raw_boolean_formatter'}} Multi Year
 
-        %th.center{data: {field: 'type'}} Type
-        %th.left{data: {field: 'title'}} Title
-        -#%th.center Status
-        %th{data: {field: 'total_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter', align: 'right'}} Cost
+-##projects_table_actions.row
+-#  - if can? :create, CapitalProject
+-#    = link_to new_capital_project_path, :class => 'btn btn-default', :style => 'margin-left: 5px;' do
+-#      %i.fa.fa-plus.fa-fw
+-#      = " New Capital Project"
+-#  .navbar-form.pull-right{:style => 'margin-top: 0px;'}
+-#    %button.btn.btn-primary.btn-md.dropdown-toggle{:data => {:toggle => 'dropdown'}, :style => 'vertical-align: top;'}
+-#      %i.fa.fa-file
+-#      = " Export"
+-#      %span.caret
+-#    %ul.dropdown-menu{:role => 'menu', :style => 'padding-top: 0px;'}
+-#      %li{:style => "background-color: #f5f5f5; padding-left: 20px;  border-bottom: 1px solid black;"}
+-#        Export Projects
+-#      -#%li
+-#      -#  = link_to 'CSV', current_url(format: :csv), target: '_blank', title: 'Export all rows and columns to CSV'
+-#      -#%li
+-#      -#  = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
+-#      %li{:style => 'border-bottom: 1px solid black;'}
+-#        = link_to 'XLSX', current_url(format: :xlsx), target: '_blank', title: 'Export all rows and columns to XLSX'
+-#      %li{:style => "background-color: #f5f5f5; padding-left: 20px; padding-right: 20px; border-bottom: 1px solid black; border-top: 1px solid black"}
+-#        Export Activity Line Items
+-#      -#%li
+-#      -#  = link_to 'CSV', current_url(format: :csv), target: '_blank', title: 'Export all rows and columns to CSV'
+-#      -#%li
+-#      -#  = link_to 'TXT', current_url(format: :txt), target: '_blank', title: 'Export all rows and columns to TXT'
+-#      %li
+-#        = link_to 'XLSX', {controller: 'capital_projects', action: 'activity_line_items', format: :xlsx}, target: '_blank', title: 'Export all rows and columns to XLSX'
+-#
+-##capital_projects_table_div.table-responsive
+-#  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+-#    :url => capital_projects_path(format: :json),
+-#    :card_view => "false",
+-#    :pagination => 'true',
+-#    :side_pagination => 'server',
+-#    :show_pagination_switch => 'false',
+-#    :page_number => '1',
+-#    :page_list => "5, 10, 20, 50, 100, 200, 10000]",
+-#    :page_size => current_user.num_table_rows,
+-#    :search => 'false',
+-#    :show_columns => 'true',
+-#    :toolbar => "#projects_table_actions",
+-#    :row_style => 'row_style',
+-#    :click_to_select => 'true',
+-#    :query_params => "query_params",
+-#    :show_export => 'true',
+-#    :id_field => 'object_key',
+-#    :export_types => "['csv', 'txt', 'excel']",
+-#    :cookie => 'true',
+-#    :cookie_id_table => "capital_projects_id",
+-#    :cookie_expire => "1y",
+-#    :single_select => 'true',
+-#    :show_footer => 'true'}}
+-#    %thead
+-#      %tr
+-#        - if @organization_list.count > 1
+-#          %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}} Agency
+-#        %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
+-#        %th.left.nowrap{data: {field: 'project_number'}} Project
+-#        %th.center.nowrap{data: {field: 'scope'}} Scope
+-#        %th.center{data: {field: 'is_emergency', formatter: 'raw_boolean_formatter'}} Emgcy
+-#        %th.center{data: {field: 'is_sogr', formatter: 'raw_boolean_formatter'}} SOGR
+-#        %th.center{data: {field: 'is_notional', formatter: 'raw_boolean_formatter'}} Shadow
+-#        %th.center{data: {field: 'is_multi_year', formatter: 'raw_boolean_formatter'}} Multi Year
+-#
+-#        %th.center{data: {field: 'type'}} Type
+-#        %th.left{data: {field: 'title'}} Title
+-#        -#%th.center Status
+-#        %th{data: {field: 'total_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter', align: 'right'}} Cost
+-#
+-#        -#%th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
+-#        %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
 
-        -#%th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
-        %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
+-#= render 'shared/table_formatters'
 
-= render 'shared/table_formatters'
 
-:javascript
-  $(document).ready(function() {
-    $('#' + '#{table_dom_id}').bootstrapTable('resetWidth');
-  });
-
-  var path = '#{capital_project_path("x")}';
-  function row_style(row, index) {
-    return {
-      classes: 'action-path'
-    };
-  };
-
-  $('#' + '#{table_dom_id}').on('click-row.bs.table', function (e, row, $element) {
-    var url = path.replace("x", row['object_key']);
-    document.location.href = url;
-  }).on('post-body.bs.table', function () {
-    $('.transam-popover').popover({
-      trigger: 'hover'
-    });
-
-    $('.transam-tooltip').tooltip();
-  });
-
-  $(window).resize(function() {
-    $('#' + '#{table_dom_id}').bootstrapTable('resetView');
-  });
-
-  var org_filter = #{@org_filter || []};
-  var fiscal_year_filter = #{@fiscal_year_filter || []};
-  var capital_project_flag_filter = #{@capital_project_flag_filter || []};
-  var capital_project_type_filter = #{@capital_project_type_filter || []};
-  var asset_subtype_filter = #{@asset_subtype_filter || []};
-
-  function query_params(params) {
-    if(org_filter.length > 0) {
-      params.org_filter = org_filter;
-    }
-
-    if(fiscal_year_filter.length > 0) {
-      params.fiscal_year_filter = fiscal_year_filter;
-    }
-
-    if(capital_project_flag_filter.length > 0) {
-      params.capital_project_flag_filter = capital_project_flag_filter;
-    }
-
-    if(capital_project_type_filter.length > 0) {
-      params.capital_project_type_filter = capital_project_type_filter;
-    }
-
-    if(asset_subtype_filter.length > 0) {
-      params.asset_subtype_filter = asset_subtype_filter;
-    }
-
-    return params;
-  }
-
-  var formatMoney = function(n, c, d, t) {
-    var c = isNaN(c = Math.abs(c)) ? 0 : c,
-    d = d == undefined ? "." : d,
-    t = t == undefined ? "," : t,
-    s = n < 0 ? "-" : "",
-    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
-    j = (j = i.length) > 3 ? j % 3 : 0;
-    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-  }
 
