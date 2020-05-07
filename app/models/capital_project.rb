@@ -309,6 +309,56 @@ class CapitalProject < ActiveRecord::Base
     sogr? && !notional? && !activity_line_items.joins(:assets).where("policy_replacement_year is not NULL and scheduled_replacement_year is not NULL and scheduled_replacement_year < policy_replacement_year").empty?
   end
 
+  #-----------------------------------------------------------------------------
+  # Generate Table Data
+  #-----------------------------------------------------------------------------
+
+  # TODO: Make this a shareable Module 
+  def rowify
+    fields = {
+              project_number: "Project ID", 
+              organization: "Organization",
+              fy_year: "Year",
+              title: "Title",
+              team_ali_code_scope: "Scope",
+              capital_project_type_name: "Project Type",
+              sogr: "SOGR",
+              notional: "Shadow",
+              multi_year: "Multi-Year",
+              emergency: "Emergency Project",
+              ali_code: "ALI",
+              total_cost: "Requested",
+              total_funds: "Allocated"
+            }
+    
+    project_row = {}
+    fields.each do |key,value|
+      project_row[value] =  self.send(key).to_s
+    end
+
+    return project_row 
+
+  end
+
+  def team_ali_code_scope
+    team_ali_code.try(:scope)
+  end
+
+  def capital_project_type_name
+    capital_project_type.try(:name)
+  end
+
+  def ali_code
+    if activity_line_items.count > 1
+      return "Multiple"
+    else
+      return activity_line_items.first.try(:team_ali_code).try(:code)
+    end
+  end
+
+
+  # End Generate Table Data
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
