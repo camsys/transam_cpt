@@ -309,7 +309,7 @@ class CapitalProject < ActiveRecord::Base
     sogr? && !notional? && !activity_line_items.joins(:assets).where("policy_replacement_year is not NULL and scheduled_replacement_year is not NULL and scheduled_replacement_year < policy_replacement_year").empty?
   end
 
-   #-----------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
   # Generate Table Data
   #-----------------------------------------------------------------------------
 
@@ -321,7 +321,7 @@ class CapitalProject < ActiveRecord::Base
               fy_year: "Year",
               title: "Title",
               team_ali_code_scope: "Scope",
-              capital_project_type_name: "Capital Project Type Name",
+              capital_project_type_name: "Project Type",
               sogr: "SOGR",
               notional: "Shadow",
               multi_year: "Multi-Year",

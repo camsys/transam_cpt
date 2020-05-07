@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       get   'find_districts'
       post  'runner'
       get   'activity_line_items'
+      get   'table'
     end
 
     member do

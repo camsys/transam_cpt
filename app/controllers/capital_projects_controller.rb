@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
+  before_action :get_project,       :except =>  [:index, :table, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -183,6 +183,50 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       format.xlsx do
         response.headers['Content-Disposition'] = "attachment; filename=Capital Projects Table Export.xlsx"
       end
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # TODO: MOST of this will be moved to a shareable module
+  #-----------------------------------------------------------------------------
+  def table
+    count = CapitalProject.all.count 
+    page = (table_params[:page] || 0).to_i
+    page_size = (table_params[:page_size] || count).to_i
+    search = (table_params[:search])
+    offset = page*page_size
+
+    query = nil 
+    if search
+      searchable_columns = [:project_number]
+      search_string = "%#{search}%"
+      org_query = Organization.arel_table[:name].matches(search_string).or(Organization.arel_table[:short_name].matches(search_string))
+      query = (query_builder(searchable_columns, search_string)).or(org_query)
+
+      # This does not work. TODO: find out why this doesn't work.
+      count = CapitalProject.joins(:organization).where(query).to_a.count 
+
+      # TODO: This is a horrible temporary piece of code that will be replaced with the line above is corrected.
+      index = 0
+      CapitalProject.joins(:organization).where(query).each do |not_used|
+        index += 1 
+      end
+      count = index  
+
+      project_table = CapitalProject.joins(:organization).where(query).offset(offset).limit(page_size).map{ |p| p.rowify }
+    else 
+      project_table = CapitalProject.all.offset(offset).limit(page_size).map{ |p| p.rowify }
+    end
+
+    render status: 200, json: {count: count, rows: project_table} 
+
+  end
+
+  def query_builder atts, search_string
+    if atts.count <= 1
+      return CapitalProject.joins(:organziation).arel_table[atts.pop].matches(search_string)
+    else
+      return CapitalProject.joins(:organization).arel_table[atts.pop].matches(search_string).or(query_builder(atts, search_string))
     end
   end
 
@@ -369,6 +413,10 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
     params.require(:capital_project).permit(CapitalProject.allowable_params)
+  end
+
+  def table_params
+    params.permit(:page, :page_size, :search)
   end
 
 end
