@@ -142,7 +142,6 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   # Search interface
   #-----------------------------------------------------------------------------
   def index
-
     @fiscal_years = get_fiscal_years
 
     # Filter by funding source and/or asset type. This takes more work and each uses a custom query to pre-select
