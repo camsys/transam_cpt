@@ -328,10 +328,7 @@ class CapitalProject < ActiveRecord::Base
               emergency: "Emergency Project",
               ali_code: "ALI",
               total_cost: "Requested",
-              total_cost: "Allocated"
-
-
-
+              total_funds: "Allocated"
             }
     
     project_row = {}
