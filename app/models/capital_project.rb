@@ -333,7 +333,7 @@ class CapitalProject < ActiveRecord::Base
     
     project_row = {}
     fields.each do |key,value|
-      project_row[value] =  self.send(key).to_s
+      project_row[value] =  self.send(key)
     end
 
     return project_row 
