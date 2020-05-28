@@ -317,7 +317,7 @@ class CapitalProject < ActiveRecord::Base
   def rowify
     fields = {
               project_number: "Project ID", 
-              organization: "Organization",
+              organization_name: "Organization",
               fy_year: "Year",
               title: "Title",
               team_ali_code_scope: "Scope",
@@ -338,6 +338,10 @@ class CapitalProject < ActiveRecord::Base
 
     return project_row 
 
+  end
+
+  def organization_name
+    organization.to_s 
   end
 
   def team_ali_code_scope
