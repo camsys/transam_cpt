@@ -314,30 +314,45 @@ class CapitalProject < ActiveRecord::Base
   #-----------------------------------------------------------------------------
 
   # TODO: Make this a shareable Module 
-  def rowify
-    fields = {
-              project_number: "Project ID", 
-              organization_name: "Organization",
-              fy_year: "Year",
-              title: "Title",
-              team_ali_code_scope: "Scope",
-              capital_project_type_name: "Project Type",
-              sogr: "SOGR",
-              notional: "Shadow",
-              multi_year: "Multi-Year",
-              emergency: "Emergency Project",
-              ali_code: "ALI",
-              total_cost: "Requested",
-              total_funds: "Allocated"
-            }
+  def rowify fields=nil
+    fields ||= [
+              :project_number,
+              :organization,
+              :fiscal_year,
+              :title,
+              :scope,
+              :project_type,
+              :sogr,
+              :shadow,
+              :multi_year,
+              :emergency,
+              :ali,
+              :requested,
+              :allocated
+            ]
     
-    project_row = {}
-    fields.each do |key,value|
-      project_row[value] =  self.send(key)
+    field_library = {
+      project_number: {label: "Project ID", method: :project_number, url: nil},
+      organization: {label: "Organization", method: :organization_name, url: nil},
+      fiscal_year: {label: "Year", method: :fy_year, url: nil},
+      title: {label: "Title", method: :title, url: nil},
+      scope: {label: "Scope", method: :team_ali_code_scope, url: nil},
+      project_type: {label: "Project Type", method: :capital_project_type_name, url: nil},
+      sogr: {label: "SOGR", method: :sogr, url: nil},
+      shadow: {label: "Shadow", method: :notional, url: nil},
+      multi_year: {label: "Multi-Year", method: :multi_year, url: nil},
+      emergency: {label: "Emergency Project", method: :emergency, url: nil},
+      ali: {label: "ALI", method: :ali_code, url: nil},
+      requested: {label: "Requested", method: :total_cost, url: nil},
+      allocated: {label: "Allocated", method: :total_funds, url: nil}
+
+    }
+
+    row = {}
+    fields.each do |field|
+      row[field] =  {label: field_library[field][:label], data: self.send(field_library[field][:method]).to_s, url: field_library[field][:url]} 
     end
-
-    return project_row 
-
+    return row 
   end
 
   def organization_name
