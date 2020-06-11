@@ -149,19 +149,21 @@ class ActivityLineItemsController < OrganizationAwareController
       format.json {
         assets_json = @activity_line_item.assets.very_specific.limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
-          p.as_json.merge!({
+          p.as_json(methods: [
+              :reported_mileage,
+              :reported_condition_rating,
+              :age,
+              :policy_replacement_year,
+              :is_early_replacement?,
+              :formatted_early_replacement_reason
+          ]).merge!({
             asset_subtype: p.try(:asset_subtype).try(:to_s),
             fuel_type: p.try(:fuel_type).try(:code),
-            age: p.age,
-            in_backlog: p.in_backlog,
-            reported_mileage: p.try(:reported_mileage),
-            policy_replacement_year: p.policy_replacement_year,
+            in_backlog: p.in_backlog ? 1 : 0,
             policy_replacement_fiscal_year: fiscal_year(p.policy_replacement_year),
             scheduled_cost: @activity_line_item.rehabilitation_ali? ? p.estimated_rehabilitation_cost : p.scheduled_replacement_cost,
             estimated_cost: @activity_line_item.rehabilitation_ali? ? (@activity_line_item.rehabilitation_cost p) : (@activity_line_item.replacement_cost p),
             is_rehabilitated: !p.rehabilitation_updates.empty?,
-            is_early_replacement: p.is_early_replacement?,
-            formatted_early_replacement_reason: p.formatted_early_replacement_reason,
             min_service_life: asset_policy_analyzer.get_min_service_life_months / 12,
             replace_with_subtype: asset_policy_analyzer.get_replace_asset_subtype_id.present? ? AssetSubtype.find_by(id: asset_policy_analyzer.get_replace_asset_subtype_id).to_s : false,
             replace_with_fuel_type: p.fuel_type_id != @activity_line_item.fuel_type_id ? @activity_line_item.fuel_type.code : false
