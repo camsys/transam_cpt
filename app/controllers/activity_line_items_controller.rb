@@ -150,13 +150,13 @@ class ActivityLineItemsController < OrganizationAwareController
         assets_json = @activity_line_item.assets.very_specific.limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
           asset_policy_analyzer = p.policy_analyzer
           p.as_json(methods: [
-              :reported_mileage,
               :reported_condition_rating,
               :age,
               :policy_replacement_year,
               :is_early_replacement?,
               :formatted_early_replacement_reason
           ]).merge!({
+            reported_mileage: p.try(:reported_mileage), # some assets don't have mileage
             asset_subtype: p.try(:asset_subtype).try(:to_s),
             fuel_type: p.try(:fuel_type).try(:code),
             in_backlog: p.in_backlog ? 1 : 0,
