@@ -190,11 +190,19 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   # TODO: MOST of this will be moved to a shareable module
   #-----------------------------------------------------------------------------
   def table
-    count = CapitalProject.all.count 
+    projects = join_builder
     page = (table_params[:page] || 0).to_i
-    page_size = (table_params[:page_size] || count).to_i
+    page_size = (table_params[:page_size] || projects.count).to_i
     search = (table_params[:search])
     offset = page*page_size
+
+    sort_column = table_params[:sort_column]
+    sort_order = table_params[:sort_order]
+
+    ### Update SORT Preferences ###
+    if sort_column
+      current_user.update_table_prefs(:projects, sort_column, sort_order)
+    end
 
     query = nil 
     if search
@@ -204,21 +212,22 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       query = (query_builder(searchable_columns, search_string))
               .or(org_query search_string)
               .or(capital_project_type_query search_string)
-
-      cp_table = CapitalProject.joins(:organization)
-                  .joins(:capital_project_type)
-                  .where(query)
-
-      count = cp_table.count 
-     
-      project_table = cp_table.offset(offset).limit(page_size).map{ |p| p.rowify }
-    else 
-      project_table = CapitalProject.all.offset(offset).limit(page_size).map{ |p| p.rowify }
+      projects = projects.where(query)
     end
 
-    render status: 200, json: {count: count, rows: project_table} 
+    projects = projects.order(current_user.table_sort_string :projects)
+    
+    project_table = projects.offset(offset).limit(page_size).map{ |p| p.rowify }
+    render status: 200, json: {count: projects.count, rows: project_table} 
 
   end
+
+  def join_builder 
+    CapitalProject.joins(:organization)
+                  .joins(:capital_project_type)
+                  .joins('left join team_ali_codes on team_ali_code_id = team_ali_codes.id')
+  end
+
 
   def is_number? string
     true if Float(string) rescue false
@@ -426,7 +435,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   end
 
   def table_params
-    params.permit(:page, :page_size, :search)
+    params.permit(:page, :page_size, :search, :sort_column, :sort_order)
   end
 
 end
