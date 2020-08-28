@@ -1,5 +1,7 @@
 class CapitalPlansController < OrganizationAwareController
 
+  add_breadcrumb "Home", :root_path
+
   before_action :get_capital_plan, only: [:show]
 
   def index
