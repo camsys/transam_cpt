@@ -9,7 +9,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Capital Projects", :capital_projects_path
 
-  before_action :get_project,       :except =>  [:index, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
+  before_action :get_project,       :except =>  [:index, :table, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
 
   INDEX_KEY_LIST_VAR    = "capital_project_key_list_cache_var"
   SESSION_VIEW_TYPE_VAR = 'capital_projects_subnav_view_type'
@@ -142,7 +142,6 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   # Search interface
   #-----------------------------------------------------------------------------
   def index
-
     @fiscal_years = get_fiscal_years
 
     # Filter by funding source and/or asset type. This takes more work and each uses a custom query to pre-select
@@ -184,6 +183,69 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       format.xlsx do
         response.headers['Content-Disposition'] = "attachment; filename=Capital Projects Table Export.xlsx"
       end
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # TODO: MOST of this will be moved to a shareable module
+  #-----------------------------------------------------------------------------
+  def table
+    projects = join_builder
+    page = (table_params[:page] || 0).to_i
+    page_size = (table_params[:page_size] || projects.count).to_i
+    search = (table_params[:search])
+    offset = page*page_size
+
+    sort_column = table_params[:sort_column]
+    sort_order = table_params[:sort_order]
+
+    ### Update SORT Preferences ###
+    if sort_column
+      current_user.update_table_prefs(:projects, sort_column, sort_order)
+    end
+
+    query = nil 
+    if search
+      searchable_columns = [:project_number, :fy_year, :title]
+      search_string = "%#{search}%"
+      search_year = (is_number? search) ? search.to_i : nil  
+      query = (query_builder(searchable_columns, search_string))
+              .or(org_query search_string)
+              .or(capital_project_type_query search_string)
+      projects = projects.where(query)
+    end
+
+    projects = projects.order(current_user.table_sort_string :projects)
+    
+    project_table = projects.offset(offset).limit(page_size).map{ |p| p.rowify }
+    render status: 200, json: {count: projects.count, rows: project_table} 
+
+  end
+
+  def join_builder 
+    CapitalProject.joins(:organization)
+                  .joins(:capital_project_type)
+                  .joins('left join team_ali_codes on team_ali_code_id = team_ali_codes.id')
+  end
+
+
+  def is_number? string
+    true if Float(string) rescue false
+  end
+
+  def org_query search_string
+    Organization.arel_table[:name].matches(search_string).or(Organization.arel_table[:short_name].matches(search_string))
+  end
+
+  def capital_project_type_query search_string
+    CapitalProjectType.arel_table[:name].matches(search_string)
+  end
+
+  def query_builder atts, search_string
+    if atts.count <= 1
+      return CapitalProject.joins(:organziation).arel_table[atts.pop].matches(search_string)
+    else
+      return CapitalProject.joins(:organization).arel_table[atts.pop].matches(search_string).or(query_builder(atts, search_string))
     end
   end
 
@@ -370,6 +432,10 @@ class CapitalProjectsController < AbstractCapitalProjectsController
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
     params.require(:capital_project).permit(CapitalProject.allowable_params)
+  end
+
+  def table_params
+    params.permit(:page, :page_size, :search, :sort_column, :sort_order)
   end
 
 end

@@ -309,6 +309,75 @@ class CapitalProject < ActiveRecord::Base
     sogr? && !notional? && !activity_line_items.joins(:assets).where("policy_replacement_year is not NULL and scheduled_replacement_year is not NULL and scheduled_replacement_year < policy_replacement_year").empty?
   end
 
+  #-----------------------------------------------------------------------------
+  # Generate Table Data
+  #-----------------------------------------------------------------------------
+
+  # TODO: Make this a shareable Module 
+  def rowify fields=nil
+    fields ||= [
+              :project_number,
+              :organization,
+              :fiscal_year,
+              :title,
+              :scope,
+              :project_type,
+              :sogr,
+              :shadow,
+              :multi_year,
+              :emergency,
+              :ali,
+              :requested,
+              :allocated
+            ]
+    
+    field_library = {
+      project_number: {label: "Project ID", method: :project_number, url: nil},
+      organization: {label: "Organization", method: :organization_name, url: nil},
+      fiscal_year: {label: "Year", method: :fy_year, url: nil},
+      title: {label: "Title", method: :title, url: nil},
+      scope: {label: "Scope", method: :team_ali_code_scope, url: nil},
+      project_type: {label: "Project Type", method: :capital_project_type_name, url: nil},
+      sogr: {label: "SOGR", method: :sogr, url: nil},
+      shadow: {label: "Shadow", method: :notional, url: nil},
+      multi_year: {label: "Multi-Year", method: :multi_year, url: nil},
+      emergency: {label: "Emergency Project", method: :emergency, url: nil},
+      ali: {label: "ALI", method: :ali_code, url: nil},
+      requested: {label: "Requested", method: :total_cost, url: nil},
+      allocated: {label: "Allocated", method: :total_funds, url: nil}
+
+    }
+
+    row = {}
+    fields.each do |field|
+      row[field] =  {label: field_library[field][:label], data: self.send(field_library[field][:method]).to_s, url: field_library[field][:url]} 
+    end
+    return row 
+  end
+
+  def organization_name
+    organization.to_s 
+  end
+
+  def team_ali_code_scope
+    team_ali_code.try(:scope)
+  end
+
+  def capital_project_type_name
+    capital_project_type.try(:name)
+  end
+
+  def ali_code
+    if activity_line_items.count > 1
+      return "Multiple"
+    else
+      return activity_line_items.first.try(:team_ali_code).try(:code)
+    end
+  end
+
+
+  # End Generate Table Data
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
