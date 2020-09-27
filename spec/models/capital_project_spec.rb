@@ -173,7 +173,7 @@ RSpec.describe CapitalProject, :type => :model do
   end
 
   it '.fiscal_year' do
-    expect(test_project.fiscal_year).to eq("FY #{test_project.fy_year-2000}-#{test_project.fy_year-2000+1}")
+    expect(test_project.fiscal_year).to eq("#{test_project.fy_year-2000}-#{test_project.fy_year-2000+1}")
   end
 
   it '.to_s' do
