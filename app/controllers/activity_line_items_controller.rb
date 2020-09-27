@@ -169,7 +169,7 @@ class ActivityLineItemsController < OrganizationAwareController
           })
         }
         render :json => {
-            :total => @activity_line_item.assets.very_specific.count,
+            :total => @activity_line_item.assets.count,
             :rows =>  assets_json
         }
       }
