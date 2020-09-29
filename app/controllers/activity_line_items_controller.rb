@@ -147,7 +147,8 @@ class ActivityLineItemsController < OrganizationAwareController
     respond_to do |format|
       format.js
       format.json {
-        assets_json = @activity_line_item.assets.very_specific.limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
+        assets_json = @activity_line_item.assets.limit(params[:limit]).offset(params[:offset]).order(sort_clause).collect{ |p|
+          p = p.very_specific
           asset_policy_analyzer = p.policy_analyzer
           p.as_json.merge!({
             asset_subtype: p.try(:asset_subtype).try(:to_s),
