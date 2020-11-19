@@ -1,4 +1,9 @@
-# Inventory searcher. 
+# --------------------------------
+# # NOT USED see TTPLAT-1832 or https://wiki.camsys.com/pages/viewpage.action?pageId=51183790
+# --------------------------------
+
+
+# Inventory searcher.
 # Designed to be populated from a search form using a new/create controller model.
 #
 class FundingSourceSearcher < BaseSearcher
