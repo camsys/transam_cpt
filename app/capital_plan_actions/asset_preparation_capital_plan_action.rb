@@ -1,5 +1,6 @@
 class AssetPreparationCapitalPlanAction < BaseCapitalPlanAction
 
+  # This action is driven by data and not manually checked by a user.
   def system_action?
     true
   end
