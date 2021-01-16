@@ -386,7 +386,7 @@ class CapitalProject < ActiveRecord::Base
   protected
 
   def create_project_number
-    years = fiscal_year.split[1]
+    years = fiscal_year
     project_number = "#{organization.short_name} #{years} ##{id}"
     self.update_attributes(:project_number => project_number)
   end
