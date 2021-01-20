@@ -1,0 +1,35 @@
+
+:ruby
+  table_dom_id = SecureRandom.hex
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => table_dom_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'scenarios',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"status":{"name": "Status"},
+                    "org":{"name":"Organization"},
+                    "created_at":{"name":"Created At"}}',
+      :selected_columns => "status,org,created_at",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - @scenarios.each_with_index do |scenario, index|
+
+    :javascript
+      add_row('#{table_dom_id}',
+      {
+        "status": '#{scenario.state.titleize}',
+        "org": '#{scenario.organization.name}',
+        "created_at": "#{format_as_date_time(scenario.created_at)}"
+      }, #{index});
