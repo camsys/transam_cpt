@@ -1,0 +1,6 @@
+.row 
+  .col-md-5
+  .col-md-1
+    =button_to 'Accept', transition_scenario_path(@scenario, transition: "accept"), method: :put, class: "btn btn-success"
+  .col-md-1
+    =button_to 'Reject', transition_scenario_path(@scenario, transition: "reject"), method: :put, class: "btn btn-danger"

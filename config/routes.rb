@@ -80,6 +80,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :scenarios, only: [:index, :show]
+  resources :scenarios, only: [:index, :show] do
+    member do 
+      put 'transition'
+    end
+  end
 
 end

@@ -14,7 +14,7 @@
       :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt']",
-      :columns => '{"status":{"name": "Status"},
+      :columns => '{"status":{"name": "Status","type":"drilldown-link"},
                     "org":{"name":"Organization"},
                     "created_at":{"name":"Created At"}}',
       :selected_columns => "status,org,created_at",
@@ -29,7 +29,7 @@
     :javascript
       add_row('#{table_dom_id}',
       {
-        "status": '#{scenario.state.titleize}',
+        "status": '#{link_to scenario.state.titleize, scenario_path(scenario)}',
         "org": '#{scenario.organization.name}',
         "created_at": "#{format_as_date_time(scenario.created_at)}"
       }, #{index});
