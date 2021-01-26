@@ -24,8 +24,8 @@ class Scenario < ApplicationRecord
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
-  # Every scenario belongs to an organization
   belongs_to  :organization
+  has_many :draft_projects
 
   #------------------------------------------------------------------------------
   #

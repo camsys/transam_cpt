@@ -6,6 +6,8 @@
 %div.text-center
   =render "#{@scenario.state}_actions"
 
+%div.text-center
+  =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
 -if @scenario.cancellable?
   %div.text-center

@@ -1,0 +1,14 @@
+%div.row
+  .col-md-4
+    .well
+      .row
+        =@draft_project.project_number
+      .row
+        =@draft_project.title
+      .row
+        =@draft_project.description
+      .row
+        =@draft_project.justification
+      .row 
+        =button_to 'Edit', edit_draft_project_path(@draft_project), method: :get, class: "btn btn-info btn-sm"
+  .col-md-8
