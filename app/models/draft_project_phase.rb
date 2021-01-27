@@ -1,32 +1,28 @@
-class DraftProject < ApplicationRecord
+class DraftProjectPhase < ApplicationRecord
 
-   # Include the object key mixin
+  # Include the object key mixin
   include TransamObjectKey
 
   # Include the fiscal year mixin
   include FiscalYear
 
   FORM_PARAMS = [
-    :project_number,
-    :title,
-    :description,
+    :name,
+    :cost,
+    :fy_year,
     :justification,
-    :scenario_id
+    :draft_project_id
   ]
 
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
-  belongs_to :scenario
-  has_many :draft_project_phases
-  alias phases draft_project_phases #just to save on typing
+  belongs_to :draft_project
 
   #------------------------------------------------------------------------------
-  # Instance Methods
+  # Validations
   #------------------------------------------------------------------------------
-  def cost
-     self.phases.pluck(:cost).sum
-  end 
+  validates :cost, presence: true 
 
   #------------------------------------------------------------------------------
   #

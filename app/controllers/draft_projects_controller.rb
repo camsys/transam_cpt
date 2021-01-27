@@ -32,6 +32,7 @@ class DraftProjectsController < OrganizationAwareController
 
   def new 
     @draft_project = DraftProject.new 
+
     @scenario = Scenario.find_by(object_key: scenario_params[:scenario_id])
     @draft_project.scenario = @scenario 
     add_breadcrumb "Scenario", scenario_path(@scenario)

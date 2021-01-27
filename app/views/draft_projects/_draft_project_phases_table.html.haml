@@ -1,0 +1,37 @@
+//Requires Scenario to be Passed
+:ruby
+  table_dom_id = SecureRandom.hex
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => table_dom_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'draft_projects',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"name":{"name":"Name", "type":"drilldown-link"},
+                    "cost":{"name":"Cost"},
+                    "fy_year":{"name":"Year"},
+                    "created_at":{"name":"Created At"}}',
+      :selected_columns => "name,cost,fy_year,created_at",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - draft_project.draft_project_phases.each_with_index do |phase, index|
+
+    :javascript
+      add_row('#{table_dom_id}',
+      {
+        "name": '#{link_to phase.name, edit_draft_project_phase_path(phase)}',
+        "cost": "#{phase.cost}",
+        "fy_year": "#{phase.fy_year}",
+        "created_at": "#{phase.created_at}"
+      }, #{index});

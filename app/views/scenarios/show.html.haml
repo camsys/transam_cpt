@@ -2,14 +2,22 @@
   =@scenario.organization
 %h4.text-center
   =@scenario.description
+%div.text-center
+  =@scenario.cost
 
 %div.text-center
   =render "#{@scenario.state}_actions"
 
+-if @scenario.cancellable?
+  %div.row
+    %div.text-center
+      =button_to 'Cancel', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger btn-xs"    
+
+%div.row 
+  %div.text-left
+    =link_to 'Add Project', new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-sm"
+
 %div.text-center
   =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
--if @scenario.cancellable?
-  %div.text-center
-    %hr
-    =button_to 'Cancel', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger btn-xs"
+

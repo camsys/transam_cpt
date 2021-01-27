@@ -26,6 +26,16 @@ class Scenario < ApplicationRecord
   #------------------------------------------------------------------------------
   belongs_to  :organization
   has_many :draft_projects
+  has_many :draft_project_phases, through: :draft_projects
+  alias phases draft_project_phases #just to save on typing
+
+
+  #------------------------------------------------------------------------------
+  # Instance Methods
+  #------------------------------------------------------------------------------
+  def cost
+     self.phases.pluck(:cost).sum
+  end 
 
   #------------------------------------------------------------------------------
   #

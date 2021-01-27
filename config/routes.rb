@@ -80,6 +80,7 @@ Rails.application.routes.draw do
     end
   end
 
+  ### SCENARIOS WorkFLOW
   resources :scenarios, only: [:index, :show] do
     member do 
       put 'transition'
@@ -87,6 +88,8 @@ Rails.application.routes.draw do
   end
 
   resources :draft_projects, only: [:show, :edit, :update, :new, :create]
+  resources :draft_project_phases, only: [:edit, :update, :new, :create]
+  ### End Scenarios Workflow
 
 
 end
