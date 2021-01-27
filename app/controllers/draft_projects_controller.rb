@@ -30,13 +30,32 @@ class DraftProjectsController < OrganizationAwareController
     end
   end
 
+  def new 
+    @draft_project = DraftProject.new 
+    @scenario = Scenario.find_by(object_key: scenario_params[:scenario_id])
+    @draft_project.scenario = @scenario 
+    add_breadcrumb "Scenario", scenario_path(@scenario)
+    add_breadcrumb "New Project"
+
+    respond_to do |format|
+      format.html
+    end
+  end
+
+  def create 
+    @draft_project = DraftProject.new 
+
+    respond_to do |format|
+      if @draft_project.update(form_params)
+        format.html { redirect_to draft_project_path(@draft_project) }
+      else
+        format.html
+      end
+    end
+  end
+
   def update
     set_draft_project
-
-    puts form_params
-    puts '-Derek-----------------'
-
-    @draft_project.update(form_params)
 
     respond_to do |format|
       if @draft_project.update(form_params)
@@ -56,6 +75,10 @@ class DraftProjectsController < OrganizationAwareController
 
   def table_params
     params.permit(:page, :page_size, :search, :sort_column, :sort_order)
+  end
+
+  def scenario_params
+    params.permit(:scenario_id)
   end
 
   def set_draft_project

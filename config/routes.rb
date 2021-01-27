@@ -86,7 +86,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :draft_projects, only: [:show, :edit, :update]
+  resources :draft_projects, only: [:show, :edit, :update, :new, :create]
 
 
 end

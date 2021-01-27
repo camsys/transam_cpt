@@ -10,7 +10,8 @@ class DraftProject < ApplicationRecord
     :project_number,
     :title,
     :description,
-    :justification
+    :justification,
+    :scenario_id
   ]
 
   #------------------------------------------------------------------------------
