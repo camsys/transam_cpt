@@ -1,0 +1,7 @@
+=simple_form_for(@draft_project) do |f|
+  =f.input :title
+  =f.input :description
+  =f.input :project_number
+  =f.input :justification
+  =f.input :scenario_id, as: :hidden
+  =f.submit
