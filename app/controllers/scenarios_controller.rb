@@ -26,7 +26,7 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def show
     set_scenario
-    add_breadcrumb "#{@scenario.state.titleize}"
+    add_breadcrumb "#{@scenario.name}"
 
     respond_to do |format|
       format.html

@@ -1,17 +1,24 @@
-%h2.text-center
-  =@scenario.organization
-%h4.text-center
-  =@scenario.description
-%div.text-center
-  =@scenario.cost
+:css
+  .with-margin {
+    margin-bottom: 5px;
+  }
 
-%div.text-center
-  =render "#{@scenario.state}_actions"
 
--if @scenario.cancellable?
-  %div.row
+.row
+  %h2
+    =@scenario.name 
+.row
+  .col-md-1
+  .col-md-10
+    %h3
+      =@scenario.organization
+    %h4
+      =@scenario.description
+    %div
+      =@scenario.cost
+  .col-md-1
     %div.text-center
-      =button_to 'Cancel', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger btn-xs"    
+      =render "#{@scenario.state}_actions"
 
 %div.row 
   %div.text-left

@@ -1,3 +1,4 @@
+%h2 Scenarios
 
 :ruby
   table_dom_id = SecureRandom.hex
@@ -14,10 +15,11 @@
       :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt']",
-      :columns => '{"status":{"name": "Status","type":"drilldown-link"},
+      :columns => '{"name":{"name": "Name","type":"drilldown-link"},
+                    "status":{"name":"Status"},
                     "org":{"name":"Organization"},
                     "created_at":{"name":"Created At"}}',
-      :selected_columns => "status,org,created_at",
+      :selected_columns => "name,status,org,created_at",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -29,7 +31,8 @@
     :javascript
       add_row('#{table_dom_id}',
       {
-        "status": '#{link_to scenario.state.titleize, scenario_path(scenario)}',
+        "name": '#{link_to scenario.name, scenario_path(scenario)}',
+        "status": '#{scenario.state.titleize}',
         "org": '#{scenario.organization.name}',
         "created_at": "#{format_as_date_time(scenario.created_at)}"
       }, #{index});
