@@ -111,17 +111,17 @@ class Scenario < ApplicationRecord
     when :cancelled
       "This scenario has been cancelled."
     when :unconstrained_plan
-      "Define all the unfunded projects needed and submit the project to BPT."
+      "#{self.organization.try(:name)} defines all the projects needing funding and submits them to BPT."
     when :submitted_unconstrained_plan
-      "BPT should review the status of this unconstrained plan."
+      "BPT reviews the status of this unconstrained plan."
     when :constrained_plan
-      "Transit Agency adds local and federal funding"
+      "#{self.organization.try(:name)} adds local and federal funding."
     when :submitted_constrained_plan
-      "BPT adds state funding"
+      "BPT adds state funding."
     when :final_draft
-      "TA Approves Final Funding before final approval"
+      "#{self.organization.try(:name)} reviews the funding amounts allocated by BPT."
     when :awaiting_final_approval
-      "BPT Needs Approval from XYX"
+      "BPT gets approval from Final Approvers."
     end
   end
 
