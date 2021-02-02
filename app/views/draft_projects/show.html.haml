@@ -1,20 +1,46 @@
-%div.row
+//TITLE
+.row.text-center
+  %h1
+    =@draft_project.title
+  .row
+    =@draft_project.description
+  .row
+    =link_to edit_draft_project_path(@draft_project) do 
+      %i.fa.fa-edit
+  
+
+// Main Content
+.row
+  .col-md-1
+  
+  //Details
+  .col-md-5
+    .row
+      %strong 
+        Project Number: 
+      =@draft_project.project_number
+    .row
+      %strong 
+        Justification: 
+      =@draft_project.justification
+    .row
+      %strong
+        Cost:
+      =format_as_currency(@draft_project.cost)
+    .row 
   .col-md-4
+
+  //Scenario Details
+  .col-md-2
     .well
       .row
-        =@draft_project.project_number
-      .row
-        =@draft_project.title
-      .row
-        =@draft_project.description
-      .row
-        =@draft_project.justification
-      .row
-        =@draft_project.cost
-      .row 
-        =button_to 'Edit', edit_draft_project_path(@draft_project), method: :get, class: "btn btn-info btn-sm"
-  .col-md-8
+        %h4
+          =@draft_project.scenario.name
+        =@draft_project.scenario.description
+        =@draft_project.scenario.state.titleize
+        =@draft_project.scenario.state_description
 
+// Project Phases
 %div.row
   .col-md-12
     %h3

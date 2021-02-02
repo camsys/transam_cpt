@@ -3,19 +3,29 @@
     margin-bottom: 5px;
   }
 
+//TITLE
 .row.text-center
   %h1
     =@scenario.name 
   =@scenario.description
-  
+
+//Main Content  
 .row
   .col-md-1
+  
+  //Details
   .col-md-9
-    %h3
+    .row
+      %strong 
+        Organization: 
       =@scenario.organization
-    %div
+    .row
+      %strong
+        Cost:
       =format_as_currency(@scenario.cost)
 
+
+  //State Info and Actions
   .col-md-2
     .well
       .row
@@ -26,10 +36,10 @@
         %br
         =render "#{@scenario.state}_actions"
 
-
+// PROJECTS
 .row
   .col-md-12
-    %h4
+    %h3
       ="Projects"
       =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
         %i.fa.fa-plus
