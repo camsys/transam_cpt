@@ -11,8 +11,8 @@ class DraftProjectPhasesController < OrganizationAwareController
 
   def edit
     set_draft_project_phase
-    add_breadcrumb "Scenario", scenario_path(@draft_project_phase.draft_project.scenario)
-    add_breadcrumb "Project", draft_project_path(@draft_project_phase.draft_project)
+    add_breadcrumb @draft_project_phase.draft_project.scenario.name, scenario_path(@draft_project_phase.draft_project.scenario)
+    add_breadcrumb @draft_project_phase.draft_project.title, draft_project_path(@draft_project_phase.draft_project)
     add_breadcrumb "#{@draft_project_phase.name}"
     
     respond_to do |format|
@@ -37,8 +37,8 @@ class DraftProjectPhasesController < OrganizationAwareController
 
     @draft_project = DraftProject.find_by(object_key: draft_project_params[:draft_project_id])
     @draft_project_phase.draft_project = @draft_project
-    add_breadcrumb "Scenario", scenario_path(@draft_project.scenario)
-    add_breadcrumb "Draft Project", draft_project_path(@draft_project)
+    add_breadcrumb @draft_project_phase.draft_project.scenario.name, scenario_path(@draft_project_phase.draft_project.scenario)
+    add_breadcrumb @draft_project_phase.draft_project.title, draft_project_path(@draft_project_phase.draft_project)
     add_breadcrumb "New Project Phase"
 
     respond_to do |format|

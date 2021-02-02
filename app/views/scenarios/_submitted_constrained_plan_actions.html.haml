@@ -1,6 +1,6 @@
-.row.with-margin
+%div{style: "float: right; width: auto;"}
+  =button_to 'Cancel', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger"
+%div{style: "float: right; width: auto;"}
+  =button_to 'Reject', transition_scenario_path(@scenario, transition: "reject"), method: :put, class: "btn btn-info"
+%div{style: "float: right; width: auto;"}
   =button_to 'Accept', transition_scenario_path(@scenario, transition: "accept"), method: :put, class: "btn btn-success"
-.row.with-margin
-  =button_to 'Reject', transition_scenario_path(@scenario, transition: "reject"), method: :put, class: "btn btn-danger"
-.row.with-margin
-  =button_to 'Cancel', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger btn-xs"

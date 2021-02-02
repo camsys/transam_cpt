@@ -104,7 +104,7 @@ class Scenario < ApplicationRecord
   #------------------------------------------------------------------------------
   # Text Helpers
   #------------------------------------------------------------------------------
-  def description
+  def state_description
     case state.to_sym
     when :approved
       "This scenario is complete and all projects have been updated."

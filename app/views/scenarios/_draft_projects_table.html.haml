@@ -32,6 +32,6 @@
       {
         "title": '#{link_to draft_project.try(:title).try(:titleize), draft_project_path(draft_project)}',
         "created_at": "#{format_as_date_time(draft_project.created_at)}",
-        "cost": "#{draft_project.cost}",
+        "cost": "#{ format_as_currency(draft_project.cost) }",
         "project_number": "#{draft_project.project_number}"
       }, #{index});

@@ -31,7 +31,7 @@
       add_row('#{table_dom_id}',
       {
         "name": '#{link_to phase.name, edit_draft_project_phase_path(phase)}',
-        "cost": "#{phase.cost}",
-        "fy_year": "#{phase.fy_year}",
+        "cost": "#{ format_as_currency(phase.cost) }",
+        "fy_year": "#{phase.get_fiscal_year}",
         "created_at": "#{phase.created_at}"
       }, #{index});

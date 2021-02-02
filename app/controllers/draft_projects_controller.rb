@@ -11,8 +11,8 @@ class DraftProjectsController < OrganizationAwareController
 
   def show
     set_draft_project
-    add_breadcrumb "Scenario", scenario_path(@draft_project.scenario)
-    add_breadcrumb "#{@draft_project.project_number}"
+    add_breadcrumb @draft_project.scenario.name, scenario_path(@draft_project.scenario)
+    add_breadcrumb "#{@draft_project.title}"
 
     respond_to do |format|
       format.html
@@ -22,8 +22,8 @@ class DraftProjectsController < OrganizationAwareController
 
   def edit
     set_draft_project
-    add_breadcrumb "Scenario", scenario_path(@draft_project.scenario)
-    add_breadcrumb "#{@draft_project.project_number}"
+    add_breadcrumb @draft_project.scenario.name, scenario_path(@draft_project.scenario)
+    add_breadcrumb "#{@draft_project.title}"
     
     respond_to do |format|
       format.html
@@ -35,7 +35,7 @@ class DraftProjectsController < OrganizationAwareController
 
     @scenario = Scenario.find_by(object_key: scenario_params[:scenario_id])
     @draft_project.scenario = @scenario 
-    add_breadcrumb "Scenario", scenario_path(@scenario)
+    add_breadcrumb @draft_project.scenario.name, scenario_path(@draft_project.scenario)
     add_breadcrumb "New Project"
 
     respond_to do |format|

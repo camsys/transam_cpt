@@ -3,28 +3,40 @@
     margin-bottom: 5px;
   }
 
-
-.row
-  %h2
+.row.text-center
+  %h1
     =@scenario.name 
+  =@scenario.description
+  
 .row
   .col-md-1
-  .col-md-10
+  .col-md-9
     %h3
       =@scenario.organization
-    %h4
-      =@scenario.description
     %div
-      =@scenario.cost
-  .col-md-1
-    %div.text-center
-      =render "#{@scenario.state}_actions"
+      =format_as_currency(@scenario.cost)
 
-%div.row 
-  %div.text-left
-    =link_to 'Add Project', new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-sm"
+  .col-md-2
+    .well
+      .row
+        %h4
+          =@scenario.state.titleize
+        =@scenario.state_description
+      .row.text-center
+        %br
+        =render "#{@scenario.state}_actions"
 
-%div.text-center
+
+.row
+  .col-md-12
+    %h4
+      ="Projects"
+      =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
+        %i.fa.fa-plus
+
+
+%div.row
   =render partial: "draft_projects_table", locals: {scenario: @scenario}
+
 
 

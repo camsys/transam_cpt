@@ -15,9 +15,12 @@
         =button_to 'Edit', edit_draft_project_path(@draft_project), method: :get, class: "btn btn-info btn-sm"
   .col-md-8
 
-%div.row 
-  %div.text-left
-    =link_to 'Add Project Phase', new_draft_project_phase_url(draft_project_id: @draft_project.object_key), class: "btn btn-info btn-sm"
+%div.row
+  .col-md-12
+    %h3
+      ="Project Phases"
+      =link_to new_draft_project_phase_url(draft_project_id: @draft_project.object_key), class: "btn btn-info btn-xs" do 
+        %i.fa.fa-plus
 
 %div.row
   %div.text-center
