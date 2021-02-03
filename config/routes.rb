@@ -81,7 +81,7 @@ Rails.application.routes.draw do
   end
 
   ### SCENARIOS WorkFLOW
-  resources :scenarios, only: [:index, :show, :edit, :udpate, :new, :create] do
+  resources :scenarios, only: [:index, :show, :edit, :update, :new, :create] do
     member do 
       put 'transition'
     end

@@ -11,7 +11,9 @@ class Scenario < ApplicationRecord
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :organization_id,
-    :fy_year
+    :fy_year,
+    :name,
+    :description
   ]
 
   CANCELLABLE_STATES = [
@@ -28,6 +30,12 @@ class Scenario < ApplicationRecord
   has_many :draft_projects
   has_many :draft_project_phases, through: :draft_projects
   alias phases draft_project_phases #just to save on typing
+
+  #------------------------------------------------------------------------------
+  # Validations
+  #------------------------------------------------------------------------------
+  validates :name, presence: true 
+  validates :organization_id, presence: true 
 
 
   #------------------------------------------------------------------------------

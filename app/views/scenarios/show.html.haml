@@ -7,7 +7,11 @@
 .row.text-center
   %h1
     =@scenario.name 
-  =@scenario.description
+  .row
+    =@scenario.description
+  .row
+    =link_to edit_scenario_path(@scenario) do 
+      %i.fa.fa-edit
 
 //Main Content  
 .row

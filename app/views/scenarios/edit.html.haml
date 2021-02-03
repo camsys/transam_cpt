@@ -1,0 +1,7 @@
+.col-md-3
+.col-md-6
+  =simple_form_for(@scenario) do |f|
+    =f.input :name
+    =f.input :description
+    //=f.input :organization, collection: @organizations, include_blank: false 
+    =f.submit

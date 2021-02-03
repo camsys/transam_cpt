@@ -35,6 +35,64 @@ class ScenariosController < OrganizationAwareController
   end
 
   #-----------------------------------------------------------------------------
+  # New
+  #-----------------------------------------------------------------------------
+  def new
+    @scenario = Scenario.new
+    @organizations =  Organization.all #TODO: Determine correct permissions here
+    add_breadcrumb "New Scenario"
+
+    respond_to do |format|
+      format.html
+    end
+    
+  end
+
+  #-----------------------------------------------------------------------------
+  # Update
+  #-----------------------------------------------------------------------------
+  def create
+    @scenario = Scenario.new 
+
+    respond_to do |format|
+      if @scenario.update(form_params)
+        format.html { redirect_to scenario_path(@scenario) }
+      else
+        format.html
+      end
+    end
+    
+  end
+
+  #-----------------------------------------------------------------------------
+  # Edit
+  #-----------------------------------------------------------------------------
+  def edit
+    set_scenario
+    add_breadcrumb @scenario.name
+
+    respond_to do |format|
+      format.html
+    end
+    
+  end
+
+  #-----------------------------------------------------------------------------
+  # Update
+  #-----------------------------------------------------------------------------
+  def update
+    set_scenario
+    respond_to do |format|
+      if @scenario.update(form_params)
+        format.html { redirect_to scenario_path(@scenario) }
+      else
+        format.html
+      end
+    end
+    
+  end
+
+  #-----------------------------------------------------------------------------
   # Transition States
   # 
   #-----------------------------------------------------------------------------
@@ -52,7 +110,7 @@ class ScenariosController < OrganizationAwareController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:scenarios).permit(Scenario.allowable_params)
+    params.require(:scenario).permit(Scenario.allowable_params)
   end
 
   def table_params

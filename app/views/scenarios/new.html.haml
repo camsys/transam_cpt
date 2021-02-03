@@ -1,0 +1,7 @@
+.col-md-3
+.col-md-6
+  =simple_form_for(@scenario) do |f|
+    =f.input :name
+    =f.input :description
+    =f.input :organization_id, collection: @organizations.collect { |o| [o.name, o.id] }
+    =f.submit
