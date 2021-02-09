@@ -101,7 +101,6 @@ class ScenariosController < OrganizationAwareController
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
     @scenario.send(transition) if transition.to_sym.in? valid_transitions
-    add_breadcrumb "#{@scenario.state.titleize}"
 
     redirect_back(fallback_location: root_path)
   end
