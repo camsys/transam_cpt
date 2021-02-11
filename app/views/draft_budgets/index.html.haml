@@ -1,0 +1,42 @@
+%h2 
+  ="Budgets"
+  =link_to new_draft_budget_path, class: "btn btn-info btn-xs" do 
+    %i.fa.fa-plus
+
+
+:ruby
+  table_dom_id = SecureRandom.hex
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => table_dom_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'draft_budgets',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"name":{"name": "Name","type":"drilldown-link"},
+                    "amount":{"name":"Amount"},
+                    "allocated":{"name":"Allocated"},
+                    "remaining":{"name":"Remaining"}}',
+      :selected_columns => "name,amount,allocated,remaining",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - @draft_budgets.each_with_index do |budget, index|
+
+    :javascript
+      add_row('#{table_dom_id}',
+      {
+        "name": '#{link_to budget.name, draft_budget_path(budget)}',
+        "amount": "#{ format_as_currency(budget.amount) }",
+        "allocated": "#{ format_as_currency(budget.allocated) }",
+        "remaining": "#{ format_as_currency(budget.remaining) }"
+      }, #{index});

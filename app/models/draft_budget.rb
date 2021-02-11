@@ -1,4 +1,4 @@
-class DraftProject < ApplicationRecord
+class DraftBudget < ApplicationRecord
 
    # Include the object key mixin
   include TransamObjectKey
@@ -7,33 +7,25 @@ class DraftProject < ApplicationRecord
   include FiscalYear
 
   FORM_PARAMS = [
-    :project_number,
-    :title,
-    :description,
-    :justification,
-    :scenario_id
+    :name,
+    :amount
   ]
 
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
-  belongs_to :scenario
-  has_many :draft_project_phases
-  alias phases draft_project_phases #just to save on typing
+  has_many :draft_budget_allocations
+  has_many :draft_project_phases, through: :draft_budget_allocations
 
   #------------------------------------------------------------------------------
   # Instance Methods
   #------------------------------------------------------------------------------
-  def cost
-     phases.pluck(:cost).sum
-  end 
-
   def allocated
-    phases.map{ |phase| phase.allocated }.sum
+    draft_budget_allocations.pluck(:amount).sum
   end
 
   def remaining
-    cost - allocated
+    amount - allocated
   end
 
   #------------------------------------------------------------------------------
@@ -44,4 +36,5 @@ class DraftProject < ApplicationRecord
   def self.allowable_params
     FORM_PARAMS
   end
+
 end

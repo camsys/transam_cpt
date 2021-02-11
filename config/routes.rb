@@ -89,6 +89,7 @@ Rails.application.routes.draw do
 
   resources :draft_projects, only: [:show, :edit, :update, :new, :create]
   resources :draft_project_phases, only: [:edit, :update, :new, :create]
+  resources :draft_budgets, only: [:index, :show, :edit, :update, :new, :create]
   ### End Scenarios Workflow
 
 

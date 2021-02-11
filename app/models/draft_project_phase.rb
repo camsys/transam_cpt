@@ -18,6 +18,8 @@ class DraftProjectPhase < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :draft_project
+  has_many :draft_budget_allocations
+  has_many :draft_budgets, through: :draft_budget_allocations
 
   #------------------------------------------------------------------------------
   # Validations
@@ -31,6 +33,14 @@ class DraftProjectPhase < ApplicationRecord
   def get_fiscal_year
     fiscal_year(fy_year)
   end 
+
+  def allocated
+    draft_budget_allocations.pluck(:amount).sum
+  end
+
+  def remaining
+    cost - allocated
+  end
 
   #------------------------------------------------------------------------------
   #

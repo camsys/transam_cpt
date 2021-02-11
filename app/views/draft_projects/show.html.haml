@@ -27,6 +27,14 @@
       %strong
         Cost:
       =format_as_currency(@draft_project.cost)
+    .row
+      %strong
+        Allocated:
+      =format_as_currency(@draft_project.allocated)
+    .row
+      %strong
+        Remaining:
+      =format_as_currency(@draft_project.remaining)
     .row 
   .col-md-4
 

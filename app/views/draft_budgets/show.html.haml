@@ -1,0 +1,55 @@
+:css
+  .with-margin {
+    margin-bottom: 5px;
+  }
+
+//TITLE
+.row.text-center
+  %h1
+    =@draft_budget.name 
+  .row
+    =link_to edit_draft_budget_path(@draft_budget) do 
+      %i.fa.fa-edit
+
+//Main Content  
+.row
+  .col-md-1
+  
+  //Details
+  .col-md-9
+    .row
+      %strong 
+        Organization: 
+      ="COMING SOON"
+    .row
+      %strong
+        Amount:
+      =format_as_currency(@draft_budget.amount)
+    .row
+      %strong
+        Allocated:
+      =format_as_currency(@draft_budget.allocated)
+    .row
+      %strong
+        Remaining:
+      =format_as_currency(@draft_budget.remaining)
+
+
+  .col-md-2
+      
+
+// PROJECTS
+.row
+  .col-md-12
+    %h3
+      ="LIST OF PHASES?"
+      //=link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
+      //  %i.fa.fa-plus
+
+
+%div.row
+  Phases Table?
+
+
+
+
