@@ -32,7 +32,7 @@
     :javascript
       add_row('#{table_dom_id}',
       {
-        "name": '#{link_to phase.name, edit_draft_project_phase_path(phase)}',
+        "name": '#{link_to phase.name, draft_project_phase_path(phase)}',
         "cost": "#{ format_as_currency(phase.cost) }",
         "allocated": "#{ format_as_currency(phase.allocated) }",
         "remaining": "#{ format_as_currency(phase.remaining) }",

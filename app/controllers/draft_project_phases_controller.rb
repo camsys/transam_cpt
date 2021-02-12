@@ -9,6 +9,17 @@ class DraftProjectPhasesController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Scenarios", :scenarios_path
 
+  def show
+    set_draft_project_phase
+    add_breadcrumb @draft_project_phase.draft_project.scenario.name, scenario_path(@draft_project_phase.draft_project.scenario)
+    add_breadcrumb @draft_project_phase.draft_project.title, draft_project_path(@draft_project_phase.draft_project)
+    add_breadcrumb "#{@draft_project_phase.name}"
+    
+    respond_to do |format|
+      format.html
+    end
+  end
+
   def edit
     set_draft_project_phase
     add_breadcrumb @draft_project_phase.draft_project.scenario.name, scenario_path(@draft_project_phase.draft_project.scenario)

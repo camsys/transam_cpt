@@ -1,0 +1,32 @@
+:ruby
+  funding_table_id = SecureRandom.hex
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => funding_table_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'funding',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"budget":{"name":"Budget","type":"drilldown-link"},
+                    "amount": {"name":"Cost"}}',
+      :selected_columns => "budget,amount",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - draft_project_phase.draft_budget_allocations.each_with_index do |alloc, index|
+
+    :javascript
+      add_row('#{funding_table_id}',
+      {
+        "budget": '#{link_to alloc.draft_budget.name, edit_draft_budget_allocation_path(alloc)}',
+        "amount": "#{ format_as_currency(alloc.amount) }"
+      }, #{index});

@@ -1,0 +1,36 @@
+:ruby
+  funding_table_id = SecureRandom.hex
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => funding_table_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'funding',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"project_phase":{"name":"Project Phase","type":"drilldown-link"},
+                    "project":{"name":"Project","type":"drilldown-link"},
+                    "organization":{"name":"Organization"},
+                    "amount": {"name":"Cost"}}',
+      :selected_columns => "project_phase,project,organization,amount",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - allocations.each_with_index do |alloc, index|
+
+    :javascript
+      add_row('#{funding_table_id}',
+      {
+        "project_phase": '#{link_to alloc.draft_project_phase.try(:name), draft_project_phase_path(alloc.draft_project_phase)}',
+        "project": '#{link_to alloc.draft_project_phase.draft_project.title, draft_project_path(alloc.draft_project_phase.draft_project)}',
+        "organization": "#{alloc.draft_project_phase.draft_project.scenario.organization.name}",
+        "amount": "#{ format_as_currency(alloc.amount) }"
+      }, #{index});

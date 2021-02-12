@@ -1,0 +1,49 @@
+:css
+  .with-margin {
+    margin-bottom: 5px;
+  }
+
+//TITLE
+.row.text-center
+  %h1
+    =@draft_project_phase.name 
+  .row
+    =@draft_project_phase.justification
+  .row
+    =link_to edit_draft_project_phase_path(@draft_project_phase) do 
+      %i.fa.fa-edit
+
+//Main Content  
+.row
+  .col-md-1
+  
+  //Details
+  .col-md-9
+    .row
+      %strong
+        Cost:
+      =format_as_currency(@draft_project_phase.cost)
+    .row
+      %strong
+        Allocated:
+      =format_as_currency(@draft_project_phase.allocated)
+    .row
+      %strong
+        Remaining:
+      =format_as_currency(@draft_project_phase.remaining)
+  .col-md-2
+      
+
+// Funding
+%div.row
+  .col-md-12
+    %h3
+      ="Allocations"
+      =link_to new_draft_budget_allocation_url(draft_project_phase_id: @draft_project_phase.object_key), class: "btn btn-info btn-xs" do 
+        %i.fa.fa-plus
+
+%div.row
+  %div.text-center
+    .col-sm-12
+      =render partial: "draft_allocations_table", locals: {draft_project_phase: @draft_project_phase}
+

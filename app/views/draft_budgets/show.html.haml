@@ -18,10 +18,6 @@
   //Details
   .col-md-9
     .row
-      %strong 
-        Organization: 
-      ="COMING SOON"
-    .row
       %strong
         Amount:
       =format_as_currency(@draft_budget.amount)
@@ -38,18 +34,16 @@
   .col-md-2
       
 
-// PROJECTS
-.row
+// Funding
+%div.row
   .col-md-12
     %h3
-      ="LIST OF PHASES?"
-      //=link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
-      //  %i.fa.fa-plus
-
+      ="Allocations"      
 
 %div.row
-  Phases Table?
-
+  %div.text-center
+    .col-sm-12
+      =render partial: "draft_allocations_table", locals: {allocations: @draft_budget.draft_budget_allocations}
 
 
 
