@@ -6,7 +6,7 @@
 #-------------------------------------------------------------------------------
 class DraftBudgetAllocationsController < OrganizationAwareController
 
-  add_breadcrumb "Home", :root_path
+  #add_breadcrumb "Home", :root_path
 
   def edit
     set_draft_budget_allocation

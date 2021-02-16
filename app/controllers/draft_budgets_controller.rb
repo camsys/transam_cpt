@@ -7,6 +7,7 @@
 class DraftBudgetsController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
+  add_breadcrumb "Budgets", :draft_budgets_path
 
   def index
     @draft_budgets= DraftBudget.all 
@@ -19,6 +20,7 @@ class DraftBudgetsController < OrganizationAwareController
 
   def show
     set_draft_budget
+    add_breadcrumb "#{@draft_budget.name}"
 
     respond_to do |format|
       format.html
@@ -28,6 +30,7 @@ class DraftBudgetsController < OrganizationAwareController
 
   def edit
     set_draft_budget
+    add_breadcrumb "#{@draft_budget.name}"
     
     respond_to do |format|
       format.html
@@ -36,6 +39,7 @@ class DraftBudgetsController < OrganizationAwareController
 
   def new 
     @draft_budget = DraftBudget.new 
+    add_breadcrumb "New Budget"
 
     respond_to do |format|
       format.html
