@@ -36,6 +36,11 @@ class DraftProject < ApplicationRecord
     cost - allocated
   end
 
+  def percent_funded
+    return 0 if cost == 0
+    return (100*(allocated.to_f/cost.to_f)).round
+  end
+
   #------------------------------------------------------------------------------
   #
   # Class Methods

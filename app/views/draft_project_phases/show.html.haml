@@ -18,7 +18,7 @@
   .col-md-1
   
   //Details
-  .col-md-9
+  .col-md-3
     .row
       %strong
         Cost:
@@ -31,7 +31,12 @@
       %strong
         Remaining:
       =format_as_currency(@draft_project_phase.remaining)
-  .col-md-2
+  .col-md-4
+    .progress
+      .progress-bar.bg-success{role: "progressbar", style: "width: #{@draft_project_phase.percent_funded}%"}
+        ="#{@draft_project_phase.percent_funded}% Funded"
+
+  .col-md-4
       
 
 // Funding

@@ -18,7 +18,7 @@
   .col-md-1
   
   //Details
-  .col-md-9
+  .col-md-3
     .row
       %strong 
         Organization: 
@@ -28,8 +28,14 @@
         Cost:
       =format_as_currency(@scenario.cost)
 
+  .col-md-4
+    .progress
+      .progress-bar.bg-success{role: "progressbar", style: "width: #{@scenario.percent_funded}%"}
+        ="#{@scenario.percent_funded}% Funded"
+
 
   //State Info and Actions
+  .col-md-2
   .col-md-2
     .well
       .row

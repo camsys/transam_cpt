@@ -42,8 +42,21 @@ class Scenario < ApplicationRecord
   # Instance Methods
   #------------------------------------------------------------------------------
   def cost
-     self.phases.pluck(:cost).sum
+     phases.pluck(:cost).sum
   end 
+
+  def allocated
+    phases.map{ |phase| phase.allocated }.sum
+  end
+
+  def remaining
+    cost - allocated
+  end
+
+  def percent_funded
+    return 0 if cost == 0
+    return (100*(allocated.to_f/cost.to_f)).round
+  end
 
   #------------------------------------------------------------------------------
   #

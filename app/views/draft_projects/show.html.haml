@@ -14,7 +14,7 @@
   .col-md-1
   
   //Details
-  .col-md-5
+  .col-md-3
     .row
       %strong 
         Project Number: 
@@ -37,8 +37,13 @@
       =format_as_currency(@draft_project.remaining)
     .row 
   .col-md-4
+    
+    .progress
+      .progress-bar.bg-success{role: "progressbar", style: "width: #{@draft_project.percent_funded}%"}
+        ="#{@draft_project.percent_funded}% Funded"
 
   //Scenario Details
+  .col-md-2
   .col-md-2
     .well
       .row
