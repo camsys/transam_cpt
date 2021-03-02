@@ -1,8 +1,10 @@
 =render partial: "allocations_modal", locals: {phase: phase}
 .panel.panel-default
   .panel-heading
-    =phase.name
-    =" (#{phase.get_fiscal_year})"
+    =link_to draft_project_phase_path(phase) do 
+      %h4
+        =phase.name
+        =" (#{phase.get_fiscal_year})"
   .panel-body 
     .row 
       .col-md-4
@@ -19,12 +21,13 @@
             Remaining:
           =format_as_currency(phase.remaining)
       .col-md-8.text-center
-        .progress
-          .progress-bar.bg-success{role: "progressbar", style: "width: #{phase.percent_funded}%"}
-            ="#{phase.percent_funded}% Funded"
-    .row.text-center
-      %button.btn.btn-primary{"data-target": "##{phase.object_key}Modal", "data-toggle": "modal", type: "button"}
-        Update Funding
+        .row
+          .progress
+            .progress-bar.bg-success{role: "progressbar", style: "width: #{phase.percent_funded}%"}
+              ="#{phase.percent_funded}% Funded"
+        .row
+          %button.btn.btn-xs.btn-success{"data-target": "##{phase.object_key}Modal", "data-toggle": "modal", type: "button"}
+            Update Funding
       
   .panel-footer.text-right
-    =phase.created_at
+    ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"
