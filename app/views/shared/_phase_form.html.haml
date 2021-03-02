@@ -1,36 +1,33 @@
-.col-md-2
-.col-md-8
-  .row 
+.row 
+  .col-md-2 
+    %h5 Budget
+  .col-md-2 
+    %h5 Required%
+  .col-md-2 
+    %h5 Effective%
+  .col-md-2 
+    %h5 Allocation
+  .col-md-2 
+    %h5 Actual%
+  .col-md-1
+    %h5 Target
+-remaining_pct = 1.0
+-draft_project_phase.ordered_allocations.each do |allocation|
+  .row
+    .col-md-2
+      =allocation.funding_source_type.try(:name)  
+      =allocation.draft_budget.try(:name)  
+    .col-md-2
+      ="#{allocation.draft_budget.funding_template.match_required}%"
+    .col-md-2
+      -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
+      ="#{effective_pct.round(3)}%"
+      -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
+    .col-md-2
+      =format_as_currency(allocation.amount)
+    .col-md-2
+      -cost = draft_project_phase.cost
+      ="#{100*(allocation.amount.to_f/cost).round(3)}%"
     .col-md-1
-      %h5 Type
-    .col-md-2 
-      %h5 Budget
-    .col-md-2 
-      %h5 Required Match
-    .col-md-2 
-      %h5 Effective Match
-    .col-md-2 
-      %h5 Allocation
-    .col-md-2 
-      %h5 Actual Match
-    .col-md-1
-      %h5 Target
-  -remaining_pct = 1.0
-  -draft_project_phase.ordered_allocations.each do |allocation|
-    .row
-      .col-md-1 
-        =allocation.funding_source_type.try(:name)  
-      .col-md-2
-        =allocation.draft_budget.try(:name)  
-      .col-md-2
-        ="#{allocation.draft_budget.funding_template.match_required}%"
-      .col-md-2
-        -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
-        ="#{effective_pct.round(3)}%"
-        -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
-      .col-md-2
-        =format_as_currency(allocation.amount)
-      .col-md-2
-        ="#{100*(allocation.amount.to_f/@draft_project_phase.cost).round(3)}%"
-      .col-md-1
-        =format_as_currency(effective_pct/100.0*@draft_project_phase.cost)
+      =format_as_currency(effective_pct/100.0*draft_project_phase.cost)
+

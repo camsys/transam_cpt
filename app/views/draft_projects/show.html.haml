@@ -64,6 +64,8 @@
         %i.fa.fa-plus
 
 %div.row
-  %div.text-center
-    .col-sm-12
-      =render partial: "draft_project_phases_table", locals: {draft_project: @draft_project}
+  -@draft_project.draft_project_phases.each_slice(3) do |phases|
+    .row
+      -phases.each do |phase|
+        .col-md-4
+          =render partial: "phase_panel", locals: {phase: phase}

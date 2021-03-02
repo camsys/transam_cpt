@@ -1,0 +1,12 @@
+/ Modal
+.modal.fade{id: "#{phase.object_key}Modal"}
+  .col-md-2
+  .col-md-8
+    .modal-content
+      .modal-header
+        %h5#exampleModalLabel.modal-title 
+          ="#{phase.name} Allocations"
+      .modal-body
+        =render partial: "shared/phase_form", locals: {draft_project_phase: phase}
+      .modal-footer
+        %button.btn.btn-secondary{"data-dismiss" => "modal", type: "button"} Close

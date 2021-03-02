@@ -19,8 +19,9 @@
                     "allocated":{"name":"Allocated"},
                     "remaining":{"name":"Remaining"},
                     "fy_year":{"name":"Year"},
-                    "created_at":{"name":"Created At"}}',
-      :selected_columns => "name,cost,allocated,remaining,fy_year,created_at",
+                    "created_at":{"name":"Created At"},
+                    "modal":{"name":"Funding"}}',
+      :selected_columns => "name,cost,allocated,remaining,fy_year,created_at,modal",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -37,5 +38,6 @@
         "allocated": "#{ format_as_currency(phase.allocated) }",
         "remaining": "#{ format_as_currency(phase.remaining) }",
         "fy_year": "#{phase.get_fiscal_year}",
-        "created_at": "#{phase.created_at}"
+        "created_at": "#{phase.created_at}",
+        "modal": '#{link_to phase.name, "#exampleModal"}'
       }, #{index});
