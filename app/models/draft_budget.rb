@@ -8,14 +8,23 @@ class DraftBudget < ApplicationRecord
 
   FORM_PARAMS = [
     :name,
-    :amount
+    :amount,
+    :funding_template_id
   ]
+
+  validates :name, presence: true 
+  validates :funding_template_id, presence: true
+  validates :amount, presence: true 
 
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
   has_many :draft_budget_allocations
   has_many :draft_project_phases, through: :draft_budget_allocations
+  
+  belongs_to :funding_template
+  has_one    :funding_source, through: :funding_template
+  has_one :funding_source_type, through: :funding_source
 
   #------------------------------------------------------------------------------
   # Instance Methods
@@ -26,6 +35,11 @@ class DraftBudget < ApplicationRecord
 
   def remaining
     amount - allocated
+  end
+
+  #Federal/State/Local/Agency
+  def funding_source_type
+    funding_template.funding_source_type 
   end
 
   #------------------------------------------------------------------------------

@@ -21,6 +21,9 @@ class DraftBudgetAllocation < ApplicationRecord
     FORM_PARAMS
   end
 
+  def funding_source_type
+    draft_budget.funding_source_type
+  end
 
   #------------------------------------------------------------------------------
   # Validations
@@ -28,4 +31,5 @@ class DraftBudgetAllocation < ApplicationRecord
   #validates :draft_project_phase, presence: true 
   #validates :draft_budget, presence: true
   #validates :amount, presence: true
+
 end

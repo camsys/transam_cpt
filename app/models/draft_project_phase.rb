@@ -47,6 +47,33 @@ class DraftProjectPhase < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
+  #This orders the draft budget allocations by whether or not the draft budet's funding source type is
+  # 1 Federal, 2 State, 3 Local, 4 Agency.
+  # A better way to handle this may be to assign rankings to the templates, fundings sources, or funding source types.
+  def ordered_allocations
+    feds = []
+    states = []
+    locals = []
+    agencies = [] 
+
+    draft_budget_allocations.each do |alloc|
+      case alloc.funding_source_type.try(:name)
+      when "Federal"
+        feds << alloc 
+      when "State"
+        states << alloc 
+      when "Local"
+        locals << alloc 
+      when "Agency"
+        agencies << alloc
+      end
+
+    end
+
+    return [feds, states, locals, agencies].flatten
+
+  end   
+
   #------------------------------------------------------------------------------
   #
   # Class Methods

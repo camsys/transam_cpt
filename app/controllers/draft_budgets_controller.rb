@@ -31,6 +31,7 @@ class DraftBudgetsController < OrganizationAwareController
   def edit
     set_draft_budget
     add_breadcrumb "#{@draft_budget.name}"
+    @funding_templates = FundingTemplate.all
     
     respond_to do |format|
       format.html
@@ -40,6 +41,8 @@ class DraftBudgetsController < OrganizationAwareController
   def new 
     @draft_budget = DraftBudget.new 
     add_breadcrumb "New Budget"
+
+    @funding_templates = FundingTemplate.all
 
     respond_to do |format|
       format.html

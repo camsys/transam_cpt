@@ -29,6 +29,16 @@
       %strong
         Remaining:
       =format_as_currency(@draft_budget.remaining)
+    .row
+      %strong
+        Funding Template:
+      =@draft_budget.funding_template.try(:name)
+    .row
+      %strong
+        Match:
+      -if @draft_budget.funding_template.try(:match_required)
+        ="#{@draft_budget.funding_template.try(:match_required)}%"
+
 
 
   .col-md-2
