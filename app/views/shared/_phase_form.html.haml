@@ -26,7 +26,7 @@
       -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
     .col-md-2
       -cost = draft_project_phase.cost
-      ="#{100*(allocation.amount.to_f/cost).round(3)}%"
+      ="#{(100*(allocation.amount.to_f/cost)).round(3)}%"
     .col-md-2
       =format_as_currency(allocation.amount)
       %i.fa.fa-edit
