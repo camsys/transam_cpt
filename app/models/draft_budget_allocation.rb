@@ -3,12 +3,17 @@ class DraftBudgetAllocation < ApplicationRecord
   # Include the object key mixin
   include TransamObjectKey
 
-  belongs_to :draft_project_phase
+
+  #------------------------------------------------------------------------------
+  # Associations
+  #------------------------------------------------------------------------------
+  belongs_to :draft_funding_request
+  has_one :draft_project_phase, through: :draft_funding_request
   belongs_to :draft_budget
 
   FORM_PARAMS = [
     :draft_budget_id,
-    :draft_project_phase_id,
+    :draft_funding_request_id,
     :amount
   ]
 

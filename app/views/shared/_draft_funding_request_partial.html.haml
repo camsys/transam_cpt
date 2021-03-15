@@ -1,0 +1,56 @@
+-funding_request.violations.each do |violation|
+  %h5
+    %i.fa.fa-exclamation-triangle
+    =violation
+.row 
+  .col-md-3
+    %h5 Budget
+  .col-md-2 
+    %h5 Required%
+  .col-md-2 
+    %h5 Effective%
+  .col-md-2 
+    %h5 Actual%
+  .col-md-2.text-right
+    %h5 Allocation
+  .col-md-1
+-remaining_pct = 1.0
+-funding_request.ordered_allocations.each do |allocation|
+  .row
+    .col-md-3 
+      =allocation.funding_source_type.try(:name)  
+      =allocation.draft_budget.try(:name)  
+      %i.fa.fa-edit
+    .col-md-2
+      ="#{allocation.draft_budget.funding_template.match_required}%"
+    .col-md-2
+      -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
+      ="#{effective_pct.round(3)}%"
+      -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
+    .col-md-2
+      -cost = funding_request.total
+      ="#{(100*(allocation.amount.to_f/cost)).round(3)}%"
+    .col-md-2.text-right
+      =format_as_currency(allocation.amount)
+      %i.fa.fa-edit
+    .col-md-1.text-left
+      =link_to draft_budget_allocation_path(allocation), method: :delete do 
+        %i.fa.fa-trash
+.row
+  .col-md-2
+    =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do 
+      %i.fa.fa-plus
+.row  
+  .row
+    .col-md-9
+    .col-md-2
+      %hr
+  .row
+    .col-md-7
+    .col-md-2.text-right
+    .col-md-2.text-right
+      %strong
+        ="Total #{format_as_currency funding_request.total}"
+.row
+  .col-md-11
+    %hr

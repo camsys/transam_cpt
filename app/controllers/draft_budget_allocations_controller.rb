@@ -20,8 +20,8 @@ class DraftBudgetAllocationsController < OrganizationAwareController
   def new 
     @draft_budgets = DraftBudget.all 
     @draft_budget_allocation = DraftBudgetAllocation.new 
-    @draft_project_phase = DraftProjectPhase.find_by(object_key: draft_project_phase_params[:draft_project_phase_id])
-    @draft_budget_allocation.draft_project_phase = @draft_project_phase 
+    @draft_funding_request = DraftFundingRequest.find_by(object_key: draft_funding_request_params[:draft_funding_request_id])
+    @draft_budget_allocation.draft_funding_request = @draft_funding_request
 
     respond_to do |format|
       format.html
@@ -30,7 +30,6 @@ class DraftBudgetAllocationsController < OrganizationAwareController
 
   def create 
     @draft_budget_allocation = DraftBudgetAllocation.new 
-
     respond_to do |format|
       if @draft_budget_allocation.update(form_params)
         format.html { redirect_to draft_project_phase_path(@draft_budget_allocation.draft_project_phase)}
@@ -52,6 +51,12 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     end
   end
 
+  def destroy
+    set_draft_budget_allocation
+    @draft_budget_allocation.destroy
+    redirect_back(fallback_location: root_path)
+  end
+
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
@@ -63,8 +68,8 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     @draft_budget_allocation = DraftBudgetAllocation.find_by(object_key: params[:id]) 
   end
 
-  def draft_project_phase_params
-    params.permit(:draft_project_phase_id)
+  def draft_funding_request_params
+    params.permit(:draft_funding_request_id)
   end
 
 end

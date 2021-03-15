@@ -1,52 +1,14 @@
-class DraftProjectPhase < ApplicationRecord
-
+class DraftFundingRequest < ApplicationRecord
+  
   # Include the object key mixin
   include TransamObjectKey
-
-  # Include the fiscal year mixin
-  include FiscalYear
-
-  FORM_PARAMS = [
-    :name,
-    :cost,
-    :fy_year,
-    :justification,
-    :draft_project_id
-  ]
-
+  
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
-  belongs_to :draft_project
-  has_many :draft_funding_requests
-  has_many :draft_budget_allocations, through: :draft_funding_requests
+  belongs_to :draft_project_phase
+  has_many :draft_budget_allocations, dependent: :destroy
   has_many :draft_budgets, through: :draft_budget_allocations
-
-  #------------------------------------------------------------------------------
-  # Validations
-  #------------------------------------------------------------------------------
-  validates :cost, presence: true 
-  validates :fy_year, presence: true
-
-  #------------------------------------------------------------------------------
-  # Instance Methods
-  #------------------------------------------------------------------------------
-  def get_fiscal_year
-    fiscal_year(fy_year)
-  end 
-
-  def allocated
-    draft_budget_allocations.pluck(:amount).sum
-  end
-
-  def remaining
-    cost - allocated
-  end
-
-  def percent_funded
-    return 0 if cost == 0
-    return (100*(allocated.to_f/cost.to_f)).round
-  end
 
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is
   # 1 Federal, 2 State, 3 Local, 4 Agency.
@@ -73,15 +35,36 @@ class DraftProjectPhase < ApplicationRecord
 
     return [feds, states, locals, agencies].flatten
 
-  end   
-
+  end 
 
   #------------------------------------------------------------------------------
-  #
-  # Class Methods
-  #
+  # Instance Methods
   #------------------------------------------------------------------------------
-  def self.allowable_params
-    FORM_PARAMS
+  def total
+    draft_budget_allocations.pluck(:amount).sum
   end
+
+  #------------------------------------------------------------------------------
+  # Business Rules
+  #------------------------------------------------------------------------------
+
+  def violations
+    return at_most_one_funding_source_type_per_request
+  end
+
+  def at_most_one_funding_source_type_per_request
+    types = []
+    messages  = []
+    ordered_allocations.each do |dba|
+      if dba.funding_source_type.in? types
+        messages << "More than one #{dba.funding_source_type.try(:name)} Funding Source is not permitted."
+      else
+        types << dba.funding_source_type
+      end
+    end
+
+    return messages.uniq 
+  
+  end
+
 end
