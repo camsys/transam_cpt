@@ -22,6 +22,7 @@ class CapitalProjectBuilder
   attr_reader :rehabilitation_project_type
   attr_reader :start_year
   attr_reader :last_year
+  attr_reader :scenario 
 
   #-----------------------------------------------------------------------------
   #
@@ -229,6 +230,18 @@ class CapitalProjectBuilder
   end
 
   def build_bottom_up(organization, options)
+
+
+    #########################################
+    # Scenario Work
+    #########################################
+    @scenario = Scenario.new 
+    @scenario.name = "#{organization.short_name} SOGR"
+    @scenario.description = "#{organization.short_name} State of Good Repair"
+    @scenario.organization = organization
+    @scenario.save! 
+    #########################################
+    ##########################################
 
     Rails.logger.debug "options = #{options.inspect}"
 
@@ -492,6 +505,17 @@ class CapitalProjectBuilder
       project = create_capital_project(organization, year, scope, project_title, project_type, sogr, notional)
       Rails.logger.debug "Created new project #{project.object_key}"
       @project_count += 1
+
+      #########################################
+      # Scenario Work
+      #########################################
+      draft_project = DraftProject.new 
+      draft_project.title = project_title
+      draft_project.scenario = @scenario 
+      draft_project.save!
+      #########################################
+      ##########################################
+
     else
       Rails.logger.debug "Using existing project #{project.object_key}"
     end
