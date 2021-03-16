@@ -59,3 +59,10 @@
       ="Funding Request"
       =link_to draft_funding_requests_url(draft_project_phase_id: @draft_project_phase.object_key), method: :post, class: "btn btn-info btn-xs" do 
         %i.fa.fa-plus
+
+// Assets
+%div.row
+  .col-md-12
+    %h3
+      ="Assets"
+=render partial: "phase_assets_table", locals: {draft_project_phase: @draft_project_phase}

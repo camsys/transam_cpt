@@ -21,6 +21,8 @@ class DraftProjectPhase < ApplicationRecord
   has_many :draft_funding_requests
   has_many :draft_budget_allocations, through: :draft_funding_requests
   has_many :draft_budgets, through: :draft_budget_allocations
+  has_many :draft_project_phase_assets
+  has_many :transit_assets, through: :draft_project_phase_assets
 
   #------------------------------------------------------------------------------
   # Validations
