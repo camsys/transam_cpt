@@ -54,8 +54,11 @@
       =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
         %i.fa.fa-plus
 
+.row 
+  =render partial: "shared/comments", locals: {comments: @scenario.comments}
 
-%div.row
+
+.row
   =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
 
