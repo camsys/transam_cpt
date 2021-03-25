@@ -4,6 +4,10 @@
 
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
+  %h3.table_header
+    ="Projects"
+    =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
+      %i.fa.fa-plus
   %table.elbat{:id => draft_projects_table_dom_id,
     :use => 'true',
     :data => {:use => 'true',
