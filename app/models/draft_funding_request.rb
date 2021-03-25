@@ -37,6 +37,18 @@ class DraftFundingRequest < ApplicationRecord
 
   end 
 
+
+  def effective_pct allocation
+    remaining_pct = 1.0
+    self.ordered_allocations.each do |alloc|
+      effective_pct = alloc.required_pct * remaining_pct
+      remaining_pct = remaining_pct - effective_pct
+      if alloc == allocation 
+        return effective_pct
+      end
+    end
+  end
+
   #------------------------------------------------------------------------------
   # Instance Methods
   #------------------------------------------------------------------------------

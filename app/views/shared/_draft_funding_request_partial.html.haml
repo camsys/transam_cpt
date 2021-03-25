@@ -1,56 +1,125 @@
--funding_request.violations.each do |violation|
-  %h5
-    %i.fa.fa-exclamation-triangle
-    =violation
-.row 
-  .col-md-3
-    %h5 Budget
-  .col-md-2 
-    %h5 Required%
-  .col-md-2 
-    %h5 Effective%
-  .col-md-2 
-    %h5 Actual%
-  .col-md-2.text-right
-    %h5 Allocation
-  .col-md-1
--remaining_pct = 1.0
--funding_request.ordered_allocations.each do |allocation|
+.dfrp
+  -funding_request.violations.each do |violation|
+    %h5
+      %i.fa.fa-exclamation-triangle
+      =violation
+  .row 
+    .col-md-2
+      %h5 Budget
+    .col-md-2 
+      %h5 Required%
+    .col-md-2 
+      %h5 Effective%
+    .col-md-2 
+      %h5 Actual%
+    .col-md-3.text-right
+      %h5 Allocation
+    .col-md-1
+  -remaining_pct = 1.0
+  -funding_request.ordered_allocations.each do |allocation|
+    -edit_active = false
+    .row
+      .col-md-2 
+        =allocation.funding_source_type.try(:name)  
+        =allocation.draft_budget.try(:name)  
+        -# %i.fa.fa-edit
+      .col-md-2
+        ="#{allocation.draft_budget.funding_template.match_required}%"
+      .col-md-2
+        -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
+        ="#{effective_pct.round(3)}%"
+        -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
+      .col-md-2.alloc_actual
+        -cost = funding_request.total
+        ="#{(100*(allocation.amount.to_f/cost)).round(3)}%"
+      .col-md-3.text-right
+        %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none", data_id: "#{allocation.object_key}" }
+        %span.unedit
+          ="#{allocation.amount}"
+        %input.toggle_edit{type:'checkbox',style:"visibility:hidden"}
+      .col-md-1.alloc_actions
+        %i.fa.fa-edit.trigger_toggle_edit
+        %i.fa.fa-check.trigger_toggle_edit{style:"display:none"}
+        =link_to lock_me_draft_budget_allocation_path(allocation_id:allocation), method: :patch do
+          %i.fa.fa-lock
+        =link_to draft_budget_allocation_path(allocation), method: :delete do 
+          %i.fa.fa-trash
+        
   .row
-    .col-md-3 
-      =allocation.funding_source_type.try(:name)  
-      =allocation.draft_budget.try(:name)  
-      %i.fa.fa-edit
     .col-md-2
-      ="#{allocation.draft_budget.funding_template.match_required}%"
-    .col-md-2
-      -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
-      ="#{effective_pct.round(3)}%"
-      -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
-    .col-md-2
-      -cost = funding_request.total
-      ="#{(100*(allocation.amount.to_f/cost)).round(3)}%"
-    .col-md-2.text-right
-      =format_as_currency(allocation.amount)
-      %i.fa.fa-edit
-    .col-md-1.text-left
-      =link_to draft_budget_allocation_path(allocation), method: :delete do 
-        %i.fa.fa-trash
-.row
-  .col-md-2
-    =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do 
-      %i.fa.fa-plus
-.row  
+      =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do 
+        %i.fa.fa-plus
+  .row  
+    .row
+      .col-md-9
+      .col-md-2
+        %hr
+    .row
+      .col-md-7
+      .col-md-2.text-right
+      .col-md-2.text-right
+        %strong.fr_total
+          ="Total #{format_as_currency funding_request.total}"
+          -# %input.edit_total{type:'number',value:"#{format_as_currency funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
+          -# .unedit_total
+          -#   ="Total #{format_as_currency funding_request.total}"
+          -# %input.toggle_edit_total{type:'checkbox'}
+          -# =link_to autofill_allocations_draft_funding_request_path(fr_id:funding_request), style:"display:none", method: :patch do
+          -#   %i.fa.fa-lock
   .row
-    .col-md-9
-    .col-md-2
+    .col-md-11
       %hr
-  .row
-    .col-md-7
-    .col-md-2.text-right
-    .col-md-2.text-right
-      %strong
-        ="Total #{format_as_currency funding_request.total}"
-.row
-  .col-md-11
-    %hr
+
+  :javascript
+    // update allocations
+    $(document).on("click", "input.toggle_edit", (x)=>{
+      let value = $(x.target).siblings("input.edit").val();
+      let id = $(x.target).siblings("input.edit").attr("data_id");
+      if($(x.target).is(":not(:checked)")){
+        $.ajax({
+          url: "/draft_budget_allocations/"+id,
+          data: {"draft_budget_allocation": {"amount":value}},
+          method: 'PUT',
+          dataType: 'json',
+          success: function(data) {
+            console.log("updated allocation");
+
+            let root = $(x.target).closest(".dfrp");
+            let total = sum_a($(root).find(".unedit"));
+
+            let actual = (100*(value/total));
+
+            // update actual
+            $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+
+            // update total
+            $(root).find(".fr_total").html("Total $" + total.toLocaleString());
+
+          },
+          error: function(e) {
+            console.log(e);
+          }
+        });
+      }
+      $(x.target).siblings(".unedit").text(value);
+      $(x.target).siblings().toggle();
+      $(x.target).parent().parent().find(".alloc_actions").children().toggle();
+    });
+
+    $(document).on("click", ".trigger_toggle_edit", (x)=>{
+      $(x.target).parent().parent().find("input.toggle_edit").click(); //yuck
+    });
+
+    let sum_a = (l) => {
+      let sum = 0;
+      l.each(function(){
+        sum += Number($(this).text());
+      });
+      return sum;
+    };
+
+    // $(document).keypress(function(e){
+    //   if(e.which == 13) {
+    //     // enter key
+    //   }
+    // });

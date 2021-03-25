@@ -30,11 +30,19 @@ class DraftBudgetAllocation < ApplicationRecord
     draft_budget.funding_source_type
   end
 
+  def effective_pct
+    draft_funding_request.effective_pct(self)
+  end
+  
+  def required_pct
+    draft_budget.funding_template.match_required / 100
+  end
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  #validates :draft_project_phase, presence: true 
-  #validates :draft_budget, presence: true
-  #validates :amount, presence: true
+  validates :draft_project_phase, presence: true 
+  validates :draft_budget, presence: true
+  validates :amount, presence: true
 
 end
