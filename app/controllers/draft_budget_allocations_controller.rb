@@ -44,7 +44,7 @@ class DraftBudgetAllocationsController < OrganizationAwareController
 
     respond_to do |format|
       if @draft_budget_allocation.update(form_params)
-        format.html { redirect_to draft_project_phase_path(@draft_budget_allocation.draft_project_phase) }
+        format.json {}      
       else
         format.html
       end
@@ -56,6 +56,22 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     @draft_budget_allocation.destroy
     redirect_back(fallback_location: root_path)
   end
+
+  def lock_me
+    allocation_to_loc = DraftBudgetAllocation.find_by(object_key: params[:allocation_id])
+    total_request_amount = allocation_to_loc.amount / allocation_to_loc.effective_pct
+    funding_request = allocation_to_loc.draft_funding_request
+    funding_request.ordered_allocations.each do |alloc|
+      alloc.amount = alloc.effective_pct * total_request_amount
+      alloc.save!
+    end
+
+    respond_to do |format|
+      format.html { redirect_to draft_project_phase_path(allocation_to_loc.draft_project_phase) }
+    end
+  end
+
+
 
   private
 
