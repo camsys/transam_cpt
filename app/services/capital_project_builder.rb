@@ -506,19 +506,19 @@ class CapitalProjectBuilder
       Rails.logger.debug "Created new project #{project.object_key}"
       @project_count += 1
 
-      #########################################
-      # Scenario Work
-      #########################################
-      draft_project = DraftProject.new 
-      draft_project.title = project_title
-      draft_project.scenario = @scenario 
-      draft_project.save!
-      #########################################
-      ##########################################
-
     else
       Rails.logger.debug "Using existing project #{project.object_key}"
     end
+
+    #########################################
+    # Scenario Work (Create Draft Project)
+    #########################################
+    draft_project = DraftProject.where(scenario: @scenario, team_ali_code: scope).first_or_create
+    project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
+    draft_project.title = project_title
+    draft_project.save!
+    #########################################
+    ##########################################
 
 
     if asset.present?
@@ -528,6 +528,26 @@ class CapitalProjectBuilder
       else
         ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ?', project.id, ali_code.id)
       end
+
+      #########################################
+      # Scenario Work (Create Draft Project)
+      #########################################
+      phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: ali_code, fy_year: year).first_or_initialize
+      phase.cost = 1
+      phase.save
+      puts 1
+      puts asset.class 
+      transit_asset = TransitAsset.find(asset.id)  #Phases expect transit assets, this might need to change. Is this even the right way to get a transit asset?
+      puts transit_asset.class 
+      puts 2
+      unless transit_asset.in? phase.transit_assets 
+        puts 3
+        phase.transit_assets << transit_asset 
+        puts 4
+      end
+      puts 5
+      #########################################
+      ##########################################
 
       # if there is an exisiting ALI, see if the asset is in it
       if ali

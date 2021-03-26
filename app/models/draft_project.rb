@@ -18,6 +18,7 @@ class DraftProject < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :scenario
+  belongs_to :team_ali_code
   has_many :draft_project_phases
   alias phases draft_project_phases #just to save on typing
 
