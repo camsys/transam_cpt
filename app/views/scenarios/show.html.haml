@@ -6,6 +6,7 @@
     background: var(--gray-medium-light);
     margin-right: -5px;
     margin-left: 5px;
+    border-bottom: 1px solid var(--gray-medium);
   }
 
   .list-group {
@@ -47,6 +48,10 @@
 
   .table_header {
     margin-top: 0px;
+  }
+
+  .project_phase_panel {
+    margin: 0px -5px 0px 5px;
   }
 
 
@@ -102,7 +107,7 @@
   //Comments
   .col-md-4.comments_panel
     %h3.text-center
-      ="Comments"
+      ="Timeline"
     =render partial: "shared/comments", locals: {comments: @scenario.comments}
     - if can? :create, @scenario.comments.build
       .row
@@ -111,10 +116,18 @@
             %legend Add Comment
             = form_for [@scenario, Comment.new], :html => {:multipart => true, :class => 'form-vertical comment_form' }, :url => scenario_comments_path(@scenario, Comment.new), :role => 'form' do |f|
               .form-group
-                = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :minlength => 10, :maxlength => 254
+                = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :maxlength => 254
               = f.submit :class => 'btn btn-primary', :id => 'comment_submit'
-  //Projects
-  .col-md-8
+  //Phases
+  .col-md-8 
+    -@scenario.draft_projects.each_with_index do |project, index| 
+      -project.draft_project_phases.each_with_index do |phase, index|
+        .row.project_phase_panel
+          .col-md-12
+            =render partial: "phase_with_assets_panel", locals: {phase: phase}
+//Projects
+.row
+  .col-md-12
     =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
 

@@ -1,0 +1,43 @@
+:ruby
+  funding_table_id = SecureRandom.hex
+
+
+:css
+  .panel_asset_table .select_columns {
+    display:none;
+  }
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => funding_table_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'funding',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"tag":{"name":"Tag","type":"drilldown-link"},
+                    "fta_category": {"name": "FTA Category"},
+                    "fta_class": {"name":"FTA Class"},
+                    "cost": {"name": "Cost"}}',
+      :selected_columns => "tag,fta_category,fta_class,cost",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - draft_project_phase.transit_assets.each_with_index do |asset, index|
+
+    :javascript
+      add_row('#{funding_table_id}',
+      {
+        "tag": '#{link_to asset.asset_tag, inventory_path(asset)}',
+        "fta_category": "#{ asset.fta_asset_category.try(:name) }",
+        "fta_class": "#{ asset.fta_asset_class.try(:name) }",
+        "cost": "#{ format_as_currency asset.cost }"
+
+      }, #{index});
