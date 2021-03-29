@@ -36,14 +36,6 @@
           =format_as_currency(phase.remaining)
       .col-md-8.panel_asset_table
         =render partial: "phase_with_assets_panel_table", locals: {draft_project_phase: phase}
-      -# .col-md-8.text-center
-        -# .row
-        -#   .progress
-        -#     .progress-bar.bg-success{role: "progressbar", style: "width: #{phase.percent_funded}%"}
-        -#       ="#{phase.percent_funded}% Funded"
-        -# .row
-        -#   %button.btn.btn-xs.btn-success{"data-target": "##{phase.object_key}Modal", "data-toggle": "modal", type: "button"}
-        -#     Update Funding
       
   .panel-footer.text-right
     ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"
