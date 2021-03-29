@@ -10,7 +10,7 @@ source "https://rubygems.org"
 
 gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
 
-gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :master
+gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :develop
 gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :master
 gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :master
 gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :master
