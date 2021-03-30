@@ -398,6 +398,9 @@ class CapitalProjectBuilder
       current_ali.assets.delete ((asset.type_of? Rails.application.config.asset_base_class_name.constantize) ? asset : asset.send(Rails.application.config.asset_base_class_name.underscore))
     end
 
+    ###############
+    ## TODO
+    ###############
     # Can't build projects for assets that have been scheduled for disposition or already disposed
     if asset.disposed? or asset.scheduled_for_disposition? or asset.no_replacement?
       Rails.logger.info "Asset #{asset.object_key} has been scheduled for disposition or no replacement. Nothing to do."
@@ -423,6 +426,7 @@ class CapitalProjectBuilder
     rehab_month = policy_analyzer['rehabilitation_service_month'].to_i
     process_rehabs = (rehab_month.to_i > 0)
     extended_years = policy_analyzer['extended_service_life_months'].to_i / 12
+
 
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
@@ -497,19 +501,6 @@ class CapitalProjectBuilder
     # Decode the scope so we can set the project up
     scope_context = scope.context.split('->')
 
-    # See if there is an existing project for this scope and year
-    project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ? and notional = ?', organization.id, scope.id, year, sogr, notional)
-    if project.nil?
-      # create this project
-      project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
-      project = create_capital_project(organization, year, scope, project_title, project_type, sogr, notional)
-      Rails.logger.debug "Created new project #{project.object_key}"
-      @project_count += 1
-
-    else
-      Rails.logger.debug "Using existing project #{project.object_key}"
-    end
-
     #########################################
     # Scenario Work (Create Draft Project)
     #########################################
@@ -522,68 +513,29 @@ class CapitalProjectBuilder
 
 
     if asset.present?
-      not_pinned_alis = ActivityLineItem.distinct.joins(:assets).where('replacement_status_type_id != 4 OR replacement_status_type_id IS NULL')
-      if asset.fuel_type_id.present?
-        ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ? AND activity_line_items.fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
-      else
-        ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ?', project.id, ali_code.id)
-      end
 
       #########################################
       # Scenario Work (Create Draft Project)
       #########################################
-      phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: ali_code, fy_year: year).first_or_initialize
+      if asset.fuel_type_id.present?
+        phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: ali_code, fy_year: year, fuel_type: asset.fuel_type).first_or_initialize
+        phase.name = project_title
+      else
+        phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: ali_code, fy_year: year).first_or_initialize
+        phase.name = project_title 
+      end
       phase.cost = 1
       phase.save
-      puts 1
-      puts asset.class 
       transit_asset = TransitAsset.find(asset.id)  #Phases expect transit assets, this might need to change. Is this even the right way to get a transit asset?
-      puts transit_asset.class 
-      puts 2
       unless transit_asset.in? phase.transit_assets 
-        puts 3
         phase.transit_assets << transit_asset 
-        puts 4
       end
-      puts 5
       #########################################
       ##########################################
 
-      # if there is an exisiting ALI, see if the asset is in it
-      if ali
-        Rails.logger.debug "Using existing ALI #{ali.object_key}"
-        unless asset.activity_line_items.exists?(ali.id)
-          Rails.logger.debug "asset not in ALI, adding it"
-
-          if Rails.application.config.asset_base_class_name.constantize == 'Asset'
-            ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
-          else
-            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
-          end
-        else
-          Rails.logger.debug "asset already in ALI, not adding it"
-        end
-      else
-        # Create the ALI and add it to the project
-        ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? (FuelType.find_by(id: fuel_type_id) || asset.fuel_type).to_s : ''} assets"
-        if asset.fuel_type_id.present?
-          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => (fuel_type_id || asset.fuel_type_id)})
-        else
-          ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
-        end
-        ali.save
-
-        # Now add the asset to it if there is one
-        if Rails.application.config.asset_base_class_name.constantize == 'Asset'
-          ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
-        else
-          ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
-        end
-        Rails.logger.debug "Created new ALI #{ali.object_key}"
-      end
     end
 
-    [project, ali]
+    [draft_project, phase]
 
   end
 

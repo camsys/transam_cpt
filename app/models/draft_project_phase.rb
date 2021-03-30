@@ -19,6 +19,7 @@ class DraftProjectPhase < ApplicationRecord
   #------------------------------------------------------------------------------
   belongs_to :draft_project
   belongs_to :team_ali_code
+  belongs_to :fuel_type
   has_many :draft_funding_requests
   has_many :draft_budget_allocations, through: :draft_funding_requests
   has_many :draft_budgets, through: :draft_budget_allocations

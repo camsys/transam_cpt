@@ -20,6 +20,10 @@
   //Details
   .col-md-3
     .row
+      %strong 
+        ALI:
+      =@draft_project_phase.team_ali_code.try(:code)
+    .row
       %strong
         Cost:
       =format_as_currency(@draft_project_phase.cost)
