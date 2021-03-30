@@ -12,6 +12,8 @@
   .row
     =link_to edit_draft_project_phase_path(@draft_project_phase) do 
       %i.fa.fa-edit
+    = link_to draft_project_phase_path(@draft_project_phase), :method => :delete, :class => "btn btn-xs btn-action", :data => { :confirm => 'Are you sure you want to remove this project phase?' } do
+      %i.fa.fa-trash
 
 //Main Content  
 .row
