@@ -2,6 +2,61 @@
   .with-margin {
     margin-bottom: 5px;
   }
+  .comments_panel {
+    background: var(--gray-medium-light);
+    margin-right: -5px;
+    margin-left: 5px;
+    border-bottom: 1px solid var(--gray-medium);
+  }
+
+  .list-group {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .comment {
+    margin: 5px 10px;
+    display:flex;
+    flex-direction: column-reverse;
+  }
+
+  .comment > span:not(.title) {
+    min-width: 0px;
+    display: inline-flex;
+    align-self: flex-end;
+    margin-bottom: -32px;
+  }
+
+  .comment_form {
+    padding: 0px 10px !important;
+  }
+
+  .comment_form .form-group .form-control {
+    background: #fff;
+  }
+
+  .comment_form #comment_submit {
+    float: right;
+    margin-bottom: 10px;
+  }
+
+  .comment_form #comment_comment {
+    resize: vertical;
+  }
+
+
+
+  .table_header {
+    margin-top: 0px;
+  }
+
+  .project_phase_panel {
+    margin: 0px -5px 0px 5px;
+  }
+
+
+
+
 
 //TITLE
 .row.text-center
@@ -46,17 +101,33 @@
         %br
         =render "#{@scenario.state}_actions"
 
-// PROJECTS
+
+
+.row
+  //Comments
+  .col-md-4.comments_panel
+    %h3.text-center
+      ="Timeline"
+    =render partial: "shared/comments", locals: {comments: @scenario.comments}
+    - if can? :create, @scenario.comments.build
+      .row
+        .col-md-12
+          %fieldset
+            %legend Add Comment
+            = form_for [@scenario, Comment.new], :html => {:multipart => true, :class => 'form-vertical comment_form' }, :url => scenario_comments_path(@scenario, Comment.new), :role => 'form' do |f|
+              .form-group
+                = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :maxlength => 254
+              = f.submit :class => 'btn btn-primary', :id => 'comment_submit'
+  //Phases
+  .col-md-8 
+    -@scenario.draft_projects.each_with_index do |project, index| 
+      -project.draft_project_phases.each_with_index do |phase, index|
+        .row.project_phase_panel
+          .col-md-12
+            =render partial: "phase_with_assets_panel", locals: {phase: phase}
+//Projects
 .row
   .col-md-12
-    %h3
-      ="Projects"
-      =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
-        %i.fa.fa-plus
-
-
-%div.row
-  =render partial: "draft_projects_table", locals: {scenario: @scenario}
-
+    =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
 

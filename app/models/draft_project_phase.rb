@@ -20,10 +20,10 @@ class DraftProjectPhase < ApplicationRecord
   belongs_to :draft_project
   belongs_to :team_ali_code
   belongs_to :fuel_type
-  has_many :draft_funding_requests
+  has_many :draft_funding_requests, :dependent => :destroy
   has_many :draft_budget_allocations, through: :draft_funding_requests
   has_many :draft_budgets, through: :draft_budget_allocations
-  has_many :draft_project_phase_assets
+  has_many :draft_project_phase_assets, :dependent => :destroy
   has_many :transit_assets, through: :draft_project_phase_assets
 
   #------------------------------------------------------------------------------
@@ -50,6 +50,10 @@ class DraftProjectPhase < ApplicationRecord
   def percent_funded
     return 0 if cost == 0
     return (100*(allocated.to_f/cost.to_f)).round
+  end
+
+  def set_estimated_cost
+    self.update(cost: self.transit_assets.sum(:scheduled_replacement_cost))
   end
 
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is

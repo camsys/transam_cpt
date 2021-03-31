@@ -223,6 +223,16 @@ class CapitalProjectBuilder
     # update cost of all other ALIs
     ActivityLineItem.joins(:assets).where("organization_id = ?",organization.id).group("activity_line_items.id").each{ |ali| ali.update_estimated_cost}
 
+
+    #########################################
+    # Scenario Work
+    #########################################
+    @scenario.draft_project_phases.each do |phase|
+      phase.set_estimated_cost
+    end
+    #########################################
+    ##########################################
+
     # destroy all empty capital projects
     CapitalProject.where(:organization_id => organization.id, :sogr => true).joins('LEFT OUTER JOIN activity_line_items ON capital_projects.id = activity_line_items.capital_project_id').where('activity_line_items.capital_project_id IS NULL').destroy_all
 

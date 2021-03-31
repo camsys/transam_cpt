@@ -19,7 +19,8 @@ class DraftProject < ApplicationRecord
   #------------------------------------------------------------------------------
   belongs_to :scenario
   belongs_to :team_ali_code
-  has_many :draft_project_phases
+  has_many :draft_project_phases, :dependent => :destroy
+
   alias phases draft_project_phases #just to save on typing
 
   #------------------------------------------------------------------------------

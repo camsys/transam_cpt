@@ -67,6 +67,14 @@ class DraftProjectsController < OrganizationAwareController
     end
   end
 
+  def destroy
+    set_draft_project
+    scenario = @draft_project.scenario
+    @draft_project.destroy
+
+    redirect_to scenario_path(scenario)
+  end
+  
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
