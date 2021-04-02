@@ -102,7 +102,9 @@
         =render "#{@scenario.state}_actions"
 
 
-
+.row 
+  .col-md-6 
+    =column_chart @scenario.phases_by_year
 .row
   //Comments
   .col-md-4.comments_panel

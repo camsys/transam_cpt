@@ -61,6 +61,18 @@ class Scenario < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
+  def phases_by_year
+    d = {}
+    phases.each do |phase|
+      if d[phase.fy_year]
+        d[phase.fy_year] = d[phase.fy_year] + phase.allocated
+      else
+        d[phase.fy_year] = phase.allocated
+      end
+    end
+    return d
+  end
+
   #------------------------------------------------------------------------------
   #
   # State Machine
