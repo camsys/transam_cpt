@@ -1,0 +1,71 @@
+//TITLE
+.row.text-center
+  %h1
+    =@draft_project.title
+  .row
+    =@draft_project.description
+  .row
+    =link_to edit_draft_project_path(@draft_project) do 
+      %i.fa.fa-edit
+  
+
+// Main Content
+.row
+  .col-md-1
+  
+  //Details
+  .col-md-3
+    .row
+      %strong 
+        Project Number: 
+      =@draft_project.project_number
+    .row
+      %strong 
+        Justification: 
+      =@draft_project.justification
+    .row
+      %strong
+        Cost:
+      =format_as_currency(@draft_project.cost)
+    .row
+      %strong
+        Allocated:
+      =format_as_currency(@draft_project.allocated)
+    .row
+      %strong
+        Remaining:
+      =format_as_currency(@draft_project.remaining)
+    .row 
+  .col-md-4
+    
+    .progress
+      .progress-bar.bg-success{role: "progressbar", style: "width: #{@draft_project.percent_funded}%"}
+        ="#{@draft_project.percent_funded}% Funded"
+
+  //Scenario Details
+  .col-md-2
+  .col-md-2
+    .well
+      .row
+        %h4
+          =@draft_project.scenario.name
+        =@draft_project.scenario.description
+      .row
+        %strong
+          State:
+        =@draft_project.scenario.state.titleize
+
+// Project Phases
+%div.row
+  .col-md-12
+    %h3
+      ="Project Phases"
+      =link_to new_draft_project_phase_url(draft_project_id: @draft_project.object_key), class: "btn btn-info btn-xs" do 
+        %i.fa.fa-plus
+
+%div.row
+  -@draft_project.draft_project_phases.each_slice(3) do |phases|
+    .row
+      -phases.each do |phase|
+        .col-md-4
+          =render partial: "phase_panel", locals: {phase: phase}

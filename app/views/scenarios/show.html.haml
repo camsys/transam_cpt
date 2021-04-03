@@ -1,0 +1,62 @@
+:css
+  .with-margin {
+    margin-bottom: 5px;
+  }
+
+//TITLE
+.row.text-center
+  %h1
+    =@scenario.name 
+  .row
+    =@scenario.description
+  .row
+    =link_to edit_scenario_path(@scenario) do 
+      %i.fa.fa-edit
+
+//Main Content  
+.row
+  .col-md-1
+  
+  //Details
+  .col-md-3
+    .row
+      %strong 
+        Organization: 
+      =@scenario.organization
+    .row
+      %strong
+        Cost:
+      =format_as_currency(@scenario.cost)
+
+  .col-md-4
+    .progress
+      .progress-bar.bg-success{role: "progressbar", style: "width: #{@scenario.percent_funded}%"}
+        ="#{@scenario.percent_funded}% Funded"
+
+
+  //State Info and Actions
+  .col-md-2
+  .col-md-2
+    .well
+      .row
+        %h4
+          =@scenario.state.titleize
+        =@scenario.state_description
+      .row.text-center
+        %br
+        =render "#{@scenario.state}_actions"
+
+// PROJECTS
+.row
+  .col-md-12
+    %h3
+      ="Projects"
+      =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
+        %i.fa.fa-plus
+
+
+%div.row
+  =render partial: "draft_projects_table", locals: {scenario: @scenario}
+
+
+

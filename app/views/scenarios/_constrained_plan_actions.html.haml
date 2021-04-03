@@ -1,0 +1,4 @@
+%div{style: "float: right; width: auto;"}
+  =button_to 'Cancel', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger"
+%div{style: "float: right; width: auto;"}
+  =button_to 'Submit', transition_scenario_path(@scenario, transition: "submit"), method: :put, class: "btn btn-success"

@@ -1,0 +1,41 @@
+//Requires Scenario to be Passed
+:ruby
+  draft_projects_table_dom_id = SecureRandom.hex
+
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => draft_projects_table_dom_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :table_code => 'draft_projects',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100",
+      :search => 'client',
+      :export => "['csv', 'txt']",
+      :columns => '{"title":{"name":"Title","type":"drilldown-link"},
+                    "created_at":{"name":"Created At"},
+                    "cost": {"name":"Cost"},
+                    "allocated": {"name":"Allocated"},
+                    "remaining": {"name":"remaining"},
+                    "project_number":{"name":"Project Number"}}',
+      :selected_columns => "title,project_number,cost,allocated,remaining,created_at",
+      :cookies => "true",
+      :sort => 'client',
+      :sort_params => @params,
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - @scenario.draft_projects.each_with_index do |draft_project, index|
+
+    :javascript
+      add_row('#{draft_projects_table_dom_id}',
+      {
+        "title": '#{link_to draft_project.try(:title).try(:titleize), draft_project_path(draft_project)}',
+        "created_at": "#{format_as_date_time(draft_project.created_at)}",
+        "cost": "#{ format_as_currency(draft_project.cost) }",
+        "allocated": "#{ format_as_currency(draft_project.allocated) }",
+        "remaining": "#{ format_as_currency(draft_project.remaining) }",
+        "project_number": "#{draft_project.project_number}"
+      }, #{index});

@@ -1,0 +1,33 @@
+=render partial: "allocations_modal", locals: {phase: phase}
+.panel.panel-default
+  .panel-heading
+    =link_to draft_project_phase_path(phase) do 
+      %h4
+        =phase.name
+        =" (#{phase.get_fiscal_year})"
+  .panel-body 
+    .row 
+      .col-md-4
+        .row
+          %strong
+            Cost:
+          =format_as_currency(phase.cost)
+        .row
+          %strong
+            Allocated:
+          =format_as_currency(phase.allocated)
+        .row
+          %strong
+            Remaining:
+          =format_as_currency(phase.remaining)
+      .col-md-8.text-center
+        .row
+          .progress
+            .progress-bar.bg-success{role: "progressbar", style: "width: #{phase.percent_funded}%"}
+              ="#{phase.percent_funded}% Funded"
+        .row
+          %button.btn.btn-xs.btn-success{"data-target": "##{phase.object_key}Modal", "data-toggle": "modal", type: "button"}
+            Update Funding
+      
+  .panel-footer.text-right
+    ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"

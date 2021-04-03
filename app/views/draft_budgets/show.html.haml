@@ -1,0 +1,59 @@
+:css
+  .with-margin {
+    margin-bottom: 5px;
+  }
+
+//TITLE
+.row.text-center
+  %h1
+    =@draft_budget.name 
+  .row
+    =link_to edit_draft_budget_path(@draft_budget) do 
+      %i.fa.fa-edit
+
+//Main Content  
+.row
+  .col-md-1
+  
+  //Details
+  .col-md-9
+    .row
+      %strong
+        Amount:
+      =format_as_currency(@draft_budget.amount)
+    .row
+      %strong
+        Allocated:
+      =format_as_currency(@draft_budget.allocated)
+    .row
+      %strong
+        Remaining:
+      =format_as_currency(@draft_budget.remaining)
+    .row
+      %strong
+        Funding Template:
+      =@draft_budget.funding_template.try(:name)
+    .row
+      %strong
+        Match:
+      -if @draft_budget.funding_template.try(:match_required)
+        ="#{@draft_budget.funding_template.try(:match_required)}%"
+
+
+
+  .col-md-2
+      
+
+// Funding
+%div.row
+  .col-md-12
+    %h3
+      ="Allocations"      
+
+%div.row
+  %div.text-center
+    .col-sm-12
+      =render partial: "draft_allocations_table", locals: {allocations: @draft_budget.draft_budget_allocations}
+
+
+
