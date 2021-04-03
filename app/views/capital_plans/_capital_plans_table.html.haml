@@ -65,8 +65,8 @@
             = link_to plan.organization.short_name, capital_plan_path(plan)
           - plan.capital_plan_actions.includes(:capital_plan_action_type).each_with_index do |a, col_idx|
 
-            //This controls the archive button 
-            - if a.capital_plan_action_type.name == 'Archive'
+              
+            - if a.capital_plan_action_type.name == 'Archive' #This controls the archive button 
               %td.center
                 - if plan.completed?
                   [Archived]
@@ -74,8 +74,8 @@
                   = link_to complete_actions_capital_plans_path(targets: a.object_key, undo_targets: ''), :class => 'btn btn-info', :data => {:confirm => 'Are you sure?'} do
                     Archive
 
-            //All columns EXCEPT for the Archive column
-            - else
+              
+            - else #All columns EXCEPT for the Archive column
               %td{data: {tableexport: {value: a.system_action? ? a.completed_pcnt : (a.completed? ? 'X' : '')}}}
                 - if a.system_action?
                   = a.notes.html_safe
