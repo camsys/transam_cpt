@@ -102,9 +102,17 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def transition
     set_scenario
+    prev_state = @scenario.state.titleize
+
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
     @scenario.send(transition) if transition.to_sym.in? valid_transitions
+
+    c = Comment.new
+    c.comment = prev_state + ": " + transition.to_str.upcase
+    c.creator = current_user
+    @scenario.comments << c
+    @scenario.save
 
     redirect_back(fallback_location: root_path)
   end
