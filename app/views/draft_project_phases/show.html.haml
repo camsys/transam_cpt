@@ -12,6 +12,8 @@
   .row
     =link_to edit_draft_project_phase_path(@draft_project_phase) do 
       %i.fa.fa-edit
+    = link_to draft_project_phase_path(@draft_project_phase), :method => :delete, :class => "btn btn-xs btn-action", :data => { :confirm => 'Are you sure you want to remove this project phase?' } do
+      %i.fa.fa-trash
 
 //Main Content  
 .row
@@ -37,23 +39,32 @@
         ="#{@draft_project_phase.percent_funded}% Funded"
 
   .col-md-4
-      
-.row
-  .col-md-2
-  .col-md-8
-    =render partial: "shared/phase_form", locals: {draft_project_phase: @draft_project_phase}
 
+%br
 
+%div.row
+  -count = 0
+  -@draft_project_phase.draft_funding_requests.order(:created_at).each do |funding_request|
+    .row
+      .col-md-2
+      .col-md-8
+        -if @draft_project_phase.draft_funding_requests.count > 1
+          %h4
+            =link_to draft_funding_request_path(funding_request), method: :delete, data: {confirm: "Are you sure you want to delete this Funding Request?"} do 
+              %i.fa.fa-trash
+            ="Funding Request #{count+=1}"
+        =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request}
 // Funding
+%div.row
+  .col-md-12.text-center
+    %h4
+      ="Funding Request"
+      =link_to draft_funding_requests_url(draft_project_phase_id: @draft_project_phase.object_key), method: :post, class: "btn btn-info btn-xs" do 
+        %i.fa.fa-plus
+
+// Assets
 %div.row
   .col-md-12
     %h3
-      ="Allocations"
-      =link_to new_draft_budget_allocation_url(draft_project_phase_id: @draft_project_phase.object_key), class: "btn btn-info btn-xs" do 
-        %i.fa.fa-plus
-
-%div.row
-  %div.text-center
-    .col-sm-12
-      =render partial: "draft_allocations_table", locals: {draft_project_phase: @draft_project_phase}
-
+      ="Assets"
+=render partial: "phase_assets_table", locals: {draft_project_phase: @draft_project_phase}
