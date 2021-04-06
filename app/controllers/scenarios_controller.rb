@@ -9,6 +9,9 @@ class ScenariosController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Scenarios", :scenarios_path
 
+  # Include the fiscal year mixin
+  include FiscalYear
+
   #-----------------------------------------------------------------------------
   # 
   #-----------------------------------------------------------------------------
@@ -39,6 +42,7 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def new
     @scenario = Scenario.new
+    @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
     @organizations =  Organization.all #TODO: Determine correct permissions here
     add_breadcrumb "New Scenario"
 
@@ -98,9 +102,17 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def transition
     set_scenario
+    prev_state = @scenario.state.titleize
+
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
     @scenario.send(transition) if transition.to_sym.in? valid_transitions
+
+    c = Comment.new
+    c.comment = prev_state + ": " + transition.to_str.upcase
+    c.creator = current_user
+    @scenario.comments << c
+    @scenario.save
 
     redirect_back(fallback_location: root_path)
   end
