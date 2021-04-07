@@ -16,6 +16,7 @@ gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch:
 gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :master
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
 gem 'rails-controller-testing'
+gem 'aws-sdk-s3' # for controller unit tests
 
 # This gem allows us to share githooks. Githooks in the .hooks folder can be checked
 # in, and when "bundle install" is run this gem automatically creates symlinks into
