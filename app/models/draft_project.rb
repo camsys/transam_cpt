@@ -43,6 +43,21 @@ class DraftProject < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
+  def year_range
+    earliest = phases.min_by(&:fy_year)
+    latest = phases.max_by(&:fy_year)
+    return (earliest.fy_year..latest.fy_year)
+  end
+
+  def year_to_cost
+    d = {}
+    self.year_range.each do |year|
+      d[year] = phases.select { |phase| phase.fy_year == year }.sum { |phase| phase.cost }
+    end
+    return d
+  end
+
+
   #------------------------------------------------------------------------------
   #
   # Class Methods

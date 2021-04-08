@@ -33,6 +33,7 @@ class Scenario < ApplicationRecord
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
   alias phases draft_project_phases #just to save on typing
+  alias projects draft_projects
 
   #------------------------------------------------------------------------------
   # Validations
@@ -61,14 +62,42 @@ class Scenario < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
-  def phases_by_year
+  def year_range
+    earliest = phases.min_by(&:fy_year)
+    latest = phases.max_by(&:fy_year)
+    return (earliest.fy_year..latest.fy_year)
+  end
+
+  def sum_phases_by_year
     d = {}
+    self.year_range.each do |y| #quick patch
+      d[y] = 0
+    end
     phases.each do |phase|
       if d[phase.fy_year]
-        d[phase.fy_year] = d[phase.fy_year] + phase.allocated
+        d[phase.fy_year] = d[phase.fy_year] + phase.cost
       else
-        d[phase.fy_year] = phase.allocated
+        d[phase.fy_year] = phase.cost
       end
+    end
+    return d
+  end
+
+  def year_to_cost_ali_breakdown
+    d = []
+    ali_to_projects = projects.group_by { |p| p.team_ali_code } 
+    ali_to_projects.each do |ali, projects|
+      x = {name:ali.full_name, data:{}}
+      projects.each do |pr|
+        pr.year_to_cost.each do |year, cost|
+          if x[:data][year]
+            x[:data][year] += cost
+          else
+            x[:data][year] = cost
+          end
+        end
+      end
+      d.push(x)
     end
     return d
   end

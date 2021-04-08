@@ -103,8 +103,8 @@
 
 
 .row 
-  .col-md-6 
-    =column_chart @scenario.phases_by_year
+  .col-md-12
+    =column_chart @scenario.year_to_cost_ali_breakdown, prefix: "$", stacked: true
 .row
   //Comments
   .col-md-4.comments_panel
