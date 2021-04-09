@@ -72,3 +72,77 @@
     %h3
       ="Assets"
 =render partial: "phase_assets_table", locals: {draft_project_phase: @draft_project_phase}
+
+:javascript
+    // update allocations with an ajax call
+    // so we don't need a page reload
+
+    $(document).on("click", "input.toggle_edit", (x)=>{
+      let value = $(x.target).siblings("input.edit").val();
+      let id = $(x.target).siblings("input.edit").attr("data_id");
+      if($(x.target).is(":not(:checked)")){
+        $.ajax({
+          url: "/draft_budget_allocations/"+id,
+          data: {"draft_budget_allocation": {"amount":value}},
+          method: 'PUT',
+          dataType: 'json',
+          success: function(data) {
+            console.log("updated allocation");
+
+            let root = $(x.target).closest(".dfrp");
+            let total = sum_a($(root).find(".unedit"));
+
+            let actual = (100*(value/total));
+
+            // update actual
+            $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+
+            // update total
+            $(root).find(".fr_total").html('$' + total.toLocaleString());
+
+          },
+          error: function(e) {
+            console.log(e);
+          }
+        });
+      }
+      $(x.target).siblings(".unedit").text(value);
+      $(x.target).siblings().toggle();
+      $(x.target).parent().parent().find(".alloc_actions").children().toggle();
+    });
+
+    // layout got moved around, but logic is the same
+    // if layout is changed again this will have to be updated
+
+    $(document).on("click", ".trigger_toggle_edit", (x)=>{
+      $(x.target).parent().parent().find("input.toggle_edit").click(); //yuck
+    });
+
+    // helper to update, generates the total
+    let sum_a = (l) => {
+      let sum = 0;
+      l.each(function(){
+        sum += Number($(this).text());
+      });
+      return sum;
+    };
+
+
+    // Edit Total
+    $(document).on('click', "input.toggle_edit_total", (x)=>{
+      if($(x.target).is(":not(:checked)")){
+        $(x.target).siblings(".unedit_total").text($(x.target).siblings("input.edit").val().toLocaleString());
+      } else {
+        $($(x.target).siblings("input.edit")[0]).val(parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, "")));
+        
+      }
+      $(x.target).siblings().toggle();
+      $(x.target).closest(".dfrp").find(".total_actions").children().toggle();
+      
+    });
+
+    // Trigger
+    $(document).on("click", ".trigger_toggle_edit_total", (x)=>{
+      $(x.target).closest(".dfrp").find("input.toggle_edit_total").click(); //yuck
+    });
+
