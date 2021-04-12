@@ -39,8 +39,49 @@
             Remaining:
           =format_as_currency(phase.remaining)
       .col-md-8.panel_asset_table
-        ="Asset Count"
-        =phase.transit_assets.count
+        .row 
+          -assets = phase.transit_assets
+          .col-md-3
+            ="Asset Count: "
+            =assets.count
+          .col-md-3 
+            .row
+              ="Age:"
+              -ages = assets.map{ |a| (Date.today.to_time.to_i - a.in_service_date.to_time.to_i)/(60*60*24*365) }
+            .row
+              ="Min"
+              -# =assets.map{ |a| a.history.last.try(:event_date) }.min
+              =ages.min
+            .row
+              ="Max"
+              -# =assets.map{ |a| a.life_cycle_action_date }.max
+              =ages.max
+            .row 
+              ="Avg"
+              =ages.reduce(:+) / ages.size.to_f
+            -# .row 
+            -#   ="Life Remaining"
+            -#   -ulr = assets.map{ |a| a.useful_life_remaining(Date.new) }
+            -#   =ulr.reduce(:+) / ulr.size.to_f
+          .col-md-3 
+            .row
+              ="Condition"
+            .row
+              -conditions = assets.map{ |a| a.reported_condition_rating_string }
+              ="Min"
+              =conditions.min
+            .row
+              ="Max"
+              =conditions.max
+          .col-md-3 
+            -# .row
+            -#   ="Milage"
+            -#   -milages = assets.map{ |a| a.reported_milage }
+            -# .row
+            -#   =milages.min
+            -# .row
+            -#   =milages.max
+
         -# =render partial: "phase_with_assets_panel_table", locals: {draft_project_phase: phase}
       
   .panel-footer.text-right
