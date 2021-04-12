@@ -145,29 +145,23 @@
 
 :javascript
 
-  let ali_select = (code)=>{
-   if(code) {
-    $(".phase:not([ali='" + code + "'])").hide();
-    $(".phase[ali='" + code + "']").show();
-   } else {
-     $(".phase").show();
-     $(".phase_filter select").prop('selectedIndex',0);
-   }
-  };
-
-  $(document).on("change", "select[name='scenario[ali_select]']", (x) => {
-    ali_select($(x.target).val())
-  });
-
-  let year_select = (year)=>{
+  let phase_filter = (code, year)=>{
+    console.log(code, year);
+    $(".phase").show();
+    if(code) {
+      $(".phase:not([ali='" + code + "'])").hide();
+    }
     if(year) {
       $(".phase:not([year='" + year + "'])").hide();
-      $(".phase[year='" + year + "']").show();
     }
   };
 
+  $(document).on("change", "select[name='scenario[ali_select]']", (x) => {
+    phase_filter($(x.target).val(), $(x.target).siblings("select").val());
+  });
+
   $(document).on("change", "select[name='scenario[year_select]']", (x) => {
-    year_select($(x.target).val())
+    phase_filter($(x.target).siblings("select").val(), $(x.target).val());
   });
 
 
