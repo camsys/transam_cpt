@@ -134,15 +134,19 @@
         $(x.target).siblings(".unedit_total").text($(x.target).siblings("input.edit").val().toLocaleString());
       } else {
         $($(x.target).siblings("input.edit")[0]).val(parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, "")));
-        
       }
       $(x.target).siblings().toggle();
       $(x.target).closest(".dfrp").find(".total_actions").children().toggle();
-      
     });
 
     // Trigger
     $(document).on("click", ".trigger_toggle_edit_total", (x)=>{
       $(x.target).closest(".dfrp").find("input.toggle_edit_total").click(); //yuck
+    });
+
+    $(document).on("click", ".cancel_edit_total", (x)=>{
+      let root = $(x.target).closest(".dfrp");
+      root.find(".unedit_total").text(root.find("input.edit").val().toLocaleString());
+      root.find("input.toggle_edit_total").click();
     });
 
