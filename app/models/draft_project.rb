@@ -43,6 +43,14 @@ class DraftProject < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
+
+  #------------------------------------------------------------------------------
+  #
+  # Chart Helpers
+  #
+  #------------------------------------------------------------------------------
+
+
   def year_range
     earliest = phases.min_by(&:fy_year)
     latest = phases.max_by(&:fy_year)

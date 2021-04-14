@@ -51,9 +51,24 @@
   }
 
   .project_phase_panel {
-    margin: 0px -5px 0px 5px;
+    margin: 0px 10px 0px 24px;
   }
 
+  .phase_filter {
+    padding: 0px 30px 24px !important;
+  }
+
+  .divider {
+    height: 1px;
+    margin: 5px 1px;
+    overflow: hidden;
+    background-color: #E5E5E5;
+    border-bottom: 1px solid #FFF;
+  }
+
+  .chart_row {
+    padding-top: 64px;
+  }
 
 
 
@@ -130,10 +145,10 @@
                 = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :maxlength => 254
               = f.submit :class => 'btn btn-primary', :id => 'comment_submit'
   //Phases
-  .col-md-8 
+  .col-md-8
     = form_with model: @scenario, html:{class: "phase_filter"} do |f|
       = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }, include_blank: "Select ALI"
-      = f.select :year_select, @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq, include_blank: "Select Year"
+      = f.select :year_select, @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| format_as_fiscal_year(y) }, include_blank: "Select Year"
     -@scenario.draft_project_phases.each_with_index do |phase, index|
       .row.project_phase_panel
         .col-md-12

@@ -8,6 +8,9 @@ class Scenario < ApplicationRecord
   # Include the Workflow module
   include TransamWorkflow
 
+  #Formatting i.e. fiscal year
+  include TransamFormatHelper
+
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :organization_id,
@@ -62,6 +65,13 @@ class Scenario < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
+
+  #------------------------------------------------------------------------------
+  #
+  # Chart Helpers
+  #
+  #------------------------------------------------------------------------------
+
   def year_range
     earliest = phases.min_by(&:fy_year)
     latest = phases.max_by(&:fy_year)
@@ -88,16 +98,16 @@ class Scenario < ApplicationRecord
     ali_to_projects = projects.group_by { |p| p.team_ali_code } 
     ali_to_projects.each do |ali, projects|
       x = {name:ali.full_name, data:{}}
+      self.year_range.each{ |y| x[:data][y] = 0 }
       projects.each do |pr|
         pr.year_to_cost.each do |year, cost|
-          if x[:data][year]
-            x[:data][year] += cost
-          else
-            x[:data][year] = cost
-          end
+          x[:data][year] += cost
         end
       end
       d.push(x)
+    end
+    d.each do |h|
+      h[:data] = h[:data].to_a.map{ |y_c| [format_as_fiscal_year(y_c[0]), y_c[1]] } #patch for formatting
     end
     return d
   end
