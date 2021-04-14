@@ -1,3 +1,8 @@
+:css
+  .total_actions{
+    padding-left:0px;
+  }
+
 .dfrp
   -funding_request.violations.each do |violation|
     %h5
@@ -59,17 +64,15 @@
       .col-md-2.text-right
       .col-md-2.text-right
         %input.edit{type:'number',value:"#{funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
-        .row
-          .col-md-1.text-right
-            ="Total: "
+        .col-md-1.text-right
+          ="Total: "
         %span.unedit_total.fr_total
           ="#{format_as_currency(funding_request.total)}"
         %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden"}
       .col-md-1.total_actions{id:"#{funding_request.object_key}"}
         %i.fa.fa-edit.trigger_toggle_edit_total
-        %i.fa.fa-check.trigger_toggle_edit_total{style:"display:none"}
-        =link_to '#' do
-          %i.fa.fa-lock.lock_total
+        %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none"}
+        %i.fa.fa-times.cancel_edit_total{style:"display:none"}
         -has_alloc = funding_request.draft_budget_allocations.length > 0
         -first_alloc = funding_request.ordered_allocations.first()
         :javascript
