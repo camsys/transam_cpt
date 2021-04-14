@@ -56,6 +56,10 @@ class DraftProjectPhase < ApplicationRecord
     self.update(cost: self.transit_assets.sum(:scheduled_replacement_cost))
   end
 
+  def notional
+    draft_project.try(:notional)
+  end
+
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is
   # 1 Federal, 2 State, 3 Local, 4 Agency.
   # A better way to handle this may be to assign rankings to the templates, fundings sources, or funding source types.
