@@ -514,10 +514,9 @@ class CapitalProjectBuilder
     #########################################
     # Scenario Work (Create Draft Project)
     #########################################
-    draft_project = DraftProject.where(scenario: @scenario, team_ali_code: scope).first_or_create
+    draft_project = DraftProject.where(scenario: @scenario, team_ali_code: scope, notional: notional).first_or_create
     project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
     draft_project.title = project_title
-    draft_project.notional = notional 
     draft_project.save!
     #########################################
     ##########################################
