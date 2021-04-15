@@ -14,6 +14,11 @@
           %strong
             Allocated:
           =format_as_currency(@draft_budget.allocated(scenario))
+        -if !@draft_budget.shared_across_scenarios
+          .row
+            %strong
+              Remaining:
+            =format_as_currency(@draft_budget.remaining(scenario))
       .col-md-2.text-center
       .col-md-4
         .row
