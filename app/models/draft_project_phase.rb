@@ -103,7 +103,7 @@ class DraftProjectPhase < ApplicationRecord
     #   end
     # }
     # return [{name:"3.34-5.0", data:high}, {name:"1.67-3.33", data:med}, {name:"0.0-1.67", data:low}];
-    return assets.map{ |a| [a.age, a.reported_condition_rating] }
+    return assets.map{ |a| {name: a.asset_tag, data:[[a.age, a.reported_condition_rating]], color:"blue"} }
   end
 
   def age_to_mileage

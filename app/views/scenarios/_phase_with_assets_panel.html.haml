@@ -111,7 +111,7 @@
             .row.text-center
               -# %strong
               -#   ="Condition"
-              =scatter_chart phase.age_to_condition, xtitle: "Age(Years)", ytitle:"Condition(1-5)", legend: false, discrete: true, colors:["blue"]
+              =scatter_chart phase.age_to_condition, xtitle: "Age(Years)", ytitle:"Condition(1-5)", legend: false
               
           -if assets.first.very_specific.respond_to?(:reported_mileage)
             .col-md-6 
