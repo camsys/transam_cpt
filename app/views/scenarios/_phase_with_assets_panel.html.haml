@@ -98,10 +98,10 @@
                   ="Mileage"
                 -milages = assets.map{ |a| a.very_specific.reported_mileage || 0 }
               .row
-                ="Max"
+                ="Min"
                 =milages.min.to_s(:delimited)
               .row
-                ="Min"
+                ="Max"
                 =milages.max.to_s(:delimited)
               .row
                 ="Avg"
