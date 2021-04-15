@@ -62,7 +62,7 @@
           -#   ="Backlog%"
           =pie_chart [["Backlog",avg],["Not Backlog",100.0-avg]] , legend: "bottom", donut: true, colors:["red","blue"], suffix:'%'
       .col-md-10.panel_asset_table
-        .row.text-center 
+        .row.text-left
           .col-md-2 
             .row
               %strong
@@ -78,8 +78,8 @@
             .row 
               ="Avg"
               =(ages.reduce(:+) / ages.size.to_f).round(2)
-          .col-md-5 
-            .row.text-center
+          .col-md-2
+            .row.text-left
               %strong
                 ="Condition"
             .row
@@ -92,8 +92,8 @@
               ="Avg"
               =(conditions.reduce(:+) / conditions.size.to_f).round(2)
           -if assets.first.very_specific.respond_to?(:reported_mileage)
-            .col-md-5 
-              .row.text-center
+            .col-md-2
+              .row.text-left
                 %strong
                   ="Mileage"
                 -milages = assets.map{ |a| a.very_specific.reported_mileage || 0 }

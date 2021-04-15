@@ -1,0 +1,23 @@
+.panel.panel-default
+  .panel-heading
+    =link_to scenario_path(scenario) do 
+      %h4
+        =scenario.name
+  .panel-body 
+    .row 
+      .col-md-4
+        .row
+          %strong
+            Status:
+          =scenario.state.titleize
+        .row
+          %strong
+            Allocated:
+          =format_as_currency(@draft_budget.allocated(scenario))
+      .col-md-2.text-center
+      .col-md-4
+        .row
+          =pie_chart [["Allocated",@draft_budget.allocated(scenario)],["Remaining",@draft_budget.remaining(scenario)]], colors: ["#b00", "#85bb65"], legend: false
+
+  .panel-footer.text-right
+    ="Created: #{scenario.created_at.strftime('%m/%d/%Y at %I:%M%p')}"

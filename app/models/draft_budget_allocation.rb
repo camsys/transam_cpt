@@ -9,6 +9,8 @@ class DraftBudgetAllocation < ApplicationRecord
   #------------------------------------------------------------------------------
   belongs_to :draft_funding_request
   has_one :draft_project_phase, through: :draft_funding_request
+  has_one :draft_project, through: :draft_project_phase
+  has_one :scenario, through: :draft_project
   belongs_to :draft_budget
 
   FORM_PARAMS = [
