@@ -63,7 +63,7 @@
       .col-md-7
       .col-md-2.text-right
       .col-md-2.text-right
-        %input.edit{type:'number',value:"#{funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
+        %input.edit.edit_total{type:'number',value:"#{funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
         .col-md-1.text-right
           ="Total: "
         %span.unedit_total.fr_total
@@ -80,8 +80,7 @@
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
             if("#{has_alloc}" === 'true') {
               let root = $(x.target).closest(".dfrp");
-              console.log(root);
-              let total = parseFloat($(root).find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""));
+              let total = $(root).find("input.edit.edit_total").val();//parseFloat($(root).find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""));
               let value = total * parseFloat("#{ has_alloc ? first_alloc.required_pct : 0.0}");
               let id = "#{has_alloc ? first_alloc.object_key : -1}";
 
