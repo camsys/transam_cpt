@@ -32,6 +32,7 @@ class Scenario < ApplicationRecord
   belongs_to  :organization
   has_many :draft_projects
   has_many :draft_project_phases, through: :draft_projects
+  has_many :draft_project_phase_assets, through: :draft_project_phases
 
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
