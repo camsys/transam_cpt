@@ -3,6 +3,7 @@
     padding-left:0px;
   }
 
+
 .dfrp
   -funding_request.violations.each do |violation|
     %h5
@@ -40,7 +41,7 @@
       .col-md-3.text-right
         %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none", data_id: "#{allocation.object_key}" }
         %span.unedit
-          =allocation.amount
+          =format_as_currency allocation.amount
         %input.toggle_edit{type:'checkbox',style:"visibility:hidden"}
       .col-md-1.alloc_actions
         %i.fa.fa-edit.trigger_toggle_edit
@@ -71,6 +72,7 @@
         %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden"}
       .col-md-1.total_actions{id:"#{funding_request.object_key}"}
         %i.fa.fa-edit.trigger_toggle_edit_total
+        %i.fa.fa-spinner.fa-spin#totalSpinner{style:"display:none"}
         %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none"}
         %i.fa.fa-times.cancel_edit_total{style:"display:none"}
         -has_alloc = funding_request.draft_budget_allocations.length > 0
@@ -78,22 +80,21 @@
         :javascript
           // lock total
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
-            //if("#{has_alloc}" === 'true') {
-              let root = $(x.target).closest(".dfrp");
-              let total = $(root).find("input.edit.edit_total").val();//parseFloat($(root).find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""));
-              //let value = total * parseFloat("#{ has_alloc ? first_alloc.required_pct : 0.0}");
-              let id = "#{funding_request.object_key}";//"#{has_alloc ? first_alloc.object_key : -1}";
+              //Show the Spinner
+              $( "#totalSpinner" ).show();
 
-              // assign new value to the first allocation
+              let root = $(x.target).closest(".dfrp");
+              let total = $(root).find("input.edit.edit_total").val();
+              let id = "#{funding_request.object_key}";
+
+              // Make Call to Update the Total
               $.ajax({
                 url: "/draft_funding_requests/"+id+"/lock_total",
                 data: {"total":total},
                 method: 'PATCH',
                 dataType: 'json',
                 success: function(data) {
-                  // then lock in the editted allocation, so that the other allocations fall in line
-                  //$(root).find(".alloc_lock")[0].click(); //ugh
-                  console.log("locked total");
+                  location.reload();
                 },
                 error: function(e) {
                   console.log(e);

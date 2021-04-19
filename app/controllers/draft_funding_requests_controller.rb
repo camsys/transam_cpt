@@ -45,7 +45,10 @@ class DraftFundingRequestsController < OrganizationAwareController
 
     @draft_funding_request.lock_total(params[:total].to_f)
     
-    redirect_to draft_project_phase_path(@draft_project_phase)
+    respond_to do |format|
+      format.html { redirect_to draft_project_phase_path(@draft_project_phase)}
+      format.json {}
+    end
   end
 
   
