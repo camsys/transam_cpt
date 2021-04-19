@@ -147,7 +147,7 @@
   //Phases
   .col-md-8
     = form_with model: @scenario, html:{class: "phase_filter"} do |f|
-      = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }, include_blank: "Select ALI"
+      = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
       = f.select :year_select, @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| format_as_fiscal_year(y) }, include_blank: "Select Year"
     -@scenario.draft_project_phases.each_with_index do |phase, index|
       .row.project_phase_panel

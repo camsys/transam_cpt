@@ -49,6 +49,20 @@ class DraftFundingRequest < ApplicationRecord
     end
   end
 
+  def lock_total total
+    accumulated = 0.0
+    self.ordered_allocations.each do |alloc|
+      calc_amount = (alloc.effective_pct.to_f * total.to_f).floor()
+      if(alloc.required_pct == 1.0)
+        alloc.amount = total - accumulated
+      else
+        alloc.amount = calc_amount
+      end
+      accumulated += calc_amount
+      alloc.save!
+    end
+  end
+
   #------------------------------------------------------------------------------
   # Instance Methods
   #------------------------------------------------------------------------------

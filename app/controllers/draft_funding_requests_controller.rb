@@ -39,6 +39,15 @@ class DraftFundingRequestsController < OrganizationAwareController
     end
   end
 
+  def lock_total
+    set_draft_funding_request
+    @draft_project_phase = @draft_funding_request.draft_project_phase
+
+    @draft_funding_request.lock_total(params[:total].to_f)
+    
+    redirect_to draft_project_phase_path(@draft_project_phase)
+  end
+
   
   def autofill_allocations
   #   # @allocation = DraftBudgetAllocation.find_by(object_key: autofill_params[:allocation_id])
@@ -67,7 +76,7 @@ class DraftFundingRequestsController < OrganizationAwareController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:draft_budget_allocation).permit(DraftBudgetAllocation.allowable_params)
+    params.require(:draft_funding_request).permit([:total])
   end
 
   def set_draft_funding_request

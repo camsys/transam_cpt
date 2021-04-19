@@ -29,18 +29,18 @@
         =allocation.draft_budget.try(:name)  
         -# %i.fa.fa-edit
       .col-md-2
-        ="#{allocation.draft_budget.funding_template.match_required}%"
+        ="#{100*allocation.required_pct}%"
       .col-md-2
-        -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
-        ="#{effective_pct.round(3)}%"
-        -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
+        -effective_pct = allocation.effective_pct
+        ="#{(100*effective_pct).round(3)}%"
+        -remaining_pct = remaining_pct*(1-(allocation.required_pct))
       .col-md-2.alloc_actual
         -cost = funding_request.total
-        ="#{(100*(allocation.amount.to_f/cost)).round(3)}%"
+        ="#{(100*(allocation.amount.to_f/cost.to_f)).round(3)}%"
       .col-md-3.text-right
         %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none", data_id: "#{allocation.object_key}" }
         %span.unedit
-          ="#{allocation.amount}"
+          =allocation.amount
         %input.toggle_edit{type:'checkbox',style:"visibility:hidden"}
       .col-md-1.alloc_actions
         %i.fa.fa-edit.trigger_toggle_edit
@@ -78,28 +78,28 @@
         :javascript
           // lock total
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
-            if("#{has_alloc}" === 'true') {
+            //if("#{has_alloc}" === 'true') {
               let root = $(x.target).closest(".dfrp");
               let total = $(root).find("input.edit.edit_total").val();//parseFloat($(root).find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""));
-              let value = total * parseFloat("#{ has_alloc ? first_alloc.required_pct : 0.0}");
-              let id = "#{has_alloc ? first_alloc.object_key : -1}";
+              //let value = total * parseFloat("#{ has_alloc ? first_alloc.required_pct : 0.0}");
+              let id = "#{funding_request.object_key}";//"#{has_alloc ? first_alloc.object_key : -1}";
 
               // assign new value to the first allocation
               $.ajax({
-                url: "/draft_budget_allocations/"+id,
-                data: {"draft_budget_allocation": {"amount":value}},
-                method: 'PUT',
+                url: "/draft_funding_requests/"+id+"/lock_total",
+                data: {"total":total},
+                method: 'PATCH',
                 dataType: 'json',
                 success: function(data) {
                   // then lock in the editted allocation, so that the other allocations fall in line
-                  $(root).find(".alloc_lock")[0].click(); //ugh
-
+                  //$(root).find(".alloc_lock")[0].click(); //ugh
+                  console.log("locked total");
                 },
                 error: function(e) {
                   console.log(e);
                 }
               });
-            }
+            //}
           });
 
   .row
