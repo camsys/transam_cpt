@@ -120,30 +120,25 @@
 .row 
   .col-md-12
     =column_chart @scenario.year_to_cost_ali_breakdown, prefix: "$", stacked: true
+
 .row
-  //Comments
-  .col-md-4.comments_panel
-    %h3.text-center
-      ="Timeline"
-    %ul.list-group
-      - @scenario.comments.each do |c|
-        %li.list-group-item.comment
-          %span.title.text-muted{:style => 'min-width: 140px; display:inline-block;'}= "#{c.creator.name} (#{c.creator_organization})<br/>#{format_as_date_time(c.created_at)}".html_safe
-          %span.pull-right{:style => 'min-width: 80px; display:block;vertical-align:top'}
-            - if can? :destroy, c
-              = link_to [c.commentable.becomes(c.commentable.class.base_class), c], :method => :delete, :class => "btn btn-warning btn-xs pull-right btn-action", :data => { :confirm => 'Are you sure you want to remove this comment?' } do
-                %i.fa.fa-trash
-                Delete
-          %span.title{:style => 'display:block;vertical-align:top;word-wrap:break-word;'}= format_as_text(c.comment.html_safe)
-    - if can? :create, @scenario.comments.build
-      .row
-        .col-md-12
-          %fieldset
-            %legend Add Comment
-            = form_for [@scenario, Comment.new], :html => {:multipart => true, :class => 'form-vertical comment_form' }, :url => scenario_comments_path(@scenario, Comment.new), :role => 'form' do |f|
-              .form-group
-                = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :maxlength => 254
-              = f.submit :class => 'btn btn-primary', :id => 'comment_submit'
+  .col-md-12
+    =render partial: 'scenario_assets_table', locals: {transit_assets: @transit_assets}
+
+.row
+  /// LEFT COLUMN
+  .col-md-4
+    //Comments
+    .row
+      =render 'scenario_comments'
+    
+    //Assets
+
+
+    
+
+  // RIGHT COLUMN
+
   //Phases
   .col-md-8
     = form_with model: @scenario, html:{class: "phase_filter"} do |f|
