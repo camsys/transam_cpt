@@ -98,7 +98,6 @@ Rails.application.routes.draw do
   end
   resources :draft_funding_requests, only: [:create, :destroy, :update] do
     member do
-      patch 'autofill_allocations'
       patch 'lock_total'
     end
   end

@@ -51,29 +51,6 @@ class DraftFundingRequestsController < OrganizationAwareController
     end
   end
 
-  
-  def autofill_allocations
-  #   # @allocation = DraftBudgetAllocation.find_by(object_key: autofill_params[:allocation_id])
-  #   @draft_funding_request = DraftFundingRequest.find_by(object_key: autofill_params[:fr_id])
-
-  #   remaining_pct = 1.0
-  #   @draft_funding_request.ordered_allocations.each do |allocation|
-
-  #     allocation.amount = allocation.effective_pct * @draft_funding_request.total
-
-  #     allocation.save
-
-  #     remaining_pct = remaining_pct-(allocation.draft_budget.funding_template.match_required/100)
-  #   end
-
-
-  #   respond_to do |format|
-  #     format.html { redirect_to draft_project_phase_path(@draft_funding_request.draft_project_phase) }
-  #   end
-
-
-  end
-
 
   private
 
