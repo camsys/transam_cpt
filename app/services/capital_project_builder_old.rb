@@ -6,7 +6,7 @@
 # for the organization.
 #
 #-------------------------------------------------------------------------------
-class CapitalProjectBuilder
+class CapitalProjectBuilderOld
 
   REPLACEMENT_PROJECT_TYPE    = 1
   EXPANSION_PROJECT_TYPE      = 2
