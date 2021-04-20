@@ -98,7 +98,7 @@ class Scenario < ApplicationRecord
     d = []
     ali_to_projects = projects.group_by { |p| p.team_ali_code } 
     ali_to_projects.each do |ali, projects|
-      x = {name:ali.try:(full_name), data:{}}
+      x = {name:ali.try(:full_name), data:{}}
       self.year_range.each{ |y| x[:data][y] = 0 }
       projects.each do |pr|
         pr.year_to_cost.each do |year, cost|
