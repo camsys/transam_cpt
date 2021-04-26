@@ -26,13 +26,18 @@
         %th Phase
     %tbody.searchable
       -transit_assets.each do |ta|
+        -phase = @scenario.draft_project_phase_assets.where(transit_asset: ta).first
         %tr
           %td 
-            =ta.asset_tag
+            =link_to ta.asset_tag, draft_project_phase_asset_path(ta.object_key, scenario_id: @scenario.object_key)
           %td
             =ta.very_specific.try(:serial_number)
           %td
             =ta.asset_subtype.try(:name)
           %td
-            =@scenario.draft_project_phase_assets.where(transit_asset: ta).first.try(:draft_project_phase).try(:name)
+            -if phase
+              ="fix me"
+              //=link_to phase.draft_project_phase.try(:name), draft_project_phase_asset_path(phase)
+            -else
+              ="N/A"
 
