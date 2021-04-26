@@ -10,12 +10,8 @@ class DraftProjectPhaseAssetsController < OrganizationAwareController
 
   def show
     set_scenario
-    puts @scenario.id
     set_transit_asset
-    puts @transit_asset.id
     set_draft_project_phase_asset
-    puts @draft_project_phase_asset 
-    puts '--------'
     #add_breadcrumb "#{@draft_budget.name}"
     @phases = @scenario.draft_project_phases.map{ |p| [p.name, p.object_key] }
 
