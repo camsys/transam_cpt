@@ -155,14 +155,16 @@
       if($(x.target).is(":not(:checked)")){ // close edit
 
         $(x.target).siblings(".unedit_total").text('$' + parseFloat($(x.target).siblings("input.edit").val()).toLocaleString()); // static gets textbox value, formatted
+        $(x.target).closest(".dfrp").find(".total_actions").children().hide();
+        $(x.target).closest(".dfrp").find( "#totalSpinner" ).show();
 
       } else { // open edit
         
         $($(x.target).siblings("input.edit")[0]).val(parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""))); // textbox gets static value, stripped
-
+        $(x.target).closest(".dfrp").find(".total_actions").children().toggle(); // swap the edit button, and the checkmark and cancel button
       }
       $(x.target).siblings().toggle(); // swap the textbox and static total
-      $(x.target).closest(".dfrp").find(".total_actions").children().toggle(); // swap the edit button, and the checkmark and cancel button
+      
     });
 
 

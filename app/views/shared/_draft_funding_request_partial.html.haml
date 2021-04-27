@@ -73,10 +73,11 @@
         %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden"}
       .col-md-1.total_actions{id:"#{funding_request.object_key}"}
         %i.fa.fa-edit.trigger_toggle_edit_total
-        %span
-          %i.fa.fa-spinner.fa-spin#totalSpinner{style:"display:none"}
+        
         %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none"}
         %i.fa.fa-times.cancel_edit_total{style:"display:none"}
+      %span#totalSpinner{style:"display:none"}
+        %i.fa.fa-spinner.fa-spin
         :javascript
           // lock total
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
@@ -92,7 +93,6 @@
               method: 'PATCH',
               dataType: 'json',
               success: function(data) {
-                $(root).find( "#totalSpinner" ).show();
                 location.reload();
               },
               error: function(e) {
