@@ -21,8 +21,8 @@
   .panel-body 
     -assets = phase.transit_assets
     -backlog = assets.select{ |a| a.in_backlog }
-    -ages = assets.map{ |a| a.age }
-    -conditions = assets.map{ |a| a.reported_condition_rating }
+    -ages = (assets.map{ |a| a.age }).compact #Compact removes nil ages
+    -conditions = (assets.map{ |a| a.reported_condition_rating }).compact #Compact removes nil conditions
     .row 
       .col-md-2.phase_info
         .row
@@ -77,7 +77,10 @@
               =ages.max
             .row 
               ="Avg"
-              =(ages.reduce(:+) / ages.size.to_f).round(2)
+              -if ages.empty?
+                N/A
+              -else
+                =(ages.reduce(:+) / ages.size.to_f).round(2)
           .col-md-2
             .row.text-left
               %strong
@@ -90,8 +93,11 @@
               =conditions.max
             .row
               ="Avg"
-              =(conditions.reduce(:+) / conditions.size.to_f).round(2)
-          -if assets.first.very_specific.respond_to?(:reported_mileage)
+              -if conditions.empty?
+                N/A
+              -else
+                =(conditions.reduce(:+) / conditions.size.to_f).round(2)
+          -if assets.first.try(:very_specific).respond_to?(:reported_mileage)
             .col-md-2
               .row.text-left
                 %strong
@@ -109,16 +115,11 @@
         .row.chart_row
           .col-md-6 
             .row.text-center
-              -# %strong
-              -#   ="Condition"
               =scatter_chart phase.age_to_condition, xtitle: "Age(Years)", ytitle:"Condition(1-5)", legend: false, discrete: true, colors:["blue"]
               
-          -if assets.first.very_specific.respond_to?(:reported_mileage)
-            .col-md-6 
-              .row.text-center 
-                -# %strong
-                -#   ="Milage"
-                =scatter_chart phase.age_to_mileage, xtitle: "Age(Years)", ytitle:"Mileage", thousands: ",", legend: false, colors:["blue", "blue"]
+          .col-md-6 
+            .row.text-center 
+              =scatter_chart phase.age_to_mileage, xtitle: "Age(Years)", ytitle:"Mileage", thousands: ",", legend: false, colors:["blue"]
 
         -# =render partial: "phase_with_assets_panel_table", locals: {draft_project_phase: phase}
       

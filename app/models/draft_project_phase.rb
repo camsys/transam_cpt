@@ -89,38 +89,32 @@ class DraftProjectPhase < ApplicationRecord
 
   def age_to_condition
     assets = self.transit_assets
-    # high=[]
-    # med=[]
-    # low=[]
-    # assets.map{ |a| 
-    #   x = [a.age, a.reported_condition_rating]
-    #   if (a.reported_condition_rating < 1.67) 
-    #     low.push(x)
-    #   elsif (a.reported_condition_rating < 3.34) 
-    #     med.push(x)
-    #   else
-    #     high.push(x)
-    #   end
-    # }
-    # return [{name:"3.34-5.0", data:high}, {name:"1.67-3.33", data:med}, {name:"0.0-1.67", data:low}];
     return assets.map{ |a| [a.age, a.reported_condition_rating] }
   end
 
   def age_to_mileage
     assets = self.transit_assets
-    milages = assets.map{ |a| a.very_specific.reported_mileage || 0 }
-    avg=(milages.reduce(:+) / milages.size.to_f).round(2)
-    above=[]
-    below=[]
-    assets.map{ |a| 
-      x = [a.age, a.very_specific.reported_mileage]
-      if (a.very_specific.reported_mileage < avg) 
-        below.push(x)
-      else
-        above.push(x)
+    mileages = (assets.map{ |a| a.very_specific.try(:reported_mileage) }).compact #Compact is used to remove nil mileages
+    
+    if mileages.empty?
+      return nil 
+    end    
+
+    avg=(mileages.reduce(:+) / mileages.size.to_f).round(2)
+    data = []
+    assets.each do |a|
+      x = [a.age, a.very_specific.try(:reported_mileage)]
+      unless x[1].nil?
+        data.push(x)
       end
-    }
-    return [{name:"Above Average", data:above}, {name:"Below Average", data:below}];
+    end
+
+    return [{name: "Mileages", data: data}];
+  
+  end
+
+  def long_name
+    "#{team_ali_code.try(:code)}: #{name} (#{self.fiscal_year(fy_year)})"
   end
 
   #------------------------------------------------------------------------------

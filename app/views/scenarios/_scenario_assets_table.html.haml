@@ -28,16 +28,15 @@
       -transit_assets.each do |ta|
         -phase = @scenario.draft_project_phase_assets.where(transit_asset: ta).first
         %tr
-          %td 
-            =link_to ta.asset_tag, draft_project_phase_asset_path(ta.object_key, scenario_id: @scenario.object_key)
+          %td
+            =link_to ta.asset_tag, inventory_path(ta)
           %td
             =ta.very_specific.try(:serial_number)
           %td
             =ta.asset_subtype.try(:name)
           %td
             -if phase
-              ="fix me"
-              //=link_to phase.draft_project_phase.try(:name), draft_project_phase_asset_path(phase)
+              =link_to phase.draft_project_phase.try(:long_name), edit_draft_project_phase_asset_path('none', transit_asset_id: ta.object_key, scenario_id: @scenario.object_key)
             -else
-              ="N/A"
+              =link_to '+', new_draft_project_phase_asset_path(transit_asset_id: ta.object_key, scenario_id: @scenario.object_key)
 
