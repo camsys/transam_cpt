@@ -103,28 +103,52 @@ class Scenario < ApplicationRecord
     return d
   end
 
-  def self.year_to_cost_ali_breakdown scenario=nil
-    d = []
+  def self.peaks_and_valleys_chart_data scenario=nil
+    data = []
+    year_range = (Time.now.year..(Time.now + 12.years).year)
+
+    # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
     if scenario
-      ali_to_projects = scenario.draft_projects.group_by { |p| p.team_ali_code } 
+      projects = scenario.draft_projects
     else
       scenarios = Scenario.where(state: CHART_STATES)
-      ali_to_projects = DraftProject.where(scenario: scenarios).group_by { |p| p.team_ali_code }
+      projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
     end
-    ali_to_projects.each do |ali, projects|
-      x = {name: ali.to_s + " " + ali.try(:context).to_s, data: {}}
-      (2021..2033).each{ |y| x[:data][y] = 0 }
-      projects.each do |pr|
-        pr.year_to_cost.each do |year, cost|
-          x[:data][year] += cost
+
+    # Get all the phases and group them by ALI
+    ali_to_phases = DraftProjectPhase.where(draft_project_id: projects.pluck(:id)).group_by { |phase| phase.parent_ali_code } 
+
+    # Iterate through each ALI and add up the costs
+    ali_to_phases.each do |ali, phases|
+      new_entry = {name: "#{ali.try(:code) || 'None'} #{ali.try(:context)}"}
+      data_hash = {}
+
+      # First create an empty hash entry for each year
+      year_range.each do |year|
+        data_hash[year] = 0
+      end
+
+      # Iterate through each phase and add it to the corresponding year
+      phases.each do |phase|
+        phase_year = phase.fy_year 
+        if data_hash[phase_year]
+          data_hash[phase_year] += phase.cost 
+        else
+          data_hash[phase_year] = phase.cost 
         end
       end
-      d.push(x)
+
+      # Convert the hash to an array, and also convert the year to be the fiscal year.
+      data_array = data_hash.map{ |k,v| [SystemConfig.fiscal_year(k.to_i),v] }
+
+      new_entry[:data] = data_array
+
+      data << new_entry 
+
     end
-    # d.each do |h|
-    #   h[:data] = h[:data].to_a.map{ |y_c| [y_c[0], y_c[1]] } #patch for formatting
-    # end
-    return d
+
+    return data
+
   end
 
   def in_chart_state?

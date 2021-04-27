@@ -117,6 +117,10 @@ class DraftProjectPhase < ApplicationRecord
     "#{team_ali_code.try(:code)}: #{name} (#{self.fiscal_year(fy_year)})"
   end
 
+  def parent_ali_code
+    draft_project.team_ali_code
+  end
+
   #------------------------------------------------------------------------------
   #
   # Class Methods

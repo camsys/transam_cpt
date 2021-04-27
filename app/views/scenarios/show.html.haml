@@ -119,7 +119,7 @@
 
 .row 
   .col-md-12
-    =column_chart @scenario.year_to_cost_ali_breakdown, prefix: "$", stacked: true
+    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true
 
 .row
   .col-md-12
@@ -141,7 +141,7 @@
 
   //Phases
   .col-md-8
-    -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases > 0
+    -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
       = form_with model: @scenario, html:{class: "phase_filter"} do |f|
         = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
         = f.select :year_select, options_for_select(@scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
