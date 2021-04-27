@@ -26,6 +26,15 @@ class Scenario < ApplicationRecord
     :submitted_constrained_plan
   ]
 
+  CHART_STATES = [ # states to be included 
+    "constrained_plan",
+    "submitted_constrained_plan",
+    "final_draft",
+    "awaiting_final_approval",
+    "approved"
+  ]
+
+
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -94,12 +103,17 @@ class Scenario < ApplicationRecord
     return d
   end
 
-  def year_to_cost_ali_breakdown
+  def self.year_to_cost_ali_breakdown scenario=nil
     d = []
-    ali_to_projects = projects.group_by { |p| p.team_ali_code } 
+    if scenario
+      ali_to_projects = scenario.draft_projects.group_by { |p| p.team_ali_code } 
+    else
+      scenarios = Scenario.where(state: CHART_STATES)
+      ali_to_projects = DraftProject.where(scenario: scenarios).group_by { |p| p.team_ali_code }
+    end
     ali_to_projects.each do |ali, projects|
-      x = {name:ali.to_s + " " + ali.try(:context), data:{}}
-      self.year_range.each{ |y| x[:data][y] = 0 }
+      x = {name: ali.to_s + " " + ali.try(:context).to_s, data: {}}
+      (2021..2033).each{ |y| x[:data][y] = 0 }
       projects.each do |pr|
         pr.year_to_cost.each do |year, cost|
           x[:data][year] += cost
@@ -107,10 +121,14 @@ class Scenario < ApplicationRecord
       end
       d.push(x)
     end
-    d.each do |h|
-      h[:data] = h[:data].to_a.map{ |y_c| [format_as_fiscal_year(y_c[0]), y_c[1]] } #patch for formatting
-    end
+    # d.each do |h|
+    #   h[:data] = h[:data].to_a.map{ |y_c| [y_c[0], y_c[1]] } #patch for formatting
+    # end
     return d
+  end
+
+  def in_chart_state?
+    state.to_sym.in? CHART_STATES
   end
 
   #------------------------------------------------------------------------------

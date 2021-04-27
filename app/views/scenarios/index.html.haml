@@ -3,6 +3,10 @@
   =link_to new_scenario_path, class: "btn btn-info btn-xs" do 
     %i.fa.fa-plus
 
+.row 
+  .col-md-12
+    -chart_data = Scenario.year_to_cost_ali_breakdown #     select { |s| s.in_chart_state? }.map { |s| s.year_to_cost_ali_breakdown }.flatten(1) 
+    =column_chart chart_data, prefix: "$", stacked: true
 
 :ruby
   table_dom_id = SecureRandom.hex
