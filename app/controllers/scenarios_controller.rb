@@ -12,6 +12,8 @@ class ScenariosController < OrganizationAwareController
   # Include the fiscal year mixin
   include FiscalYear
 
+  include TransamFormatHelper
+
   #-----------------------------------------------------------------------------
   # 
   #-----------------------------------------------------------------------------
@@ -32,7 +34,14 @@ class ScenariosController < OrganizationAwareController
     add_breadcrumb "#{@scenario.name}"
 
     @transit_assets = TransitAsset.where(organization: @scenario.organization)
-
+    if params[:filter_year]
+      @phase_filter_year = params[:filter_year] # from url
+    elsif @scenario.draft_project_phases.length > 0
+      @phase_filter_year = @scenario.draft_project_phases.min_by(&:fy_year).fy_year.to_s # default to earliest fy year
+    else
+      @phase_filter_year = Date.new.year # default to 'now' if no phases
+    end
+    #@phase_filter_ali_code = params[:filter_ali] || @scenario.draft_project_phases.min_by(&:fy_year).team_ali_code #TODO: what should be default here?
     respond_to do |format|
       format.html
     end

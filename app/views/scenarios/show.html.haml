@@ -141,13 +141,14 @@
 
   //Phases
   .col-md-8
-    = form_with model: @scenario, html:{class: "phase_filter"} do |f|
-      = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
-      = f.select :year_select, @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| format_as_fiscal_year(y) }, include_blank: "Select Year"
-    -@scenario.draft_project_phases.each_with_index do |phase, index|
-      .row.project_phase_panel
-        .col-md-12
-          =render partial: "phase_with_assets_panel", locals: {phase: phase}
+    -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases > 0
+      = form_with model: @scenario, html:{class: "phase_filter"} do |f|
+        = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
+        = f.select :year_select, options_for_select(@scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
+      -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
+        .row.project_phase_panel
+          .col-md-12
+            =render partial: "phase_with_assets_panel", locals: {phase: phase}
 //Projects
 .row
   .col-md-12
@@ -155,23 +156,49 @@
 
 :javascript
 
-  let phase_filter = (code, year)=>{
-    console.log(code, year);
-    $(".phase").show();
-    if(code) {
-      $(".phase:not([ali='" + code + "'])").hide();
-    }
-    if(year) {
-      $(".phase:not([year='" + year + "'])").hide();
-    }
-  };
-
   $(document).on("change", "select[name='scenario[ali_select]']", (x) => {
-    phase_filter($(x.target).val(), $(x.target).siblings("select").val());
+    let code = $(x.target).val();
+    $(".phase").show();
+    if (code) $(".phase:not([ali='" + code + "'])").hide();
   });
 
   $(document).on("change", "select[name='scenario[year_select]']", (x) => {
-    phase_filter($(x.target).siblings("select").val(), $(x.target).val());
+    let year = $(x.target).val().toString();
+    let url = location.href.replace(location.search, '');
+    location.replace(url+"?filter_year="+year);
   });
+
+
+
+  // within a phase panel
+  const change_phase_year = (id, year) => {
+    // send new year to controller to update 
+    $.ajax({
+        url: "/draft_project_phases/"+id+"/update_for_scenarios",
+        data: {"draft_project_phase": {"fy_year":year}},
+        method: 'PUT',
+        dataType: 'json',
+        success: function(data) {
+          console.log("updated phase");
+          //location.replace(location.href + year);
+          location.reload();
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+  }
+
+  $(document).on("change", "select[name='draft_project_phase[phase_year_select]']", (x) => {
+    let id = $(x.target).closest(".panel").attr("id"); // get id from parent panel
+    let year = $(x.target).val();
+    change_phase_year(id, year);
+  });
+
+  let convert_to_fiscal = (y) => {
+    let first = y.toString().slice(2,4);
+    let second = (parseInt(first) + 1).toString(); // not century safe
+    return first + '-' + second;
+  }
 
 

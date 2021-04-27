@@ -82,6 +82,20 @@ class DraftProjectPhasesController < OrganizationAwareController
 
 
 
+
+
+
+
+  def update_for_scenarios
+    set_draft_project_phase 
+    @phase_filter_year = @draft_project_phase.fy_year
+    @draft_project_phase.update(form_params)
+  end
+
+
+
+
+
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.

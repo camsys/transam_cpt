@@ -10,14 +10,18 @@
   .panel-body {
     padding: 0px 0px 0px 10px;
   }
-.panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{format_as_fiscal_year(phase.fy_year)}"}
-  .panel-heading
-    =link_to draft_project_path(phase.draft_project) do
-      =phase.draft_project.try(:title).try(:titleize)
-    = ">"
-    =link_to draft_project_phase_path(phase) do
-      =phase.name
-      =" (#{phase.get_fiscal_year})"
+.panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
+  .row.panel-heading
+    .col-md-10
+      =link_to draft_project_path(phase.draft_project) do
+        =phase.draft_project.try(:title).try(:titleize)
+      = ">"
+      =link_to draft_project_phase_path(phase) do
+        =phase.name
+        =" (#{phase.get_fiscal_year})"
+    .col-md-2.text-right
+      = form_with model: phase, html:{class: "phase_year_select"} do |f|
+        = f.select :phase_year_select, options_for_select(phase.draft_project.scenario.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year)
   .panel-body 
     -assets = phase.transit_assets
     -backlog = assets.select{ |a| a.in_backlog }
@@ -45,6 +49,14 @@
           %strong
             Remaining:
           =format_as_currency(phase.remaining)
+        .row 
+          %strong
+            Justification:
+          =phase.draft_project.justification
+        .row 
+          %strong
+            Description:
+          =phase.draft_project.description
         .row
           %strong
             ="Asset Count: "
