@@ -105,7 +105,7 @@ class Scenario < ApplicationRecord
 
   def self.peaks_and_valleys_chart_data scenario=nil
     data = []
-    year_range = ((Time.now - 1.years).year..(Time.now + 12.years).year)
+    year_range = ((Time.now - 1.years).year..(Time.now + 10.years).year)
 
     # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
     if scenario

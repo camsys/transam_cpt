@@ -1,15 +1,10 @@
 :css
-  .panel_asset_table {
-    padding:10px;
-  }
 
   .phase_info {
     padding: 10px 15px;
   }
 
-  .panel-body {
-    padding: 0px 0px 0px 10px;
-  }
+
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
   .row.panel-heading
     .col-md-10
@@ -28,6 +23,16 @@
     -ages = (assets.map{ |a| a.age }).compact #Compact removes nil ages
     -conditions = (assets.map{ |a| a.reported_condition_rating }).compact #Compact removes nil conditions
     .row 
+      .row
+        .col-md-12.phase_info
+          .row 
+            %strong
+              Justification:
+            =phase.draft_project.justification
+          .row 
+            %strong
+              Description:
+            =phase.draft_project.description
       .col-md-2.phase_info
         .row
           %strong 
@@ -49,14 +54,6 @@
           %strong
             Remaining:
           =format_as_currency(phase.remaining)
-        .row 
-          %strong
-            Justification:
-          =phase.draft_project.justification
-        .row 
-          %strong
-            Description:
-          =phase.draft_project.description
         .row
           %strong
             ="Asset Count: "
