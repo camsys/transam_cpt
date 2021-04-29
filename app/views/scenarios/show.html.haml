@@ -144,7 +144,7 @@
     -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
       = form_with model: @scenario, html:{class: "phase_filter"} do |f|
         = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
-        = f.select :year_select, options_for_select(@scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
+        = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year) # @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
       -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
         .row.project_phase_panel
           .col-md-12
@@ -180,8 +180,7 @@
         dataType: 'json',
         success: function(data) {
           console.log("updated phase");
-          //location.replace(location.href + year);
-          location.reload();
+          location.replace(location.href.replace(location.search, '')+"?filter_year="+year); // clear out url queries, then add back the year filter query with the new year
         },
         error: function(e) {
           console.log(e);

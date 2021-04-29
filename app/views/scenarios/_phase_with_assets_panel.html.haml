@@ -16,8 +16,8 @@
         =" (#{phase.get_fiscal_year})"
     .col-md-2.text-right
       = form_with model: phase, html:{class: "phase_year_select"} do |f|
-        = f.select :phase_year_select, options_for_select(phase.draft_project.scenario.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year)
-  .panel-body 
+        = f.select :phase_year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+  .panel-body
     -assets = phase.transit_assets
     -backlog = assets.select{ |a| a.in_backlog }
     -ages = (assets.map{ |a| a.age }).compact #Compact removes nil ages

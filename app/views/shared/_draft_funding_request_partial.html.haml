@@ -23,12 +23,10 @@
     .col-md-1
   -remaining_pct = 1.0
   -funding_request.ordered_allocations.each do |allocation|
-    -edit_active = false
     .row.allocation_row
       .col-md-2 
         =allocation.funding_source_type.try(:name)  
-        =allocation.draft_budget.try(:name)  
-        -# %i.fa.fa-edit
+        =allocation.draft_budget.try(:name)
       .col-md-2
         ="#{100*allocation.required_pct}%"
       .col-md-2

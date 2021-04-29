@@ -88,8 +88,8 @@ class DraftProjectPhasesController < OrganizationAwareController
 
   def update_for_scenarios
     set_draft_project_phase 
-    @phase_filter_year = @draft_project_phase.fy_year
     @draft_project_phase.update(form_params)
+    @phase_filter_year = @draft_project_phase.fy_year
   end
 
 
