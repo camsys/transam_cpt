@@ -4,7 +4,7 @@ class ActivityLineItemsController < OrganizationAwareController
   include FiscalYear
 
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Capital Projects", :capital_projects_path
+  add_breadcrumb "Projects", :capital_projects_path
 
   before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
                                                     :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets, :pin]

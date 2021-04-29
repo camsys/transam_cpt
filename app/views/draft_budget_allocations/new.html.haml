@@ -3,5 +3,5 @@
   =simple_form_for(@draft_budget_allocation) do |f|
     =f.input :amount
     =f.input :draft_budget_id, collection: @draft_budgets.collect { |o| [o.name, o.id] }, include_blank: false
-    =f.input :draft_project_phase_id, as: :hidden
+    =f.input :draft_funding_request_id, as: :hidden
     =f.submit

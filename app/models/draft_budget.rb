@@ -20,7 +20,8 @@ class DraftBudget < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   has_many :draft_budget_allocations
-  has_many :draft_project_phases, through: :draft_budget_allocations
+  has_many :draft_funding_requests, through: :draft_budget_allocations
+  has_many :draft_project_phases, through: :draft_funding_requests
   
   belongs_to :funding_template
   has_one    :funding_source, through: :funding_template

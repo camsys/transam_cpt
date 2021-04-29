@@ -3,12 +3,17 @@ class DraftBudgetAllocation < ApplicationRecord
   # Include the object key mixin
   include TransamObjectKey
 
-  belongs_to :draft_project_phase
+
+  #------------------------------------------------------------------------------
+  # Associations
+  #------------------------------------------------------------------------------
+  belongs_to :draft_funding_request
+  has_one :draft_project_phase, through: :draft_funding_request
   belongs_to :draft_budget
 
   FORM_PARAMS = [
     :draft_budget_id,
-    :draft_project_phase_id,
+    :draft_funding_request_id,
     :amount
   ]
 
@@ -25,11 +30,19 @@ class DraftBudgetAllocation < ApplicationRecord
     draft_budget.funding_source_type
   end
 
+  def effective_pct
+    draft_funding_request.effective_pct(self)
+  end
+  
+  def required_pct
+    draft_budget.funding_template.match_required / 100
+  end
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  #validates :draft_project_phase, presence: true 
-  #validates :draft_budget, presence: true
-  #validates :amount, presence: true
+  validates :draft_project_phase, presence: true 
+  validates :draft_budget, presence: true
+  validates :amount, presence: true
 
 end

@@ -29,6 +29,9 @@ class Scenario < ApplicationRecord
   belongs_to  :organization
   has_many :draft_projects
   has_many :draft_project_phases, through: :draft_projects
+
+  has_many    :comments,    :as => :commentable,  :dependent => :destroy
+
   alias phases draft_project_phases #just to save on typing
 
   #------------------------------------------------------------------------------

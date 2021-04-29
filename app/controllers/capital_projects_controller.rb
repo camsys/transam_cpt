@@ -7,7 +7,7 @@
 class CapitalProjectsController < AbstractCapitalProjectsController
 
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Capital Projects", :capital_projects_path
+  add_breadcrumb "Projects", :capital_projects_path
 
   before_action :get_project,       :except =>  [:index, :table, :create, :new, :runner, :builder, :get_dashboard_summary, :find_districts, :activity_line_items]
 

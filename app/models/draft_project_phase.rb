@@ -18,8 +18,11 @@ class DraftProjectPhase < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :draft_project
-  has_many :draft_budget_allocations
+  has_many :draft_funding_requests, :dependent => :destroy
+  has_many :draft_budget_allocations, through: :draft_funding_requests
   has_many :draft_budgets, through: :draft_budget_allocations
+  has_many :draft_project_phase_assets, :dependent => :destroy
+  has_many :transit_assets, through: :draft_project_phase_assets
 
   #------------------------------------------------------------------------------
   # Validations
@@ -73,6 +76,7 @@ class DraftProjectPhase < ApplicationRecord
     return [feds, states, locals, agencies].flatten
 
   end   
+
 
   #------------------------------------------------------------------------------
   #

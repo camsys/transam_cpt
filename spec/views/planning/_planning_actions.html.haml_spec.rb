@@ -5,6 +5,6 @@ describe "planning/_planning_actions.html.haml", :type => :view do
     allow(controller).to receive(:current_ability).and_return(Ability.new(create(:admin)))
     render
 
-    expect(rendered).to have_link('New Capital Project')
+    expect(rendered).to have_link('New Project')
   end
 end
