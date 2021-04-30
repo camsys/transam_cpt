@@ -70,7 +70,13 @@
     padding-top: 64px;
   }
 
+  .row.panel-heading {
+    margin: 0px;
+  }
 
+  .float-right {
+    float: right;
+  }
 
 
 //TITLE
@@ -82,6 +88,18 @@
   .row
     =link_to edit_scenario_path(@scenario) do 
       %i.fa.fa-edit
+
+// Transitions Comments Modal
+.modal.fade#comment_modal{:tabindex => -1, :role => 'dialog', :backdrop => 'static', :keyboard => false, :aria => {:hidden => true}}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.btn.btn-primary.btn-danger.float-right#no_comment_submit
+          ='No Comment'
+        %h4.modal-title
+          Transition Comment
+      .modal-body
+        = render 'scenario_comments_new'
 
 //Main Content  
 .row
@@ -114,7 +132,8 @@
         =@scenario.state_description
       .row.text-center
         %br
-        =render "#{@scenario.state}_actions"
+        .trigger_modal{:data => {:toggle => "modal", :target => "#comment_modal"}}
+          =render "#{@scenario.state}_actions"
 
 
 .row 
@@ -199,5 +218,15 @@
     let second = (parseInt(first) + 1).toString(); // not century safe
     return first + '-' + second;
   }
+
+  // This is needed because Bootstrap is a useless waste of time, and should be avoided at all costs
+  $(document).ready((x)=>{
+    $('#comment_modal').modal({backdrop: true, keyboard: false, show: false});
+    $('#comment_modal').data('bs.modal').options.backdrop = 'static';   
+  });
+
+  $(document).on('click', '#no_comment_submit', (x)=>{
+    location.reload();
+  });
 
 

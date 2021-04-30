@@ -1,0 +1,7 @@
+.row
+  .col-md-12
+    %fieldset
+      = form_for [@scenario, Comment.new], :html => {:multipart => true, :class => 'form-vertical comment_form' }, :url => scenario_comments_path(@scenario, Comment.new), :role => 'form' do |f|
+        .form-group
+          = f.text_area :comment, :class => 'form-control', :required => true, :maxlength => 254, :value => @scenario.state.titleize + ": "
+        = f.submit :class => 'btn btn-primary', :id => 'comment_submit'
