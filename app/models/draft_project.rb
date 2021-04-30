@@ -18,7 +18,9 @@ class DraftProject < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :scenario
+  belongs_to :team_ali_code
   has_many :draft_project_phases, :dependent => :destroy
+
   alias phases draft_project_phases #just to save on typing
 
   #------------------------------------------------------------------------------
@@ -40,6 +42,29 @@ class DraftProject < ApplicationRecord
     return 0 if cost == 0
     return (100*(allocated.to_f/cost.to_f)).round
   end
+
+
+  #------------------------------------------------------------------------------
+  #
+  # Chart Helpers
+  #
+  #------------------------------------------------------------------------------
+
+
+  def year_range
+    earliest = phases.min_by(&:fy_year)
+    latest = phases.max_by(&:fy_year)
+    return (earliest.fy_year..latest.fy_year)
+  end
+
+  def year_to_cost
+    d = {}
+    self.year_range.each do |year|
+      d[year] = phases.select { |phase| phase.fy_year == year }.sum { |phase| phase.cost }
+    end
+    return d
+  end
+
 
   #------------------------------------------------------------------------------
   #

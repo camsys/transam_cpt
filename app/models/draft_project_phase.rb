@@ -18,6 +18,8 @@ class DraftProjectPhase < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :draft_project
+  belongs_to :team_ali_code
+  belongs_to :fuel_type
   has_many :draft_funding_requests, :dependent => :destroy
   has_many :draft_budget_allocations, through: :draft_funding_requests
   has_many :draft_budgets, through: :draft_budget_allocations
@@ -50,6 +52,14 @@ class DraftProjectPhase < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
+  def set_estimated_cost
+    self.update(cost: self.transit_assets.sum(:scheduled_replacement_cost))
+  end
+
+  def notional
+    draft_project.try(:notional)
+  end
+
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is
   # 1 Federal, 2 State, 3 Local, 4 Agency.
   # A better way to handle this may be to assign rankings to the templates, fundings sources, or funding source types.
@@ -77,6 +87,39 @@ class DraftProjectPhase < ApplicationRecord
 
   end   
 
+  def age_to_condition
+    assets = self.transit_assets
+    return assets.map{ |a| [a.age, a.reported_condition_rating] }
+  end
+
+  def age_to_mileage
+    assets = self.transit_assets
+    mileages = (assets.map{ |a| a.very_specific.try(:reported_mileage) }).compact #Compact is used to remove nil mileages
+    
+    if mileages.empty?
+      return nil 
+    end    
+
+    avg=(mileages.reduce(:+) / mileages.size.to_f).round(2)
+    data = []
+    assets.each do |a|
+      x = [a.age, a.very_specific.try(:reported_mileage)]
+      unless x[1].nil?
+        data.push(x)
+      end
+    end
+
+    return [{name: "Mileages", data: data}];
+  
+  end
+
+  def long_name
+    "#{team_ali_code.try(:code)}: #{name} (#{self.fiscal_year(fy_year)})"
+  end
+
+  def parent_ali_code
+    draft_project.team_ali_code
+  end
 
   #------------------------------------------------------------------------------
   #

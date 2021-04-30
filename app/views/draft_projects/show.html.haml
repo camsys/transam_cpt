@@ -23,8 +23,16 @@
       =@draft_project.project_number
     .row
       %strong 
+        ALI:
+      =@draft_project.team_ali_code.try(:code)
+    .row
+      %strong 
         Justification: 
       =@draft_project.justification
+    .row 
+      %strong
+        Shadow:
+      =@draft_project.notional.to_s
     .row
       %strong
         Cost:

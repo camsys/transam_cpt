@@ -12,6 +12,8 @@ class ScenariosController < OrganizationAwareController
   # Include the fiscal year mixin
   include FiscalYear
 
+  include TransamFormatHelper
+
   #-----------------------------------------------------------------------------
   # 
   #-----------------------------------------------------------------------------
@@ -31,6 +33,15 @@ class ScenariosController < OrganizationAwareController
     set_scenario
     add_breadcrumb "#{@scenario.name}"
 
+    @transit_assets = TransitAsset.where(organization: @scenario.organization)
+    if params[:filter_year]
+      @phase_filter_year = params[:filter_year] # from url
+    elsif @scenario.draft_project_phases.length > 0
+      @phase_filter_year = @scenario.draft_project_phases.min_by(&:fy_year).fy_year.to_s # default to earliest fy year
+    else
+      @phase_filter_year = Date.new.year # default to 'now' if no phases
+    end
+    #@phase_filter_ali_code = params[:filter_ali] || @scenario.draft_project_phases.min_by(&:fy_year).team_ali_code #TODO: what should be default here?
     respond_to do |format|
       format.html
     end
@@ -102,9 +113,17 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def transition
     set_scenario
+    prev_state = @scenario.state.titleize
+
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
     @scenario.send(transition) if transition.to_sym.in? valid_transitions
+
+    c = Comment.new
+    c.comment = prev_state + ": " + transition.to_str.upcase
+    c.creator = current_user
+    @scenario.comments << c
+    @scenario.save
 
     redirect_back(fallback_location: root_path)
   end

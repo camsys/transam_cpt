@@ -51,9 +51,24 @@
   }
 
   .project_phase_panel {
-    margin: 0px -5px 0px 5px;
+    margin: 0px 10px 0px 24px;
   }
 
+  .phase_filter {
+    padding: 0px 30px 24px !important;
+  }
+
+  .divider {
+    height: 1px;
+    margin: 5px 1px;
+    overflow: hidden;
+    background-color: #E5E5E5;
+    border-bottom: 1px solid #FFF;
+  }
+
+  .chart_row {
+    padding-top: 64px;
+  }
 
 
 
@@ -102,26 +117,35 @@
         =render "#{@scenario.state}_actions"
 
 
+.row 
+  .col-md-12
+    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true
 
 .row
-  //Comments
-  .col-md-4.comments_panel
-    %h3.text-center
-      ="Timeline"
-    =render partial: "shared/comments", locals: {comments: @scenario.comments}
-    - if can? :create, @scenario.comments.build
-      .row
-        .col-md-12
-          %fieldset
-            %legend Add Comment
-            = form_for [@scenario, Comment.new], :html => {:multipart => true, :class => 'form-vertical comment_form' }, :url => scenario_comments_path(@scenario, Comment.new), :role => 'form' do |f|
-              .form-group
-                = f.text_area :comment, :class => 'form-control', :placeholder => 'Enter a new comment...', :required => true, :maxlength => 254
-              = f.submit :class => 'btn btn-primary', :id => 'comment_submit'
+  .col-md-12
+    =render partial: 'scenario_assets_table', locals: {transit_assets: @transit_assets}
+
+.row
+  /// LEFT COLUMN
+  .col-md-4
+    //Comments
+    .row
+      =render 'scenario_comments'
+    
+    //Assets
+
+
+    
+
+  // RIGHT COLUMN
+
   //Phases
-  .col-md-8 
-    -@scenario.draft_projects.each_with_index do |project, index| 
-      -project.draft_project_phases.each_with_index do |phase, index|
+  .col-md-8
+    -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
+      = form_with model: @scenario, html:{class: "phase_filter"} do |f|
+        = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
+        = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year) # @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+      -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
         .row.project_phase_panel
           .col-md-12
             =render partial: "phase_with_assets_panel", locals: {phase: phase}
@@ -129,5 +153,51 @@
 .row
   .col-md-12
     =render partial: "draft_projects_table", locals: {scenario: @scenario}
+
+:javascript
+
+  $(document).on("change", "select[name='scenario[ali_select]']", (x) => {
+    let code = $(x.target).val();
+    $(".phase").show();
+    if (code) $(".phase:not([ali='" + code + "'])").hide();
+  });
+
+  $(document).on("change", "select[name='scenario[year_select]']", (x) => {
+    let year = $(x.target).val().toString();
+    let url = location.href.replace(location.search, '');
+    location.replace(url+"?filter_year="+year);
+  });
+
+
+
+  // within a phase panel
+  const change_phase_year = (id, year) => {
+    // send new year to controller to update 
+    $.ajax({
+        url: "/draft_project_phases/"+id+"/update_for_scenarios",
+        data: {"draft_project_phase": {"fy_year":year}},
+        method: 'PUT',
+        dataType: 'json',
+        success: function(data) {
+          console.log("updated phase");
+          location.replace(location.href.replace(location.search, '')+"?filter_year="+year); // clear out url queries, then add back the year filter query with the new year
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+  }
+
+  $(document).on("change", "select[name='draft_project_phase[phase_year_select]']", (x) => {
+    let id = $(x.target).closest(".panel").attr("id"); // get id from parent panel
+    let year = $(x.target).val();
+    change_phase_year(id, year);
+  });
+
+  let convert_to_fiscal = (y) => {
+    let first = y.toString().slice(2,4);
+    let second = (parseInt(first) + 1).toString(); // not century safe
+    return first + '-' + second;
+  }
 
 

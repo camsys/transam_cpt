@@ -3,6 +3,9 @@
   =link_to new_scenario_path, class: "btn btn-info btn-xs" do 
     %i.fa.fa-plus
 
+.row 
+  .col-md-12
+    =column_chart Scenario.peaks_and_valleys_chart_data, prefix: "$", stacked: true
 
 :ruby
   table_dom_id = SecureRandom.hex

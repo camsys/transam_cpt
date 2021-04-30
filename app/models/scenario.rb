@@ -8,6 +8,9 @@ class Scenario < ApplicationRecord
   # Include the Workflow module
   include TransamWorkflow
 
+  #Formatting i.e. fiscal year
+  include TransamFormatHelper
+
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :organization_id,
@@ -23,16 +26,27 @@ class Scenario < ApplicationRecord
     :submitted_constrained_plan
   ]
 
+  CHART_STATES = [ # states to be included 
+    "constrained_plan",
+    "submitted_constrained_plan",
+    "final_draft",
+    "awaiting_final_approval",
+    "approved"
+  ]
+
+
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
   belongs_to  :organization
   has_many :draft_projects
   has_many :draft_project_phases, through: :draft_projects
+  has_many :draft_project_phase_assets, through: :draft_project_phases
 
   has_many    :comments,    :as => :commentable,  :dependent => :destroy
 
   alias phases draft_project_phases #just to save on typing
+  alias projects draft_projects
 
   #------------------------------------------------------------------------------
   # Validations
@@ -59,6 +73,86 @@ class Scenario < ApplicationRecord
   def percent_funded
     return 0 if cost == 0
     return (100*(allocated.to_f/cost.to_f)).round
+  end
+
+
+  #------------------------------------------------------------------------------
+  #
+  # Chart Helpers
+  #
+  #------------------------------------------------------------------------------
+
+  def year_range
+    earliest = phases.min_by(&:fy_year)
+    latest = phases.max_by(&:fy_year)
+    return (earliest.fy_year..latest.fy_year)
+  end
+
+  def sum_phases_by_year
+    d = {}
+    self.year_range.each do |y| #quick patch
+      d[y] = 0
+    end
+    phases.each do |phase|
+      if d[phase.fy_year]
+        d[phase.fy_year] = d[phase.fy_year] + phase.cost
+      else
+        d[phase.fy_year] = phase.cost
+      end
+    end
+    return d
+  end
+
+  def self.peaks_and_valleys_chart_data scenario=nil
+    data = []
+    year_range = ((Time.now - 1.years).year..(Time.now + 10.years).year)
+
+    # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
+    if scenario
+      projects = scenario.draft_projects
+    else
+      scenarios = Scenario.where(state: CHART_STATES)
+      projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
+    end
+
+    # Get all the phases and group them by ALI
+    ali_to_phases = DraftProjectPhase.where(draft_project_id: projects.pluck(:id)).group_by { |phase| phase.parent_ali_code } 
+
+    # Iterate through each ALI and add up the costs
+    ali_to_phases.each do |ali, phases|
+      new_entry = {name: "#{ali.try(:code) || 'None'} #{ali.try(:context)}"}
+      data_hash = {}
+
+      # First create an empty hash entry for each year
+      year_range.each do |year|
+        data_hash[year] = 0
+      end
+
+      # Iterate through each phase and add it to the corresponding year
+      phases.each do |phase|
+        phase_year = phase.fy_year 
+        if data_hash[phase_year]
+          data_hash[phase_year] += phase.cost 
+        else
+          data_hash[phase_year] = phase.cost 
+        end
+      end
+
+      # Convert the hash to an array, and also convert the year to be the fiscal year.
+      data_array = data_hash.map{ |k,v| [SystemConfig.fiscal_year(k.to_i),v] }
+
+      new_entry[:data] = data_array
+
+      data << new_entry 
+
+    end
+
+    return data
+
+  end
+
+  def in_chart_state?
+    state.to_sym.in? CHART_STATES
   end
 
   #------------------------------------------------------------------------------
