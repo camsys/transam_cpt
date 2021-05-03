@@ -1,3 +1,9 @@
+:css
+  .total_actions{
+    padding-left:0px;
+  }
+
+
 .dfrp
   -funding_request.violations.each do |violation|
     %h5
@@ -7,9 +13,9 @@
     .col-md-2
       %h5 Budget
     .col-md-2 
-      %h5 Required%
+      %h5 Maximum%
     .col-md-2 
-      %h5 Effective%
+      %h5 Typical%
     .col-md-2 
       %h5 Actual%
     .col-md-3.text-right
@@ -17,31 +23,30 @@
     .col-md-1
   -remaining_pct = 1.0
   -funding_request.ordered_allocations.each do |allocation|
-    -edit_active = false
-    .row
+    .row.allocation_row
       .col-md-2 
         =allocation.funding_source_type.try(:name)  
-        =allocation.draft_budget.try(:name)  
-        -# %i.fa.fa-edit
+        =allocation.draft_budget.try(:name)
       .col-md-2
-        ="#{allocation.draft_budget.funding_template.match_required}%"
+        ="#{100*allocation.required_pct}%"
       .col-md-2
-        -effective_pct = allocation.draft_budget.funding_template.match_required*remaining_pct
-        ="#{effective_pct.round(3)}%"
-        -remaining_pct = remaining_pct*(1-(allocation.draft_budget.funding_template.match_required/100))
+        -effective_pct = allocation.effective_pct
+        ="#{(100*effective_pct).round(3)}%"
+        -remaining_pct = remaining_pct*(1-(allocation.required_pct))
       .col-md-2.alloc_actual
         -cost = funding_request.total
-        ="#{(100*(allocation.amount.to_f/cost)).round(3)}%"
+        ="#{(100*(allocation.amount.to_f/cost.to_f)).round(3)}%"
       .col-md-3.text-right
-        %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none", data_id: "#{allocation.object_key}" }
+        %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none"}
         %span.unedit
-          ="#{allocation.amount}"
+          =format_as_currency allocation.amount
         %input.toggle_edit{type:'checkbox',style:"visibility:hidden"}
-      .col-md-1.alloc_actions
+      .col-md-1.alloc_actions{ data_id: "#{allocation.object_key}" }
         %i.fa.fa-edit.trigger_toggle_edit
-        %i.fa.fa-check.trigger_toggle_edit{style:"display:none"}
+        %i.fa.fa-check.trigger_toggle_edit.confirm_edit{style:"display:none"}
+        %i.fa.fa-times.cancel_edit{style:"display:none"}
         =link_to lock_me_draft_budget_allocation_path(allocation_id:allocation), method: :patch do
-          %i.fa.fa-lock
+          %i.fa.fa-lock.alloc_lock
         =link_to draft_budget_allocation_path(allocation), method: :delete do 
           %i.fa.fa-trash
         
@@ -58,68 +63,42 @@
       .col-md-7
       .col-md-2.text-right
       .col-md-2.text-right
-        %strong.fr_total
-          ="Total #{format_as_currency funding_request.total}"
-          -# %input.edit_total{type:'number',value:"#{format_as_currency funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
-          -# .unedit_total
-          -#   ="Total #{format_as_currency funding_request.total}"
-          -# %input.toggle_edit_total{type:'checkbox'}
-          -# =link_to autofill_allocations_draft_funding_request_path(fr_id:funding_request), style:"display:none", method: :patch do
-          -#   %i.fa.fa-lock
+        %input.edit.edit_total{type:'number',value:"#{funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
+        .col-md-1.text-right
+          ="Total: "
+        %span.unedit_total.fr_total
+          ="#{format_as_currency(funding_request.total)}"
+        %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden"}
+      .col-md-1.total_actions{id:"#{funding_request.object_key}"}
+        %i.fa.fa-edit.trigger_toggle_edit_total
+        
+        %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none"}
+        %i.fa.fa-times.cancel_edit_total{style:"display:none"}
+      %span#totalSpinner{style:"display:none"}
+        %i.fa.fa-spinner.fa-spin
+        :javascript
+          // lock total
+          $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
+
+            let root = $(x.target).closest(".dfrp");
+            let total = $(root).find("input.edit.edit_total").val();
+            let id = "#{funding_request.object_key}";
+
+            // Make Call to Update the Total
+            $.ajax({
+              url: "/draft_funding_requests/"+id+"/lock_total",
+              data: {"total":total},
+              method: 'PATCH',
+              dataType: 'json',
+              success: function(data) {
+                location.reload();
+              },
+              error: function(e) {
+                console.log(e);
+              }
+            });
+          });
+
   .row
     .col-md-11
       %hr
-
-  :javascript
-    // update allocations
-    $(document).on("click", "input.toggle_edit", (x)=>{
-      let value = $(x.target).siblings("input.edit").val();
-      let id = $(x.target).siblings("input.edit").attr("data_id");
-      if($(x.target).is(":not(:checked)")){
-        $.ajax({
-          url: "/draft_budget_allocations/"+id,
-          data: {"draft_budget_allocation": {"amount":value}},
-          method: 'PUT',
-          dataType: 'json',
-          success: function(data) {
-            console.log("updated allocation");
-
-            let root = $(x.target).closest(".dfrp");
-            let total = sum_a($(root).find(".unedit"));
-
-            let actual = (100*(value/total));
-
-            // update actual
-            $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
-
-            // update total
-            $(root).find(".fr_total").html("Total $" + total.toLocaleString());
-
-          },
-          error: function(e) {
-            console.log(e);
-          }
-        });
-      }
-      $(x.target).siblings(".unedit").text(value);
-      $(x.target).siblings().toggle();
-      $(x.target).parent().parent().find(".alloc_actions").children().toggle();
-    });
-
-    $(document).on("click", ".trigger_toggle_edit", (x)=>{
-      $(x.target).parent().parent().find("input.toggle_edit").click(); //yuck
-    });
-
-    let sum_a = (l) => {
-      let sum = 0;
-      l.each(function(){
-        sum += Number($(this).text());
-      });
-      return sum;
-    };
-
-    // $(document).keypress(function(e){
-    //   if(e.which == 13) {
-    //     // enter key
-    //   }
-    // });

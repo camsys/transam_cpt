@@ -9,6 +9,7 @@ class DraftBudget < ApplicationRecord
   FORM_PARAMS = [
     :name,
     :amount,
+    :shared_across_scenarios,
     :funding_template_id
   ]
 
@@ -22,6 +23,8 @@ class DraftBudget < ApplicationRecord
   has_many :draft_budget_allocations
   has_many :draft_funding_requests, through: :draft_budget_allocations
   has_many :draft_project_phases, through: :draft_funding_requests
+  has_many :draft_projects, through: :draft_project_phases
+  has_many :scenarios, through: :draft_projects
   
   belongs_to :funding_template
   has_one    :funding_source, through: :funding_template
@@ -30,12 +33,26 @@ class DraftBudget < ApplicationRecord
   #------------------------------------------------------------------------------
   # Instance Methods
   #------------------------------------------------------------------------------
-  def allocated
-    draft_budget_allocations.pluck(:amount).sum
+  def allocated scenario=nil
+    if scenario 
+      sum = 0
+      draft_budget_allocations.each do |dba|
+        if dba.scenario == scenario
+          sum += dba.amount 
+        end
+      end
+      sum 
+    else 
+      draft_budget_allocations.pluck(:amount).sum
+    end
   end
 
-  def remaining
-    amount - allocated
+  def remaining scenario=nil
+    if scenario 
+      amount - allocated(scenario)
+    else
+      amount - allocated
+    end
   end
 
   #Federal/State/Local/Agency

@@ -1,0 +1,6 @@
+.col-md-3
+.col-md-6
+  =simple_form_for(@draft_project_phase_asset) do |f|
+    =f.input :draft_project_phase_id, collection: @phases, include_blank: false
+    =f.input :transit_asset_id, as: :hidden
+    =f.submit

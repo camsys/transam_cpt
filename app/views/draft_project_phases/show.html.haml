@@ -22,6 +22,10 @@
   //Details
   .col-md-3
     .row
+      %strong 
+        ALI:
+      =@draft_project_phase.team_ali_code.try(:code)
+    .row
       %strong
         Cost:
       =format_as_currency(@draft_project_phase.cost)
@@ -68,3 +72,113 @@
     %h3
       ="Assets"
 =render partial: "phase_assets_table", locals: {draft_project_phase: @draft_project_phase}
+
+:javascript
+
+    // update allocation with an ajax call
+    // send new allocation amount back to server
+    $(document).on("click", ".confirm_edit",(x) => {
+
+      let id = $(x.target).closest(".alloc_actions").attr("data_id");
+      let value = $(x.target).closest(".allocation_row").find("input.edit").val();
+      let root = $(x.target).closest(".dfrp");  // dfrp is a class at the root of the draft_funding_request_partial
+
+      $.ajax({
+        url: "/draft_budget_allocations/"+id,
+        data: {"draft_budget_allocation": {"amount":value}},
+        method: 'PUT',
+        dataType: 'json',
+        success: function(data) {
+          console.log("updated allocation");
+
+          let total = sum_a($(root).find(".unedit"));
+
+          let actual = (100*(value/total));
+
+          // update actual %
+          $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+
+          // update total
+          $(root).find(".fr_total").html('$' + total.toLocaleString());
+
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+    });
+
+
+
+    // toggle the controls for the related allocation
+    $(document).on("click", "input.toggle_edit", (x)=>{
+      if($(x.target).is(":not(:checked)")){ // close edit
+        $(x.target).siblings(".unedit").text('$' + parseFloat($(x.target).siblings("input.edit").val()).toLocaleString());// update static alloc amount, formatted
+      } else { // open edit 
+        $(x.target).siblings("input.edit").val(parseFloat($(x.target).siblings(".unedit").text().replace(/[^\d\.\-eE+]/g, ""))); // textbox gets static value, stripped
+      }
+
+      $(x.target).siblings().toggle(); // swap text box and span
+
+      $(x.target).closest(".allocation_row").find(".alloc_actions").children().toggle(); // swap the edit, lock, and trash icons, for the 'done editting' checkmark
+    });
+
+    // Trigger Edit Allocation
+    $(document).on("click", ".trigger_toggle_edit", (x)=>{
+      $(x.target).closest(".allocation_row").find("input.toggle_edit").click(); // toggle the hidden checkbox, which controls the editting of the related allocation
+    });
+
+    // Trigger Cancel
+    $(document).on("click", ".cancel_edit", (x)=>{
+      let root = $(x.target).closest(".allocation_row")
+      root.find("input.edit").val(root.find(".unedit").text().replace(/[^\d\.\-eE+]/g, "").toLocaleString()); // reset the textbox
+      root.find("input.toggle_edit").click(); 
+    });
+
+    // helper to update, generates the total
+    let sum_a = (l) => {
+      let sum = 0;
+      l.each(function(){
+        sum += parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""));
+      });
+      return sum;
+    };
+
+
+
+
+
+
+    // Edit Total
+    // Toggle controls for editting the funding request total
+    $(document).on('click', "input.toggle_edit_total", (x)=>{
+      if($(x.target).is(":not(:checked)")){ // close edit
+
+        $(x.target).siblings(".unedit_total").text('$' + parseFloat($(x.target).siblings("input.edit").val()).toLocaleString()); // static gets textbox value, formatted
+        $(x.target).closest(".dfrp").find(".total_actions").children().hide();
+        $(x.target).closest(".dfrp").find( "#totalSpinner" ).show();
+
+      } else { // open edit
+        
+        $($(x.target).siblings("input.edit")[0]).val(parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""))); // textbox gets static value, stripped
+        $(x.target).closest(".dfrp").find(".total_actions").children().toggle(); // swap the edit button, and the checkmark and cancel button
+      }
+      $(x.target).siblings().toggle(); // swap the textbox and static total
+      
+    });
+
+
+
+    // Trigger Edit Total
+    $(document).on("click", ".trigger_toggle_edit_total", (x)=>{
+      $(x.target).closest(".dfrp").find("input.toggle_edit_total").click(); // toggle the hidden checkbox, which controls the editting of the total, of the related funding request 
+    });
+
+
+    // Trigger Cancel (Total)
+    $(document).on("click", ".cancel_edit_total", (x)=>{
+      let root = $(x.target).closest(".dfrp");
+      root.find("input.edit_total").val(root.find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, "").toLocaleString()); // reset textbox
+      root.find("input.toggle_edit_total").click(); // toggle the hidden checkbox, which controls the editting of the total, of the related funding request
+    });
+

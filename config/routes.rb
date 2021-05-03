@@ -89,7 +89,13 @@ Rails.application.routes.draw do
   end
 
   resources :draft_projects, only: [:show, :edit, :update, :new, :create, :destroy]
-  resources :draft_project_phases, only: [:edit, :update, :new, :create, :show, :destroy]
+  resources :draft_project_phases, only: [:edit, :update, :new, :create, :show, :destroy] do
+    member do
+      put 'update_for_scenarios'
+    end
+  end
+  resources :draft_project_phase_assets, only: [:edit, :update, :new, :create]
+
   resources :draft_budgets, only: [:index, :show, :edit, :update, :new, :create]
   resources :draft_budget_allocations, only: [:edit, :update, :new, :create, :destroy] do
     member do
@@ -98,7 +104,7 @@ Rails.application.routes.draw do
   end
   resources :draft_funding_requests, only: [:create, :destroy, :update] do
     member do
-      patch 'autofill_allocations'
+      patch 'lock_total'
     end
   end
   ### End Scenarios Workflow

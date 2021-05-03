@@ -1,0 +1,42 @@
+:css
+  table.dataTable thead .sorting, 
+  table.dataTable thead .sorting_asc, 
+  table.dataTable thead .sorting_desc {
+      background : none;
+  }
+
+:javascript
+  $(document).ready(function () {
+
+    $('#myTable').DataTable();
+
+  });
+
+.col-md-1
+.col-md-10
+  %h3
+    ="Assets"
+  //%input#filter.form-control{placeholder: "Type here...", type: "text"}
+  %table.table-striped#myTable
+    %thead
+      %tr
+        %th ID
+        %th Serial/VIN
+        %th Subtype
+        %th Phase
+    %tbody.searchable
+      -transit_assets.each do |ta|
+        -phase = @scenario.draft_project_phase_assets.where(transit_asset: ta).first
+        %tr
+          %td
+            =link_to ta.asset_tag, inventory_path(ta)
+          %td
+            =ta.very_specific.try(:serial_number)
+          %td
+            =ta.asset_subtype.try(:name)
+          %td
+            -if phase
+              =link_to phase.draft_project_phase.try(:long_name), edit_draft_project_phase_asset_path('none', transit_asset_id: ta.object_key, scenario_id: @scenario.object_key)
+            -else
+              =link_to '+', new_draft_project_phase_asset_path(transit_asset_id: ta.object_key, scenario_id: @scenario.object_key)
+
