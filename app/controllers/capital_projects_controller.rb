@@ -101,6 +101,10 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
       # set class names whether primary or components are selected
       class_names = FtaAssetClass.where(id: @builder_proxy.fta_asset_classes).distinct.pluck(:class_name)
+
+
+
+
       ['Facility', 'Infrastructure'].each do |klass|
         if params["#{klass.downcase}_primary"].to_i == 1
           if params["#{klass.downcase}_component"].to_i == 1
