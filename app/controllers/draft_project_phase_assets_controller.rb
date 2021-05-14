@@ -55,12 +55,22 @@ class DraftProjectPhaseAssetsController < OrganizationAwareController
     redirect_to scenario_path(@draft_project_phase_asset.scenario)
   end
 
+  def move_to
+    fy_year = move_to_params[:fy_year].to_i
+    object_key =  move_to_params[:object_key]
+    @draft_project_phase_asset = DraftProjectPhaseAsset.find_by(object_key: object_key)
+    render json: {result: @draft_project_phase_asset.move_to(fy_year) }
+  end
 
-  private
+  protected
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
     params.require(:draft_project_phase_asset).permit(DraftProjectPhaseAsset.allowable_params)
+  end
+
+  def move_to_params
+    params.permit(:fy_year, :object_key)
   end
 
   def set_scenario

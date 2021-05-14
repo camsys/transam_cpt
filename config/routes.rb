@@ -85,6 +85,7 @@ Rails.application.routes.draw do
     resources :comments
     member do 
       put 'transition'
+      get 'assets'
     end
   end
 
@@ -94,7 +95,11 @@ Rails.application.routes.draw do
       put 'update_for_scenarios'
     end
   end
-  resources :draft_project_phase_assets, only: [:edit, :update, :new, :create]
+  resources :draft_project_phase_assets, only: [:edit, :update, :new, :create] do 
+    member do 
+      put 'move_to'
+    end
+  end
 
   resources :draft_budgets, only: [:index, :show, :edit, :update, :new, :create]
   resources :draft_budget_allocations, only: [:edit, :update, :new, :create, :destroy] do

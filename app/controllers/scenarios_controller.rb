@@ -48,6 +48,18 @@ class ScenariosController < OrganizationAwareController
     
   end
 
+  def assets
+    set_scenario
+    add_breadcrumb "#{@scenario.name} Assets"
+
+    @transit_assets = TransitAsset.where(organization: @scenario.organization)
+
+    respond_to do |format|
+      format.html
+    end
+
+  end
+
   #-----------------------------------------------------------------------------
   # New
   #-----------------------------------------------------------------------------

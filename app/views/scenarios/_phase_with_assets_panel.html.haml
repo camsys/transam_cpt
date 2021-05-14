@@ -4,6 +4,41 @@
     padding: 10px 15px;
   }
 
+  table.dataTable thead .sorting, 
+  table.dataTable thead .sorting_asc, 
+  table.dataTable thead .sorting_desc {
+      background : none;
+  }
+
+:javascript
+  $(document).ready(function () {
+
+    $('.assetTable').DataTable();
+
+    // This controls the year dropdown in each asset table
+    $(".assetReplacementYear").change(function(){
+      var object_key = $(this).attr("id");
+      var year = $(this).val();
+      $("#" + object_key + "Cell").html(year);
+      //this.innerHTML = "WAITING...";
+      moveTo(object_key, year, this);
+    });
+
+  });
+
+
+  function moveTo(object_key, year, element){
+    $.ajax({
+      url: '/draft_project_phase_assets/' + object_key + '/move_to',
+      data: {'fy_year': year, 'object_key': object_key},
+      type: 'PUT',
+      success: function(result) {
+        console.log("Updated Year");
+      }
+    });
+  }
+
+
 
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
   .row.panel-heading
@@ -130,7 +165,7 @@
             .row.text-center 
               =scatter_chart phase.age_to_mileage, xtitle: "Age(Years)", ytitle:"Mileage", thousands: ",", legend: false, colors:["blue"]
 
-        -# =render partial: "phase_with_assets_panel_table", locals: {draft_project_phase: phase}
+        =render partial: "draft_project_phases/phase_assets_table", locals: {draft_project_phase: phase}
       
   .panel-footer.text-right
     ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"

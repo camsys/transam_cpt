@@ -93,10 +93,14 @@
       %strong 
         Organization: 
       =@scenario.organization
-    .row
-      %strong
-        Cost:
-      =format_as_currency(@scenario.cost)
+    //.row
+    //  %strong
+    //    Cost:
+    //  =format_as_currency(@scenario.cost)
+    .row 
+      =link_to assets_scenario_path(@scenario), target: "_blank" do 
+        %i.fa.fa-search
+        Assets
 
   .col-md-4
     .progress
@@ -120,11 +124,6 @@
 .row 
   .col-md-12
     =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true
-
-.row
-  .col-md-12
-    =render partial: 'scenario_assets_table', locals: {transit_assets: @transit_assets}
-
 .row
   /// LEFT COLUMN
   .col-md-4
@@ -142,13 +141,19 @@
   //Phases
   .col-md-8
     -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
-      = form_with model: @scenario, html:{class: "phase_filter"} do |f|
-        = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
-        = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year) # @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+      .row
+        .col-md-4
+          = form_with model: @scenario, html:{class: "phase_filter"} do |f|
+            = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
+            = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
+
+      
+      //TODO: Opportunity to increase performance by making this "select" a "where". Where takes advantage of SQL queries to only pull out the data that we need.
       -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
         .row.project_phase_panel
           .col-md-12
             =render partial: "phase_with_assets_panel", locals: {phase: phase}
+
 //Projects
 .row
   .col-md-12
