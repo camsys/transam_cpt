@@ -244,10 +244,12 @@ class CapitalProjectBuilder
     #########################################
     # Scenario Work
     #########################################
-    @scenario = Scenario.new 
+    @scenario = Scenario.new
     @scenario.name = "#{organization.short_name} SOGR"
     @scenario.description = "#{organization.short_name} State of Good Repair"
     @scenario.organization = organization
+    @scenario.reviewer_organization = Organization.find_by(short_name: "BPT") #TODO: Obviously, this will need to be improved if anyone besides PennDOT wants this
+                                                                              #TODO: Blame Derek, he was working fast and lean.
     @scenario.save! 
     #########################################
     ##########################################

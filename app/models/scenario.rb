@@ -39,6 +39,7 @@ class Scenario < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to  :organization
+  belongs_to  :reviewer_organization, class_name: 'Organization', foreign_key: 'reviewer_organization_id'
   has_many :draft_projects
   has_many :draft_project_phases, through: :draft_projects
   has_many :draft_project_phase_assets, through: :draft_project_phases
@@ -229,17 +230,17 @@ class Scenario < ApplicationRecord
     when :cancelled
       "This scenario has been cancelled."
     when :unconstrained_plan
-      "#{self.organization.try(:name)} defines all the projects needing funding and submits them to BPT."
+      "#{self.organization.try(:name)} defines all the projects needing funding and submits them to #{reviewer_organization.try(:short_name) || 'the reviewer'}."
     when :submitted_unconstrained_plan
-      "BPT reviews the status of this unconstrained plan."
+      "#{reviewer_organization.try(:short_name) || 'The reviewer'} reviews the status of this unconstrained plan."
     when :constrained_plan
       "#{self.organization.try(:name)} adds local and federal funding."
     when :submitted_constrained_plan
-      "BPT adds state funding."
+      "#{reviewer_organization.try(:short_name) || 'The reviewer'} adds state funding."
     when :final_draft
-      "#{self.organization.try(:name)} reviews the funding amounts allocated by BPT."
+      "#{self.organization.try(:name)} reviews the funding amounts allocated by #{reviewer_organization.try(:short_name) || 'the reviewer'}."
     when :awaiting_final_approval
-      "BPT gets approval from Final Approvers."
+      "#{reviewer_organization.try(:short_name) || 'The reviewer'} gets approval from Final Approvers."
     end
   end
 
