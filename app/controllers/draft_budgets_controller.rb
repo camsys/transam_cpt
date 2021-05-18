@@ -31,7 +31,9 @@ class DraftBudgetsController < OrganizationAwareController
   def edit
     set_draft_budget
     add_breadcrumb "#{@draft_budget.name}"
-    @funding_templates = FundingTemplate.all
+    
+    @funding_templates = FundingTemplate.joins(:organizations).where(funding_templates_organizations: {organization_id: current_user.viewable_organizations})
+    #@funding_templates = FundingTemplate.all
     
     respond_to do |format|
       format.html
@@ -42,7 +44,7 @@ class DraftBudgetsController < OrganizationAwareController
     @draft_budget = DraftBudget.new 
     add_breadcrumb "New Budget"
 
-    @funding_templates = FundingTemplate.all
+    @funding_templates = FundingTemplate.joins(:organizations).where(funding_templates_organizations: {organization_id: current_user.viewable_organizations})
 
     respond_to do |format|
       format.html
