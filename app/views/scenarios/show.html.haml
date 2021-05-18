@@ -126,7 +126,7 @@
     =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true
 .row
   /// LEFT COLUMN
-  .col-md-4
+  .col-md-3
     //Comments
     .row
       =render 'scenario_comments'
@@ -139,7 +139,7 @@
   // RIGHT COLUMN
 
   //Phases
-  .col-md-8
+  .col-md-9
     -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
       .row
         .col-md-4
@@ -155,9 +155,9 @@
             =render partial: "phase_with_assets_panel", locals: {phase: phase}
 
 //Projects
-.row
-  .col-md-12
-    =render partial: "draft_projects_table", locals: {scenario: @scenario}
+//.row
+//  .col-md-12
+//    =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
 :javascript
 

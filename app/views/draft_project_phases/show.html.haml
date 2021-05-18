@@ -1,6 +1,36 @@
 :css
-  .with-margin {
-    margin-bottom: 5px;
+  table.dataTable thead .sorting, 
+  table.dataTable thead .sorting_asc, 
+  table.dataTable thead .sorting_desc {
+      background : none;
+  }
+
+:javascript
+  $(document).ready(function () {
+
+    $('.assetTable').DataTable();
+
+    // This controls the year dropdown in each asset table
+    $(".assetReplacementYear").change(function(){
+      var object_key = $(this).attr("id");
+      var year = $(this).val();
+      var display_year = $(this).children("option:selected").text();
+      $("#" + object_key + "Cell").html("Moved to: " + display_year);
+      moveTo(object_key, year, this);
+    });
+
+  });
+
+
+  function moveTo(object_key, year, element){
+    $.ajax({
+      url: '/draft_project_phase_assets/' + object_key + '/move_to',
+      data: {'fy_year': year, 'object_key': object_key},
+      type: 'PUT',
+      success: function(result) {
+        console.log("Updated Year");
+      }
+    });
   }
 
 //TITLE
