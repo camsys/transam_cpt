@@ -220,6 +220,17 @@ class Scenario < ApplicationRecord
     state.to_sym.in? CANCELLABLE_STATES
   end
 
+  def state_owner
+    case state.to_sym
+    when :approved, :cancelled
+      nil
+    when :unconstrained_plan, :constrained_plan, :final_draft
+      organization 
+    when :submitted_unconstrained_plan, :submitted_constrained_plan, :awaiting_final_approval
+      reviewer_organization
+    end
+  end
+
   #------------------------------------------------------------------------------
   # Text Helpers
   #------------------------------------------------------------------------------
@@ -243,6 +254,36 @@ class Scenario < ApplicationRecord
       "#{reviewer_organization.try(:short_name) || 'The reviewer'} gets approval from Final Approvers."
     end
   end
+
+  def past_tense transition
+    case transition.to_s
+    when "cancel"
+      return "Cancelled"
+    when "accept"
+      return "accepted"
+    when "reject"
+      return "rejected"
+    when "submit"
+      return "submitted"
+    end 
+  end
+
+  #------------------------------------------------------------------------------
+  # Mail Helpers
+  #------------------------------------------------------------------------------
+
+  def send_transition_email transition 
+    subject = "#{name} has been #{past_tense transition}."
+    users = (User.with_role :manager).where(organization: state_owner)
+    if users.blank? #No managers here, send to all users at this org
+      users = User.where(organization: state_owner)
+    end
+    #emails = users.pluck(:email)
+    emails = ["dedwards8@gmail.com"] #TODO Leave this here. Remove only when going to QA.
+
+    CptMailer.transition(emails, subject, self).deliver! unless emails.blank?
+  end
+
 
 
 
