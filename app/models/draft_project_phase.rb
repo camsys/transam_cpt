@@ -18,6 +18,7 @@ class DraftProjectPhase < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :draft_project
+  delegate :scenario, to: :draft_project
   belongs_to :team_ali_code
   belongs_to :fuel_type
   has_many :draft_funding_requests, :dependent => :destroy
