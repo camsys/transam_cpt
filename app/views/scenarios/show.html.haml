@@ -119,6 +119,9 @@
       .row.text-center
         %br
         =render "#{@scenario.state}_actions"
+      .row.text-center
+        %input#emailUpdates{type: "checkbox", checked: @scenario.email_updates, "data-scenario": @scenario.object_key}
+        Email Updates
 
 
 .row 
@@ -204,5 +207,33 @@
     let second = (parseInt(first) + 1).toString(); // not century safe
     return first + '-' + second;
   }
+
+  // Deal with the emaili UPdates checkbox
+  $(document).ready(function() {
+    //set initial state.
+    //$('#emailUpdates').val($(this).is(':checked'));
+
+    $('#emailUpdates').click(function() {
+      var email_updates = this.checked;
+      var object_key = this.dataset.scenario;
+
+      $.ajax({
+        url: "/scenarios/" + object_key,
+        data: {"scenario": {"email_updates": email_updates}},
+        method: 'PUT',
+        dataType: 'json',
+        success: function(data) {
+          console.log("updated email status");
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+
+
+
+    });
+
+  });
 
 

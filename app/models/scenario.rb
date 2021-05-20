@@ -16,7 +16,8 @@ class Scenario < ApplicationRecord
     :organization_id,
     :fy_year,
     :name,
-    :description
+    :description,
+    :email_updates
   ]
 
   CANCELLABLE_STATES = [

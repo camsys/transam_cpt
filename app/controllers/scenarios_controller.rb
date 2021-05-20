@@ -112,8 +112,10 @@ class ScenariosController < OrganizationAwareController
     respond_to do |format|
       if @scenario.update(form_params)
         format.html { redirect_to scenario_path(@scenario) }
+        format.json { render json: true}
       else
         format.html
+        format.json { render json: false}
       end
     end
     
@@ -130,7 +132,10 @@ class ScenariosController < OrganizationAwareController
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
     @scenario.send(transition) if transition.to_sym.in? valid_transitions
-    @scenario.send_transition_email(transition)
+    
+    if @scenario.email_updates
+      @scenario.send_transition_email(transition)
+    end
 
     c = Comment.new
     c.comment = prev_state + ": " + transition.to_str.upcase
