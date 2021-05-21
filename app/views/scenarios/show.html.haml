@@ -1,78 +1,3 @@
-:css
-  .with-margin {
-    margin-bottom: 5px;
-  }
-  .comments_panel {
-    background: var(--gray-medium-light);
-    margin-right: -5px;
-    margin-left: 5px;
-    border-bottom: 1px solid var(--gray-medium);
-  }
-
-  .list-group {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-
-  .comment {
-    margin: 5px 10px;
-    display:flex;
-    flex-direction: column-reverse;
-  }
-
-  .comment > span:not(.title) {
-    min-width: 0px;
-    display: inline-flex;
-    align-self: flex-end;
-    margin-bottom: -32px;
-  }
-
-  .comment_form {
-    padding: 0px 10px !important;
-  }
-
-  .comment_form .form-group .form-control {
-    background: #fff;
-  }
-
-  .comment_form #comment_submit {
-    float: right;
-    margin-bottom: 10px;
-  }
-
-  .comment_form #comment_comment {
-    resize: vertical;
-  }
-
-
-
-  .table_header {
-    margin-top: 0px;
-  }
-
-  .project_phase_panel {
-    margin: 0px 10px 0px 24px;
-  }
-
-  .phase_filter {
-    padding: 0px 30px 24px !important;
-  }
-
-  .divider {
-    height: 1px;
-    margin: 5px 1px;
-    overflow: hidden;
-    background-color: #E5E5E5;
-    border-bottom: 1px solid #FFF;
-  }
-
-  .chart_row {
-    padding-top: 64px;
-  }
-
-
-
-
 //TITLE
 .row.text-center
   %h1
@@ -126,7 +51,7 @@
 
 .row 
   .col-md-12
-    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true
+    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true, label: "Value"
 .row
   /// LEFT COLUMN
   .col-md-3
@@ -144,16 +69,15 @@
   //Phases
   .col-md-9
     -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
-      .row
-        .col-md-4
-          = form_with model: @scenario, html:{class: "phase_filter"} do |f|
-            = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
-            = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
-
+      .row.text-left
+        = form_with model: @scenario, html:{class: "phase_filter"} do |f|
+          = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
+          = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
+      %br 
       
       //TODO: Opportunity to increase performance by making this "select" a "where". Where takes advantage of SQL queries to only pull out the data that we need.
       -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
-        .row.project_phase_panel
+        .row
           .col-md-12
             =render partial: "phase_with_assets_panel", locals: {phase: phase}
 

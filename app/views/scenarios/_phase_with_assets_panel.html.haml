@@ -36,17 +36,15 @@
 
 
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
-  .row.panel-heading
-    .col-md-10
-      =link_to draft_project_path(phase.draft_project) do
-        =phase.draft_project.try(:title).try(:titleize)
-      = ">"
-      =link_to draft_project_phase_path(phase) do
-        =phase.name
-        =" (#{phase.get_fiscal_year})"
-    .col-md-2.text-right
-      = form_with model: phase, html:{class: "phase_year_select"} do |f|
-        = f.select :phase_year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+  .panel-heading
+    .row
+      .col-md-10
+        %h4
+          =link_to draft_project_phase_path(phase) do
+            =phase.name
+      .col-md-2.text-right
+        = form_with model: phase, html:{class: "phase_year_select"} do |f|
+          = f.select :phase_year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
   
   .panel-body
 
@@ -62,6 +60,11 @@
             Shadow:
           =phase.notional.to_s
       .col-md-8
+        .row
+          %strong
+            Project: 
+          =link_to draft_project_path(phase.draft_project) do
+            =phase.draft_project.try(:title)   
         -unless phase.draft_project.justification.blank?
           .row 
             %strong
