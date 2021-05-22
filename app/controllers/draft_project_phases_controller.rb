@@ -33,12 +33,13 @@ class DraftProjectPhasesController < OrganizationAwareController
 
   def update
     set_draft_project_phase 
-
     respond_to do |format|
       if @draft_project_phase.update(form_params)
         format.html { redirect_to draft_project_path(@draft_project_phase.draft_project) }
+        format.json { render json: true }
       else
         format.html
+        format.json { render json: false }
       end
     end
   end
@@ -77,23 +78,6 @@ class DraftProjectPhasesController < OrganizationAwareController
 
     redirect_to draft_project_path(project)
   end
-
-
-
-
-
-
-
-
-
-  def update_for_scenarios
-    set_draft_project_phase 
-    @draft_project_phase.update(form_params)
-    @phase_filter_year = @draft_project_phase.fy_year
-  end
-
-
-
 
 
   private

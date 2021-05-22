@@ -100,19 +100,17 @@
     location.replace(url+"?filter_year="+year);
   });
 
-
-
   // within a phase panel
   const change_phase_year = (id, year) => {
     // send new year to controller to update 
     $.ajax({
-        url: "/draft_project_phases/"+id+"/update_for_scenarios",
+        url: "/draft_project_phases/"+id,
         data: {"draft_project_phase": {"fy_year":year}},
         method: 'PUT',
         dataType: 'json',
         success: function(data) {
+          console.log(id);
           console.log("updated phase");
-          location.replace(location.href.replace(location.search, '')+"?filter_year="+year); // clear out url queries, then add back the year filter query with the new year
         },
         error: function(e) {
           console.log(e);
@@ -122,6 +120,7 @@
 
   $(document).on("change", "select[name='draft_project_phase[phase_year_select]']", (x) => {
     let id = $(x.target).closest(".panel").attr("id"); // get id from parent panel
+    $(x.target).closest(".panel").hide() // Hide this panel since it's no longer part of this year.
     let year = $(x.target).val();
     change_phase_year(id, year);
   });
@@ -132,11 +131,9 @@
     return first + '-' + second;
   }
 
-  // Deal with the emaili UPdates checkbox
+  // Deal with the emaili Updates checkbox
+  // Let users NOT spam everyone with email
   $(document).ready(function() {
-    //set initial state.
-    //$('#emailUpdates').val($(this).is(':checked'));
-
     $('#emailUpdates').click(function() {
       var email_updates = this.checked;
       var object_key = this.dataset.scenario;
@@ -153,9 +150,6 @@
           console.log(e);
         }
       });
-
-
-
     });
 
   });
