@@ -134,6 +134,8 @@
   // Deal with the emaili Updates checkbox
   // Let users NOT spam everyone with email
   $(document).ready(function() {
+    
+
     $('#emailUpdates').click(function() {
       var email_updates = this.checked;
       var object_key = this.dataset.scenario;
@@ -151,6 +153,31 @@
         }
       });
     });
+
+    $('.assetTable').DataTable();
+
+    // This controls the year dropdown in each asset table
+    $(".assetReplacementYear").change(function(){
+      var object_key = $(this).attr("id");
+      var year = $(this).val();
+      $("#" + object_key + "Cell").html("Moved to: " + year);
+      //this.innerHTML = "WAITING...";
+      moveTo(object_key, year, this);
+    });
+
+    
+    // This controls the delete a phase trash icon
+    $(".deletePhase").click(function(){
+      var r = confirm("Are you sure that you want to remove this phase? This action cannot be undone.");
+      var object_key = this.dataset.objectKey;
+      if (r == true) {
+        deleteThisPhase(object_key);
+        $('#' + object_key).hide();
+      } else {
+        console.log('NOT DELETED');
+      }
+    });
+
 
   });
 

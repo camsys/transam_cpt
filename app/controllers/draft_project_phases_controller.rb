@@ -76,7 +76,11 @@ class DraftProjectPhasesController < OrganizationAwareController
     project = @draft_project_phase.draft_project
     @draft_project_phase.destroy
 
-    redirect_to draft_project_path(project)
+
+    respond_to do |format|
+      format.html { redirect_to draft_project_path(project) }
+      format.json { render json: true }
+    end
   end
 
 
