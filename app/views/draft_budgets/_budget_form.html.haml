@@ -5,4 +5,4 @@
     =f.input :amount
     =f.input :shared_across_scenarios, as: :select, include_blank: false
     =f.input :funding_template_id, collection: @funding_templates.collect { |o| ["#{o.funding_source_type.try(:name)}: #{o.name}", o.id] }
-    =f.submit
+    =f.submit 'Save', class: 'btn btn-primary'

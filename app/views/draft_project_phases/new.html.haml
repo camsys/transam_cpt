@@ -6,4 +6,4 @@
     =f.input :fy_year, collection: get_fiscal_years(Date.today-1.years,51), label: 'Fy Year'
     //=f.input :justification
     =f.input :draft_project_id, as: :hidden
-    =f.submit
+    =f.submit 'Save', class: 'btn btn-primary'

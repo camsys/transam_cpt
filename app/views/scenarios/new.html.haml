@@ -5,4 +5,4 @@
     =f.input :fy_year, :collection => @fiscal_years, :include_blank => false, :label => get_fiscal_year_label
     =f.input :description
     =f.input :organization_id, collection: @organizations.collect { |o| [o.name, o.id] }
-    =f.submit
+    =f.submit 'Save', class: 'btn btn-primary'
