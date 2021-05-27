@@ -11,7 +11,9 @@ class DraftProjectPhase < ApplicationRecord
     :cost,
     :fy_year,
     :justification,
-    :draft_project_id
+    :draft_project_id,
+    :team_ali_code_id,
+    :fuel_type_id
   ]
 
   #------------------------------------------------------------------------------
@@ -59,6 +61,24 @@ class DraftProjectPhase < ApplicationRecord
 
   def notional
     draft_project.try(:notional)
+  end
+
+  def copy new_project
+    attributes = {}
+    (FORM_PARAMS - [:draft_project_id]).each do |param|
+      attributes[param] = self.send(param)
+    end   
+    attributes[:draft_project] = new_project
+
+    new_project_phase = DraftProjectPhase.create(attributes)
+
+    # Copy over the DraftProjectPha
+    draft_funding_requests.each do |dfr|
+      dfr.copy(new_project_phase)
+    end
+
+    # Add all the Transit Assets
+    new_project_phase.transit_assets << self.transit_assets 
   end
 
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is

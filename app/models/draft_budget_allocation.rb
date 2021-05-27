@@ -28,6 +28,13 @@ class DraftBudgetAllocation < ApplicationRecord
     FORM_PARAMS
   end
 
+
+  #------------------------------------------------------------------------------
+  #
+  # Instance Methods
+  #
+  #------------------------------------------------------------------------------
+
   def funding_source_type
     draft_budget.funding_source_type
   end
@@ -38,6 +45,16 @@ class DraftBudgetAllocation < ApplicationRecord
   
   def required_pct
     draft_budget.funding_template.match_required / 100
+  end
+
+  def copy new_funding_request
+    attributes = {}
+    (FORM_PARAMS - [:draft_funding_request_id]).each do |param|
+      attributes[param] = self.send(param)
+    end   
+    attributes[:draft_funding_request] = new_funding_request
+
+    DraftBudgetAllocation.create(attributes)
   end
 
   #------------------------------------------------------------------------------

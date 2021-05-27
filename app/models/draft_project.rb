@@ -11,6 +11,9 @@ class DraftProject < ApplicationRecord
     :title,
     :description,
     :justification,
+    :team_ali_code_id,
+    :notional,
+    :fy_year,
     :scenario_id
   ]
 
@@ -41,6 +44,21 @@ class DraftProject < ApplicationRecord
   def percent_funded
     return 0 if cost == 0
     return (100*(allocated.to_f/cost.to_f)).round
+  end
+
+  def copy new_scenario
+    attributes = {}
+    (FORM_PARAMS - [:scenario_id]).each do |param|
+      attributes[param] = self.send(param)
+    end   
+    attributes[:scenario] = new_scenario
+
+    new_project = DraftProject.create(attributes)
+
+    # Copy over the DraftProjectPhases and the Children of Draft Project Phases
+    draft_project_phases.each do |dpp|
+      dpp.copy(new_project)
+    end
   end
 
 

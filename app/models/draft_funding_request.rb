@@ -2,13 +2,15 @@ class DraftFundingRequest < ApplicationRecord
   
   # Include the object key mixin
   include TransamObjectKey
-  
+
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :draft_project_phase
   has_many :draft_budget_allocations, dependent: :destroy
   has_many :draft_budgets, through: :draft_budget_allocations
+
+
 
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is
   # 1 Federal, 2 State, 3 Local, 4 Agency.
@@ -68,6 +70,16 @@ class DraftFundingRequest < ApplicationRecord
   #------------------------------------------------------------------------------
   def total
     draft_budget_allocations.pluck(:amount).sum
+  end
+
+  def copy new_project_phase
+    
+    new_funding_request = DraftFundingRequest.create(draft_project_phase: new_project_phase)
+
+    # Copy over the Draft Budget Allocations
+    draft_budget_allocations.each do |dba|
+      dba.copy(new_funding_request)
+    end
   end
 
   #------------------------------------------------------------------------------

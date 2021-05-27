@@ -122,6 +122,17 @@ class ScenariosController < OrganizationAwareController
   end
 
   #-----------------------------------------------------------------------------
+  # Copy
+  #-----------------------------------------------------------------------------
+  def copy
+    set_scenario
+    @scenario = @scenario.copy 
+    respond_to do |format|
+      format.html { redirect_to scenario_path(@scenario) }
+    end
+  end
+
+  #-----------------------------------------------------------------------------
   # Transition States
   # 
   #-----------------------------------------------------------------------------

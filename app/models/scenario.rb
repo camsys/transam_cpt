@@ -17,7 +17,9 @@ class Scenario < ApplicationRecord
     :fy_year,
     :name,
     :description,
-    :email_updates
+    :email_updates,
+    :reviewer_organization_id,
+    :state  
   ]
 
   CANCELLABLE_STATES = [
@@ -75,6 +77,36 @@ class Scenario < ApplicationRecord
   def percent_funded
     return 0 if cost == 0
     return (100*(allocated.to_f/cost.to_f)).round
+  end
+
+  
+  def copy  
+
+    # Copy over the Scenario Attributes
+    attributes = {}
+    FORM_PARAMS.each do |param|
+      attributes[param] = self.send(param)
+    end   
+    new_scenario = Scenario.create(attributes)
+
+    # Copy over the Projects and The Children of Projects
+    draft_projects.each do |dp|
+      dp.copy(new_scenario)
+    end
+
+    # Copy over the comments
+    comments.each do |comment|
+      Comment.create!(
+        commentable_id: new_scenario.id, 
+        commentable_type: comment.commentable_type, 
+        comment: comment.comment,
+        created_by_id: comment.created_by_id,
+        created_at: comment.created_at
+      )
+    end
+
+    new_scenario
+
   end
 
 
@@ -284,8 +316,6 @@ class Scenario < ApplicationRecord
 
     CptMailer.transition(emails, subject, self).deliver! unless emails.blank?
   end
-
-
 
 
   #------------------------------------------------------------------------------

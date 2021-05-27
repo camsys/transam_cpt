@@ -86,6 +86,7 @@ Rails.application.routes.draw do
     member do 
       put 'transition'
       get 'assets'
+      post 'copy'
     end
   end
 
