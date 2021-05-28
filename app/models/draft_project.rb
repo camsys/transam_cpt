@@ -46,7 +46,13 @@ class DraftProject < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
-  def copy new_scenario
+  def copy(new_scenario, pinned_only=false)
+    
+    #Return if we want pinned phases only and this project has none
+    if pinned_only and !has_pinned_phases?
+      return 
+    end
+
     attributes = {}
     (FORM_PARAMS - [:scenario_id]).each do |param|
       attributes[param] = self.send(param)
@@ -57,8 +63,12 @@ class DraftProject < ApplicationRecord
 
     # Copy over the DraftProjectPhases and the Children of Draft Project Phases
     draft_project_phases.each do |dpp|
-      dpp.copy(new_project)
+      dpp.copy(new_project, pinned_only)
     end
+  end
+
+  def has_pinned_phases?
+    draft_project_phases.where(pinned: true).count > 0
   end
 
 

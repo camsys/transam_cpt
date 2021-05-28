@@ -10,9 +10,6 @@
     cursor: pointer;
   }
 
-%i.fa.fa-thumb-tack.pinned
-%i.fa.fa-thumb-tack.unpinned
-
 .row.text-center
   %h1
     =@scenario.name 
@@ -183,7 +180,6 @@
   // Deal with the emaili Updates checkbox
   // Let users NOT spam everyone with email
   $(document).ready(function() {
-    
 
     $('#emailUpdates').click(function() {
       var email_updates = this.checked;

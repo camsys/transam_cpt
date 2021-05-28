@@ -80,7 +80,7 @@ class Scenario < ApplicationRecord
   end
 
   
-  def copy  
+  def copy(pinned_only=false, include_comments=true)
 
     # Copy over the Scenario Attributes
     attributes = {}
@@ -91,18 +91,20 @@ class Scenario < ApplicationRecord
 
     # Copy over the Projects and The Children of Projects
     draft_projects.each do |dp|
-      dp.copy(new_scenario)
+      dp.copy(new_scenario, pinned_only)
     end
 
-    # Copy over the comments
-    comments.each do |comment|
-      Comment.create!(
-        commentable_id: new_scenario.id, 
-        commentable_type: comment.commentable_type, 
-        comment: comment.comment,
-        created_by_id: comment.created_by_id,
-        created_at: comment.created_at
-      )
+    if include_comments
+      # Copy over the comments
+      comments.each do |comment|
+        Comment.create!(
+          commentable_id: new_scenario.id, 
+          commentable_type: comment.commentable_type, 
+          comment: comment.comment,
+          created_by_id: comment.created_by_id,
+          created_at: comment.created_at
+        )
+      end
     end
 
     new_scenario

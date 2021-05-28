@@ -64,7 +64,12 @@ class DraftProjectPhase < ApplicationRecord
     draft_project.try(:notional)
   end
 
-  def copy new_project
+  def copy new_project, pinned_only=false
+    #Return if we want pinned phases only and this phase is not pinned
+    if pinned_only and !pinned 
+      return 
+    end
+
     attributes = {}
     (FORM_PARAMS - [:draft_project_id]).each do |param|
       attributes[param] = self.send(param)
