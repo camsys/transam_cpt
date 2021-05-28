@@ -43,6 +43,10 @@
     .row
       .col-md-10
         %h4
+          -if phase.pinned
+            %i.fa.fa-thumb-tack.pinned.pinner{data: {object_key: phase.object_key}}
+          -else
+            %i.fa.fa-thumb-tack.unpinned.pinner{data: {object_key: phase.object_key}}
           =link_to draft_project_phase_path(phase) do
             =phase.name
       .col-md-2.text-right

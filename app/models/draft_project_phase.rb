@@ -13,7 +13,8 @@ class DraftProjectPhase < ApplicationRecord
     :justification,
     :draft_project_id,
     :team_ali_code_id,
-    :fuel_type_id
+    :fuel_type_id,
+    :pinned
   ]
 
   #------------------------------------------------------------------------------
