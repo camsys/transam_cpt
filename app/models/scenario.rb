@@ -56,7 +56,12 @@ class Scenario < ApplicationRecord
   # Validations
   #------------------------------------------------------------------------------
   validates :name, presence: true 
-  validates :organization_id, presence: true 
+  validates :organization_id, presence: true
+
+  #------------------------------------------------------------------------------
+  # Scopes
+  #------------------------------------------------------------------------------
+  scope :approved, -> { where(state: "approved") }
 
 
   #------------------------------------------------------------------------------
@@ -301,6 +306,14 @@ class Scenario < ApplicationRecord
     when "submit"
       return "submitted"
     end 
+  end
+
+  def name_with_year 
+    if fy_year
+      return "#{name} (#{SystemConfig.fiscal_year(fy_year)})"
+    else 
+      return name 
+    end
   end
 
   #------------------------------------------------------------------------------

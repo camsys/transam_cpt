@@ -241,19 +241,7 @@ class CapitalProjectBuilder
 
   def build_bottom_up(organization, options)
 
-    #########################################
-    # Scenario Work
-    #########################################
-    @scenario = Scenario.new
-    @scenario.name = "#{organization.short_name} SOGR"
-    @scenario.description = "#{organization.short_name} State of Good Repair"
-    @scenario.organization = organization
-    @scenario.reviewer_organization = Organization.find_by(short_name: "BPT") #TODO: Obviously, this will need to be improved if anyone besides PennDOT wants this
-                                                                              #TODO: Blame Derek, he was working fast and lean.
-    @scenario.save! 
-    #########################################
-    ##########################################
-
+    
     Rails.logger.debug "options = #{options.inspect}"
 
     # User must set the start fy year as well otherwise we use the first planning year
@@ -264,6 +252,31 @@ class CapitalProjectBuilder
     if options[:end_fy].to_i > 0
       @last_year = options[:end_fy].to_i
     end
+
+
+    #########################################
+    # Scenario Work
+    #########################################
+    #Check to see if we are starting from an existing scenario
+    if options[:scenario_id]
+      old_scenario = Scenario.find(options[:scenario_id].to_i)
+      @scenario = old_scenario.copy(pinned_only=true, include_comments=false)
+    else
+      1/0
+      @scenario = Scenario.new
+    end
+    @scenario.name = "#{organization.short_name} SOGR"
+    @scenario.description = "#{organization.short_name} State of Good Repair"
+    @scenario.organization = organization
+    @scenario.fy_year = @start_year
+    @scenario.reviewer_organization = Organization.find_by(short_name: "BPT") #TODO: Obviously, this will need to be improved if anyone besides PennDOT wants this
+                                                                              #TODO: Blame Derek, he was working fast and lean.
+    @scenario.save! 
+    #########################################
+    ##########################################
+
+
+
 
     #---------------------------------------------------------------------------
     # Basic Algorithm:
