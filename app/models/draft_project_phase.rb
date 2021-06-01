@@ -64,9 +64,13 @@ class DraftProjectPhase < ApplicationRecord
     draft_project.try(:notional)
   end
 
-  def copy new_project, pinned_only=false
+  def copy new_project, pinned_only=false, starting_year=nil
     #Return if we want pinned phases only and this phase is not pinned
     if pinned_only and !pinned 
+      return 
+    end
+
+    if starting_year and starting_year > fy_year 
       return 
     end
 

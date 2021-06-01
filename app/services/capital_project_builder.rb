@@ -260,9 +260,8 @@ class CapitalProjectBuilder
     #Check to see if we are starting from an existing scenario
     if options[:scenario_id]
       old_scenario = Scenario.find(options[:scenario_id].to_i)
-      @scenario = old_scenario.copy(pinned_only=true, include_comments=false)
+      @scenario = old_scenario.copy(pinned_only=true, include_comments=false, starting_year=@start_year)
     else
-      1/0
       @scenario = Scenario.new
     end
     @scenario.name = "#{organization.short_name} SOGR"
@@ -525,6 +524,17 @@ class CapitalProjectBuilder
     # Decode the scope so we can set the project up
     scope_context = scope.context.split('->')
 
+    # Check to See if this Asset is already in a project. This should only happen for assets in pinned projects
+    if asset.class.name == "CapitalEquipment"
+      transit_asset = asset 
+    else
+      transit_asset = asset.transit_asset 
+    end
+
+    if transit_asset.id.in? @scenario.draft_project_phase_assets.pluck(:transit_asset_id)
+      return [nil, nil]
+    end
+
     #########################################
     # Scenario Work (Create Draft Project)
     #########################################
@@ -562,12 +572,6 @@ class CapitalProjectBuilder
       end
       phase.cost = 1
       phase.save
-
-      if asset.class.name == "CapitalEquipment"
-        transit_asset = asset 
-      else
-        transit_asset = asset.transit_asset 
-      end
 
       unless transit_asset.in? phase.transit_assets 
         phase.transit_assets << transit_asset 

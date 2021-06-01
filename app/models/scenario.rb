@@ -85,7 +85,7 @@ class Scenario < ApplicationRecord
   end
 
   
-  def copy(pinned_only=false, include_comments=true)
+  def copy(pinned_only=false, include_comments=true, starting_year=nil)
 
     # Copy over the Scenario Attributes
     attributes = {}
@@ -96,7 +96,7 @@ class Scenario < ApplicationRecord
 
     # Copy over the Projects and The Children of Projects
     draft_projects.each do |dp|
-      dp.copy(new_scenario, pinned_only)
+      dp.copy(new_scenario, pinned_only, starting_year)
     end
 
     if include_comments

@@ -46,12 +46,17 @@ class DraftProject < ApplicationRecord
     return (100*(allocated.to_f/cost.to_f)).round
   end
 
-  def copy(new_scenario, pinned_only=false)
+  def copy(new_scenario, pinned_only=false, starting_year=nil)
     
     #Return if we want pinned phases only and this project has none
-    if pinned_only and !has_pinned_phases?
+    if pinned_only and !has_pinned_phases? starting_year
       return 
     end
+
+    #REturn if this project as no ALIs  at or beyond the starting year
+    if starting_year and !has_projects_beyond_year? starting_year 
+      return 
+    end   
 
     attributes = {}
     (FORM_PARAMS - [:scenario_id]).each do |param|
@@ -63,12 +68,20 @@ class DraftProject < ApplicationRecord
 
     # Copy over the DraftProjectPhases and the Children of Draft Project Phases
     draft_project_phases.each do |dpp|
-      dpp.copy(new_project, pinned_only)
+      dpp.copy(new_project, pinned_only, starting_year)
     end
   end
 
-  def has_pinned_phases?
-    draft_project_phases.where(pinned: true).count > 0
+  def has_pinned_phases? starting_year=nil
+    if starting_year
+      draft_project_phases.where(pinned: true).where('fy_year >= ?', starting_year).count > 0
+    else
+      draft_project_phases.where(pinned: true).where.count > 0
+    end
+  end
+
+  def has_projects_beyond_year? starting_year
+    draft_project_phases.where('fy_year >= ?', starting_year).count > 0
   end
 
 
