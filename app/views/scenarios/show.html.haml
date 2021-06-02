@@ -87,7 +87,7 @@
       .row.text-left
         = form_with model: @scenario, html:{class: "phase_filter"} do |f|
           = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
-          = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
+          = f.select :year_select, options_for_select((@scenario.fy_year..@scenario.ending_fy_year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
       %br 
       
       //TODO: Opportunity to increase performance by making this "select" a "where". Where takes advantage of SQL queries to only pull out the data that we need.

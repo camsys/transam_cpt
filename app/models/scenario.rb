@@ -15,6 +15,7 @@ class Scenario < ApplicationRecord
   FORM_PARAMS = [
     :organization_id,
     :fy_year,
+    :ending_fy_year,
     :name,
     :description,
     :email_updates,
@@ -57,6 +58,8 @@ class Scenario < ApplicationRecord
   #------------------------------------------------------------------------------
   validates :name, presence: true 
   validates :organization_id, presence: true
+  validates :fy_year, presence: true 
+  validates :ending_fy_year, presence: true
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -146,12 +149,14 @@ class Scenario < ApplicationRecord
 
   def self.peaks_and_valleys_chart_data scenario=nil
     data = []
-    year_range = ((Time.now - 1.years).year..(Time.now + 10.years).year)
+    
 
     # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
     if scenario
+      year_range = (scenario.fy_year..scenario.ending_fy_year)
       projects = scenario.draft_projects
     else
+      year_range = ((Time.now - 1.years).year..(Time.now + 10.years).year)
       scenarios = Scenario.where(state: CHART_STATES)
       projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
     end

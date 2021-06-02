@@ -268,6 +268,7 @@ class CapitalProjectBuilder
     @scenario.description = "#{organization.short_name} State of Good Repair"
     @scenario.organization = organization
     @scenario.fy_year = @start_year
+    @scenario.ending_fy_year = @last_year || (@start_year + 12)
     @scenario.reviewer_organization = Organization.find_by(short_name: "BPT") #TODO: Obviously, this will need to be improved if anyone besides PennDOT wants this
                                                                               #TODO: Blame Derek, he was working fast and lean.
     @scenario.save! 
