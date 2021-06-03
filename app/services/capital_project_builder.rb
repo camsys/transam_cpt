@@ -258,12 +258,13 @@ class CapitalProjectBuilder
     # Scenario Work
     #########################################
     #Check to see if we are starting from an existing scenario
-    if options[:scenario_id].blank?
+    if !options[:scenario_id].blank?
       old_scenario = Scenario.find(options[:scenario_id].to_i)
       @scenario = old_scenario.copy(pinned_only=true, include_comments=false, starting_year=@start_year)
     else
       @scenario = Scenario.new
     end
+    
     @scenario.name = "#{organization.short_name} SOGR"
     @scenario.description = "#{organization.short_name} State of Good Repair"
     @scenario.state = "unconstrained_plan"
