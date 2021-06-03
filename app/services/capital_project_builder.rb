@@ -258,7 +258,7 @@ class CapitalProjectBuilder
     # Scenario Work
     #########################################
     #Check to see if we are starting from an existing scenario
-    if options[:scenario_id]
+    if options[:scenario_id].blank?
       old_scenario = Scenario.find(options[:scenario_id].to_i)
       @scenario = old_scenario.copy(pinned_only=true, include_comments=false, starting_year=@start_year)
     else
