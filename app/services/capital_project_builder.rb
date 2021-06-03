@@ -266,6 +266,7 @@ class CapitalProjectBuilder
     end
     @scenario.name = "#{organization.short_name} SOGR"
     @scenario.description = "#{organization.short_name} State of Good Repair"
+    @scenario.state = "unconstrained_plan"
     @scenario.organization = organization
     @scenario.fy_year = @start_year
     @scenario.ending_fy_year = @last_year || (@start_year + 12)
