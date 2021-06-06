@@ -14,6 +14,9 @@ class DraftProjectPhasesController < OrganizationAwareController
     add_breadcrumb @draft_project_phase.draft_project.scenario.name, scenario_path(@draft_project_phase.draft_project.scenario)
     add_breadcrumb @draft_project_phase.draft_project.title, draft_project_path(@draft_project_phase.draft_project)
     add_breadcrumb "#{@draft_project_phase.name}"
+
+    #TODO: Permissions
+    @draft_budgets = DraftBudget.all
     
     respond_to do |format|
       format.html

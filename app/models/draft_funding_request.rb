@@ -10,6 +10,10 @@ class DraftFundingRequest < ApplicationRecord
   has_many :draft_budget_allocations, dependent: :destroy
   has_many :draft_budgets, through: :draft_budget_allocations
 
+  #------------------------------------------------------------------------------
+  # Callbacks
+  #------------------------------------------------------------------------------
+  after_create :create_default_allocations
 
 
   #This orders the draft budget allocations by whether or not the draft budet's funding source type is
@@ -103,6 +107,14 @@ class DraftFundingRequest < ApplicationRecord
 
     return messages.uniq 
   
+  end
+
+  private 
+
+  def create_default_allocations
+    DraftBudget.where(default: true).each do |db|
+      DraftBudgetAllocation.create(amount: 0, draft_budget: db, draft_funding_request: self)
+    end
   end
 
 end

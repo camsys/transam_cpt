@@ -87,7 +87,7 @@
             =link_to draft_funding_request_path(funding_request), method: :delete, data: {confirm: "Are you sure you want to delete this Funding Request?"} do 
               %i.fa.fa-trash
             ="Funding Request #{count+=1}"
-        =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request}
+        =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request, budgets: @draft_budgets}
 // Funding
 %div.row
   .col-md-12.text-center

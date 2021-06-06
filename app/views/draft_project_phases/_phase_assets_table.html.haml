@@ -8,6 +8,7 @@
           YEAR
         %th ID
         %th Subtype
+        %th Desc
         %th Fuel
         %th Age
         %th Bcklg
@@ -32,6 +33,8 @@
             =link_to dppa.transit_asset.asset_tag, inventory_path(dppa.transit_asset)
           %td
             =specific_asset.asset_subtype.try(:name)
+          %td
+            =specific_asset.description
           %td
             =specific_asset.try(:fuel_type_name)
           %td.text-center
