@@ -120,6 +120,28 @@ class Scenario < ApplicationRecord
   end
 
 
+  # Validation Methods
+  def no_local_or_federal_budget_placeholders_in_year_1?
+    draft_project_phases.where(fy_year: fy_year).each do |phase|
+      phase.draft_budgets.where(default: true).each do |budget|
+        if budget.funding_source_type.try(:name).in? ["Federal", "Local"]
+          return false
+        end
+      end
+    end
+    return true
+  end
+
+  def no_budget_placeholders_in_year_1?
+    draft_project_phases.where(fy_year: fy_year).each do |phase|
+      if phase.draft_budgets.where(default: true).count > 0
+        return false
+      end
+    end
+    return true
+  end
+
+
   #------------------------------------------------------------------------------
   #
   # Chart Helpers
