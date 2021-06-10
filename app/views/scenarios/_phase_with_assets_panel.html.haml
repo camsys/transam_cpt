@@ -37,7 +37,6 @@
   }
 
 
-
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
   .panel-heading
     .row
@@ -66,6 +65,9 @@
           %strong
             Shadow:
           =phase.notional.to_s
+        .row 
+          %strong
+            Milestones
       .col-md-8
         .row
           %strong

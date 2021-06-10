@@ -96,6 +96,7 @@ class Scenario < ApplicationRecord
       attributes[param] = self.send(param)
     end   
     new_scenario = Scenario.create(attributes)
+    new_scenario.name = "#{new_scenario.name} (Copy)"
 
     # Copy over the Projects and The Children of Projects
     draft_projects.each do |dp|

@@ -29,6 +29,12 @@ class DraftProjectPhase < ApplicationRecord
   has_many :draft_budgets, through: :draft_budget_allocations
   has_many :draft_project_phase_assets, :dependent => :destroy
   has_many :transit_assets, through: :draft_project_phase_assets
+  has_many :milestones, :dependent => :destroy
+
+  #------------------------------------------------------------------------------
+  # Milestones
+  #------------------------------------------------------------------------------
+  after_create :add_milestones
 
   #------------------------------------------------------------------------------
   # Validations
@@ -159,5 +165,13 @@ class DraftProjectPhase < ApplicationRecord
   #------------------------------------------------------------------------------
   def self.allowable_params
     FORM_PARAMS
+  end
+
+  #private
+
+  def add_milestones
+    MilestoneType.active.each do |mt|
+      Milestone.where(milestone_type: mt, draft_project_phase: self).first_or_create!
+    end 
   end
 end

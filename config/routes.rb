@@ -110,6 +110,8 @@ Rails.application.routes.draw do
       patch 'lock_total'
     end
   end
+
+  resources :milestones, only: [:update] 
   ### End Scenarios Workflow
 
 

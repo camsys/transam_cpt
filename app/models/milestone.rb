@@ -15,7 +15,9 @@ class Milestone < ActiveRecord::Base
   after_initialize  :set_defaults
 
   # Associations
-  belongs_to :activity_line_item
+  belongs_to :activity_line_item #The old Way
+  belongs_to :draft_project_phase #The Scenario Way
+
 
   belongs_to :milestone_type
   

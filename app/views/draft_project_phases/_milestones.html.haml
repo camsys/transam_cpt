@@ -1,0 +1,29 @@
+.row
+  .col-md-2
+  .col-md-2
+  .col-md-1.text-center
+    %strong
+      Date
+  .col-md-3.text-center
+    %strong
+      Comments
+-phase.milestones.each do |milestone|
+
+  .row
+    =simple_form_for milestone do |f|
+      .col-md-2
+      .col-md-2.text-right
+        %strong
+          // Keying off the name is a hack carried over from the old way of collecting these: TODO: Actually assign some milestone types as required
+          = milestone.milestone_type.try(:name) == "Contract Complete" ? "#{milestone.milestone_type.try(:name)}*" : milestone.milestone_type.try(:name)
+      .col-md-1
+        =f.input :milestone_date, as: :string, :input_html => { :class => 'form-control datepicker', value: (milestone.milestone_date ? milestone.milestone_date.strftime('%m/%d/%Y') : nil) }, label: false, readonly: true 
+      .col-md-3
+        =f.input :comments, label: false
+      .col-md-1
+        =f.submit
+
+:javascript
+  $('.datepicker').bootstrapDP({
+  });
+
