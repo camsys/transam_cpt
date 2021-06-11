@@ -14,7 +14,7 @@
           =phase.team_ali_code.try(:code)
         .row
           %strong
-            Cost:
+            =phase.cost_estimated ? "Cost (e):" : "Cost"
           =format_as_currency(phase.cost)
         .row
           %strong

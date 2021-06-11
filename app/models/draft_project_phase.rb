@@ -14,7 +14,8 @@ class DraftProjectPhase < ApplicationRecord
     :draft_project_id,
     :team_ali_code_id,
     :fuel_type_id,
-    :pinned
+    :pinned,
+    :cost_estimated
   ]
 
   #------------------------------------------------------------------------------

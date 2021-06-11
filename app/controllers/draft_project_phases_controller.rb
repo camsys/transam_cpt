@@ -38,7 +38,7 @@ class DraftProjectPhasesController < OrganizationAwareController
     set_draft_project_phase 
     respond_to do |format|
       if @draft_project_phase.update(form_params)
-        format.html { redirect_to draft_project_path(@draft_project_phase.draft_project) }
+        format.html { redirect_to draft_project_phase_path(@draft_project_phase) }
         format.json { render json: true }
       else
         format.html
