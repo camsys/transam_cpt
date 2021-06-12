@@ -68,8 +68,13 @@ class DraftProjectPhase < ApplicationRecord
     if !cost_estimated
       return
     end
-    
-    self.update(cost: self.transit_assets.sum(:scheduled_replacement_cost))
+
+    cost = 0
+    transit_assets.each do |asset|
+      cost += asset.estimated_replacement_cost_in_year self.fy_year 
+    end
+
+    self.update(cost: cost)
   end
 
   def notional

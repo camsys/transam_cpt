@@ -20,6 +20,8 @@ class DraftProjectPhaseAsset < ApplicationRecord
   # 3) Reassign this asset to that hpase
   def move_to year
 
+    old_phase = self.draft_project_phase 
+
     #########################################
     if transit_asset.fuel_type_id.present?
       phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: asset.fuel_type).first_or_initialize do |phase|
@@ -34,12 +36,9 @@ class DraftProjectPhaseAsset < ApplicationRecord
     end
 
     self.draft_project_phase = phase 
-
-    if draft_project_phase.cost == -1
-      draft_project_phase.set_estimated_cost
-    end
-
     self.save 
+    self.draft_project_phase.set_estimated_cost
+    old_phase.set_estimated_cost
 
 
   end

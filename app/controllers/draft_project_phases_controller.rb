@@ -38,6 +38,7 @@ class DraftProjectPhasesController < OrganizationAwareController
     set_draft_project_phase 
     respond_to do |format|
       if @draft_project_phase.update(form_params)
+        @draft_project_phase.set_estimated_cost
         format.html { redirect_to draft_project_phase_path(@draft_project_phase) }
         format.json { render json: true }
       else

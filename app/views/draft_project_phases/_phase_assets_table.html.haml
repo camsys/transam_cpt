@@ -50,7 +50,7 @@
           %td.text-right
             =format_as_currency(specific_asset.try(:purchase_cost))
           %td.text-right
-            =format_as_currency(specific_asset.try(:scheduled_replacement_cost))
+            =format_as_currency(specific_asset.estimated_replacement_cost_in_year draft_project_phase.fy_year)
           //%td
           //  =specific_asset.try(:book_value)
 
