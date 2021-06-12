@@ -64,6 +64,11 @@ class DraftProjectPhase < ApplicationRecord
   end
 
   def set_estimated_cost
+    # If the phase cost has been manually updated, don't override it
+    if !cost_estimated
+      return
+    end
+    
     self.update(cost: self.transit_assets.sum(:scheduled_replacement_cost))
   end
 
