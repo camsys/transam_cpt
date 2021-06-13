@@ -38,6 +38,13 @@ class Milestone < ActiveRecord::Base
     :milestone_date,
     :comments
   ]
+
+  #------------------------------------------------------------------------------
+  #
+  # Class Scopes
+  #
+  #------------------------------------------------------------------------------
+  scope :required, -> { joins(:milestone_type).where(milestone_types: { required: true }) }
   
   #------------------------------------------------------------------------------
   #
@@ -47,6 +54,10 @@ class Milestone < ActiveRecord::Base
     
   def self.allowable_params
     FORM_PARAMS
+  end
+
+  def required?
+    milestone_type.required
   end
     
   #------------------------------------------------------------------------------

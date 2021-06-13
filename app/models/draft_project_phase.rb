@@ -169,6 +169,10 @@ class DraftProjectPhase < ApplicationRecord
     draft_project.team_ali_code
   end
 
+  def milestones_completed?
+    milestones.required.where(milestone_date: nil).empty?
+  end 
+
   #------------------------------------------------------------------------------
   #
   # Class Methods

@@ -65,9 +65,12 @@
           %strong
             Shadow:
           =phase.notional.to_s
-        .row 
-          %strong
-            Milestones
+        -unless phase.milestones_completed?
+          .row 
+            %strong
+              =link_to draft_project_phase_path(phase, anchor: "milestones-section"), target: "_blank" do
+                %i.fa.fa-flag-checkered
+                Add Milestones
       .col-md-8
         .row
           %strong
