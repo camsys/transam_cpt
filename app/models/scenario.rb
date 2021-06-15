@@ -374,7 +374,7 @@ class Scenario < ApplicationRecord
     when :approved
       "This scenario is complete and all projects have been updated."
     when :cancelled
-      "This scenario has been cancelled."
+      "This scenario has been closed."
     when :unconstrained_plan
       "#{self.organization.try(:name)} defines all the projects needing funding and submits them to #{reviewer_organization.try(:short_name) || 'the reviewer'}."
     when :submitted_unconstrained_plan
@@ -393,7 +393,7 @@ class Scenario < ApplicationRecord
   def past_tense transition
     case transition.to_s
     when "cancel"
-      return "Cancelled"
+      return "Closed"
     when "accept"
       return "accepted"
     when "reject"
@@ -401,6 +401,14 @@ class Scenario < ApplicationRecord
     when "submit"
       return "submitted"
     end 
+  end
+
+  def state_title
+    if state == "cancelled"
+      return "Closed"
+    else
+      return state.titleize
+    end
   end
 
   def name_with_year 
