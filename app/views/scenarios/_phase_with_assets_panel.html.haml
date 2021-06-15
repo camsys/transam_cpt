@@ -65,12 +65,28 @@
           %strong
             Shadow:
           =phase.notional.to_s
+
+        // Several Conditional Links   
         -unless phase.milestones_completed?
           .row 
             %strong
               =link_to draft_project_phase_path(phase, anchor: "milestones-section"), target: "_blank" do
                 %i.fa.fa-flag-checkered
                 Add Milestones
+        -if phase.scenario.state == "constrained_plan" and not phase.federal_and_local_funding_complete?
+          .row
+            %strong
+              =link_to draft_project_phase_path(phase, anchor: "funding-section"), target: "_blank" do
+                %i.fa.fa-usd
+                Update Funding
+        -if phase.scenario.state == "submitted_constrained_plan" and not phase.state_funding_complete?
+          .row
+            %strong
+              =link_to draft_project_phase_path(phase, anchor: "funding-section"), target: "_blank" do
+                %i.fa.fa-usd
+                Update Funding
+                
+
       .col-md-8
         .row
           %strong

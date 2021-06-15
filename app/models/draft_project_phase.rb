@@ -118,6 +118,7 @@ class DraftProjectPhase < ApplicationRecord
     locals = []
     agencies = [] 
 
+    #TODO: Don't use names in logic.
     draft_budget_allocations.each do |alloc|
       case alloc.funding_source_type.try(:name)
       when "Federal"
@@ -173,6 +174,27 @@ class DraftProjectPhase < ApplicationRecord
   def milestones_completed?
     milestones.required.where(milestone_date: nil).empty?
   end 
+
+  #TODO Don't use names in logic
+  def federal_and_local_funding_complete?
+    draft_budgets.where(default: true).each do |budget|
+      if budget.funding_source_type.try(:name).in? ["Federal", "Local"]
+        return false
+      end
+    end
+    return true 
+  end
+
+  #TODO Don't use names in logic
+  def state_funding_complete?
+    draft_budgets.where(default: true).each do |budget|
+      if budget.funding_source_type.try(:name).in? ["State"]
+        return false
+      end
+    end
+    return true 
+  end
+
 
   #------------------------------------------------------------------------------
   #
