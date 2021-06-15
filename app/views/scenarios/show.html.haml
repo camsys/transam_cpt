@@ -56,12 +56,13 @@
         %h4
           =@scenario.state_title
         =@scenario.state_description
-      .row.text-center
-        %br
-        =render "#{@scenario.state}_actions"
-      .row.text-center
-        %input#emailUpdates{type: "checkbox", checked: @scenario.email_updates, "data-scenario": @scenario.object_key}
-        Email Updates
+      -if @scenario.state_owner.in? current_user.viewable_organizations 
+        .row.text-center
+          %br
+          =render "#{@scenario.state}_actions"
+        .row.text-center
+          %input#emailUpdates{type: "checkbox", checked: @scenario.email_updates, "data-scenario": @scenario.object_key}
+          Email Updates
 
 
 .row 
