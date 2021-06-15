@@ -172,7 +172,7 @@ class Scenario < ApplicationRecord
     return d
   end
 
-  def self.peaks_and_valleys_chart_data scenario=nil
+  def self.peaks_and_valleys_chart_data(scenario=nil, year=current_fiscal_year_year)
     data = []
     
 
@@ -181,8 +181,8 @@ class Scenario < ApplicationRecord
       year_range = (scenario.fy_year..scenario.ending_fy_year)
       projects = scenario.draft_projects
     else
-      year_range = ((Time.now - 1.years).year..(Time.now + 10.years).year)
-      scenarios = Scenario.where(state: CHART_STATES)
+      year_range = (year.to_i..(year.to_i+12))
+      scenarios = Scenario.where(state: CHART_STATES, fy_year: year)
       projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
     end
 

@@ -18,7 +18,8 @@ class ScenariosController < OrganizationAwareController
   # 
   #-----------------------------------------------------------------------------
   def index
-    @scenarios = Scenario.all 
+    @fy_year = allowed_params[:fy_year] || current_fiscal_year_year
+    @scenarios = Scenario.where(fy_year: @fy_year)
 
     respond_to do |format|
       format.html
@@ -172,8 +173,8 @@ class ScenariosController < OrganizationAwareController
     params.require(:scenario).permit(Scenario.allowable_params)
   end
 
-  def table_params
-    params.permit(:page, :page_size, :search, :sort_column, :sort_order)
+  def allowed_params
+    params.permit(:fy_year)
   end
 
   def set_scenario
