@@ -36,6 +36,7 @@ class DraftProjectPhase < ApplicationRecord
   # Milestones
   #------------------------------------------------------------------------------
   after_create :add_milestones
+  after_create :add_funding_request
 
   #------------------------------------------------------------------------------
   # Validations
@@ -182,11 +183,15 @@ class DraftProjectPhase < ApplicationRecord
     FORM_PARAMS
   end
 
-  #private
+  private
 
   def add_milestones
     MilestoneType.active.each do |mt|
       Milestone.where(milestone_type: mt, draft_project_phase: self).first_or_create!
     end 
+  end
+
+  def add_funding_request
+    DraftFundingRequest.create(draft_project_phase: self)
   end
 end

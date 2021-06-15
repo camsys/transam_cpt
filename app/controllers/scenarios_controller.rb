@@ -142,17 +142,25 @@ class ScenariosController < OrganizationAwareController
 
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
-    @scenario.send(transition) if transition.to_sym.in? valid_transitions
-    
-    if @scenario.email_updates
-      @scenario.send_transition_email(transition)
-    end
 
-    c = Comment.new
-    c.comment = prev_state + ": " + transition.to_str.upcase
-    c.creator = current_user
-    @scenario.comments << c
-    @scenario.save
+    if !@scenario.validate_transition transition 
+      error =  @scenario.errors.try(:first) 
+      if error
+        flash.alert = error.try(:last)
+      end
+    else 
+      @scenario.send(transition) if transition.to_sym.in? valid_transitions
+
+      if @scenario.email_updates
+        @scenario.send_transition_email(transition)
+      end
+
+      c = Comment.new
+      c.comment = prev_state + ": " + transition.to_str.upcase
+      c.creator = current_user
+      @scenario.comments << c
+      @scenario.save
+    end 
 
     redirect_back(fallback_location: root_path)
   end

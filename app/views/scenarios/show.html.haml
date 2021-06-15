@@ -90,8 +90,7 @@
           = f.select :year_select, options_for_select((@scenario.fy_year..@scenario.ending_fy_year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
       %br 
       
-      //TODO: Opportunity to increase performance by making this "select" a "where". Where takes advantage of SQL queries to only pull out the data that we need.
-      -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
+      -@scenario.draft_project_phases.where(fy_year: @phase_filter_year).each_with_index do |phase, index|
         .row
           .col-md-12
             =render partial: "phase_with_assets_panel", locals: {phase: phase}

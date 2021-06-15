@@ -38,7 +38,6 @@ class Scenario < ApplicationRecord
     "approved"
   ]
 
-
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -126,6 +125,7 @@ class Scenario < ApplicationRecord
     draft_project_phases.where(fy_year: fy_year).each do |phase|
       phase.draft_budgets.where(default: true).each do |budget|
         if budget.funding_source_type.try(:name).in? ["Federal", "Local"]
+          self.errors.add(:funding, "Please update all Federal and Local placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
           return false
         end
       end
@@ -136,11 +136,13 @@ class Scenario < ApplicationRecord
   def no_budget_placeholders_in_year_1?
     draft_project_phases.where(fy_year: fy_year).each do |phase|
       if phase.draft_budgets.where(default: true).count > 0
+        self.errors.add(:funding, "Please remove all placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
         return false
       end
     end
     return true
   end
+
 
 
   #------------------------------------------------------------------------------
@@ -244,7 +246,9 @@ class Scenario < ApplicationRecord
     state :submitted_unconstrained_plan
 
     state :constrained_plan
-    state :submitted_unconstained_plan
+    state :submitted_unconstained_plan do 
+       validate :no_local_or_federal_budget_placeholders_in_year_1?
+    end 
     state :final_draft
     state :awaiting_final_approval
 
@@ -282,6 +286,21 @@ class Scenario < ApplicationRecord
       transition CANCELLABLE_STATES => :cancelled
     end
 
+  end
+
+  # Custom Validator for The State machine
+  def validate_transition action 
+    case state
+    when "constrained_plan"
+      if action == "submit"
+        return no_local_or_federal_budget_placeholders_in_year_1?
+      end
+    when "submitted_constrained_plan"
+      if action == "accept"
+        return no_budget_placeholders_in_year_1?
+      end 
+    end
+    return true 
   end
 
   def cancellable? 
