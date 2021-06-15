@@ -19,7 +19,7 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def index
     @fy_year = allowed_params[:fy_year] || current_fiscal_year_year
-    @scenarios = Scenario.where(fy_year: @fy_year)
+    @scenarios = Scenario.where(fy_year: @fy_year, organization: current_user.viewable_organizations)
 
     respond_to do |format|
       format.html

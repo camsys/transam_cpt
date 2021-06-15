@@ -30,7 +30,18 @@ class Scenario < ApplicationRecord
     :submitted_constrained_plan
   ]
 
-  CHART_STATES = [ # states to be included 
+  # STATE WHERE WE ARE DEALING WITH BUDGETS
+  CONSTRAINED_STATES = [ # states to be included 
+    "constrained_plan",
+    "submitted_constrained_plan",
+    "final_draft",
+    "awaiting_final_approval",
+    "approved"
+  ]
+
+  # STATES WHERE ONLY ONE SCENARIO CAN EXIST PER YEAR
+  SUBMITTED_STATES = [ # states to be included 
+    "submitted_unconstrained_plan",
     "constrained_plan",
     "submitted_constrained_plan",
     "final_draft",
@@ -64,6 +75,8 @@ class Scenario < ApplicationRecord
   # Scopes
   #------------------------------------------------------------------------------
   scope :approved, -> { where(state: "approved") }
+  scope :in_constrained_state, -> { where(state: CONSTRAINED_STATES) }
+  scope :in_submitted_state, -> { where(state: SUBMITTED_STATES) }
 
 
   #------------------------------------------------------------------------------
@@ -158,7 +171,7 @@ class Scenario < ApplicationRecord
       projects = scenario.draft_projects
     else
       year_range = (year.to_i..(year.to_i+12))
-      scenarios = Scenario.where(state: CHART_STATES, fy_year: year)
+      scenarios = Scenario.in_constrained_state.where(fy_year: year)
       projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
     end
 
@@ -199,7 +212,7 @@ class Scenario < ApplicationRecord
   end
 
   def in_chart_state?
-    state.to_sym.in? CHART_STATES
+    state.to_sym.in? CONSTRAINED_STATES
   end
 
   #------------------------------------------------------------------------------
@@ -286,6 +299,10 @@ class Scenario < ApplicationRecord
   #---------------------------------------------------------------------------
   def validate_transition action 
     case state
+    when "unconstrained_plan"
+      if action = "submit"
+        return no_other_submitted_scenarios_for_this_year?
+      end 
     when "constrained_plan"
       if action == "submit"
         return (no_estimated_costs_in_year_1? and no_local_or_federal_budget_placeholders_in_year_1? and all_required_milestones_are_present_in_year_1?)
@@ -336,6 +353,14 @@ class Scenario < ApplicationRecord
       return false
     end 
     return true 
+  end
+
+  def no_other_submitted_scenarios_for_this_year?
+    if Scenario.in_submitted_state.where(fy_year: fy_year, organization: organization).count > 0
+      self.errors.add(:state, "Only one one scenario can be submitted at a time.")
+      return false
+    end 
+    return true
   end
 
 
