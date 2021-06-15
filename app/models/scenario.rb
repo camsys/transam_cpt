@@ -120,30 +120,6 @@ class Scenario < ApplicationRecord
   end
 
 
-  # Validation Methods
-  def no_local_or_federal_budget_placeholders_in_year_1?
-    draft_project_phases.where(fy_year: fy_year).each do |phase|
-      phase.draft_budgets.where(default: true).each do |budget|
-        if budget.funding_source_type.try(:name).in? ["Federal", "Local"]
-          self.errors.add(:funding, "Please update all Federal and Local placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
-          return false
-        end
-      end
-    end
-    return true
-  end
-
-  def no_budget_placeholders_in_year_1?
-    draft_project_phases.where(fy_year: fy_year).each do |phase|
-      if phase.draft_budgets.where(default: true).count > 0
-        self.errors.add(:funding, "Please remove all placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
-        return false
-      end
-    end
-    return true
-  end
-
-
 
   #------------------------------------------------------------------------------
   #
@@ -172,9 +148,9 @@ class Scenario < ApplicationRecord
     return d
   end
 
-  def self.peaks_and_valleys_chart_data(scenario=nil, year=current_fiscal_year_year)
+  def self.peaks_and_valleys_chart_data(scenario=nil, year=nil)
     data = []
-    
+    year ||= self.current_fiscal_year_year
 
     # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
     if scenario
@@ -246,9 +222,8 @@ class Scenario < ApplicationRecord
     state :submitted_unconstrained_plan
 
     state :constrained_plan
-    state :submitted_unconstained_plan do 
-       validate :no_local_or_federal_budget_placeholders_in_year_1?
-    end 
+    state :submitted_unconstained_plan 
+
     state :final_draft
     state :awaiting_final_approval
 
@@ -288,21 +263,9 @@ class Scenario < ApplicationRecord
 
   end
 
-  # Custom Validator for The State machine
-  def validate_transition action 
-    case state
-    when "constrained_plan"
-      if action == "submit"
-        return no_local_or_federal_budget_placeholders_in_year_1?
-      end
-    when "submitted_constrained_plan"
-      if action == "accept"
-        return no_budget_placeholders_in_year_1?
-      end 
-    end
-    return true 
-  end
-
+  #---------------------------------------------------------------------------
+  # State Helper Methods
+  #---------------------------------------------------------------------------
   def cancellable? 
     state.to_sym.in? CANCELLABLE_STATES
   end
@@ -318,8 +281,68 @@ class Scenario < ApplicationRecord
     end
   end
 
+  #---------------------------------------------------------------------------
+  # State Machine Validations
+  #---------------------------------------------------------------------------
+  def validate_transition action 
+    case state
+    when "constrained_plan"
+      if action == "submit"
+        return (no_estimated_costs_in_year_1? and no_local_or_federal_budget_placeholders_in_year_1? and all_required_milestones_are_present_in_year_1?)
+      end
+    when "submitted_constrained_plan"
+      if action == "accept"
+        return no_budget_placeholders_in_year_1?
+      end 
+    end
+    return true 
+  end
+
+  # Validation Methods
+  def no_local_or_federal_budget_placeholders_in_year_1?
+    draft_project_phases.where(fy_year: fy_year).each do |phase|
+      phase.draft_budgets.where(default: true).each do |budget|
+        if budget.funding_source_type.try(:name).in? ["Federal", "Local"]
+          self.errors.add(:funding, "Please update all Federal and Local placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
+          return false
+        end
+      end
+    end
+    return true
+  end
+
+  def no_budget_placeholders_in_year_1?
+    draft_project_phases.where(fy_year: fy_year).each do |phase|
+      if phase.draft_budgets.where(default: true).count > 0
+        self.errors.add(:funding, "Please remove all placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
+        return false
+      end
+    end
+    return true
+  end
+
+  def no_estimated_costs_in_year_1?
+    if draft_project_phases.where(fy_year: fy_year, cost_estimated: true).count > 0
+      self.errors.add(:funding, "Please update all estimate costs for #{SystemConfig.fiscal_year(fy_year)}.")
+      return false
+    end
+    return true
+  end
+
+  def all_required_milestones_are_present_in_year_1?
+    phase_ids = draft_project_phases.where(fy_year: fy_year).pluck(:id)
+    if Milestone.required.where(draft_project_phase_id: phase_ids).where(milestone_date: nil).count > 0
+      self.errors.add(:milestones, "Please add required milestones for all ALIs in #{SystemConfig.fiscal_year(fy_year)}.")
+      return false
+    end 
+    return true 
+  end
+
+
   #------------------------------------------------------------------------------
+  #
   # Text Helpers
+  #
   #------------------------------------------------------------------------------
   def state_description
     case state.to_sym
@@ -388,6 +411,11 @@ class Scenario < ApplicationRecord
 
   def self.allowable_params
     FORM_PARAMS
+  end
+
+  #Unable to access the FiscalYear module from class methods. Copied teh current fiscal year method from there to here.
+  def self.current_fiscal_year_year
+    SystemConfig.instance.fy_year
   end
 
 end
