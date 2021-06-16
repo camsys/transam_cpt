@@ -96,6 +96,14 @@
           .col-md-12
             =render partial: "phase_with_assets_panel", locals: {phase: phase}
 
+    // Project Phases
+    %div.row.text-center
+      .col-md-12
+        %h3
+          ="Add Project"
+          =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
+            %i.fa.fa-plus      
+
 //Projects
 //.row
 //  .col-md-12

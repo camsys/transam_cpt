@@ -55,6 +55,10 @@
       %strong 
         ALI:
       =@draft_project_phase.team_ali_code.try(:code)
+    .row 
+      %strong 
+        Count:
+      =@draft_project_phase.count
     .row
       %strong
         =@draft_project_phase.cost_estimated ? "Cost (e):" : "Cost"

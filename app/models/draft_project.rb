@@ -14,7 +14,8 @@ class DraftProject < ApplicationRecord
     :team_ali_code_id,
     :notional,
     :fy_year,
-    :scenario_id
+    :scenario_id,
+    :capital_project_type_id
   ]
 
   #------------------------------------------------------------------------------
@@ -22,9 +23,15 @@ class DraftProject < ApplicationRecord
   #------------------------------------------------------------------------------
   belongs_to :scenario
   belongs_to :team_ali_code
+  belongs_to :capital_project_type
   has_many :draft_project_phases, :dependent => :destroy
 
   alias phases draft_project_phases #just to save on typing
+
+  #------------------------------------------------------------------------------
+  # Validations
+  #------------------------------------------------------------------------------
+  validates :team_ali_code_id, presence: true
 
   #------------------------------------------------------------------------------
   # Instance Methods

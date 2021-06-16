@@ -5,4 +5,6 @@
     =f.input :description
     =f.input :project_number
     =f.input :justification
+    = f.association :team_ali_code, :collection => TeamAliCode.categories, :label_method => 'full_name', :label => 'Scope'
+    = f.association :capital_project_type, :collection => CapitalProjectType.active, :include_blank => false, :label => 'Project Type'
     =f.submit 'Save', class: 'btn btn-primary'

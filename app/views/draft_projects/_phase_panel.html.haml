@@ -13,6 +13,11 @@
             ALI:
           =phase.team_ali_code.try(:code)
         .row
+          %strong 
+            Count:
+          =phase.count
+
+        .row
           %strong
             =phase.cost_estimated ? "Cost (e):" : "Cost"
           =format_as_currency(phase.cost)
@@ -29,9 +34,11 @@
           .progress
             .progress-bar.bg-success{role: "progressbar", style: "width: #{phase.percent_funded}%"}
               ="#{phase.percent_funded}% Funded"
-        .row
-          %button.btn.btn-xs.btn-success{"data-target": "##{phase.object_key}Modal", "data-toggle": "modal", type: "button"}
-            Update Funding
+        //.row
+        //  %button.btn.btn-xs.btn-success{"data-target": "##{phase.object_key}Modal", "data-toggle": "modal", type: "button"}
+        //    Update Funding
       
   .panel-footer.text-right
     ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"
+
+    

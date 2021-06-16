@@ -27,6 +27,10 @@
       =@draft_project.team_ali_code.try(:code)
     .row
       %strong 
+        Project Type:
+      =@draft_project.capital_project_type.try(:name)
+    .row
+      %strong 
         Justification: 
       =@draft_project.justification
     .row 
@@ -69,7 +73,7 @@
 %div.row
   .col-md-12
     %h3
-      ="Project Phases"
+      ="ALIs"
       =link_to new_draft_project_phase_url(draft_project_id: @draft_project.object_key), class: "btn btn-info btn-xs" do 
         %i.fa.fa-plus
 
