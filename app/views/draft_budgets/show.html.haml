@@ -36,6 +36,10 @@
       =@draft_budget.funding_source_type.try(:name)
     .row
       %strong
+        Active:
+      =@draft_budget.active
+    .row
+      %strong
         Shared Across Scenarios:
       =@draft_budget.shared_across_scenarios
     .row

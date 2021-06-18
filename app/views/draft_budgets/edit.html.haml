@@ -18,6 +18,7 @@
     =simple_form_for(@draft_budget) do |f|
       =f.input :name
       =f.input :amount
+      =f.input :active, collection: [true, false], include_blank: false
       =f.submit 'Save', class: 'btn btn-primary'
 
 

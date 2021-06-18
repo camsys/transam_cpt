@@ -15,6 +15,7 @@
       =f.input :funding_template_id, as: :hidden
       =f.input :contributor_id, collection: @eligible_owner_orgs, include_blank: false
       =f.input :owner_id, collection: @eligible_owner_orgs
+      =f.input :active, collection: [true, false], include_blank: false
       =f.submit 'Save', class: 'btn btn-primary'
 
 
