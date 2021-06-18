@@ -1,1 +1,28 @@
-=render "budget_form"
+.col-md-3
+.col-md-6
+  .row
+    %form{id: "FundingForm" }
+      %select.template
+        -@funding_templates.each do |template|
+          %option{value: "#{template.object_key}", selected: (template.object_key==@draft_budget.funding_template.try(:object_key))} 
+            =template.type_and_name
+  %br 
+  .row 
+    =simple_form_for(@draft_budget) do |f|
+      =f.input :name
+      =f.input :amount
+      =f.input :shared_across_scenarios, as: :select, include_blank: false, label: "Shared across agencies"
+      =f.input :funding_template_id, as: :hidden
+      =f.input :contributor_id, collection: @eligible_owner_orgs, include_blank: false
+      =f.input :owner_id, collection: @eligible_owner_orgs
+      =f.submit 'Save', class: 'btn btn-primary'
+
+
+:javascript 
+
+  // This controls the year dropdown in each asset table
+  $(".template").change(function(){
+    var template = $(this).val();
+    $("#FundingForm").html("Updating . . .");
+    window.location.replace("/draft_budgets/new?funding_template_id=" + template);
+  });

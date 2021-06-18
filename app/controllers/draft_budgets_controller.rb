@@ -10,7 +10,7 @@ class DraftBudgetsController < OrganizationAwareController
   add_breadcrumb "Budgets", :draft_budgets_path
 
   def index
-    @draft_budgets= DraftBudget.all 
+    @draft_budgets= DraftBudget.where(contributor: current_user.viewable_organizations)
 
     respond_to do |format|
       format.html
@@ -32,8 +32,7 @@ class DraftBudgetsController < OrganizationAwareController
     set_draft_budget
     add_breadcrumb "#{@draft_budget.name}"
     
-    @funding_templates = FundingTemplate.joins(:organizations).where(funding_templates_organizations: {organization_id: current_user.viewable_organizations})
-    #@funding_templates = FundingTemplate.all
+    @funding_templates = get_contributor_funding_templates
     
     respond_to do |format|
       format.html
@@ -41,10 +40,15 @@ class DraftBudgetsController < OrganizationAwareController
   end
 
   def new 
+
     @draft_budget = DraftBudget.new 
     add_breadcrumb "New Budget"
-
-    @funding_templates = FundingTemplate.joins(:organizations).where(funding_templates_organizations: {organization_id: current_user.viewable_organizations}).uniq
+    
+    @funding_templates = get_contributor_funding_templates
+    @funding_template = FundingTemplate.find_by(object_key: params[:funding_template_id]) || @funding_templates.first 
+    @draft_budget.funding_template = @funding_template
+    @eligible_owner_orgs = current_user.viewable_organizations & @funding_template.organizations
+    @eligible_contributor_orgs = current_user.viewable_organizations & @funding_template.contributor_organizations
 
     respond_to do |format|
       format.html
@@ -88,6 +92,12 @@ class DraftBudgetsController < OrganizationAwareController
 
   def set_draft_budget
     @draft_budget = DraftBudget.find_by(object_key: params[:id]) 
+  end
+
+  def get_contributor_funding_templates
+    viewable_orgs = current_user.viewable_organizations
+    # Just return the Funding Templates where at list one of the users viewable orgs is a contributor
+    FundingTemplate.active.select{ |ft| ft.contributor_organizations.count > (ft.contributor_organizations - viewable_orgs).count }
   end
 
 end

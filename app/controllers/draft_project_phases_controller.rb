@@ -15,8 +15,10 @@ class DraftProjectPhasesController < OrganizationAwareController
     add_breadcrumb @draft_project_phase.draft_project.title, draft_project_path(@draft_project_phase.draft_project)
     add_breadcrumb "#{@draft_project_phase.name}"
 
-    #TODO: Permissions
-    @draft_budgets = DraftBudget.all
+    @draft_budgets = DraftBudget.active.where(owner: @draft_project_phase.organization)
+    @draft_budgets += DraftBudget.active.placeholder 
+    @draft_budgets += DraftBudget.active.shared 
+    @draft_budgets.uniq!
     
     respond_to do |format|
       format.html

@@ -196,6 +196,9 @@ class DraftProjectPhase < ApplicationRecord
     return true 
   end
 
+  def organization
+    scenario.organization
+  end
 
   #------------------------------------------------------------------------------
   #

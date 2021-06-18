@@ -38,6 +38,14 @@
       %strong
         Shared Across Scenarios:
       =@draft_budget.shared_across_scenarios
+    .row
+      %strong
+        Contributor
+      =@draft_budget.contributor.try(:short_name) || "None"
+    .row
+      %strong
+        Owner:
+      =@draft_budget.owner.try(:short_name) || "None"
 
 
   -if @draft_budget.shared_across_scenarios
