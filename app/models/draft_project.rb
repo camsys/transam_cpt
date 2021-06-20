@@ -120,7 +120,8 @@ class DraftProject < ApplicationRecord
       emergency: emergency,
       organization: scenario.try(:organization).try(:dotgrants_json),
       capital_project_type: capital_project_type.try(:dotgrants_json),
-      team_ali_code: team_ali_code.try(:dotgrants_json)
+      team_ali_code: team_ali_code.try(:dotgrants_json),
+      districts: districts.map{ |district| district.try(:dotgrants_json) }
     }
   end
 
