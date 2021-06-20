@@ -27,6 +27,8 @@ class DraftProject < ApplicationRecord
   belongs_to :team_ali_code
   belongs_to :capital_project_type
   has_many :draft_project_phases, :dependent => :destroy
+  has_many :draft_project_districts, :dependent => :destroy
+  has_many :districts, through: :draft_project_districts
 
   alias phases draft_project_phases #just to save on typing
 
