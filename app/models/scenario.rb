@@ -277,6 +277,18 @@ class Scenario < ApplicationRecord
   end
 
   #---------------------------------------------------------------------------
+  # Instance Methods
+  #---------------------------------------------------------------------------
+  def dotgrants_json
+    export = {environment: Rails.env}
+
+    #Add on the ALIs
+    export[:activity_line_items] = draft_project_phases.map{ |ali| ali.dotgrants_json}
+    export[:funding_templates] = FundingTemplate.all.map{ |funding_template| funding_template.as_json }
+    return export 
+  end 
+
+  #---------------------------------------------------------------------------
   # State Helper Methods
   #---------------------------------------------------------------------------
   def cancellable? 

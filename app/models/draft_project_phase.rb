@@ -10,7 +10,7 @@ class DraftProjectPhase < ApplicationRecord
     :name,
     :cost,
     :fy_year,
-    :justification,
+    :cost_justification,
     :draft_project_id,
     :team_ali_code_id,
     :fuel_type_id,
@@ -70,13 +70,15 @@ class DraftProjectPhase < ApplicationRecord
     if !cost_estimated
       return
     end
+    self.update(cost: estimated_cost)
+  end
 
+  def estimated_cost
     cost = 0
     transit_assets.each do |asset|
       cost += asset.estimated_replacement_cost_in_year self.fy_year 
     end
-
-    self.update(cost: cost)
+    return cost
   end
 
   def notional
@@ -198,6 +200,60 @@ class DraftProjectPhase < ApplicationRecord
 
   def organization
     scenario.organization
+  end
+
+  #------------------------------------------------------------------------------
+  #
+  # DotGrants Methods
+  #
+  #------------------------------------------------------------------------------
+
+  def dotgrants_json
+    export =  
+      {
+        activity_line_item: {
+              id: id, 
+              object_key: object_key,
+              capital_project_id: draft_project.try(:id),
+              fy_year: fy_year,
+              team_ali_code_id: team_ali_code.id,
+              name: name,
+              anticipated_cost: cost,
+              estimated_cost: estimated_cost,
+              cost_justification: cost_justification,
+              active: true,
+              created_at: created_at,
+              updated_at: updated_at,
+              fuel_type_id: fuel_type.try(:id),
+              is_planning_complete: is_planning_complete?,
+              purchased_new: purchased_new?,
+              count: transit_assets.count,
+              length: length,
+              team_ali_code: team_ali_code.try(:dotgrants_json),
+              fuel_type: fuel_type.try(:dotgrants_json),
+              capital_project: draft_project.try(:dotgrants_json),
+              milestones: milestones.map{ |milestone| milestone.dotgrants_json},
+              funding_requests: draft_funding_requests.map{ |fr| fr.dotgrants_json},
+              assets: transit_assets.map{ |transit_asset| transit_asset.dotgrants_json}
+        }
+      }
+    return export
+  end
+
+  def is_planning_complete?
+    scenario.state == "approved" and scenario.fy_year >= fy_year 
+  end
+
+  def purchased_new?
+    transit_assets.first.try(:purchased_new)
+  end
+
+  def length
+    if transit_assets.count == 0
+      return nil
+    else
+      return transit_assets.first.very_specific.try(:vehicle_length)
+    end
   end
 
   #------------------------------------------------------------------------------

@@ -165,6 +165,18 @@ class ScenariosController < OrganizationAwareController
 
     redirect_back(fallback_location: root_path)
   end
+
+  #-----------------------------------------------------------------------------
+  # Transition States
+  # 
+  #-----------------------------------------------------------------------------
+  def dotgrants_export
+    set_scenario
+    #render json: @scenario.dotgrants_json
+    respond_to do |format|
+      format.html { send_data @scenario.dotgrants_json, filename: "#{@scenario.organization.try(:short_name)}_dotgrants.json",type: :json, disposition: "attachment" }
+    end
+  end
     
   private
 

@@ -47,6 +47,18 @@ class Milestone < ActiveRecord::Base
   scope :required, -> { joins(:milestone_type).where(milestone_types: { required: true }) }
   
   #------------------------------------------------------------------------------
+  # DotGrants Export
+  #------------------------------------------------------------------------------
+  def dotgrants_json
+    {
+      milestone_date: milestone_date,
+      comments: comments,
+      milestone_type: milestone_type.try(:dotgrants_json)
+    }
+  end
+
+
+  #------------------------------------------------------------------------------
   #
   # Class Methods
   #

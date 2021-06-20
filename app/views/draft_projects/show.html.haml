@@ -23,6 +23,10 @@
       =@draft_project.project_number
     .row
       %strong 
+        Emergency: 
+      =@draft_project.emergency
+    .row
+      %strong 
         ALI:
       =@draft_project.team_ali_code.try(:code)
     .row

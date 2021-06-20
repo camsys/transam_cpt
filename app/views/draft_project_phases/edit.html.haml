@@ -5,6 +5,7 @@
     =f.input :cost
     =f.input :count, required: true
     =f.input :cost_estimated, as: :hidden, input_html: { value: false }
+    =f.input :cost_justification
     =f.input :fy_year, collection:  @draft_project_phase.get_fiscal_years(Date.today-1.years,51), label: 'Fy Year'
     =f.association :team_ali_code, :collection => @draft_project_phase.draft_project.team_ali_code.children, :label_method => 'full_name', :label => 'ALI Code'
     //=f.input :justification

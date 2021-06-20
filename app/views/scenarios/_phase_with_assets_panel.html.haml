@@ -93,16 +93,21 @@
             Project: 
           =link_to draft_project_path(phase.draft_project) do
             =phase.draft_project.try(:title)   
-        -unless phase.draft_project.justification.blank?
-          .row 
-            %strong
-              Justification:
-            =phase.draft_project.justification
         -unless phase.draft_project.description.blank?
           .row 
             %strong
               Description:
             =phase.draft_project.description
+        -unless phase.draft_project.justification.blank?
+          .row 
+            %strong
+              Justification:
+            =phase.draft_project.justification
+        -unless phase.cost_justification.blank?
+          .row 
+            %strong
+              Cost Justification:
+            =phase.cost_justification
       .col-md-2.text-right
         .row
           %strong

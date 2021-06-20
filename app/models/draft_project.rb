@@ -15,7 +15,9 @@ class DraftProject < ApplicationRecord
     :notional,
     :fy_year,
     :scenario_id,
-    :capital_project_type_id
+    :capital_project_type_id,
+    :sogr,
+    :emergency
   ]
 
   #------------------------------------------------------------------------------
@@ -90,6 +92,48 @@ class DraftProject < ApplicationRecord
   def has_projects_beyond_year? starting_year
     draft_project_phases.where('fy_year >= ?', starting_year).count > 0
   end
+
+  #------------------------------------------------------------------------------
+  # DotGrants Export
+  #------------------------------------------------------------------------------
+  def dotgrants_json
+    {
+      id: id,
+      object_key: object_key,
+      fy_year: fy_year,
+      project_number: project_number,
+      organization_id: organization_id,
+      team_ali_code_id: team_ali_code_id,
+      capital_project_type_id: capital_project_type_id,
+      notional: notional,
+      multi_year: multi_year?,
+      state: scenario.state,
+      sogr: sogr,
+      title: title,
+      description: description,
+      justification: justification,
+      active: true,
+      created_at: created_at,
+      updated_at: updated_at,
+      emergency: emergency,
+      organization: scenario.try(:organization).try(:dotgrants_json),
+      capital_project_type: capital_project_type.try(:dotgrants_json),
+      team_ali_code: team_ali_code.try(:dotgrants_json)
+    }
+  end
+
+  def fy_year
+    phases.pluck(:fy_year).min.to_i
+  end
+
+  def multi_year?
+    phases.pluck(:fy_year).max.to_i > fy_year 
+  end
+
+  def organization_id
+    scenario.try(:organization).try(:id)
+  end
+
 
 
   #------------------------------------------------------------------------------

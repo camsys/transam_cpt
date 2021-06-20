@@ -109,6 +109,58 @@ class DraftFundingRequest < ApplicationRecord
   
   end
 
+  #---------------------------------------------------------------------------
+  # DotGrants
+  #---------------------------------------------------------------------------
+  def dotgrants_json
+    export = {}
+
+    federal_amount = 0
+    federal_count = 0
+    state_amount = 0
+    state_count = 0
+    local_amount = 0 
+    local_count = 0
+
+    draft_budget_allocations.each do |dba|
+      dba_json = dba.dotgrants_json
+      #TODO: Don't key off of names and DRY
+      case dba.funding_source_type.try(:name)
+      when "Federal"
+        federal_amount += dba.amount 
+        federal_count += 1
+        if federal_count == 1
+          export[:federal_funding_line_item] = dba_json
+        else
+          export["federal_funding_line_item_#{federal_count}".to_sym] = dba_json
+        end 
+      when "State"
+        state_amount += dba.amount 
+        state_count += 1 
+        if state_count == 1
+          export[:state_funding_line_item] = dba_json
+        else
+          export["state_funding_line_item_#{state_count}".to_sym] = dba_json
+        end 
+      when "Local"
+        local_amount += dba.amount 
+        local_count += 1 
+        if local_count == 1
+          export[:local_funding_line_item] = dba_json
+        else
+          export["local_funding_line_item_#{local_count}".to_sym] = dba_json
+        end 
+      end 
+    end
+
+    export[:federal_amount] =  federal_amount
+    export[:state_amount] =  state_amount
+    export[:local_amount] =  local_amount
+
+    return export
+  end 
+
+
   private 
 
   def create_default_allocations

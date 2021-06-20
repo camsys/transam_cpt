@@ -87,6 +87,7 @@ Rails.application.routes.draw do
       put 'transition'
       get 'assets'
       post 'copy'
+      get 'dotgrants_export'
     end
   end
 
