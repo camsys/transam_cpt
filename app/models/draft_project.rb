@@ -17,7 +17,8 @@ class DraftProject < ApplicationRecord
     :scenario_id,
     :capital_project_type_id,
     :sogr,
-    :emergency
+    :emergency,
+    :district_ids => []
   ]
 
   #------------------------------------------------------------------------------
@@ -70,12 +71,13 @@ class DraftProject < ApplicationRecord
     end   
 
     attributes = {}
-    (FORM_PARAMS - [:scenario_id]).each do |param|
+    (FORM_PARAMS - [:scenario_id, {district_ids: [] }]).each do |param|
       attributes[param] = self.send(param)
     end   
     attributes[:scenario] = new_scenario
 
     new_project = DraftProject.create(attributes)
+    new_project.districts = self.districts
 
     # Copy over the DraftProjectPhases and the Children of Draft Project Phases
     draft_project_phases.each do |dpp|

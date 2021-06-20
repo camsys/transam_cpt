@@ -8,5 +8,6 @@
     =f.input :emergency, collection: [true,false], include_blank: false
     =f.association :team_ali_code, :collection => TeamAliCode.all_categories, :label_method => 'full_name_with_parent', :label => 'Scope'
     =f.association :capital_project_type, :collection => CapitalProjectType.active, :include_blank => false, :label => 'Project Type'
+    =f.association :districts, collection: @districts, label_method: :to_s, include_blank: false, input_html: { multiple: true }
     =f.input :scenario_id, as: :hidden
     =f.submit 'Save', class: 'btn btn-primary'

@@ -109,6 +109,10 @@ class Scenario < ApplicationRecord
     end   
     new_scenario = Scenario.create(attributes)
     new_scenario.name = "#{new_scenario.name} (Copy)"
+    if new_scenario.state.in? SUBMITTED_STATES
+      new_scenario.state = "unconstrained_plan"
+    end
+    new_scenario.save 
 
     # Copy over the Projects and The Children of Projects
     draft_projects.each do |dp|
