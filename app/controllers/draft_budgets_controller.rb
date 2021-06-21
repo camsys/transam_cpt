@@ -60,7 +60,7 @@ class DraftBudgetsController < OrganizationAwareController
 
     respond_to do |format|
       if @draft_budget.update(form_params)
-        format.html { redirect_to draft_budget_path(@draft_budget) }
+        format.html { redirect_to draft_budgets_path }
       else
         format.html
       end

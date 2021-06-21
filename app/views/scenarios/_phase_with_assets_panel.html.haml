@@ -67,8 +67,13 @@
           =phase.notional.to_s
         .row 
           %strong
+            Project Type:
+          =phase.draft_project.try(:capital_project_type).try(:name)
+        .row 
+          %strong
             Count:
           =phase.get_count.to_s
+
 
         // Several Conditional Links   
         -unless phase.milestones_completed?

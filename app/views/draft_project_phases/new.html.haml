@@ -9,5 +9,3 @@
     =f.association :team_ali_code, :collection => @draft_project_phase.draft_project.team_ali_code.children, :label_method => 'full_name', :label => 'ALI Code'
     =f.input :draft_project_id, as: :hidden
     =f.submit 'Save', class: 'btn btn-primary'
-
-

@@ -230,6 +230,10 @@ class CapitalProjectBuilder
     @scenario.draft_project_phases.each do |phase|
       phase.set_estimated_cost
     end
+
+    @scenario.draft_projects.each do |project|
+      project.set_project_number
+    end
     #########################################
     ##########################################
 

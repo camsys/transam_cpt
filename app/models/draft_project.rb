@@ -97,6 +97,12 @@ class DraftProject < ApplicationRecord
     draft_project_phases.where('fy_year >= ?', starting_year).count > 0
   end
 
+  def set_project_number
+    years = fiscal_year self.fy_year
+    project_number = "#{organization.short_name} #{years} ##{id}"
+    self.update_attributes(:project_number => project_number)
+  end
+
   #------------------------------------------------------------------------------
   # DotGrants Export
   #------------------------------------------------------------------------------

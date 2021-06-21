@@ -356,7 +356,7 @@ class Scenario < ApplicationRecord
 
   def no_estimated_costs_in_year_1?
     if draft_project_phases.where(fy_year: fy_year, cost_estimated: true).count > 0
-      self.errors.add(:funding, "Please update all estimate costs for #{SystemConfig.fiscal_year(fy_year)}.")
+      self.errors.add(:funding, "Please update all estimated costs for #{SystemConfig.fiscal_year(fy_year)}.")
       return false
     end
     return true
