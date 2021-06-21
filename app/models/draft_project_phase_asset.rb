@@ -24,12 +24,12 @@ class DraftProjectPhaseAsset < ApplicationRecord
 
     #########################################
     if transit_asset.fuel_type_id.present?
-      phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: asset.fuel_type).first_or_initialize do |phase|
+      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: asset.fuel_type).first_or_initialize do |phase|
         phase.name = draft_project.title
         phase.cost = -1
       end
     else
-      phase = DraftProjectPhase.where(draft_project: draft_project, team_ali_code: draft_project_phase.team_ali_code, fy_year: year).first_or_initialize do |phase|
+      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year).first_or_initialize do |phase|
         phase.name = draft_project.title
         phase.cost = -1
       end
