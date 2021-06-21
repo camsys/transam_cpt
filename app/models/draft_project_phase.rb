@@ -202,6 +202,10 @@ class DraftProjectPhase < ApplicationRecord
     scenario.organization
   end
 
+  def get_count
+    count || transit_assets.count 
+  end
+
   #------------------------------------------------------------------------------
   #
   # DotGrants Methods
@@ -227,7 +231,7 @@ class DraftProjectPhase < ApplicationRecord
               fuel_type_id: fuel_type.try(:id),
               is_planning_complete: is_planning_complete?,
               purchased_new: purchased_new?,
-              count: transit_assets.count,
+              count: get_count,
               length: length,
               team_ali_code: team_ali_code.try(:dotgrants_json),
               fuel_type: fuel_type.try(:dotgrants_json),

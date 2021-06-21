@@ -58,7 +58,7 @@
     .row 
       %strong 
         Count:
-      =@draft_project_phase.count
+      =@draft_project_phase.get_count 
     .row
       %strong
         =@draft_project_phase.cost_estimated ? "Cost (e):" : "Cost"

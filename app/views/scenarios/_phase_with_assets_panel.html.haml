@@ -65,6 +65,10 @@
           %strong
             Shadow:
           =phase.notional.to_s
+        .row 
+          %strong
+            Count:
+          =phase.get_count.to_s
 
         // Several Conditional Links   
         -unless phase.milestones_completed?
