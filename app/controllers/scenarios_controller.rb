@@ -174,7 +174,7 @@ class ScenariosController < OrganizationAwareController
     set_scenario
     #render json: @scenario.dotgrants_json
     respond_to do |format|
-      format.html { send_data @scenario.dotgrants_json, filename: "#{@scenario.organization.try(:short_name)}_dotgrants.json",type: :json, disposition: "attachment" }
+      format.html { send_data @scenario.dotgrants_json.to_json, filename: "#{@scenario.organization.try(:short_name)}_dotgrants.json",type: :json, disposition: "attachment" }
     end
   end
     
