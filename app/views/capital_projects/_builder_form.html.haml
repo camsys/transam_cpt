@@ -15,16 +15,16 @@
         = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
       .col-md-3
         = f.input :range_fys, :required => true,      :collection => @range_fiscal_years, :label => "Range of Years"
-      //.col-md-3
-      //  = f.input :scenario_id, :required => false, :collection => @scenarios, :label_method => 'name_with_year'
+      .col-md-3
+        = f.input :scenario_id, :required => false, :collection => @scenarios, :label_method => 'name_with_year'
   - else
     .row
       .col-md-3
         = f.input :start_fy, :required => true,      :collection => @fiscal_years, :label => "Starting #{get_fiscal_year_label}"
       .col-md-3
         = f.input :range_fys, :required => true,      :collection => @range_fiscal_years, :label => "Range of Years"
-      //.col-md-3
-      //  = f.input :scenario_id, :required => false, :collection => @scenarios, :label_method => 'name_with_year'
+      .col-md-3
+        = f.input :scenario_id, :required => false, :collection => @scenarios, :label_method => 'name_with_year'
 
   .row
     - FtaAssetCategory.active.each do |fta_category|
