@@ -2,4 +2,4 @@
 .col-md-6
   =simple_form_for(@draft_project_phase_asset) do |f|
     =f.input :draft_project_phase_id, collection: @phases, selected: @draft_project_phase_asset.draft_project_phase.id, include_blank: true
-    =f.submit
+    =f.submit 'Save', class: 'btn btn-primary'

@@ -15,8 +15,12 @@ class Scenario < ApplicationRecord
   FORM_PARAMS = [
     :organization_id,
     :fy_year,
+    :ending_fy_year,
     :name,
-    :description
+    :description,
+    :email_updates,
+    :reviewer_organization_id,
+    :state  
   ]
 
   CANCELLABLE_STATES = [
@@ -26,7 +30,8 @@ class Scenario < ApplicationRecord
     :submitted_constrained_plan
   ]
 
-  CHART_STATES = [ # states to be included 
+  # STATE WHERE WE ARE DEALING WITH BUDGETS
+  CONSTRAINED_STATES = [ # states to be included 
     "constrained_plan",
     "submitted_constrained_plan",
     "final_draft",
@@ -34,11 +39,21 @@ class Scenario < ApplicationRecord
     "approved"
   ]
 
+  # STATES WHERE ONLY ONE SCENARIO CAN EXIST PER YEAR
+  SUBMITTED_STATES = [ # states to be included 
+    "submitted_unconstrained_plan",
+    "constrained_plan",
+    "submitted_constrained_plan",
+    "final_draft",
+    "awaiting_final_approval",
+    "approved"
+  ]
 
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
   belongs_to  :organization
+  belongs_to  :reviewer_organization, class_name: 'Organization', foreign_key: 'reviewer_organization_id'
   has_many :draft_projects
   has_many :draft_project_phases, through: :draft_projects
   has_many :draft_project_phase_assets, through: :draft_project_phases
@@ -52,7 +67,16 @@ class Scenario < ApplicationRecord
   # Validations
   #------------------------------------------------------------------------------
   validates :name, presence: true 
-  validates :organization_id, presence: true 
+  validates :organization_id, presence: true
+  validates :fy_year, presence: true 
+  validates :ending_fy_year, presence: true
+
+  #------------------------------------------------------------------------------
+  # Scopes
+  #------------------------------------------------------------------------------
+  scope :approved, -> { where(state: "approved") }
+  scope :in_constrained_state, -> { where(state: CONSTRAINED_STATES) }
+  scope :in_submitted_state, -> { where(state: SUBMITTED_STATES) }
 
 
   #------------------------------------------------------------------------------
@@ -74,6 +98,44 @@ class Scenario < ApplicationRecord
     return 0 if cost == 0
     return (100*(allocated.to_f/cost.to_f)).round
   end
+
+  
+  def copy(pinned_only=false, include_comments=true, starting_year=nil)
+
+    # Copy over the Scenario Attributes
+    attributes = {}
+    FORM_PARAMS.each do |param|
+      attributes[param] = self.send(param)
+    end   
+    new_scenario = Scenario.create(attributes)
+    new_scenario.name = "#{new_scenario.name} (Copy)"
+    if new_scenario.state.in? SUBMITTED_STATES
+      new_scenario.state = "unconstrained_plan"
+    end
+    new_scenario.save 
+
+    # Copy over the Projects and The Children of Projects
+    draft_projects.each do |dp|
+      dp.copy(new_scenario, pinned_only, starting_year)
+    end
+
+    if include_comments
+      # Copy over the comments
+      comments.each do |comment|
+        Comment.create!(
+          commentable_id: new_scenario.id, 
+          commentable_type: comment.commentable_type, 
+          comment: comment.comment,
+          created_by_id: comment.created_by_id,
+          created_at: comment.created_at
+        )
+      end
+    end
+
+    new_scenario
+
+  end
+
 
 
   #------------------------------------------------------------------------------
@@ -103,15 +165,17 @@ class Scenario < ApplicationRecord
     return d
   end
 
-  def self.peaks_and_valleys_chart_data scenario=nil
+  def self.peaks_and_valleys_chart_data(scenario=nil, year=nil)
     data = []
-    year_range = ((Time.now - 1.years).year..(Time.now + 10.years).year)
+    year ||= self.current_fiscal_year_year
 
     # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
     if scenario
+      year_range = (scenario.fy_year..scenario.ending_fy_year)
       projects = scenario.draft_projects
     else
-      scenarios = Scenario.where(state: CHART_STATES)
+      year_range = (year.to_i..(year.to_i+12))
+      scenarios = Scenario.in_constrained_state.where(fy_year: year)
       projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
     end
 
@@ -152,7 +216,7 @@ class Scenario < ApplicationRecord
   end
 
   def in_chart_state?
-    state.to_sym.in? CHART_STATES
+    state.to_sym.in? CONSTRAINED_STATES
   end
 
   #------------------------------------------------------------------------------
@@ -175,7 +239,8 @@ class Scenario < ApplicationRecord
     state :submitted_unconstrained_plan
 
     state :constrained_plan
-    state :submitted_unconstained_plan
+    state :submitted_unconstained_plan 
+
     state :final_draft
     state :awaiting_final_approval
 
@@ -215,34 +280,176 @@ class Scenario < ApplicationRecord
 
   end
 
+  #---------------------------------------------------------------------------
+  # Instance Methods
+  #---------------------------------------------------------------------------
+  def dotgrants_json
+    export = {environment: Rails.env}
+
+    #Add on the ALIs
+    export[:activity_line_items] = draft_project_phases.map{ |ali| ali.dotgrants_json}
+    export[:funding_templates] = FundingTemplate.all.map{ |funding_template| funding_template.as_json }
+    return export 
+  end 
+
+  #---------------------------------------------------------------------------
+  # State Helper Methods
+  #---------------------------------------------------------------------------
   def cancellable? 
     state.to_sym.in? CANCELLABLE_STATES
   end
 
+  def state_owner
+    case state.to_sym
+    when :approved, :cancelled
+      nil
+    when :unconstrained_plan, :constrained_plan, :final_draft
+      organization 
+    when :submitted_unconstrained_plan, :submitted_constrained_plan, :awaiting_final_approval
+      reviewer_organization
+    end
+  end
+
+  #---------------------------------------------------------------------------
+  # State Machine Validations
+  #---------------------------------------------------------------------------
+  def validate_transition action 
+    case state
+    when "unconstrained_plan"
+      if action = "submit"
+        return no_other_submitted_scenarios_for_this_year?
+      end 
+    when "constrained_plan"
+      if action == "submit"
+        return (no_estimated_costs_in_year_1? and no_local_or_federal_budget_placeholders_in_year_1? and all_required_milestones_are_present_in_year_1?)
+      end
+    when "submitted_constrained_plan"
+      if action == "accept"
+        return no_budget_placeholders_in_year_1?
+      end 
+    end
+    return true 
+  end
+
+  # Validation Methods
+  def no_local_or_federal_budget_placeholders_in_year_1?
+    draft_project_phases.where(fy_year: fy_year).each do |phase|
+      phase.draft_budgets.where(default: true).each do |budget|
+        if budget.funding_source_type.try(:name).in? ["Federal", "Local"]
+          self.errors.add(:funding, "Please update all Federal and Local placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
+          return false
+        end
+      end
+    end
+    return true
+  end
+
+  def no_budget_placeholders_in_year_1?
+    draft_project_phases.where(fy_year: fy_year).each do |phase|
+      if phase.draft_budgets.where(default: true).count > 0
+        self.errors.add(:funding, "Please remove all placeholder budgets for #{SystemConfig.fiscal_year(fy_year)}.")
+        return false
+      end
+    end
+    return true
+  end
+
+  def no_estimated_costs_in_year_1?
+    if draft_project_phases.where(fy_year: fy_year, cost_estimated: true).count > 0
+      self.errors.add(:funding, "Please update all estimated costs for #{SystemConfig.fiscal_year(fy_year)}.")
+      return false
+    end
+    return true
+  end
+
+  def all_required_milestones_are_present_in_year_1?
+    phase_ids = draft_project_phases.where(fy_year: fy_year).pluck(:id)
+    if Milestone.required.where(draft_project_phase_id: phase_ids).where(milestone_date: nil).count > 0
+      self.errors.add(:milestones, "Please add required milestones for all ALIs in #{SystemConfig.fiscal_year(fy_year)}.")
+      return false
+    end 
+    return true 
+  end
+
+  def no_other_submitted_scenarios_for_this_year?
+    if Scenario.in_submitted_state.where(fy_year: fy_year, organization: organization).count > 0
+      self.errors.add(:state, "Only one one scenario can be submitted at a time.")
+      return false
+    end 
+    return true
+  end
+
+
   #------------------------------------------------------------------------------
+  #
   # Text Helpers
+  #
   #------------------------------------------------------------------------------
   def state_description
     case state.to_sym
     when :approved
       "This scenario is complete and all projects have been updated."
     when :cancelled
-      "This scenario has been cancelled."
+      "This scenario has been closed."
     when :unconstrained_plan
-      "#{self.organization.try(:name)} defines all the projects needing funding and submits them to BPT."
+      "#{self.organization.try(:name)} defines all the projects needing funding and submits them to #{reviewer_organization.try(:short_name) || 'the reviewer'}."
     when :submitted_unconstrained_plan
-      "BPT reviews the status of this unconstrained plan."
+      "#{reviewer_organization.try(:short_name) || 'The reviewer'} reviews the status of this unconstrained plan."
     when :constrained_plan
       "#{self.organization.try(:name)} adds local and federal funding."
     when :submitted_constrained_plan
-      "BPT adds state funding."
+      "#{reviewer_organization.try(:short_name) || 'The reviewer'} adds state funding."
     when :final_draft
-      "#{self.organization.try(:name)} reviews the funding amounts allocated by BPT."
+      "#{self.organization.try(:name)} reviews the funding amounts allocated by #{reviewer_organization.try(:short_name) || 'the reviewer'}."
     when :awaiting_final_approval
-      "BPT gets approval from Final Approvers."
+      "#{reviewer_organization.try(:short_name) || 'The reviewer'} gets approval from Final Approvers."
     end
   end
 
+  def past_tense transition
+    case transition.to_s
+    when "cancel"
+      return "Closed"
+    when "accept"
+      return "accepted"
+    when "reject"
+      return "rejected"
+    when "submit"
+      return "submitted"
+    end 
+  end
+
+  def state_title
+    if state == "cancelled"
+      return "Closed"
+    else
+      return state.titleize
+    end
+  end
+
+  def name_with_year 
+    if fy_year
+      return "#{name} (#{SystemConfig.fiscal_year(fy_year)})"
+    else 
+      return name 
+    end
+  end
+
+  #------------------------------------------------------------------------------
+  # Mail Helpers
+  #------------------------------------------------------------------------------
+
+  def send_transition_email transition 
+    subject = "#{name} has been #{past_tense transition}."
+    users = (User.with_role :manager).where(organization: state_owner)
+    if users.blank? #No managers here, send to all users at this org
+      users = User.where(organization: state_owner)
+    end
+    #emails = users.pluck(:email)
+    emails = ["dedwards8@gmail.com"] #TODO Leave this here. Remove only when going to QA.
+
+    CptMailer.transition(emails, subject, self).deliver! unless emails.blank?
+  end
 
 
   #------------------------------------------------------------------------------
@@ -253,6 +460,11 @@ class Scenario < ApplicationRecord
 
   def self.allowable_params
     FORM_PARAMS
+  end
+
+  #Unable to access the FiscalYear module from class methods. Copied teh current fiscal year method from there to here.
+  def self.current_fiscal_year_year
+    SystemConfig.instance.fy_year
   end
 
 end

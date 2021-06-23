@@ -3,6 +3,32 @@
     padding-left:0px;
   }
 
+:javascript
+  $(document).ready(function () {
+  // This controls the year dropdown in each asset table
+    $(".budgetForm").change(function(){
+      var allocation = $(this).attr("id");
+      console.log(allocation);
+      var budget = $(this).val();
+      console.log(budget);
+      $("#" + allocation + "Row").html("Updating . . . ");
+      updateAllocationBudget(allocation, budget);
+    });
+  });
+
+  function updateAllocationBudget(allocation, budget){
+    $.ajax({
+      url: '/draft_budget_allocations/' + allocation,
+      data: {'draft_budget_allocation': {'draft_budget_id': budget}},
+      type: 'PUT',
+      success: function(result) {
+        //TODO: Make this more efficieint. ie don't reload the whole page
+        location.reload();
+      }
+    });
+  }
+
+
 
 .dfrp
   -funding_request.violations.each do |violation|
@@ -10,13 +36,13 @@
       %i.fa.fa-exclamation-triangle
       =violation
   .row 
-    .col-md-2
+    .col-md-3
       %h5 Budget
     .col-md-2 
       %h5 Maximum%
     .col-md-2 
       %h5 Typical%
-    .col-md-2 
+    .col-md-1 
       %h5 Actual%
     .col-md-3.text-right
       %h5 Allocation
@@ -24,16 +50,20 @@
   -remaining_pct = 1.0
   -funding_request.ordered_allocations.each do |allocation|
     .row.allocation_row
-      .col-md-2 
-        =allocation.funding_source_type.try(:name)  
-        =allocation.draft_budget.try(:name)
+      .col-md-3.text-center{id: "#{allocation.object_key}Row"}
+        //=allocation.draft_budget.try(:name)
+        %form.text-left
+          %select.text-left.budgetForm{id: allocation.object_key}
+            -budgets.each do |budget|
+              %option{value: budget.id, selected: allocation.draft_budget == budget} 
+                =budget.try(:type_and_name)
       .col-md-2
         ="#{100*allocation.required_pct}%"
       .col-md-2
         -effective_pct = allocation.effective_pct
         ="#{(100*effective_pct).round(3)}%"
         -remaining_pct = remaining_pct*(1-(allocation.required_pct))
-      .col-md-2.alloc_actual
+      .col-md-1.alloc_actual
         -cost = funding_request.total
         ="#{(100*(allocation.amount.to_f/cost.to_f)).round(3)}%"
       .col-md-3.text-right
@@ -51,7 +81,7 @@
           %i.fa.fa-trash
         
   .row
-    .col-md-2
+    .col-md-3.text-center
       =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do 
         %i.fa.fa-plus
   .row  

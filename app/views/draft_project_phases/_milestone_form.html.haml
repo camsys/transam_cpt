@@ -1,0 +1,13 @@
+%tr
+  %td.nowrap.col-md-2
+    .form-group
+      - is_contract = false
+      %label.optional.control-label
+        = "#{i_f.object.milestone_type.name}"
+  %td.col-md-2
+    = i_f.input :milestone_date, :wrapper => :vertical_append, :label => false do
+      = i_f.input_field :milestone_date, :as => :string, :class => is_contract ? 'form-control datepicker contract_completed_date' : 'form-control datepicker', :data => {'date-container' => '#form-modal'}.merge(is_contract ? {'date-start-date' => "#{format_as_date(Date.today)}"} : {}), :value => format_as_date(i_f.object.milestone_date), :required => is_contract
+      %span.input-group-addon
+        %i.fa.fa-calendar
+  %td.col-md-8
+    = i_f.input :comments, :input_html => { :rows => 3 }, :placeholder => "Enter any additional comments...", :label => false

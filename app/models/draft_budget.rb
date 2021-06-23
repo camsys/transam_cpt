@@ -10,7 +10,10 @@ class DraftBudget < ApplicationRecord
     :name,
     :amount,
     :shared_across_scenarios,
-    :funding_template_id
+    :funding_template_id,
+    :owner_id,
+    :contributor_id,
+    :active
   ]
 
   validates :name, presence: true 
@@ -29,6 +32,17 @@ class DraftBudget < ApplicationRecord
   belongs_to :funding_template
   has_one    :funding_source, through: :funding_template
   has_one :funding_source_type, through: :funding_source
+
+  belongs_to :contributor, class_name: "Organization"
+  belongs_to :owner, class_name: "Organization"
+
+
+  #------------------------------------------------------------------------------
+  # Placeholders
+  #------------------------------------------------------------------------------
+  scope :placeholder, -> { where(:default => true) }
+  scope :shared, -> { where(:shared_across_scenarios => true) }
+  scope :active, -> { where(:active => true)}
 
   #------------------------------------------------------------------------------
   # Instance Methods
@@ -60,6 +74,9 @@ class DraftBudget < ApplicationRecord
     funding_template.funding_source_type 
   end
 
+  def type_and_name
+    "#{funding_source_type.try(:name)} #{name}"
+  end
   #------------------------------------------------------------------------------
   #
   # Class Methods
@@ -68,5 +85,6 @@ class DraftBudget < ApplicationRecord
   def self.allowable_params
     FORM_PARAMS
   end
+
 
 end

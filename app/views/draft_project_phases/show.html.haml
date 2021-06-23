@@ -1,6 +1,36 @@
 :css
-  .with-margin {
-    margin-bottom: 5px;
+  table.dataTable thead .sorting, 
+  table.dataTable thead .sorting_asc, 
+  table.dataTable thead .sorting_desc {
+      background : none;
+  }
+
+:javascript
+  $(document).ready(function () {
+
+    $('.assetTable').DataTable();
+
+    // This controls the year dropdown in each asset table
+    $(".assetReplacementYear").change(function(){
+      var object_key = $(this).attr("id");
+      var year = $(this).val();
+      var display_year = $(this).children("option:selected").text();
+      $("#" + object_key + "Cell").html("Moved to: " + display_year);
+      moveTo(object_key, year, this);
+    });
+
+  });
+
+
+  function moveTo(object_key, year, element){
+    $.ajax({
+      url: '/draft_project_phase_assets/' + object_key + '/move_to',
+      data: {'fy_year': year, 'object_key': object_key},
+      type: 'PUT',
+      success: function(result) {
+        console.log("Updated Year");
+      }
+    });
   }
 
 //TITLE
@@ -8,7 +38,7 @@
   %h1
     =@draft_project_phase.name 
   .row
-    =@draft_project_phase.justification
+    =@draft_project_phase.cost_justification
   .row
     =link_to edit_draft_project_phase_path(@draft_project_phase) do 
       %i.fa.fa-edit
@@ -25,9 +55,13 @@
       %strong 
         ALI:
       =@draft_project_phase.team_ali_code.try(:code)
+    .row 
+      %strong 
+        Count:
+      =@draft_project_phase.get_count 
     .row
       %strong
-        Cost:
+        =@draft_project_phase.cost_estimated ? "Cost (e):" : "Cost"
       =format_as_currency(@draft_project_phase.cost)
     .row
       %strong
@@ -44,7 +78,12 @@
 
   .col-md-4
 
-%br
+
+%div.row
+  .col-md-12
+    %h3#funding-section
+      ="Funding"
+%hr
 
 %div.row
   -count = 0
@@ -57,7 +96,7 @@
             =link_to draft_funding_request_path(funding_request), method: :delete, data: {confirm: "Are you sure you want to delete this Funding Request?"} do 
               %i.fa.fa-trash
             ="Funding Request #{count+=1}"
-        =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request}
+        =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request, budgets: @draft_budgets}
 // Funding
 %div.row
   .col-md-12.text-center
@@ -66,11 +105,21 @@
       =link_to draft_funding_requests_url(draft_project_phase_id: @draft_project_phase.object_key), method: :post, class: "btn btn-info btn-xs" do 
         %i.fa.fa-plus
 
+// Milestones
+%div.row
+  .col-md-12
+    %h3#milestones-section
+      ="Milestones"
+    %hr
+    .row
+      =render partial: "milestones", locals: {phase: @draft_project_phase}
+
 // Assets
 %div.row
   .col-md-12
     %h3
       ="Assets"
+    %hr
 =render partial: "phase_assets_table", locals: {draft_project_phase: @draft_project_phase}
 
 :javascript

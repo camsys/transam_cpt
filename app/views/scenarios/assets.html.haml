@@ -25,7 +25,7 @@
         %th Subtype
         %th Phase
     %tbody.searchable
-      -transit_assets.each do |ta|
+      -@transit_assets.each do |ta|
         -phase = @scenario.draft_project_phase_assets.where(transit_asset: ta).first
         %tr
           %td

@@ -85,16 +85,20 @@ Rails.application.routes.draw do
     resources :comments
     member do 
       put 'transition'
+      get 'assets'
+      post 'copy'
+      get 'dotgrants_export'
     end
   end
 
   resources :draft_projects, only: [:show, :edit, :update, :new, :create, :destroy]
-  resources :draft_project_phases, only: [:edit, :update, :new, :create, :show, :destroy] do
-    member do
-      put 'update_for_scenarios'
+  resources :draft_project_phases, only: [:edit, :update, :new, :create, :show, :destroy] 
+
+  resources :draft_project_phase_assets, only: [:edit, :update, :new, :create] do 
+    member do 
+      put 'move_to'
     end
   end
-  resources :draft_project_phase_assets, only: [:edit, :update, :new, :create]
 
   resources :draft_budgets, only: [:index, :show, :edit, :update, :new, :create]
   resources :draft_budget_allocations, only: [:edit, :update, :new, :create, :destroy] do
@@ -107,6 +111,8 @@ Rails.application.routes.draw do
       patch 'lock_total'
     end
   end
+
+  resources :milestones, only: [:update] 
   ### End Scenarios Workflow
 
 

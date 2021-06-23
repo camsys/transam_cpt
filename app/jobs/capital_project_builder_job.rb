@@ -12,6 +12,7 @@ class CapitalProjectBuilderJob < Job
   attr_accessor :fta_asset_classes
   attr_accessor :start_fy
   attr_accessor :end_fy
+  attr_accessor :scenario_id
   attr_accessor :creator
 
   def run
@@ -20,6 +21,7 @@ class CapitalProjectBuilderJob < Job
     options = {}
     options[:start_fy] = start_fy
     options[:end_fy] = end_fy
+    options[:scenario_id] = scenario_id
 
     assets = []
     class_names.each do |class_name|
@@ -61,13 +63,14 @@ class CapitalProjectBuilderJob < Job
     raise ArgumentError, "creator can't be blank " if creator.nil?
   end
 
-  def initialize(organization, class_names, fta_asset_classes, start_fy, end_fy, creator)
+  def initialize(organization, class_names, fta_asset_classes, start_fy, end_fy, scenario_id, creator)
     super
     self.organization = organization
     self.class_names = class_names
     self.fta_asset_classes = fta_asset_classes
     self.start_fy = start_fy
     self.end_fy = end_fy
+    self.scenario_id = scenario_id
     self.creator = creator
   end
 

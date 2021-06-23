@@ -1,87 +1,29 @@
 :css
-  .with-margin {
-    margin-bottom: 5px;
-  }
-  .comments_panel {
-    background: var(--gray-medium-light);
-    margin-right: -5px;
-    margin-left: 5px;
-    border-bottom: 1px solid var(--gray-medium);
+  .pinned {
+    color: #428bca;
+    font-size: 18px;
+    cursor: pointer;
   }
 
-  .list-group {
-    display: flex;
-    flex-direction: column-reverse;
+  .unpinned {
+    opacity: .25;
+    cursor: pointer;
   }
 
-  .comment {
-    margin: 5px 10px;
-    display:flex;
-    flex-direction: column-reverse;
-  }
-
-  .comment > span:not(.title) {
-    min-width: 0px;
-    display: inline-flex;
-    align-self: flex-end;
-    margin-bottom: -32px;
-  }
-
-  .comment_form {
-    padding: 0px 10px !important;
-  }
-
-  .comment_form .form-group .form-control {
-    background: #fff;
-  }
-
-  .comment_form #comment_submit {
-    float: right;
-    margin-bottom: 10px;
-  }
-
-  .comment_form #comment_comment {
-    resize: vertical;
-  }
-
-
-
-  .table_header {
-    margin-top: 0px;
-  }
-
-  .project_phase_panel {
-    margin: 0px 10px 0px 24px;
-  }
-
-  .phase_filter {
-    padding: 0px 30px 24px !important;
-  }
-
-  .divider {
-    height: 1px;
-    margin: 5px 1px;
-    overflow: hidden;
-    background-color: #E5E5E5;
-    border-bottom: 1px solid #FFF;
-  }
-
-  .chart_row {
-    padding-top: 64px;
-  }
-
-
-
-
-//TITLE
 .row.text-center
   %h1
     =@scenario.name 
   .row
     =@scenario.description
   .row
+    ="Created: #{@scenario.created_at.strftime('%b %e, %Y at %I:%M%p')}"
+  .row
     =link_to edit_scenario_path(@scenario) do 
       %i.fa.fa-edit
+    =link_to copy_scenario_path(@scenario), method: :post, data: {confirm: "Are you sure you want to copy this scenario?"} do 
+      %i.fa.fa-clone
+    =link_to dotgrants_export_scenario_path(@scenario) do
+      %i.fa.fa-download
 
 //Main Content  
 .row
@@ -93,15 +35,20 @@
       %strong 
         Organization: 
       =@scenario.organization
-    .row
-      %strong
-        Cost:
-      =format_as_currency(@scenario.cost)
+    //.row
+    //  %strong
+    //    Cost:
+    //  =format_as_currency(@scenario.cost)
+    .row 
+      =link_to assets_scenario_path(@scenario), target: "_blank" do 
+        %i.fa.fa-search
+        Assets
+
 
   .col-md-4
-    .progress
-      .progress-bar.bg-success{role: "progressbar", style: "width: #{@scenario.percent_funded}%"}
-        ="#{@scenario.percent_funded}% Funded"
+    //  .progress
+    //    .progress-bar.bg-success{role: "progressbar", style: "width: #{@scenario.percent_funded}%"}
+    //      ="#{@scenario.percent_funded}% Funded"
 
 
   //State Info and Actions
@@ -110,24 +57,23 @@
     .well
       .row
         %h4
-          =@scenario.state.titleize
+          =@scenario.state_title
         =@scenario.state_description
-      .row.text-center
-        %br
-        =render "#{@scenario.state}_actions"
+      -if @scenario.state_owner.in? current_user.viewable_organizations 
+        .row.text-center
+          %br
+          =render "#{@scenario.state}_actions"
+        .row.text-center
+          %input#emailUpdates{type: "checkbox", checked: @scenario.email_updates, "data-scenario": @scenario.object_key}
+          Email Updates
 
 
 .row 
   .col-md-12
-    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true
-
-.row
-  .col-md-12
-    =render partial: 'scenario_assets_table', locals: {transit_assets: @transit_assets}
-
+    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true, label: "Value"
 .row
   /// LEFT COLUMN
-  .col-md-4
+  .col-md-3
     //Comments
     .row
       =render 'scenario_comments'
@@ -140,19 +86,31 @@
   // RIGHT COLUMN
 
   //Phases
-  .col-md-8
+  .col-md-9
     -if @scenario.draft_projects.length > 0 && @scenario.draft_project_phases.length > 0
-      = form_with model: @scenario, html:{class: "phase_filter"} do |f|
-        = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
-        = f.select :year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year) # @scenario.draft_project_phases.map { |ph| ph.fy_year }.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
-      -@scenario.draft_project_phases.select{ |p| p.fy_year.to_s == @phase_filter_year }.each_with_index do |phase, index|
-        .row.project_phase_panel
+      .row.text-left
+        = form_with model: @scenario, html:{class: "phase_filter"} do |f|
+          = f.select :ali_select, @scenario.draft_projects.map { |proj| proj.team_ali_code }.uniq, include_blank: "Select ALI"
+          = f.select :year_select, options_for_select((@scenario.fy_year..@scenario.ending_fy_year).map{ |y| [format_as_fiscal_year(y), y] }, @phase_filter_year)
+      %br 
+      
+      -@scenario.draft_project_phases.where(fy_year: @phase_filter_year).each_with_index do |phase, index|
+        .row
           .col-md-12
             =render partial: "phase_with_assets_panel", locals: {phase: phase}
+
+    // Project Phases
+    %div.row.text-center
+      .col-md-12
+        %h3
+          ="Add Project"
+          =link_to new_draft_project_url(scenario_id: @scenario.object_key), class: "btn btn-info btn-xs" do 
+            %i.fa.fa-plus      
+
 //Projects
-.row
-  .col-md-12
-    =render partial: "draft_projects_table", locals: {scenario: @scenario}
+//.row
+//  .col-md-12
+//    =render partial: "draft_projects_table", locals: {scenario: @scenario}
 
 :javascript
 
@@ -168,19 +126,34 @@
     location.replace(url+"?filter_year="+year);
   });
 
-
-
   // within a phase panel
   const change_phase_year = (id, year) => {
     // send new year to controller to update 
     $.ajax({
-        url: "/draft_project_phases/"+id+"/update_for_scenarios",
+        url: "/draft_project_phases/"+id,
         data: {"draft_project_phase": {"fy_year":year}},
         method: 'PUT',
         dataType: 'json',
         success: function(data) {
+          console.log(id);
           console.log("updated phase");
-          location.replace(location.href.replace(location.search, '')+"?filter_year="+year); // clear out url queries, then add back the year filter query with the new year
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+  }
+
+  // Method to Update the Pin Status
+  const change_pinned_status = (id, status) => {
+    $.ajax({
+        url: "/draft_project_phases/"+id,
+        data: {"draft_project_phase": {"pinned":status}},
+        method: 'PUT',
+        dataType: 'json',
+        success: function(data) {
+          console.log(id);
+          console.log("updated phase");
         },
         error: function(e) {
           console.log(e);
@@ -190,6 +163,7 @@
 
   $(document).on("change", "select[name='draft_project_phase[phase_year_select]']", (x) => {
     let id = $(x.target).closest(".panel").attr("id"); // get id from parent panel
+    $(x.target).closest(".panel").hide() // Hide this panel since it's no longer part of this year.
     let year = $(x.target).val();
     change_phase_year(id, year);
   });
@@ -199,5 +173,86 @@
     let second = (parseInt(first) + 1).toString(); // not century safe
     return first + '-' + second;
   }
+
+  // Delete a phase and hide the panel
+  function deleteThisPhase(object_key){
+    console.log('Deleting . . . ');
+    $.ajax({
+      url: '/draft_project_phases/' + object_key,
+      dataType: "json",
+      type: 'DELETE',
+      success: function(result) {
+        console.log("DELETED PHASE");
+      }
+    });
+  }
+
+
+  // Deal with the emaili Updates checkbox
+  // Let users NOT spam everyone with email
+  $(document).ready(function() {
+
+    $('#emailUpdates').click(function() {
+      var email_updates = this.checked;
+      var object_key = this.dataset.scenario;
+
+      $.ajax({
+        url: "/scenarios/" + object_key,
+        data: {"scenario": {"email_updates": email_updates}},
+        method: 'PUT',
+        dataType: 'json',
+        success: function(data) {
+          console.log("updated email status");
+        },
+        error: function(e) {
+          console.log(e);
+        }
+      });
+    });
+
+    $('.assetTable').DataTable();
+
+    // This controls the year dropdown in each asset table
+    $(".assetReplacementYear").change(function(){
+      var object_key = $(this).attr("id");
+      var year = $(this).val();
+      $("#" + object_key + "Cell").html("Moved to: " + year);
+      //this.innerHTML = "WAITING...";
+      moveTo(object_key, year, this);
+    });
+
+    
+    // This controls the delete a phase trash icon
+    $(".deletePhase").click(function(){
+      var r = confirm("Are you sure that you want to remove this phase? This action cannot be undone.");
+      var object_key = this.dataset.objectKey;
+      if (r == true) {
+        deleteThisPhase(object_key);
+        $('#' + object_key).hide();
+      } else {
+        console.log('NOT DELETED');
+      }
+    });
+
+    // Handle When someone pins/unpins a phase
+    $(".pinner").click(function(){
+      var object_key = this.dataset.objectKey;
+      console.log(object_key);
+      if (this.classList.contains('pinned')) {
+        console.log('UNpinning');
+        change_pinned_status(object_key, false);
+        this.classList.add("unpinned");
+        this.classList.remove("pinned");
+        // do some stuff
+      } else {
+        console.log('pinning');
+        change_pinned_status(object_key, true);
+        this.classList.add("pinned");
+        this.classList.remove("unpinned");
+      }
+    });
+
+
+  });
 
 

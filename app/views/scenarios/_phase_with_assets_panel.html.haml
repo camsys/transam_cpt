@@ -1,39 +1,62 @@
 :css
+  table.dataTable thead .sorting, 
+  table.dataTable thead .sorting_asc, 
+  table.dataTable thead .sorting_desc {
+      background : none;
+  }
 
-  .phase_info {
-    padding: 10px 15px;
+  .deletePhase {
+    cursor: pointer;
+  }
+
+:javascript
+
+  // Move a phase to a new year and hide the panel
+  function moveTo(object_key, year, element){
+    $.ajax({
+      url: '/draft_project_phase_assets/' + object_key + '/move_to',
+      data: {'fy_year': year, 'object_key': object_key},
+      type: 'PUT',
+      success: function(result) {
+        console.log("Updated Year");
+      }
+    });
+  }
+
+  // Delete a phase and hide the panel
+  function deleteThisPhase(object_key){
+    console.log('Deleting . . . ');
+    $.ajax({
+      url: '/draft_project_phases/' + object_key,
+      dataType: "json",
+      type: 'DELETE',
+      success: function(result) {
+        console.log("DELETED PHASE");
+      }
+    });
   }
 
 
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
-  .row.panel-heading
-    .col-md-10
-      =link_to draft_project_path(phase.draft_project) do
-        =phase.draft_project.try(:title).try(:titleize)
-      = ">"
-      =link_to draft_project_phase_path(phase) do
-        =phase.name
-        =" (#{phase.get_fiscal_year})"
-    .col-md-2.text-right
-      = form_with model: phase, html:{class: "phase_year_select"} do |f|
-        = f.select :phase_year_select, options_for_select(((Time.now - 1.years).year..(Time.now + 10.years).year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+  .panel-heading
+    .row
+      .col-md-10
+        %h4
+          -if phase.pinned
+            %i.fa.fa-thumb-tack.pinned.pinner{data: {object_key: phase.object_key}}
+          -else
+            %i.fa.fa-thumb-tack.unpinned.pinner{data: {object_key: phase.object_key}}
+          =link_to draft_project_phase_path(phase) do
+            =phase.name
+      .col-md-2.text-right
+        = form_with model: phase, html:{class: "phase_year_select"} do |f|
+          = f.select :phase_year_select, options_for_select((phase.scenario.fy_year..phase.scenario.ending_fy_year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+  
   .panel-body
-    -assets = phase.transit_assets
-    -backlog = assets.select{ |a| a.in_backlog }
-    -ages = (assets.map{ |a| a.age }).compact #Compact removes nil ages
-    -conditions = (assets.map{ |a| a.reported_condition_rating }).compact #Compact removes nil conditions
+
+    // Basic info 
     .row 
-      .row
-        .col-md-12.phase_info
-          .row 
-            %strong
-              Justification:
-            =phase.draft_project.justification
-          .row 
-            %strong
-              Description:
-            =phase.draft_project.description
-      .col-md-2.phase_info
+      .col-md-2
         .row
           %strong 
             ALI:
@@ -42,9 +65,62 @@
           %strong
             Shadow:
           =phase.notional.to_s
+        .row 
+          %strong
+            Project Type:
+          =phase.draft_project.try(:capital_project_type).try(:name)
+        .row 
+          %strong
+            Count:
+          =phase.get_count.to_s
+
+
+        // Several Conditional Links   
+        -unless phase.milestones_completed?
+          .row 
+            %strong
+              =link_to draft_project_phase_path(phase, anchor: "milestones-section"), target: "_blank" do
+                %i.fa.fa-flag-checkered
+                Add Milestones
+        -if phase.scenario.state == "constrained_plan" and not phase.federal_and_local_funding_complete?
+          .row
+            %strong
+              =link_to draft_project_phase_path(phase, anchor: "funding-section"), target: "_blank" do
+                %i.fa.fa-usd
+                Update Funding
+        -if phase.scenario.state == "submitted_constrained_plan" and not phase.state_funding_complete?
+          .row
+            %strong
+              =link_to draft_project_phase_path(phase, anchor: "funding-section"), target: "_blank" do
+                %i.fa.fa-usd
+                Update Funding
+                
+
+      .col-md-8
         .row
           %strong
-            Cost:
+            Project: 
+          =link_to draft_project_path(phase.draft_project) do
+            =phase.draft_project.try(:title)   
+        -unless phase.draft_project.description.blank?
+          .row 
+            %strong
+              Description:
+            =phase.draft_project.description
+        -unless phase.draft_project.justification.blank?
+          .row 
+            %strong
+              Justification:
+            =phase.draft_project.justification
+        -unless phase.cost_justification.blank?
+          .row 
+            %strong
+              Cost Justification:
+            =phase.cost_justification
+      .col-md-2.text-right
+        .row
+          %strong
+            =phase.cost_estimated ? "Cost (e):" : "Cost"
           =format_as_currency(phase.cost)
         .row
           %strong
@@ -54,83 +130,22 @@
           %strong
             Remaining:
           =format_as_currency(phase.remaining)
-        .row
-          %strong
-            ="Asset Count: "
-          =assets.count
-        .row
-          %li.divider
-        .row
-          %strong
-            ="Backlog:"
-          -avg = ((backlog.size.to_f/assets.size.to_f)*100).round(2)
-          =avg 
-          ="%"
-        .row.text-center
-          -# %strong
-          -#   ="Backlog%"
-          =pie_chart [["Backlog",avg],["Not Backlog",100.0-avg]] , legend: "bottom", donut: true, colors:["red","blue"], suffix:'%'
-      .col-md-10.panel_asset_table
-        .row.text-left
-          .col-md-2 
-            .row
-              %strong
-                ="Age"
-            .row
-              ="Min"
-              -# =assets.map{ |a| a.history.last.try(:event_date) }.min
-              =ages.min
-            .row
-              ="Max"
-              -# =assets.map{ |a| a.life_cycle_action_date }.max
-              =ages.max
-            .row 
-              ="Avg"
-              -if ages.empty?
-                N/A
-              -else
-                =(ages.reduce(:+) / ages.size.to_f).round(2)
-          .col-md-2
-            .row.text-left
-              %strong
-                ="Condition"
-            .row
-              ="Min"
-              =conditions.min
-            .row
-              ="Max"
-              =conditions.max
-            .row
-              ="Avg"
-              -if conditions.empty?
-                N/A
-              -else
-                =(conditions.reduce(:+) / conditions.size.to_f).round(2)
-          -if assets.first.try(:very_specific).respond_to?(:reported_mileage)
-            .col-md-2
-              .row.text-left
-                %strong
-                  ="Mileage"
-                -milages = assets.map{ |a| a.very_specific.reported_mileage || 0 }
-              .row
-                ="Min"
-                =milages.min.to_s(:delimited)
-              .row
-                ="Max"
-                =milages.max.to_s(:delimited)
-              .row
-                ="Avg"
-                =(milages.reduce(:+) / milages.size.to_f).round(2).to_s(:delimited)
-        .row.chart_row
-          .col-md-6 
-            .row.text-center
-              =scatter_chart phase.age_to_condition, xtitle: "Age(Years)", ytitle:"Condition(1-5)", legend: false, discrete: true, colors:["blue"]
-              
-          .col-md-6 
-            .row.text-center 
-              =scatter_chart phase.age_to_mileage, xtitle: "Age(Years)", ytitle:"Mileage", thousands: ",", legend: false, colors:["blue"]
+      //.col-md-2
+      //  .row 
+      //    =pie_chart [["Allocated",phase.allocated],["Remaining",phase.remaining]], donut: true, colors:["green","red"]
 
-        -# =render partial: "phase_with_assets_panel_table", locals: {draft_project_phase: phase}
+
+    // Asstes Table
+    %hr 
+    .row
+      =render partial: "draft_project_phases/phase_assets_table", locals: {draft_project_phase: phase}
       
-  .panel-footer.text-right
-    ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"
+      //
+      
+      
+  .panel-footer
+    .row
+      .col-md-10.text-left
+        ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"
+      .col-md-2.text-right
+        %i.fa.fa-trash.deletePhase{data: {object_key: phase.object_key}}

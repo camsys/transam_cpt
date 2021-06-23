@@ -15,7 +15,9 @@ class Milestone < ActiveRecord::Base
   after_initialize  :set_defaults
 
   # Associations
-  belongs_to :activity_line_item
+  belongs_to :activity_line_item #The old Way
+  belongs_to :draft_project_phase #The Scenario Way
+
 
   belongs_to :milestone_type
   
@@ -36,7 +38,26 @@ class Milestone < ActiveRecord::Base
     :milestone_date,
     :comments
   ]
+
+  #------------------------------------------------------------------------------
+  #
+  # Class Scopes
+  #
+  #------------------------------------------------------------------------------
+  scope :required, -> { joins(:milestone_type).where(milestone_types: { required: true }) }
   
+  #------------------------------------------------------------------------------
+  # DotGrants Export
+  #------------------------------------------------------------------------------
+  def dotgrants_json
+    {
+      milestone_date: milestone_date,
+      comments: comments,
+      milestone_type: milestone_type.try(:dotgrants_json)
+    }
+  end
+
+
   #------------------------------------------------------------------------------
   #
   # Class Methods
@@ -45,6 +66,10 @@ class Milestone < ActiveRecord::Base
     
   def self.allowable_params
     FORM_PARAMS
+  end
+
+  def required?
+    milestone_type.required
   end
     
   #------------------------------------------------------------------------------

@@ -36,8 +36,20 @@
       =@draft_budget.funding_source_type.try(:name)
     .row
       %strong
-        Shared Across Scenarios:
+        Active:
+      =@draft_budget.active
+    .row
+      %strong
+        Shared Across Agencies:
       =@draft_budget.shared_across_scenarios
+    .row
+      %strong
+        Contributor
+      =@draft_budget.contributor.try(:short_name) || "None"
+    .row
+      %strong
+        Owner:
+      =@draft_budget.owner.try(:short_name) || "None"
 
 
   -if @draft_budget.shared_across_scenarios
