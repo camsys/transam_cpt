@@ -287,7 +287,7 @@ class Scenario < ApplicationRecord
     export = {environment: Rails.env}
 
     #Add on the ALIs
-    export[:activity_line_items] = draft_project_phases.map{ |ali| ali.dotgrants_json}
+    export[:activity_line_items] = draft_project_phases.where(fy_year: fy_year).map{ |ali| ali.dotgrants_json}
     export[:funding_templates] = FundingTemplate.all.map{ |funding_template| funding_template.as_json }
     return export 
   end 

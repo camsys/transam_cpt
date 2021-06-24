@@ -72,7 +72,7 @@ class DraftBudgetAllocation < ApplicationRecord
       owner_id: draft_budget.try(:owner_id),
       description: nil,
       active: draft_budget.try(:active),
-      created_by: nil,
+      created_by_id: nil,
       updated_by_id: nil,
       created_at: draft_budget.try(:created_at),
       updated_at: draft_budget.try(:updated_at),
