@@ -102,6 +102,7 @@ class DraftProjectPhase < ApplicationRecord
     attributes[:draft_project] = new_project
 
     new_project_phase = DraftProjectPhase.create(attributes)
+    new_project_phase.draft_funding_requests.each{ |dfr| dfr.destroy } #Delete the default funding request. take whateve the copy gives us
 
     # Copy over the DraftProjectPha
     draft_funding_requests.each do |dfr|

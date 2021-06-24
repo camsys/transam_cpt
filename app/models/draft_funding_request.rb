@@ -78,12 +78,15 @@ class DraftFundingRequest < ApplicationRecord
 
   def copy new_project_phase
     
+
     new_funding_request = DraftFundingRequest.create(draft_project_phase: new_project_phase)
+    new_funding_request.draft_budget_allocations.each{ |dba| dba.destroy } #Delete the default ones, take whateve the copy gives us
 
     # Copy over the Draft Budget Allocations
     draft_budget_allocations.each do |dba|
       dba.copy(new_funding_request)
     end
+
   end
 
   #------------------------------------------------------------------------------
