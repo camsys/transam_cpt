@@ -373,7 +373,7 @@ class Scenario < ApplicationRecord
 
   def no_other_submitted_scenarios_for_this_year?
     if Scenario.in_submitted_state.where(fy_year: fy_year, organization: organization).count > 0
-      self.errors.add(:state, "Only one one scenario can be submitted at a time.")
+      self.errors.add(:state, "Only one scenario can be submitted at a time.")
       return false
     end 
     return true
