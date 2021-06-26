@@ -75,6 +75,15 @@ class DraftProjectsController < OrganizationAwareController
 
     redirect_to scenario_path(scenario)
   end
+
+  def export_to_csv 
+    fy_year = params[:fy_year].to_i
+    @scenarios = Scenario.in_submitted_state.where(fy_year: fy_year)
+
+    respond_to do |format|
+      format.html { send_data DraftProject.to_csv(@scenarios), filename: "unconstrained_capital_projects_report.csv", type: :csv, disposition: "attachment" }
+    end
+  end
   
   private
 

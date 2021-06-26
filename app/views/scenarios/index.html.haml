@@ -4,11 +4,20 @@
     %i.fa.fa-plus
 %h5
   .row
-    %form
-      %select#yearSelector
-        -(2020..2050).each do |year|
-          %option{value: "#{year}", selected: (year.to_s==@fy_year.to_s)} 
-            =format_as_fiscal_year year
+    .col-md-1
+      %form
+        %select#yearSelector
+          -(2020..2050).each do |year|
+            %option{value: "#{year}", selected: (year.to_s==@fy_year.to_s)} 
+              =format_as_fiscal_year year
+
+    -if current_user.organization.try(:organization_type).try(:name) == "Grantor"
+      .col-md-10
+      .col-md-1
+        =link_to export_to_csv_draft_projects_path(fy_year: @fy_year) do
+          %i.fa.fa-file-excel-o
+          Export to CSV
+
 
 .row 
   .col-md-12

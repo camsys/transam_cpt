@@ -28,6 +28,8 @@ class DraftProject < ApplicationRecord
   belongs_to :team_ali_code
   belongs_to :capital_project_type
   has_many :draft_project_phases, :dependent => :destroy
+  has_many :draft_project_phase_assets, through: :draft_project_phases 
+  has_many :transit_assets, through: :draft_project_phase_assets
   has_many :draft_project_districts, :dependent => :destroy
   has_many :districts, through: :draft_project_districts
 
@@ -133,8 +135,71 @@ class DraftProject < ApplicationRecord
     }
   end
 
+  def self.to_csv scenarios
+    attributes = 
+                {
+                  "Org": "organization_short_name",
+                  "FY": "formatted_fiscal_year",
+                  "Project": "project_number",
+                  "Title": "title",
+                  "Scope": "scope",
+                  "Cost": "cost",
+                  "# ALIs": "number_of_alis",
+                  "# Assets": "number_of_assets",
+                  "Type": "project_type_code",
+                  "Emgcy": "emergency_code",
+                  "SOGR": "sogr_code",
+                  "Shadow": "shadow_code",
+                  "Multi Year": "multi_year_code"
+                }
+
+    CSV.generate(headers: true) do |csv|
+      csv << attributes.keys
+
+      DraftProject.where(scenario_id: scenarios.pluck(:id)).each do |project|
+        csv << attributes.values.map{ |attr| project.send(attr) }
+      end
+    end
+  end
+
+  def organization_short_name
+    scenario.try(:organization).try(:short_name)
+  end
+
   def fy_year
     phases.pluck(:fy_year).min.to_i
+  end
+
+  def scope
+    team_ali_code.try(:scope)
+  end
+
+  def number_of_alis
+    draft_project_phases.count 
+  end
+
+  def number_of_assets
+    transit_assets.count
+  end
+
+  def project_type_code 
+    capital_project_type.try(:code)
+  end
+
+  def emergency_code
+    emergency ? "Y" : ""
+  end
+
+  def sogr_code
+    sogr ? "Y" : ""
+  end
+
+  def shadow_code 
+    notional ? "Y" : ""
+  end
+
+  def multi_year_code 
+    multi_year? ? "Y" : ""
   end
 
   def multi_year?
@@ -144,6 +209,12 @@ class DraftProject < ApplicationRecord
   def organization_id
     scenario.try(:organization).try(:id)
   end
+
+  def formatted_fiscal_year
+    fiscal_year(self.try(:fy_year))
+  end
+
+
 
 
 

@@ -281,7 +281,7 @@ class Scenario < ApplicationRecord
   end
 
   #---------------------------------------------------------------------------
-  # Instance Methods
+  # Serializers and Exporters
   #---------------------------------------------------------------------------
   def dotgrants_json
     export = {environment: Rails.env}
@@ -291,6 +291,7 @@ class Scenario < ApplicationRecord
     export[:funding_templates] = FundingTemplate.all.map{ |funding_template| funding_template.as_json }
     return export 
   end 
+
 
   #---------------------------------------------------------------------------
   # State Helper Methods
