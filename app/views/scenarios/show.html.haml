@@ -214,7 +214,8 @@
     $('.assetTable').DataTable();
 
     // This controls the year dropdown in each asset table
-    $(".assetReplacementYear").change(function(){
+    //$(".assetTable").change(".assetReplacementYear", function(){
+    $(".assetTable").on("change", ".assetReplacementYear", function(){
       var object_key = $(this).attr("id");
       var year = $(this).val();
       $("#" + object_key + "Cell").html("Moved to: " + year);
