@@ -42,6 +42,7 @@ class DraftBudget < ApplicationRecord
   #------------------------------------------------------------------------------
   scope :placeholder, -> { where(:default => true) }
   scope :shared, -> { where(:shared_across_scenarios => true) }
+  scope :not_shared, -> { where(:shared_across_scenarios => false) }
   scope :active, -> { where(:active => true)}
 
   #------------------------------------------------------------------------------

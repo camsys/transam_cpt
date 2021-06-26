@@ -72,6 +72,30 @@
 .row 
   .col-md-12
     =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true, label: "Value"
+
+.row
+  -@budgets.each_slice(6) do |budgets|
+    .row
+      .col-md-1
+      .col-md-10
+        -budgets.each do |budget|
+          .col-md-2
+            .text-center
+              .row
+                %h4
+                  =budget.name
+              .row
+                %strong Allocated:
+                =format_as_currency(budget.allocated(@scenario))
+              .row
+                %strong Remaining:
+                =format_as_currency(budget.remaining(@scenario))
+
+              =pie_chart [["Allocated",budget.allocated(@scenario)],["Remaining",budget.remaining(@scenario)]], colors: ["#b00", "#85bb65"], legend: false, donut: true, prefix: "$", thousands: ",", height: "100px"
+
+%hr
+
+
 .row
   /// LEFT COLUMN
   .col-md-3

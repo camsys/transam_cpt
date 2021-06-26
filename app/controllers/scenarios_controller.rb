@@ -33,6 +33,7 @@ class ScenariosController < OrganizationAwareController
   def show
     set_scenario
     add_breadcrumb "#{@scenario.name}"
+    @budgets = DraftBudget.active.not_shared.where(owner: @scenario.organization)
 
     @transit_assets = TransitAsset.where(organization: @scenario.organization)
     if params[:filter_year]
