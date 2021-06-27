@@ -245,7 +245,7 @@ class CapitalProjectBuilder
 
   def build_bottom_up(organization, options)
 
-    
+
     Rails.logger.debug "options = #{options.inspect}"
 
     # User must set the start fy year as well otherwise we use the first planning year

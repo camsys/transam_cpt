@@ -127,7 +127,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       # save range of FYs for the org
       org.update(capital_projects_range_fys: @builder_proxy.range_fys.to_i)
 
-      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, current_planning_year_year + @builder_proxy.range_fys.to_i, @builder_proxy.scenario_id, current_user), :priority => 0
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, @builder_proxy.start_fy.to_i + @builder_proxy.range_fys.to_i, @builder_proxy.scenario_id, current_user), :priority => 0
 
       # Let the user know the results
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."
