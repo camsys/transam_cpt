@@ -36,11 +36,11 @@
       %i.fa.fa-exclamation-triangle
       =violation
   .row 
-    .col-md-3
+    .col-md-5
       %h5 Budget
-    .col-md-2 
-      %h5 Maximum%
-    .col-md-2 
+    .col-md-1 
+      %h5 Max%
+    .col-md-1 
       %h5 Typical%
     .col-md-1 
       %h5 Actual%
@@ -50,16 +50,16 @@
   -remaining_pct = 1.0
   -funding_request.ordered_allocations.each do |allocation|
     .row.allocation_row
-      .col-md-3.text-center{id: "#{allocation.object_key}Row"}
+      .col-md-5.text-center{id: "#{allocation.object_key}Row"}
         //=allocation.draft_budget.try(:name)
         %form.text-left
           %select.text-left.budgetForm{id: allocation.object_key}
             -budgets.each do |budget|
               %option{value: budget.id, selected: allocation.draft_budget == budget} 
                 =budget.try(:type_and_name)
-      .col-md-2
+      .col-md-1
         ="#{100*allocation.required_pct}%"
-      .col-md-2
+      .col-md-1
         -effective_pct = allocation.effective_pct
         ="#{(100*effective_pct).round(3)}%"
         -remaining_pct = remaining_pct*(1-(allocation.required_pct))
