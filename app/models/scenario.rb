@@ -317,7 +317,7 @@ class Scenario < ApplicationRecord
   def validate_transition action 
     case state
     when "unconstrained_plan"
-      if action = "submit"
+      if action == "submit"
         return no_other_submitted_scenarios_for_this_year?
       end 
     when "constrained_plan"

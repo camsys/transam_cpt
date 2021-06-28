@@ -101,7 +101,8 @@ class DraftProject < ApplicationRecord
 
   def set_project_number
     years = fiscal_year self.fy_year
-    project_number = "#{organization.short_name} #{years} ##{id}"
+    org_short_name = scenario.try(:organization).try(:short_name)
+    project_number = "#{org_short_name} #{years} ##{id}"
     self.update_attributes(:project_number => project_number)
   end
 
