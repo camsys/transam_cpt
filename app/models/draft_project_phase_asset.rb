@@ -41,7 +41,6 @@ class DraftProjectPhaseAsset < ApplicationRecord
       phase.draft_project = new_project
       phase.save!
       new_project.set_project_number
-      puts phase.ai 
     end
 
     self.draft_project_phase = phase 
