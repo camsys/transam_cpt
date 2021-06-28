@@ -45,10 +45,11 @@ class DraftProjectsController < OrganizationAwareController
   end
 
   def create 
-    @draft_project = DraftProject.new 
+    @draft_project = DraftProject.new
 
     respond_to do |format|
-      if @draft_project.update(form_params)
+      if @draft_project.update!(form_params)
+        add_districts
         format.html { redirect_to draft_project_path(@draft_project) }
       else
         format.html
@@ -60,7 +61,8 @@ class DraftProjectsController < OrganizationAwareController
     set_draft_project
 
     respond_to do |format|
-      if @draft_project.update(form_params)
+      if @draft_project.update!(form_params)
+        add_districts
         format.html { redirect_to draft_project_path(@draft_project) }
       else
         format.html
@@ -90,6 +92,15 @@ class DraftProjectsController < OrganizationAwareController
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
     params.require(:draft_project).permit(DraftProject.allowable_params)
+  end
+
+  def add_districts
+    districts = District.where(id: district_ids)
+    @draft_project.districts = districts 
+  end 
+
+  def district_ids
+    params["draft_project"].try(:[], "district_ids")
   end
 
   def table_params

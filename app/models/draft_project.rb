@@ -17,8 +17,8 @@ class DraftProject < ApplicationRecord
     :scenario_id,
     :capital_project_type_id,
     :sogr,
-    :emergency,
-    :district_ids => []
+    :emergency
+    #:district_ids => []
   ]
 
   #------------------------------------------------------------------------------
