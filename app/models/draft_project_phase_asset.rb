@@ -23,8 +23,8 @@ class DraftProjectPhaseAsset < ApplicationRecord
     old_project = self.draft_project
 
     #########################################
-    if transit_asset.fuel_type_id.present?
-      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: asset.fuel_type).first
+    if transit_asset.very_specific.fuel_type_id.present?
+      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: transit_asset.very_specific.fuel_type).first
     else
       phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year).first
     end
@@ -35,7 +35,7 @@ class DraftProjectPhaseAsset < ApplicationRecord
       phase = DraftProjectPhase.new 
       phase.team_ali_code = old_phase.team_ali_code
       phase.fy_year = year
-      fuel_type = asset.fuel_type if transit_asset.fuel_type_id.present?
+      fuel_type = transit_asset.very_specific.fuel_type if transit_asset.very_specific.fuel_type_id.present?
       phase.cost = -1 
       phase.name = new_project.title 
       phase.draft_project = new_project
