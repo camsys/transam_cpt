@@ -15,24 +15,36 @@ class DraftProjectPhaseAsset < ApplicationRecord
   has_one :scenario, through: :draft_project
 
   #Move this Asset to another year.
-  # 1) Check to see if a phase already exists.
-  # 2) If no phase exists, create a new one
-  # 3) Reassign this asset to that hpase
+  # Case 1: A Phase already exists that matches the asset, so add the asset to that phase.
+  # Case 2: A Phase does NOT exist, create a new phase and create a new project for that phase.
   def move_to year
 
     old_phase = self.draft_project_phase 
+    old_project = self.draft_project
 
     #########################################
     if transit_asset.fuel_type_id.present?
-      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: asset.fuel_type).first_or_initialize do |phase|
-        phase.name = draft_project.title
-        phase.cost = -1
-      end
+      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year, fuel_type: asset.fuel_type).first
     else
-      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year).first_or_initialize do |phase|
-        phase.name = draft_project.title
-        phase.cost = -1
-      end
+      phase = scenario.draft_project_phases.where(team_ali_code: draft_project_phase.team_ali_code, fy_year: year).first
+    end
+
+    puts phase.ai 
+    puts '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+
+    if phase.nil?
+      #We don't have a phase. let's create a new project and a new phase for this asset
+      new_project = old_project.copy_from_attributes 
+      phase = DraftProjectPhase.new 
+      phase.team_ali_code = old_phase.team_ali_code
+      phase.fy_year = year
+      fuel_type = asset.fuel_type if transit_asset.fuel_type_id.present?
+      phase.cost = -1 
+      phase.name = new_project.title 
+      phase.draft_project = new_project
+      phase.save!
+      new_project.set_project_number
+      puts phase.ai 
     end
 
     self.draft_project_phase = phase 

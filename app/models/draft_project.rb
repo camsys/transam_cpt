@@ -13,7 +13,6 @@ class DraftProject < ApplicationRecord
     :justification,
     :team_ali_code_id,
     :notional,
-    :fy_year,
     :scenario_id,
     :capital_project_type_id,
     :sogr,
@@ -85,6 +84,17 @@ class DraftProject < ApplicationRecord
     draft_project_phases.each do |dpp|
       dpp.copy(new_project, pinned_only, starting_year)
     end
+  end
+
+  def copy_from_attributes 
+    attributes = {}
+    (FORM_PARAMS - [:project_number, {district_ids: [] }]).each do |param|
+      attributes[param] = self.send(param)
+    end   
+    new_project = DraftProject.create(attributes)
+    new_project.districts = self.districts
+    new_project.save 
+    return new_project
   end
 
   def has_pinned_phases? starting_year=nil
