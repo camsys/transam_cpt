@@ -76,7 +76,7 @@ class DraftBudget < ApplicationRecord
   end
 
   def type_and_name
-    "#{funding_source_type.try(:name)} #{name}"
+    "#{name} (#{funding_source_type.try(:name)})"
   end
   #------------------------------------------------------------------------------
   #

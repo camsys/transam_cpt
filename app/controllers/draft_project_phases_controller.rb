@@ -17,7 +17,9 @@ class DraftProjectPhasesController < OrganizationAwareController
 
     @draft_budgets = DraftBudget.active.where(owner: @draft_project_phase.organization)
     @draft_budgets += DraftBudget.active.placeholder 
-    @draft_budgets += DraftBudget.active.shared 
+    if current_user.organization.grantor?
+      @draft_budgets += DraftBudget.active.shared 
+    end
     @draft_budgets.uniq!
     
     respond_to do |format|

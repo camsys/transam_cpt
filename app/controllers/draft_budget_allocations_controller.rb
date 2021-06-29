@@ -10,7 +10,7 @@ class DraftBudgetAllocationsController < OrganizationAwareController
 
   def edit
     set_draft_budget_allocation
-    @draft_budgets = DraftBudget.all 
+    @draft_budgets = nil
     
     respond_to do |format|
       format.html
@@ -25,7 +25,9 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     org = @draft_funding_request.draft_project_phase.try(:organization)
     @draft_budgets = DraftBudget.active.where(owner: org)
     @draft_budgets += DraftBudget.active.placeholder 
-    @draft_budgets += DraftBudget.active.shared 
+    if current_user.organization.grantor?
+      @draft_budgets += DraftBudget.active.shared 
+    end
     @draft_budgets.uniq!
 
     respond_to do |format|
