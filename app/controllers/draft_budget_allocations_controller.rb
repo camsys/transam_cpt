@@ -18,10 +18,15 @@ class DraftBudgetAllocationsController < OrganizationAwareController
   end
 
   def new 
-    @draft_budgets = DraftBudget.all 
     @draft_budget_allocation = DraftBudgetAllocation.new 
     @draft_funding_request = DraftFundingRequest.find_by(object_key: draft_funding_request_params[:draft_funding_request_id])
     @draft_budget_allocation.draft_funding_request = @draft_funding_request
+
+    org = @draft_funding_request.draft_project_phase.try(:organization)
+    @draft_budgets = DraftBudget.active.where(owner: org)
+    @draft_budgets += DraftBudget.active.placeholder 
+    @draft_budgets += DraftBudget.active.shared 
+    @draft_budgets.uniq!
 
     respond_to do |format|
       format.html
