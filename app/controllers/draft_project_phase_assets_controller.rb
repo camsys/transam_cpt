@@ -46,13 +46,13 @@ class DraftProjectPhaseAssetsController < OrganizationAwareController
     else
       @draft_project_phase_asset.update(form_params)
     end
-    redirect_to scenario_path(@scenario)
+    redirect_to assets_scenario_path(@scenario)
   end
 
   def create
     @draft_project_phase_asset = DraftProjectPhaseAsset.new 
     @draft_project_phase_asset.update(form_params)
-    redirect_to scenario_path(@draft_project_phase_asset.scenario)
+    redirect_to assets_scenario_path(@draft_project_phase_asset.scenario)
   end
 
   def move_to
