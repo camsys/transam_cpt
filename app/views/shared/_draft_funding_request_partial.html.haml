@@ -92,19 +92,22 @@
     .row
       .col-md-7
       .col-md-2.text-right
+      
+      // TOTAL Value (Sometimes is plain text, sometimes is an edit field)
       .col-md-2.text-right
         %input.edit.edit_total{type:'number',value:"#{funding_request.total}", style:"display:none", data_id: "#{funding_request.object_key}" }
         .col-md-1.text-right
           ="Total: "
-        %span.unedit_total.fr_total
+        %span.unedit_total.fr_total{id: "total_#{funding_request.id}"}
           ="#{format_as_currency(funding_request.total)}"
-        %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden"}
+        %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden", id: "edit_field_#{funding_request.id}"}
+      
       .col-md-1.total_actions{id:"#{funding_request.object_key}"}
-        %i.fa.fa-edit.trigger_toggle_edit_total
+        %i.fa.fa-edit.trigger_toggle_edit_total.edit_button{id: "edit_#{funding_request.id}"}
         
-        %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none"}
-        %i.fa.fa-times.cancel_edit_total{style:"display:none"}
-      %span#totalSpinner{style:"display:none"}
+        %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none", id: "check_#{funding_request.id}"}
+        %i.fa.fa-times.cancel_edit_total{style:"display:none", id: "cancel_#{funding_request.id}"}
+      %span{style:"display:none", id: "spinner_#{funding_request.id}"}
         %i.fa.fa-spinner.fa-spin
         :javascript
           // lock total
