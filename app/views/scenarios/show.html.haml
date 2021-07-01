@@ -85,6 +85,9 @@
                 %h4
                   =budget.name
               .row
+                %strong Total:
+                =format_as_currency(budget.amount)
+              .row
                 %strong Allocated:
                 =format_as_currency(budget.allocated(@scenario))
               .row
