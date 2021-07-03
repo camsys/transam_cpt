@@ -16,19 +16,11 @@
   .col-md-1
   
   //Details
-  .col-md-9
+  .col-md-5
     .row
       %strong
         Amount:
       =format_as_currency(@draft_budget.amount)
-    .row
-      %strong
-        Allocated:
-      =format_as_currency(@draft_budget.allocated)
-    .row
-      %strong
-        Remaining:
-      =format_as_currency(@draft_budget.remaining)
     .row
       %strong
         Funding Template:
@@ -38,11 +30,54 @@
         Match:
       -if @draft_budget.funding_template.try(:match_required)
         ="#{@draft_budget.funding_template.try(:match_required)}%"
+    .row
+      %strong
+        Type:
+      =@draft_budget.funding_source_type.try(:name)
+    .row
+      %strong
+        Active:
+      =@draft_budget.active
+    .row
+      %strong
+        Shared Across Agencies:
+      =@draft_budget.shared_across_scenarios
+    .row
+      %strong
+        Contributor
+      =@draft_budget.contributor.try(:short_name) || "None"
+    .row
+      %strong
+        Owner:
+      =@draft_budget.owner.try(:short_name) || "None"
 
 
+  -if @draft_budget.shared_across_scenarios
+    .col-md-1
+    .col-md-2
+      .row
+        %strong
+          Allocated:
+        =format_as_currency(@draft_budget.allocated)
+      .row
+        %strong
+          Remaining:
+        =format_as_currency(@draft_budget.remaining)
+    .col-md-2
+      =pie_chart [["Allocated",@draft_budget.allocated],["Remaining",@draft_budget.remaining]], colors: ["#b00", "#85bb65"]
 
-  .col-md-2
-      
+%div.row
+  .col-md-12
+    %h3
+      ="Scenarios"
+%div.row
+  -@draft_budget.scenarios.uniq.each_slice(3) do |scenarios|
+    .row
+      -scenarios.each do |scenario|
+        .col-md-4
+          =render partial: "scenario_panel", locals: {scenario: scenario}
+
+        
 
 // Funding
 %div.row

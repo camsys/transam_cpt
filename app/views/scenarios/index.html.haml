@@ -2,6 +2,35 @@
   ="Scenarios"
   =link_to new_scenario_path, class: "btn btn-info btn-xs" do 
     %i.fa.fa-plus
+%h5
+  .row
+    %form
+      %select#yearSelector
+        -(2020..2050).each do |year|
+          %option{value: "#{year}", selected: (year.to_s==@fy_year.to_s)} 
+            =format_as_fiscal_year year
+
+.row 
+  .col-md-12
+    =column_chart Scenario.peaks_and_valleys_chart_data(nil, @fy_year), prefix: "$", stacked: true
+
+
+
+:javascript
+  $(document).ready(function () {
+
+    // This controls the year dropdown in each asset table
+    $("#yearSelector").change(function(){
+      var year = $(this).val();
+      goToYear(year);
+    });
+
+  });
+
+
+  function goToYear(year){
+    window.location.replace("/scenarios?fy_year=" + year);
+  }
 
 
 :ruby
@@ -36,7 +65,7 @@
       add_row('#{table_dom_id}',
       {
         "name": '#{link_to scenario.name, scenario_path(scenario)}',
-        "status": '#{scenario.state.titleize}',
+        "status": '#{scenario.state_title}',
         "org": '#{scenario.organization.name}',
         "created_at": "#{format_as_date_time(scenario.created_at)}"
       }, #{index});

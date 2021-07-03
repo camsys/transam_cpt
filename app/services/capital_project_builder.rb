@@ -8,6 +8,7 @@
 #-------------------------------------------------------------------------------
 class CapitalProjectBuilder
 
+
   REPLACEMENT_PROJECT_TYPE    = 1
   EXPANSION_PROJECT_TYPE      = 2
   IMPROVEMENT_PROJECT_TYPE    = 3
@@ -582,4 +583,3 @@ class CapitalProjectBuilder
   private
 
 end
-

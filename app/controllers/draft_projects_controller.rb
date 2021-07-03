@@ -22,6 +22,7 @@ class DraftProjectsController < OrganizationAwareController
 
   def edit
     set_draft_project
+    @districts = Organization.get_typed_organization(@draft_project.scenario.organization).districts
     add_breadcrumb @draft_project.scenario.name, scenario_path(@draft_project.scenario)
     add_breadcrumb "#{@draft_project.title}"
     
@@ -32,8 +33,8 @@ class DraftProjectsController < OrganizationAwareController
 
   def new 
     @draft_project = DraftProject.new 
-
     @scenario = Scenario.find_by(object_key: scenario_params[:scenario_id])
+    @districts = Organization.get_typed_organization(@scenario.organization).districts
     @draft_project.scenario = @scenario 
     add_breadcrumb @draft_project.scenario.name, scenario_path(@draft_project.scenario)
     add_breadcrumb "New Project"

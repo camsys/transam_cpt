@@ -13,4 +13,11 @@ class MilestoneType < ActiveRecord::Base
     name
   end
 
+   #------------------------------------------------------------------------------
+  # DotGrants Export
+  #------------------------------------------------------------------------------
+  def dotgrants_json
+    { name: name }
+  end
+
 end

@@ -64,6 +64,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
     @fiscal_years = get_fiscal_years(Date.today)
     @range_fiscal_years = ((1..14).to_a + (3..10).to_a.map{|x| x * 5}).map{|x| ["#{x} years", x-1]}
+    @scenarios = Scenario.approved.where(organization: current_user.viewable_organizations)
     @builder_proxy = BuilderProxy.new
 
     @has_locked_sogr_this_fiscal_year = CapitalPlanModule.joins(:capital_plan_module_type, :capital_plan).where(capital_plan_module_types: {name: ['Unconstrained Plan', 'Constrained Plan']}, capital_plans: {organization_id: @organization_list, fy_year: current_planning_year_year}).where('capital_plan_modules.completed_at IS NOT NULL').pluck('capital_plans.organization_id')
@@ -101,6 +102,10 @@ class CapitalProjectsController < AbstractCapitalProjectsController
 
       # set class names whether primary or components are selected
       class_names = FtaAssetClass.where(id: @builder_proxy.fta_asset_classes).distinct.pluck(:class_name)
+
+
+
+
       ['Facility', 'Infrastructure'].each do |klass|
         if params["#{klass.downcase}_primary"].to_i == 1
           if params["#{klass.downcase}_component"].to_i == 1
@@ -122,7 +127,7 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       # save range of FYs for the org
       org.update(capital_projects_range_fys: @builder_proxy.range_fys.to_i)
 
-      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, current_planning_year_year + @builder_proxy.range_fys.to_i, current_user), :priority => 0
+      Delayed::Job.enqueue CapitalProjectBuilderJob.new(org, class_names, @builder_proxy.fta_asset_classes, @builder_proxy.start_fy, current_planning_year_year + @builder_proxy.range_fys.to_i, @builder_proxy.scenario_id, current_user), :priority => 0
 
       # Let the user know the results
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."

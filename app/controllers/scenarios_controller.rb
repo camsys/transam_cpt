@@ -12,11 +12,14 @@ class ScenariosController < OrganizationAwareController
   # Include the fiscal year mixin
   include FiscalYear
 
+  include TransamFormatHelper
+
   #-----------------------------------------------------------------------------
   # 
   #-----------------------------------------------------------------------------
   def index
-    @scenarios = Scenario.all 
+    @fy_year = allowed_params[:fy_year] || current_fiscal_year_year
+    @scenarios = Scenario.where(fy_year: @fy_year, organization: current_user.viewable_organizations)
 
     respond_to do |format|
       format.html
@@ -31,10 +34,31 @@ class ScenariosController < OrganizationAwareController
     set_scenario
     add_breadcrumb "#{@scenario.name}"
 
+    @transit_assets = TransitAsset.where(organization: @scenario.organization)
+    if params[:filter_year]
+      @phase_filter_year = params[:filter_year] # from url
+    elsif @scenario.draft_project_phases.length > 0
+      @phase_filter_year = @scenario.draft_project_phases.min_by(&:fy_year).fy_year.to_s # default to earliest fy year
+    else
+      @phase_filter_year = Date.new.year # default to 'now' if no phases
+    end
+    #@phase_filter_ali_code = params[:filter_ali] || @scenario.draft_project_phases.min_by(&:fy_year).team_ali_code #TODO: what should be default here?
     respond_to do |format|
       format.html
     end
     
+  end
+
+  def assets
+    set_scenario
+    add_breadcrumb "#{@scenario.name} Assets"
+
+    @transit_assets = TransitAsset.where(organization: @scenario.organization)
+
+    respond_to do |format|
+      format.html
+    end
+
   end
 
   #-----------------------------------------------------------------------------
@@ -89,11 +113,24 @@ class ScenariosController < OrganizationAwareController
     respond_to do |format|
       if @scenario.update(form_params)
         format.html { redirect_to scenario_path(@scenario) }
+        format.json { render json: true}
       else
         format.html
+        format.json { render json: false}
       end
     end
     
+  end
+
+  #-----------------------------------------------------------------------------
+  # Copy
+  #-----------------------------------------------------------------------------
+  def copy
+    set_scenario
+    @scenario = @scenario.copy 
+    respond_to do |format|
+      format.html { redirect_to scenario_path(@scenario) }
+    end
   end
 
   #-----------------------------------------------------------------------------
@@ -102,11 +139,43 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def transition
     set_scenario
+    prev_state = @scenario.state.titleize
+
     valid_transitions = @scenario.state_transitions.map(&:event) #Don't let the big bad internet send anything that isn't valid.
     transition = params[:transition]
-    @scenario.send(transition) if transition.to_sym.in? valid_transitions
+
+    if !@scenario.validate_transition transition 
+      error =  @scenario.errors.try(:first) 
+      if error
+        flash.alert = error.try(:last)
+      end
+    else 
+      @scenario.send(transition) if transition.to_sym.in? valid_transitions
+
+      if @scenario.email_updates
+        @scenario.send_transition_email(transition)
+      end
+
+      c = Comment.new
+      c.comment = prev_state + ": " + transition.to_str.upcase
+      c.creator = current_user
+      @scenario.comments << c
+      @scenario.save
+    end 
 
     redirect_back(fallback_location: root_path)
+  end
+
+  #-----------------------------------------------------------------------------
+  # Transition States
+  # 
+  #-----------------------------------------------------------------------------
+  def dotgrants_export
+    set_scenario
+    #render json: @scenario.dotgrants_json
+    respond_to do |format|
+      format.html { send_data @scenario.dotgrants_json.to_json, filename: "#{@scenario.organization.try(:short_name)}_dotgrants.json",type: :json, disposition: "attachment" }
+    end
   end
     
   private
@@ -116,8 +185,8 @@ class ScenariosController < OrganizationAwareController
     params.require(:scenario).permit(Scenario.allowable_params)
   end
 
-  def table_params
-    params.permit(:page, :page_size, :search, :sort_column, :sort_order)
+  def allowed_params
+    params.permit(:fy_year)
   end
 
   def set_scenario

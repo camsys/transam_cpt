@@ -3,4 +3,4 @@
   =simple_form_for(@draft_budget_allocation) do |f|
     =f.input :amount
     =f.input :draft_budget_id, collection: @draft_budgets.collect { |o| [o.name, o.id] }, include_blank: false
-    =f.submit
+    =f.submit 'Save', class: 'btn btn-primary'

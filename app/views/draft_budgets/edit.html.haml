@@ -1,1 +1,32 @@
-=render "budget_form"
+.col-md-3
+.col-md-6
+  .row
+    %strong
+      Funding Template:
+    =@draft_budget.funding_template.type_and_name
+  .row
+    %strong
+      Contributor
+    =@draft_budget.contributor.try(:short_name) || "None"
+  .row
+    %strong
+      Owner:
+    =@draft_budget.owner.try(:short_name) || "None"
+
+  %br 
+  .row 
+    =simple_form_for(@draft_budget) do |f|
+      =f.input :name
+      =f.input :amount
+      =f.input :active, collection: [true, false], include_blank: false
+      =f.submit 'Save', class: 'btn btn-primary'
+
+
+:javascript 
+
+  // This controls the year dropdown in each asset table
+  $(".template").change(function(){
+    var template = $(this).val();
+    $("#FundingForm").html("Updating . . .");
+    window.location.replace("/draft_budgets/new?funding_template_id=" + template);
+  });

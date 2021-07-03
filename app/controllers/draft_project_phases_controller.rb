@@ -14,6 +14,11 @@ class DraftProjectPhasesController < OrganizationAwareController
     add_breadcrumb @draft_project_phase.draft_project.scenario.name, scenario_path(@draft_project_phase.draft_project.scenario)
     add_breadcrumb @draft_project_phase.draft_project.title, draft_project_path(@draft_project_phase.draft_project)
     add_breadcrumb "#{@draft_project_phase.name}"
+
+    @draft_budgets = DraftBudget.active.where(owner: @draft_project_phase.organization)
+    @draft_budgets += DraftBudget.active.placeholder 
+    @draft_budgets += DraftBudget.active.shared 
+    @draft_budgets.uniq!
     
     respond_to do |format|
       format.html
@@ -33,12 +38,14 @@ class DraftProjectPhasesController < OrganizationAwareController
 
   def update
     set_draft_project_phase 
-
     respond_to do |format|
       if @draft_project_phase.update(form_params)
-        format.html { redirect_to draft_project_path(@draft_project_phase.draft_project) }
+        @draft_project_phase.set_estimated_cost
+        format.html { redirect_to draft_project_phase_path(@draft_project_phase) }
+        format.json { render json: true }
       else
         format.html
+        format.json { render json: false }
       end
     end
   end
@@ -75,11 +82,12 @@ class DraftProjectPhasesController < OrganizationAwareController
     project = @draft_project_phase.draft_project
     @draft_project_phase.destroy
 
-    redirect_to draft_project_path(project)
+
+    respond_to do |format|
+      format.html { redirect_to draft_project_path(project) }
+      format.json { render json: true }
+    end
   end
-
-
-
 
 
   private

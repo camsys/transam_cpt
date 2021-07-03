@@ -6,6 +6,9 @@ class BuilderProxy < Proxy
   # organization
   attr_accessor     :organization_id
 
+  # starting Scenario
+  attr_accessor     :scenario_id
+
   # FYs to generate projects for
   attr_accessor     :start_fy
   attr_accessor     :range_fys

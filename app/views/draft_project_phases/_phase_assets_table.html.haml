@@ -1,37 +1,56 @@
-:ruby
-  funding_table_id = SecureRandom.hex
 
-= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
-.library-table
-  %table.elbat{:id => funding_table_id,
-    :use => 'true',
-    :data => {:use => 'true',
-      :table_code => 'draft_phase_assets',
-      :side => 'client',
-      :current_page => '0',
-      :current_page_size => '10',
-      :page_sizes => "10,20,50,100",
-      :search => 'client',
-      :export => "['csv', 'txt']",
-      :columns => '{"tag":{"name":"Tag","type":"drilldown-link"},
-                    "fta_category": {"name": "FTA Category"},
-                    "fta_class": {"name":"FTA Class"},
-                    "cost": {"name": "Cost"}}',
-      :selected_columns => "tag,fta_category,fta_class,cost",
-      :cookies => "true",
-      :sort => 'client',
-      :sort_params => @params,
-      :filter => "[]",
-      :data_source => 'client',
-      :url => ''}}
-  - draft_project_phase.transit_assets.each_with_index do |asset, index|
 
-    :javascript
-      add_row('#{funding_table_id}',
-      {
-        "tag": '#{link_to asset.asset_tag, inventory_path(asset)}',
-        "fta_category": "#{ asset.fta_asset_category.try(:name) }",
-        "fta_class": "#{ asset.fta_asset_class.try(:name) }",
-        "cost": "#{ format_as_currency asset.cost }"
+.col-md-12
+  %table.table-striped.assetTable
+    %thead
+      %tr
+        %th.text-center
+          YEAR
+        %th ID
+        %th Subtype
+        %th Desc
+        %th Fuel
+        %th Age
+        %th Bcklg
+        %th Mileage
+        %th Condition
+        %th FY
+        %th Purchase
+        %th Replcmnt
+        //%th Book
 
-      }, #{index});
+    %tbody.searchable
+      -draft_project_phase.draft_project_phase_assets.each do |dppa|
+        -specific_asset = dppa.transit_asset.very_specific
+        %tr
+          %td.text-center{id: "#{dppa.object_key}Cell"}
+            %form
+              %select.assetReplacementYear{id: dppa.object_key}
+                -(2020..2032).each do |year|
+                  %option{value: "#{year}", selected: (year==draft_project_phase.fy_year)} 
+                    =format_as_fiscal_year year
+          %td
+            =link_to dppa.transit_asset.asset_tag, inventory_path(dppa.transit_asset)
+          %td
+            =specific_asset.asset_subtype.try(:name)
+          %td
+            =specific_asset.description
+          %td
+            =specific_asset.try(:fuel_type_name)
+          %td.text-center
+            =specific_asset.age
+          %td.text-right
+            =format_as_boolean(specific_asset.in_backlog)
+          %td.text-right
+            =format_as_integer specific_asset.try(:reported_mileage)
+          %td.text-center
+            =specific_asset.try(:reported_condition_rating)
+          %td.text-right
+            =format_as_fiscal_year(specific_asset.try(:policy_replacement_year))
+          %td.text-right
+            =format_as_currency(specific_asset.try(:purchase_cost))
+          %td.text-right
+            =format_as_currency(specific_asset.estimated_replacement_cost_in_year draft_project_phase.fy_year)
+          //%td
+          //  =specific_asset.try(:book_value)
+

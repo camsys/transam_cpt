@@ -3,7 +3,9 @@
   =simple_form_for(@draft_project_phase) do |f|
     =f.input :name
     =f.input :cost
+    =f.input :cost_justification
+    =f.input :count
     =f.input :fy_year, collection: get_fiscal_years(Date.today-1.years,51), label: 'Fy Year'
-    =f.input :justification
+    =f.association :team_ali_code, :collection => @draft_project_phase.draft_project.team_ali_code.children, :label_method => 'full_name', :label => 'ALI Code', include_blank: false
     =f.input :draft_project_id, as: :hidden
-    =f.submit
+    =f.submit 'Save', class: 'btn btn-primary'

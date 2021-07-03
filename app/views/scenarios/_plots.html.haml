@@ -1,0 +1,62 @@
+-assets = phase.transit_assets
+-ages = (assets.map{ |a| a.age }).compact #Compact removes nil ages
+-conditions = (assets.map{ |a| a.reported_condition_rating }).compact #Compact removes nil conditions
+
+.row.text-left
+  .col-md-2 
+    .row
+      %strong
+        ="Age"
+    .row
+      ="Min"
+      -# =assets.map{ |a| a.history.last.try(:event_date) }.min
+      =ages.min
+    .row
+      ="Max"
+      -# =assets.map{ |a| a.life_cycle_action_date }.max
+      =ages.max
+    .row 
+      ="Avg"
+      -if ages.empty?
+        N/A
+      -else
+        =(ages.reduce(:+) / ages.size.to_f).round(2)
+  .col-md-2
+    .row.text-left
+      %strong
+        ="Condition"
+    .row
+      ="Min"
+      =conditions.min
+    .row
+      ="Max"
+      =conditions.max
+    .row
+      ="Avg"
+      -if conditions.empty?
+        N/A
+      -else
+        =(conditions.reduce(:+) / conditions.size.to_f).round(2)
+  -if assets.first.try(:very_specific).respond_to?(:reported_mileage)
+    .col-md-2
+      .row.text-left
+        %strong
+          ="Mileage"
+        -milages = assets.map{ |a| a.very_specific.reported_mileage || 0 }
+      .row
+        ="Min"
+        =milages.min.to_s(:delimited)
+      .row
+        ="Max"
+        =milages.max.to_s(:delimited)
+      .row
+        ="Avg"
+        =(milages.reduce(:+) / milages.size.to_f).round(2).to_s(:delimited)
+.row.chart_row
+  .col-md-6 
+    .row.text-center
+      =scatter_chart phase.age_to_condition, xtitle: "Age(Years)", ytitle:"Condition(1-5)", legend: false, discrete: true, colors:["blue"]
+      
+  .col-md-6 
+    .row.text-center 
+      =scatter_chart phase.age_to_mileage, xtitle: "Age(Years)", ytitle:"Mileage", thousands: ",", legend: false, colors:["blue"]

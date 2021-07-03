@@ -1,0 +1,12 @@
+%h2
+  =@subject
+
+="#{@scenario.name} is now in the <b>#{@scenario.state.titleize}</b> state.".html_safe
+%br
+="What happens now? #{@scenario.state_description}"
+
+%h3
+  =link_to "Click here to view #{@scenario.name}", scenario_url(@scenario)
+
+%hr 
+  ="This is an automated message from #{@app_title}."
