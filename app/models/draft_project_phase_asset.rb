@@ -35,7 +35,7 @@ class DraftProjectPhaseAsset < ApplicationRecord
       phase = DraftProjectPhase.new 
       phase.team_ali_code = old_phase.team_ali_code
       phase.fy_year = year
-      fuel_type = transit_asset.very_specific.fuel_type if transit_asset.very_specific.fuel_type_id.present?
+      phase.fuel_type = (transit_asset.very_specific.fuel_type_id.present? ? transit_asset.very_specific.fuel_type : nil)
       phase.cost = -1 
       phase.name = new_project.title 
       phase.draft_project = new_project
