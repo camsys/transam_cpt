@@ -1,11 +1,11 @@
 %li.text-left
-  = link_to capital_projects_path do
+  = link_to scenarios_path do
     %i.fa.fa-cubes.fa-fw
-    = "Projects"
-%li.text-left
-  = link_to planning_index_path do
-    %i.fa.fa-tasks.fa-fw
-    = " Project Planner"
+    = "Scenarios"
+//%li.text-left
+//  = link_to planning_index_path do
+//    %i.fa.fa-tasks.fa-fw
+//    = " Project Planner"
 
 - if can? :create, CapitalProject
   %li.text-left

@@ -27,7 +27,7 @@
     %thead
       %tr
         %th.left
-        - capital_plan_type.capital_plan_module_types.each do |m|
+        - capital_plan_type.capital_plan_module_types.active.each do |m|
           %th.left{colspan: m.capital_plan_action_types.count}= m
 
         - view_component = "app_capital_plans_table_head"
@@ -35,7 +35,7 @@
           = render :partial => "capital_plans/#{view_component}"
       %tr
         %th.left
-        - capital_plan_type.capital_plan_module_types.each do |m|
+        - capital_plan_type.capital_plan_module_types.active.each do |m|
           - m.capital_plan_action_types.each do |a|
             %th.left= a
 
@@ -47,7 +47,7 @@
         %th.left
           Select All
         - col_idx = 0
-        - capital_plan_type.capital_plan_module_types.each do |m|
+        - capital_plan_type.capital_plan_module_types.active.each do |m|
           - m.capital_plan_action_types.each_with_index do |a, idx|
             - col_idx += 1
             %th
@@ -64,8 +64,6 @@
           %td
             = link_to plan.organization.short_name, capital_plan_path(plan)
           - plan.capital_plan_actions.includes(:capital_plan_action_type).each_with_index do |a, col_idx|
-
-              
             - if a.capital_plan_action_type.name == 'Archive' #This controls the archive button 
               %td.center
                 - if plan.completed?
@@ -74,7 +72,7 @@
                   = link_to complete_actions_capital_plans_path(targets: a.object_key, undo_targets: ''), :class => 'btn btn-info', :data => {:confirm => 'Are you sure?'} do
                     Archive
 
-              
+            
             - else #All columns EXCEPT for the Archive column
               %td{data: {tableexport: {value: a.system_action? ? a.completed_pcnt : (a.completed? ? 'X' : '')}}}
                 - if a.system_action?

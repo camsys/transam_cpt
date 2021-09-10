@@ -1,31 +1,35 @@
-#spinner{style: 'display:none;'}= loader_panel_tag({:message => "Updating capital plan(s)...", :size => 3, :spinner => "cog"})
+%h2= "Assets Status"
 
 .row
-  .col-sm-12
-    .page-header
-      %h2= "#{format_as_fiscal_year(current_planning_year_year)} Capital Plan Status"
+  .col-md-1
+  .col-md-10
+    %table.table-striped.statusTable
+      %thead
+        %tr 
+          %th
+            Org
+          %th
+            Assets Updated
+      %tbody.searchable
+        -current_user.viewable_organizations.each do |o|
+          %tr
+            %td
+              =o.short_name
+            %td 
+              ="#{OrgAuditAnalyzer.new(o).audit_complete_pcnt}%"
 
-.row
-  .col-md-12
-    - CapitalPlanType.all.each do |plan_type|
-      - table_dom_id = SecureRandom.hex
-      = render partial: 'capital_plans_table', locals: {capital_plan_type: plan_type, table_dom_id: table_dom_id}
 
-      - if can? :update, CapitalPlan
-        = render partial: 'scripts', locals: {table_dom_id: table_dom_id}
 
-        :javascript
-          function get_checkbox_vals(action) {
-            checked_targets = [];
-            unchecked_targets = [];
-            $('input.capital-plan-action-checkbox[data-index="'+action.data('index')+'"]').each(function() {
-              if ($(this).is(':checked')) {
-                checked_targets.push($( this ).val());
-              } else{
-                unchecked_targets.push($( this ).val());
-              }
-            });
+:css
+  table.dataTable thead .sorting, 
+  table.dataTable thead .sorting_asc, 
+  table.dataTable thead .sorting_desc {
+      background : none;
+  }
 
-            return [$('tr[data-index="'+action.data('index')+'"]').data('object-key'), checked_targets.join(',')];
-          }
+:javascript
+  $(document).ready(function () {
 
+    $('.statusTable').DataTable();
+
+  });
