@@ -1,11 +1,19 @@
-%li.text-left
-  = link_to scenarios_path do
-    %i.fa.fa-cubes.fa-fw
-    = "Scenarios"
-//%li.text-left
-//  = link_to planning_index_path do
-//    %i.fa.fa-tasks.fa-fw
-//    = " Project Planner"
+- if Rails.application.config.try(:use_new_scenarios_tool)
+  %li.text-left
+    = link_to scenarios_path do
+      %i.fa.fa-cubes.fa-fw
+      = "Scenarios"
+
+- else
+  %li.text-left
+    = link_to capital_projects_path do
+      %i.fa.fa-cubes.fa-fw
+      = "Projects"
+
+  %li.text-left
+    = link_to planning_index_path do
+      %i.fa.fa-tasks.fa-fw
+      = " Project Planner"
 
 - if can? :create, CapitalProject
   %li.text-left
