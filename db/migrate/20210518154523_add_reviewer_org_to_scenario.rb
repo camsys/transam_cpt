@@ -1,5 +1,5 @@
 class AddReviewerOrgToScenario < ActiveRecord::Migration[5.2]
   def change
-  	add_reference :scenarios, :reviewer_organization, foreign_key: { to_table: :organizations }, type: :integer
+  	add_reference :scenarios, :reviewer_organization, foreign_key: { to_table: :organizations }, type: :bigint
   end
 end
