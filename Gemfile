@@ -19,6 +19,7 @@ gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: use_b
 gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: use_branch
 gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: use_branch
 gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: use_branch
+
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
 gem 'rails-controller-testing'
 
