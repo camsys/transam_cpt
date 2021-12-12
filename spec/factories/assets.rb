@@ -46,8 +46,43 @@ FactoryBot.define do
     purchase_date { 1.year.ago }
     in_service_date { 1.year.ago }
     purchased_new { false }
-    association :asset_subtype
     association :organization, :factory => :organization
+  end
+
+  factory :transit_asset, :class => :transit_asset  do
+    asset_tag
+    purchase_cost { 2000.0 }
+    purchase_date { 1.year.ago }
+    in_service_date { 1.year.ago }
+    purchased_new { false }
+    association :organization, :factory => :organization
+    fta_asset_category { FtaAssetCategory.first }
+    fta_asset_class { FtaAssetClass.find_by(code: "bus") }
+    fta_type_id { 10 }
+    fta_type_type { "FtaVehicleType" }
+
+  end
+
+  factory :service_vehicle, :class => :service_vehicle do
+    asset_tag
+    purchase_cost { 2000.0 }
+    purchase_date { 1.year.ago }
+    in_service_date { 1.year.ago }
+    purchased_new { false }
+    association :organization, :factory => :organization
+    fta_asset_category { FtaAssetCategory.find_by(name: "Equipment") }
+    fta_asset_class { FtaAssetClass.find_by(code: "service_vehicle") }
+    fta_type_id { 1 }
+    fta_type_type { "FtaSupportVehicleType" }
+    manufacture_year { 1.year.ago }
+    serial_number { 'ABC123' }
+    manufacturer_id { 1 }
+    manufacturer_model_id { 1 }
+    fuel_type_id { 18 }
+    vehicle_length { 10 }
+    vehicle_length_unit { 'feet' }
+    seating_capacity { 5 }
+    ada_accessible { true }
   end
 
   factory :buslike_asset_basic_org, :class => :asset do # An untyped asset which looks like a bus
