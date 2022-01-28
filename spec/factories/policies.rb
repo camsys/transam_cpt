@@ -25,7 +25,7 @@ FactoryBot.define do
     association :organization, :factory => :organization
 
     transient do
-      has_fuel_type { false }
+      has_fuel_type { true }
     end
 
     transient do
