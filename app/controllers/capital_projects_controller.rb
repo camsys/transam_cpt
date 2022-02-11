@@ -133,7 +133,12 @@ class CapitalProjectsController < AbstractCapitalProjectsController
       msg = "SOGR Capital Project Analyzer is running. You will be notified when the process is complete."
       notify_user(:notice, msg)
 
-      redirect_to scenarios_url
+      if Rails.application.config.try(:use_new_scenarios_tool)
+        redirect_to scenarios_url
+      else
+        redirect_to capital_projects_url
+      end
+
       return
     else
       respond_to do |format|
