@@ -223,20 +223,22 @@ class CapitalProjectBuilder
     # update cost of all other ALIs
     ActivityLineItem.joins(:assets).where("organization_id = ?",organization.id).group("activity_line_items.id").each{ |ali| ali.update_estimated_cost}
 
+    if Rails.application.config.try(:use_new_scenarios_tool)
 
-    #########################################
-    # Scenario Work
-    #########################################
-    @scenario.draft_project_phases.each do |phase|
-      phase.set_estimated_cost
+      #########################################
+      # Scenario Work
+      #########################################
+      @scenario.draft_project_phases.each do |phase|
+        phase.set_estimated_cost
+      end
+
+      @scenario.draft_projects.each do |project|
+        project.set_project_number
+      end
+      #########################################
+      ##########################################
     end
-
-    @scenario.draft_projects.each do |project|
-      project.set_project_number
-    end
-    #########################################
-    ##########################################
-
+    
     # destroy all empty capital projects
     CapitalProject.where(:organization_id => organization.id, :sogr => true).joins('LEFT OUTER JOIN activity_line_items ON capital_projects.id = activity_line_items.capital_project_id').where('activity_line_items.capital_project_id IS NULL').destroy_all
 
@@ -244,7 +246,6 @@ class CapitalProjectBuilder
   end
 
   def build_bottom_up(organization, options)
-
 
     Rails.logger.debug "options = #{options.inspect}"
 
@@ -258,30 +259,30 @@ class CapitalProjectBuilder
     end
 
 
-    #########################################
-    # Scenario Work
-    #########################################
-    #Check to see if we are starting from an existing scenario
-    if !options[:scenario_id].blank?
-      old_scenario = Scenario.find(options[:scenario_id].to_i)
-      @scenario = old_scenario.copy(pinned_only=true, include_comments=false, starting_year=@start_year)
-    else
-      @scenario = Scenario.new
+    if Rails.application.config.try(:use_new_scenarios_tool)
+      #########################################
+      # Scenario Work
+      #########################################
+      #Check to see if we are starting from an existing scenario
+      if !options[:scenario_id].blank?
+        old_scenario = Scenario.find(options[:scenario_id].to_i)
+        @scenario = old_scenario.copy(pinned_only=true, include_comments=false, starting_year=@start_year)
+      else
+        @scenario = Scenario.new
+      end
+      
+      @scenario.name = "#{organization.short_name} SOGR"
+      @scenario.description = "#{organization.short_name} State of Good Repair"
+      @scenario.state = "unconstrained_plan"
+      @scenario.organization = organization
+      @scenario.fy_year = @start_year
+      @scenario.ending_fy_year = @last_year || (@start_year + 12)
+      @scenario.reviewer_organization = Organization.find_by(short_name: "BPT") #TODO: Obviously, this will need to be improved if anyone besides PennDOT wants this
+      #TODO: Blame Derek, he was working fast and lean.
+      @scenario.save! 
+      #########################################
+      ##########################################
     end
-    
-    @scenario.name = "#{organization.short_name} SOGR"
-    @scenario.description = "#{organization.short_name} State of Good Repair"
-    @scenario.state = "unconstrained_plan"
-    @scenario.organization = organization
-    @scenario.fy_year = @start_year
-    @scenario.ending_fy_year = @last_year || (@start_year + 12)
-    @scenario.reviewer_organization = Organization.find_by(short_name: "BPT") #TODO: Obviously, this will need to be improved if anyone besides PennDOT wants this
-                                                                              #TODO: Blame Derek, he was working fast and lean.
-    @scenario.save! 
-    #########################################
-    ##########################################
-
-
 
 
     #---------------------------------------------------------------------------
@@ -457,7 +458,6 @@ class CapitalProjectBuilder
     process_rehabs = (rehab_month.to_i > 0)
     extended_years = policy_analyzer['extended_service_life_months'].to_i / 12
 
-
     # If the asset has already been scheduled for a rehab, add this to the plan
     if asset.scheduled_rehabilitation_year.present?
       projects_and_alis << add_to_project(asset.organization, asset, rehab_ali_code, asset.scheduled_rehabilitation_year, rehabilitation_project_type, true, false)
@@ -528,56 +528,114 @@ class CapitalProjectBuilder
     # the scope becomes 11.11.XX (bus replacement project)
     scope = ali_code.parent
 
-    # Check to See if this Asset is already in a project. This should only happen for assets in pinned projects
-    if asset.class.name == "CapitalEquipment"
-      transit_asset = asset 
+    if Rails.application.config.try(:use_new_scenarios_tool)
+      # Check to See if this Asset is already in a project. This should only happen for assets in pinned projects
+      if asset.class.name == "CapitalEquipment"
+        transit_asset = asset 
+      else
+        transit_asset = asset.transit_asset 
+      end
+
+      if transit_asset.id.in? @scenario.draft_project_phase_assets.pluck(:transit_asset_id)
+        return [nil, nil]
+      end
     else
-      transit_asset = asset.transit_asset 
-    end
+      # Decode the scope so we can set the project up
+      scope_context = scope.context.split('->')
 
-    if transit_asset.id.in? @scenario.draft_project_phase_assets.pluck(:transit_asset_id)
-      return [nil, nil]
+      # See if there is an existing project for this scope and year
+      project = CapitalProject.find_by('organization_id = ? AND team_ali_code_id = ? AND fy_year = ? AND sogr = ? and notional = ?', organization.id, scope.id, year, sogr, notional)
+      if project.nil?
+        # create this project
+        project_title = "#{scope_context[1]}: #{scope_context[2]}: #{scope.name} project"
+        project = create_capital_project(organization, year, scope, project_title, project_type, sogr, notional)
+        Rails.logger.debug "Created new project #{project.object_key}"
+        @project_count += 1
+      else
+        Rails.logger.debug "Using existing project #{project.object_key}"
+      end
     end
-
-    #########################################
-    ##########################################
 
     if asset.present?
 
-      #########################################
-      # Scenario Work (Create Draft Project)
-      #########################################
-      if asset.fuel_type_id.present?
-        phase = @scenario.draft_project_phases.where(team_ali_code: ali_code, fy_year: year, fuel_type: asset.fuel_type).first
+      if Rails.application.config.try(:use_new_scenarios_tool)
+        #########################################
+        # Scenario Work (Create Draft Project)
+        #########################################
+        if asset.fuel_type_id.present?
+          phase = @scenario.draft_project_phases.where(team_ali_code: ali_code, fy_year: year, fuel_type: asset.fuel_type).first
+        else
+          phase = @scenario.draft_project_phases.where(team_ali_code: ali_code, fy_year: year).first
+        end
+
+        if phase.nil?
+
+          #We don't have a phase. let's create a new project and a new phase for this asset
+          new_project = create_draft_project(scope, notional, organization)
+          phase = DraftProjectPhase.new 
+          phase.team_ali_code = ali_code
+          phase.fy_year = year
+          phase.fuel_type = transit_asset.very_specific.fuel_type if transit_asset.very_specific.fuel_type_id.present?
+          phase.cost = -1 
+          phase.name = new_project.title 
+          phase.draft_project = new_project
+          phase.save 
+          new_project.set_project_number
+        end
+
+        unless transit_asset.in? phase.transit_assets 
+          phase.transit_assets << transit_asset 
+        end
+        #########################################
+        ##########################################
       else
-        phase = @scenario.draft_project_phases.where(team_ali_code: ali_code, fy_year: year).first
+        not_pinned_alis = ActivityLineItem.distinct.joins(:assets).where('replacement_status_type_id != 4 OR replacement_status_type_id IS NULL')
+        if asset.fuel_type_id.present?
+          ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ? AND activity_line_items.fuel_type_id = ?', project.id, ali_code.id, (fuel_type_id || asset.fuel_type_id))
+        else
+          ali = not_pinned_alis.find_by('activity_line_items.capital_project_id = ? AND activity_line_items.team_ali_code_id = ?', project.id, ali_code.id)
+        end
+
+        # if there is an exisiting ALI, see if the asset is in it
+        if ali
+          Rails.logger.debug "Using existing ALI #{ali.object_key}"
+          unless asset.activity_line_items.exists?(ali.id)
+            Rails.logger.debug "asset not in ALI, adding it"
+
+            if Rails.application.config.asset_base_class_name.constantize == 'Asset'
+              ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
+            else
+              ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
+            end
+          else
+            Rails.logger.debug "asset already in ALI, not adding it"
+          end
+        else
+          # Create the ALI and add it to the project
+          ali_name = "#{scope.name} #{ali_code.name} #{asset.fuel_type_id.present? ? (FuelType.find_by(id: fuel_type_id) || asset.fuel_type).to_s : ''} assets"
+          if asset.fuel_type_id.present?
+            ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year, :fuel_type_id => (fuel_type_id || asset.fuel_type_id)})
+          else
+            ali = ActivityLineItem.new({:capital_project => project, :name => ali_name, :team_ali_code => ali_code, :fy_year => project.fy_year})
+          end
+          ali.save
+
+          # Now add the asset to it if there is one
+          if Rails.application.config.asset_base_class_name.constantize == 'Asset'
+            ActivityLineItemsAsset.create(activity_line_item: ali, asset: asset)
+          else
+            ActivityLineItemsAsset.create(activity_line_item: ali, transam_asset: asset.try(:transam_asset) || asset)
+          end
+          Rails.logger.debug "Created new ALI #{ali.object_key}"
+        end
       end
-
-      if phase.nil?
-
-        #We don't have a phase. let's create a new project and a new phase for this asset
-        new_project = create_draft_project(scope, notional, organization)
-        phase = DraftProjectPhase.new 
-        phase.team_ali_code = ali_code
-        phase.fy_year = year
-        phase.fuel_type = transit_asset.very_specific.fuel_type if transit_asset.very_specific.fuel_type_id.present?
-        phase.cost = -1 
-        phase.name = new_project.title 
-        phase.draft_project = new_project
-        phase.save 
-        new_project.set_project_number
-      end
-
-      unless transit_asset.in? phase.transit_assets 
-        phase.transit_assets << transit_asset 
-      end
-      #########################################
-      ##########################################
-
     end
 
-    [phase.draft_project, phase]
-
+    if Rails.application.config.try(:use_new_scenarios_tool)
+      return [phase.draft_project, phase]
+    else
+      return [project, ali]
+    end
   end
 
   def create_draft_project scope, notional, organization 

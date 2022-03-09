@@ -35,4 +35,7 @@ Dummy::Application.configure do
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
+
+  # Required for CloudWatch in PutMetricDataService.
+  ENV["AWS_REGION"] = "us-east-1"
 end
