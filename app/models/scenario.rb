@@ -11,6 +11,11 @@ class Scenario < ApplicationRecord
   #Formatting i.e. fiscal year
   include TransamFormatHelper
 
+  #------------------------------------------------------------------------------
+  # Callbacks
+  #------------------------------------------------------------------------------
+  after_initialize :set_defaults
+
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
     :organization_id,
@@ -468,4 +473,17 @@ class Scenario < ApplicationRecord
     SystemConfig.instance.fy_year
   end
 
+  #------------------------------------------------------------------------------
+  #
+  # Protected Methods
+  #
+  #------------------------------------------------------------------------------
+  protected
+
+  # Set resonable defaults for a new scenario
+  def set_defaults
+    self.fy_year ||= current_planning_year_year
+    self.ending_fy_year ||= current_planning_year_year
+    self.reviewer_organization ||= Organization.find_by(organization_type: OrganizationType.where(name: 'Grantor'))
+  end
 end
