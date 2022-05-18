@@ -273,8 +273,16 @@ class CapitalProjectBuilder
       else
         @scenario = Scenario.new
       end
-      
-      @scenario.name = "#{organization.short_name} SOGR"
+
+      # Generate unique name
+      name = "#{organization.short_name} SOGR #{fiscal_year(@start_year)} to #{fiscal_year(@last_year || (@start_year + 12))}"
+      if Scenario.exists?(name: name)
+        i = 1
+        i += 1 while Scenario.exists?(name: "#{name} ##{i}")
+        name += " ##{i}"
+      end
+
+      @scenario.name = name
       @scenario.description = "#{organization.short_name} State of Good Repair"
       @scenario.state = "unconstrained_plan"
       @scenario.organization = organization
