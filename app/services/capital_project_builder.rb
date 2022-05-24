@@ -586,7 +586,7 @@ class CapitalProjectBuilder
         if phase.nil?
 
           #We don't have a phase. let's create a new project and a new phase for this asset
-          new_project = create_draft_project(scope, notional, organization)
+          new_project = create_draft_project(scope, notional, organization, project_type)
           phase = DraftProjectPhase.new 
           phase.team_ali_code = ali_code
           phase.fy_year = year
@@ -653,7 +653,7 @@ class CapitalProjectBuilder
     end
   end
 
-  def create_draft_project scope, notional, organization 
+  def create_draft_project(scope, notional, organization, project_type)
 
     scope_context = scope.context.split('->')
 
@@ -661,6 +661,7 @@ class CapitalProjectBuilder
     # Scenario Work (Create Draft Project)
     #########################################
     draft_project = DraftProject.new 
+    draft_project.capital_project_type = project_type
     draft_project.scenario = @scenario 
     draft_project.team_ali_code = scope
     draft_project.notional = notional 
