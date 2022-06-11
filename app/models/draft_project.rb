@@ -24,6 +24,7 @@ class DraftProject < ApplicationRecord
   # Associations
   #------------------------------------------------------------------------------
   belongs_to :scenario
+  has_one :organization, through: :scenario
   belongs_to :team_ali_code
   belongs_to :capital_project_type
   has_many :draft_project_phases, :dependent => :destroy
@@ -144,6 +145,47 @@ class DraftProject < ApplicationRecord
       team_ali_code: team_ali_code.try(:dotgrants_json),
       districts: districts.map{ |district| district.try(:dotgrants_json) }
     }
+  end
+
+  # check if project has any early replacement assets
+  def has_early_replacement_assets?
+    sogr? && !notional? && !transit_assets.joins(:transam_asset).where("policy_replacement_year is not NULL and scheduled_replacement_year is not NULL and scheduled_replacement_year < policy_replacement_year").empty?
+  end
+
+  # Render the project as a JSON object -- overrides the default json encoding
+  def as_json(options={})
+    # Don't override Rails method
+    if options[:is_super]
+      if options[:root]
+        {"capital_project" => (super(options)['capital_project'].merge! self.fundable_as_json)}
+      else
+        super(options)
+      end
+    else
+      json = {
+        object_key: object_key,
+        scenario: scenario.name,
+        agency: organization.try(:to_s),
+        fy_year: formatted_fiscal_year,
+        project_number: project_number,
+        scope: team_ali_code.try(:scope),
+        is_emergency: emergency?,
+        is_sogr: sogr?,
+        is_notional: notional?,
+        is_multi_year: multi_year?,
+        type: capital_project_type.try(:code),
+        title: title,
+        total_cost: cost,
+        has_early_replacement_assets: has_early_replacement_assets?
+      }
+
+
+      if self.respond_to? :fundable_as_json
+        json.merge! self.fundable_as_json(options)
+      end
+
+      json
+    end
   end
 
   def self.to_csv scenarios
