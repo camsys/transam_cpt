@@ -44,8 +44,10 @@ class UnconstrainedCapitalNeedsForecast < AbstractReport
   end
 
   def get_data(organization_id_list, params)
-
-    capital_projects = CapitalProject.where('capital_projects.organization_id IN (?)', organization_id_list)
+    capital_projects = CapitalProject.where(organization_id: organization_id_list)
+    if params[:report_filter_type].present?
+      capital_projects = capital_projects.joins(assets: :asset_subtype).where(asset_subtypes: {asset_type_id: params[:report_filter_type]})
+    end
     return get_data_from_result_list(capital_projects)
 
   end
