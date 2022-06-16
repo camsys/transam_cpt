@@ -19,7 +19,7 @@ wb.styles do |style|
             organization:           ["Organization", "project.organization.short_name"],
             year:                   ["Year", "format_as_fiscal_year(project.fy_year)"],
             title:                  ["Title", "project.title"],
-            scope:                  ["Scope", "project.team_ali_code.scope"],
+            scope:                  ["Scope", "project.team_ali_code.try(:scope)"],
             ali:                    ["ALI", "project.team_ali_code"],
             project_type:           ["Project Type", "project.capital_project_type"],
             sogr:                   ["SOGR", "format_as_yes_no(project.sogr?)"],
