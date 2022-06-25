@@ -15,11 +15,11 @@ wb.styles do |style|
         # Define columns [column header, data value]
         columns = {
 	    scenario:		["Scenario", "phase.scenario.name"],
-            project_id:         ["Project ID", "phase.draft_project.project_number.split('#').last"],
+            project_id:         ["Project ID", "phase.draft_project.project_number.to_s.split('#').last"],
             organization:       ["Organization", "phase.scenario.organization"],
             project_year:       ["Project Year", "format_as_fiscal_year(phase.draft_project.fy_year)"],
             project_title:      ["Project Title", "phase.draft_project.title"],
-            scope:              ["Scope", "phase.team_ali_code.scope"],
+            scope:              ["Scope", "phase.team_ali_code.try(:scope)"],
             project_type:       ["Project Type", "phase.draft_project.capital_project_type"],
             sogr:               ["SOGR", "format_as_yes_no(phase.draft_project.sogr?)"],
             shadow:             ["Shadow", "format_as_yes_no(phase.draft_project.notional?)"],
