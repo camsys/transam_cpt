@@ -91,9 +91,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :draft_projects, only: [:show, :edit, :update, :new, :create, :destroy] do
+  resources :draft_projects, only: [:index, :show, :edit, :update, :new, :create, :destroy] do
     collection do 
       get 'export_to_csv'
+      get 'phases'
     end
   end
   

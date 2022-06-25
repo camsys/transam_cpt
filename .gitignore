@@ -36,3 +36,5 @@ coverage/
 .idea/
 
 shadowed_views.log
+# EMACS backups
+*.*~

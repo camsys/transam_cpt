@@ -1,0 +1,54 @@
+require 'rubyXL'
+
+wb = xlsx_package.workbook
+
+wb.styles do |style|
+
+    # Define styles
+    table_header = style.add_style(bg_color: "BFBFBF", b: true, font_name: "Calibri (body)", :border => { :style => :thin, :color => "00000000" })
+    column_header = style.add_style(b: true, font_name: "Calibri (body)")
+    table_data = style.add_style(font_name: "Calibri (body)")
+
+    # Add worksheet
+    wb.add_worksheet(name: "Phases") do |sheet|
+
+        # Define columns [column header, data value]
+        columns = {
+	    scenario:		["Scenario", "phase.scenario.name"],
+            project_id:         ["Project ID", "phase.draft_project.project_number.to_s.split('#').last"],
+            organization:       ["Organization", "phase.scenario.organization"],
+            project_year:       ["Project Year", "format_as_fiscal_year(phase.draft_project.fy_year)"],
+            project_title:      ["Project Title", "phase.draft_project.title"],
+            scope:              ["Scope", "phase.team_ali_code.try(:scope)"],
+            project_type:       ["Project Type", "phase.draft_project.capital_project_type"],
+            sogr:               ["SOGR", "format_as_yes_no(phase.draft_project.sogr?)"],
+            shadow:             ["Shadow", "format_as_yes_no(phase.draft_project.notional?)"],
+            emergency_project:  ["Emergency Project", "format_as_yes_no(phase.draft_project.emergency?)"],
+            phase_year:         ["PHASE Year", "format_as_fiscal_year(phase.fy_year)"],
+            name:               ["Name", "phase.name"],
+            phase:              ["PHASE", "phase.team_ali_code"],
+            cost:               ["Cost", "phase.cost"],
+            count:              ["No. of Assets", "phase.transit_assets.count.nil? || phase.transit_assets.count == 0 ? '' : phase.transit_assets.count"],
+            pinned:             ["Pinned", "format_as_yes_no(phase.pinned?)"]
+        }
+
+        # Merge table header cells and add padding
+        sheet.merge_cells "A1:#{RubyXL::Reference.ind2ref(0, columns.length - 1)}"
+
+        table_header_cells = ["Activity Line Item Data"]
+        (columns.length - 1).times do
+            table_header_cells << ""
+        end
+
+        # Add table header
+        sheet.add_row table_header_cells, style: table_header
+
+        # Add column headers
+        sheet.add_row columns.map{|key, value| value[0]}, style: column_header
+
+        # Add data
+        @phases.each do |phase|
+            sheet.add_row columns.map{|key, value| eval(value[1])}, style: table_data
+        end
+    end
+end

@@ -273,8 +273,16 @@ class CapitalProjectBuilder
       else
         @scenario = Scenario.new
       end
-      
-      @scenario.name = "#{organization.short_name} SOGR"
+
+      # Generate unique name
+      name = "#{organization.short_name} SOGR #{fiscal_year(@start_year)} to #{fiscal_year(@last_year || (@start_year + 12))}"
+      if Scenario.exists?(name: name)
+        i = 1
+        i += 1 while Scenario.exists?(name: "#{name} ##{i}")
+        name += " ##{i}"
+      end
+
+      @scenario.name = name
       @scenario.description = "#{organization.short_name} State of Good Repair"
       @scenario.state = "unconstrained_plan"
       @scenario.organization = organization
@@ -578,7 +586,7 @@ class CapitalProjectBuilder
         if phase.nil?
 
           #We don't have a phase. let's create a new project and a new phase for this asset
-          new_project = create_draft_project(scope, notional, organization)
+          new_project = create_draft_project(scope, notional, organization, project_type)
           phase = DraftProjectPhase.new 
           phase.team_ali_code = ali_code
           phase.fy_year = year
@@ -645,7 +653,7 @@ class CapitalProjectBuilder
     end
   end
 
-  def create_draft_project scope, notional, organization 
+  def create_draft_project(scope, notional, organization, project_type)
 
     scope_context = scope.context.split('->')
 
@@ -653,6 +661,7 @@ class CapitalProjectBuilder
     # Scenario Work (Create Draft Project)
     #########################################
     draft_project = DraftProject.new 
+    draft_project.capital_project_type = project_type
     draft_project.scenario = @scenario 
     draft_project.team_ali_code = scope
     draft_project.notional = notional 
