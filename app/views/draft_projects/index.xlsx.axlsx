@@ -18,7 +18,7 @@ wb.styles do |style|
             organization:           ["Agency", "project.organization.short_name"],
             year:                   ["FY", "format_as_fiscal_year(project.fy_year)"],
             project_id:             ["Project Name", "project.project_number.to_s.split('#').last"],
-            project_type:           ["Project Type", "project.capital_project_type"],
+            title:                  ["Title", "project.title"],
             project_description:    ["Project Description", "project.description"],
             project_justification:  ["Project Justification", "project.justification"],
             scope:                  ["Scope", "project.team_ali_code.try(:scope)"],
@@ -28,10 +28,11 @@ wb.styles do |style|
             multi_year:             ["Multi Year", "project.multi_year?"],
             number_of_alis:         ["# ALIs", "project.number_of_alis"],
             number_of_assets:       ["Asset Count", "project.number_of_assets"],
+            project_type:           ["Project Type", "project.capital_project_type"],
             total_cost:             ["Cost", "project.cost"],
+            scenario_status:        ["Scenario Status", "project.scenario.try(:state_title)"],
             scenario_created:       ["Create Date", "format_as_date(project.scenario.try(:created_at))"],
-            scenario_modified:      ["Last Modified Date", "format_as_date(project.scenario.try(:updated_at))"],
-            scenario_status:        ["Scenario Status", "project.scenario.try(:state_title)"]
+            scenario_modified:      ["Last Modified Date", "format_as_date(project.scenario.try(:updated_at))"]
         }
 
         # Merge table header cells and add padding

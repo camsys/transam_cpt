@@ -64,7 +64,7 @@
         %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
         -#%th.left.nowrap{data: {field: 'scenario'}} Scenario
         %th.left.nowrap{data: {field: 'project_number'}} Project Name
-        %th.center{data: {visible: 'false', field: 'type'}} Project Type
+        %th.left{data: {visible: 'false', field: 'title'}} Title
         %th.left.nowrap{data: {visible: 'false', field: 'description'}} Project Description
         %th.left.nowrap{data: {visible: 'false', field: 'justification'}} Project Justification
         %th.center.nowrap{data: {field: 'scope'}} Scope
@@ -74,13 +74,13 @@
         %th.center{data: {field: 'is_multi_year', formatter: 'raw_boolean_formatter'}} Multi Year
         %th.center{data: {visible: 'false', field: 'number_of_alis'}} # ALIs
         %th.center{data: {visible: 'false', field: 'number_of_assets'}} Asset Count
-        -#%th.left{data: {field: 'title'}} Title
+        %th.center{data: {visible: 'false', field: 'type'}} Type
         -#%th.center Status
         %th{data: {field: 'total_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter', align: 'right'}} Cost
 
+        %th.center.nowrap{data: {field: 'scenario_status'}} Scenario Status
         %th.center.nowrap{data: {field: 'scenario_created', formatter: 'date_formatter'}} Create Date
         %th.center.nowrap{data: {field: 'scenario_modified', formatter: 'date_formatter'}} Last Modified Date
-        %th.center.nowrap{data: {field: 'scenario_status'}} Scenario Status
 
         -#%th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
         %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
