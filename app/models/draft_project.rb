@@ -176,7 +176,14 @@ class DraftProject < ApplicationRecord
         type: capital_project_type.try(:code),
         title: title,
         total_cost: cost,
-        has_early_replacement_assets: has_early_replacement_assets?
+        has_early_replacement_assets: has_early_replacement_assets?,
+        scenario_created: scenario.try(:created_at),
+        scenario_modified: scenario.try(:updated_at),
+        description: description,
+        justification: justification,
+        number_of_alis: number_of_alis,
+        number_of_assets: number_of_assets,
+        scenario_status: scenario.try(:state_title)
       }
 
 
