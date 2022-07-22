@@ -14,7 +14,6 @@ wb.styles do |style|
 
         # Define columns [column header, data value]
         columns = {
-	    scenario:		    ["Scenario", "project.scenario.name"],
             organization:           ["Agency", "project.organization.short_name"],
             year:                   ["FY", "format_as_fiscal_year(project.fy_year)"],
             project_id:             ["Project Name", "project.project_number.to_s.split('#').last"],
@@ -30,6 +29,7 @@ wb.styles do |style|
             number_of_assets:       ["Asset Count", "project.number_of_assets"],
             project_type:           ["Project Type", "project.capital_project_type"],
             total_cost:             ["Cost", "project.cost"],
+            scenario:		        ["Scenario", "project.scenario.name"],
             scenario_status:        ["Scenario Status", "project.scenario.try(:state_title)"],
             scenario_created:       ["Create Date", "format_as_date(project.scenario.try(:created_at))"],
             scenario_modified:      ["Last Modified Date", "format_as_date(project.scenario.try(:updated_at))"]

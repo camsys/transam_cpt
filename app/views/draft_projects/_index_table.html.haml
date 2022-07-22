@@ -62,7 +62,6 @@
         - if @organization_list.count > 1
           %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}} Agency
         %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
-        -#%th.left.nowrap{data: {field: 'scenario'}} Scenario
         %th.left.nowrap{data: {field: 'project_number'}} Project Name
         %th.left{data: {visible: 'false', field: 'title'}} Title
         %th.left.nowrap{data: {visible: 'false', field: 'description'}} Project Description
@@ -77,9 +76,9 @@
         %th.center{data: {visible: 'false', field: 'type'}} Type
         -#%th.center Status
         %th{data: {field: 'total_cost', formatter: 'currency_formatter', footer_formatter: 'total_cost_formatter', align: 'right'}} Cost
-
+        %th.left.nowrap{data: {field: 'scenario'}} Scenario
         %th.center.nowrap{data: {field: 'scenario_status'}} Scenario Status
-        %th.center.nowrap{data: {field: 'scenario_created', formatter: 'date_formatter'}} Create Date
+        %th.center.nowrap{data: {visible: 'false', field: 'scenario_created', formatter: 'date_formatter'}} Create Date
         %th.center.nowrap{data: {field: 'scenario_modified', formatter: 'date_formatter'}} Last Modified Date
 
         -#%th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
