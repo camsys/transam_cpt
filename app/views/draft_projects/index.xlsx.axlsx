@@ -14,20 +14,25 @@ wb.styles do |style|
 
         # Define columns [column header, data value]
         columns = {
-	    scenario:		    ["Scenario", "project.scenario.name"],
-            project_id:             ["Project ID", "project.project_number.to_s.split('#').last"],
-            organization:           ["Organization", "project.organization.short_name"],
-            year:                   ["Year", "format_as_fiscal_year(project.fy_year)"],
+            organization:           ["Agency", "project.organization.short_name"],
+            year:                   ["FY", "format_as_fiscal_year(project.fy_year)"],
+            project_id:             ["Project Name", "project.project_number.to_s.split('#').last"],
             title:                  ["Title", "project.title"],
+            project_description:    ["Project Description", "project.description"],
+            project_justification:  ["Project Justification", "project.justification"],
             scope:                  ["Scope", "project.team_ali_code.try(:scope)"],
-            ali:                    ["ALI", "project.team_ali_code"],
-            project_type:           ["Project Type", "project.capital_project_type"],
+            emergency_project:      ["Emergency Project", "format_as_yes_no(project.emergency?)"],
             sogr:                   ["SOGR", "format_as_yes_no(project.sogr?)"],
             shadow:                 ["Shadow", "format_as_yes_no(project.notional?)"],
-            emergency_project:      ["Emergency Project", "format_as_yes_no(project.emergency?)"],
-            cost:                   ["Cost", "project.cost"],
-            project_description:    ["Project Description", "project.description"],
-            project_justification:  ["Project Justification", "project.justification"]
+            multi_year:             ["Multi Year", "project.multi_year?"],
+            number_of_alis:         ["# ALIs", "project.number_of_alis"],
+            number_of_assets:       ["Asset Count", "project.number_of_assets"],
+            project_type:           ["Project Type", "project.capital_project_type"],
+            total_cost:             ["Cost", "project.cost"],
+            scenario:		        ["Scenario", "project.scenario.name"],
+            scenario_status:        ["Scenario Status", "project.scenario.try(:state_title)"],
+            scenario_created:       ["Create Date", "format_as_date(project.scenario.try(:created_at))"],
+            scenario_modified:      ["Last Modified Date", "format_as_date(project.scenario.try(:updated_at))"]
         }
 
         # Merge table header cells and add padding
