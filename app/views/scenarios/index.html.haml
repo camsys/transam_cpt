@@ -4,15 +4,21 @@
     %i.fa.fa-plus
 %h5
   .row
-    .col-md-1
+    .col-md-4
       %form
         %select#yearSelector
           -(2020..2050).each do |year|
             %option{value: "#{year}", selected: (year.to_s==@fy_year.to_s)} 
               =format_as_fiscal_year year
+        %label{style: "margin-left: 5px;"} Filter by Status
+        %select#statusFilter
+          %option{value: "", selected: @status == nil}
+          - Scenario.all.map{|s| s.state}.uniq.each do |state|
+            %option{value: state, selected: state == @status}
+              = state == "cancelled" ? "Closed" : state.titleize
 
     -if current_user.organization.try(:organization_type).try(:name) == "Grantor"
-      .col-md-10
+      .col-md-7
       .col-md-1
         =link_to export_to_csv_draft_projects_path(fy_year: @fy_year) do
           %i.fa.fa-file-excel-o
@@ -27,20 +33,45 @@
 
 :javascript
   $(document).ready(function () {
+    // Pre-populate filters used for the scenarios table
+    var scenarioFilters = {fy_year: #{@fy_year}, status: "#{@status}"};
 
     // This controls the year dropdown in each asset table
     $("#yearSelector").change(function(){
       var year = $(this).val();
-      goToYear(year);
+      scenarioFilters["fy_year"] = year;
+      applyFilters(scenarioFilters);
     });
 
+    // Filter the table by scenario status
+    $("#statusFilter").change(function(){
+      var scenarioStatus = $(this).val();
+      scenarioFilters["status"] = scenarioStatus;
+      applyFilters(scenarioFilters);
+    });
   });
 
 
-  function goToYear(year){
-    window.location.replace("/scenarios?fy_year=" + year);
+  // function goToYear(year){
+  //   window.location.replace("/scenarios?fy_year=" + year);
+  // }
+
+  function applyFilters(filters){
+    // Construct params string using filter values
+    var filtersParamString = "?";
+    Object.keys(filters).forEach(function(filter) {
+      if (filters[filter] != "") {
+        filtersParamString += filter + "=" + filters[filter] + "&";
+      }
+    });
+    filtersParamString = filtersParamString.slice(0, -1);
+
+    window.location.replace("/scenarios" + filtersParamString);
   }
 
+  // function filterByStatus(status){
+  //   window.location.replace("/scenarios?status=" + status);
+  // }
 
 :ruby
   table_dom_id = SecureRandom.hex
