@@ -71,7 +71,7 @@
 
 .row 
   .col-md-12
-    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", stacked: true, label: "Value"
+    =column_chart Scenario.peaks_and_valleys_chart_data(@scenario), prefix: "$", label: "Value", library: {scales: {yAxes: [{id: 'y-axis', type: 'logarithmic'},]}}
 
 .row
   -@budgets.each_slice(6) do |budgets|

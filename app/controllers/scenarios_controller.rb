@@ -19,7 +19,12 @@ class ScenariosController < OrganizationAwareController
   #-----------------------------------------------------------------------------
   def index
     @fy_year = allowed_params[:fy_year] || current_planning_year_year
+    @status = allowed_params[:status]
     @scenarios = Scenario.where(fy_year: @fy_year, organization: current_user.viewable_organizations).order(created_at: :desc)
+
+    if @status
+      @scenarios = @scenarios.where(state: @status)
+    end
 
     respond_to do |format|
       format.html
@@ -187,7 +192,7 @@ class ScenariosController < OrganizationAwareController
   end
 
   def allowed_params
-    params.permit(:fy_year)
+    params.permit(:fy_year, :status)
   end
 
   def set_scenario
