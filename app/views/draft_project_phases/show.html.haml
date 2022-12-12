@@ -123,6 +123,8 @@
 =render partial: "phase_assets_table", locals: {draft_project_phase: @draft_project_phase}
 
 :javascript
+    // keep track of remaining funds to allocate
+    let remaining_allocation = parseFloat("#{@draft_project_phase.remaining}");
 
     // update allocation with an ajax call
     // send new allocation amount back to server
@@ -161,10 +163,18 @@
 
     // toggle the controls for the related allocation
     $(document).on("click", "input.toggle_edit", (x)=>{
+      let initial_val = parseFloat($(x.target).siblings(".unedit").text().replace(/[^\d\.\-eE+]/g, ""));
+
       if($(x.target).is(":not(:checked)")){ // close edit
-        $(x.target).siblings(".unedit").text('$' + parseFloat($(x.target).siblings("input.edit").val()).toLocaleString());// update static alloc amount, formatted
-      } else { // open edit 
-        $(x.target).siblings("input.edit").val(parseFloat($(x.target).siblings(".unedit").text().replace(/[^\d\.\-eE+]/g, ""))); // textbox gets static value, stripped
+        let updated_val = parseFloat($(x.target).siblings("input.edit").val());
+        $(x.target).siblings(".unedit").text('$' + updated_val.toLocaleString());// update static alloc amount, formatted
+        remaining_allocation += (initial_val - updated_val); // update remaining allocation according to the amount changed
+      } else { // open edit
+        if (initial_val <= 0) {
+          $(x.target).siblings("input.edit").val(remaining_allocation); // textbox gets static value, stripped
+        } else {
+          $(x.target).siblings("input.edit").val(initial_val); // textbox gets static value, stripped
+        }
       }
 
       $(x.target).siblings().toggle(); // swap text box and span
@@ -210,7 +220,12 @@
 
       } else { // open edit
         console.log('edit');
-        $($(x.target).siblings("input.edit")[0]).val(parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""))); // textbox gets static value, stripped
+        let input_val = parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""));
+        if (input_val <= 0) {
+          $($(x.target).siblings("input.edit")[0]).val(remaining_allocation); // textbox gets static value, stripped
+        } else {
+          $($(x.target).siblings("input.edit")[0]).val(input_val); // textbox gets static value, stripped
+        }
         $(x.target).closest(".dfrp").find(".total_actions").children().toggle(); // swap the edit button, and the checkmark and cancel button
       }
       $(x.target).siblings().toggle(); // swap the textbox and static total
