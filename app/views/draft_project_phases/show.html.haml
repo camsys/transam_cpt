@@ -63,11 +63,11 @@
       %strong
         =@draft_project_phase.cost_estimated ? "Cost (e):" : "Cost"
       =format_as_currency(@draft_project_phase.cost)
-    .row
+    .row.allocated
       %strong
         Allocated:
       =format_as_currency(@draft_project_phase.allocated)
-    .row
+    .row.remaining
       %strong
         Remaining:
       =format_as_currency(@draft_project_phase.remaining)
@@ -93,7 +93,7 @@
       .col-md-8
         -if @draft_project_phase.draft_funding_requests.count > 1
           %h4
-            =link_to draft_funding_request_path(funding_request), method: :delete, data: {confirm: "Are you sure you want to delete this Funding Request?"} do 
+            =link_to draft_funding_request_path(funding_request), method: :delete, data: {confirm: "Are you sure you want to delete this Funding Request?"} do
               %i.fa.fa-trash
             ="Funding Request #{count+=1}"
         =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request, budgets: @draft_budgets}
@@ -144,14 +144,28 @@
 
           let total = sum_a($(root).find(".unedit"));
 
-          let actual = (100*(value/total));
+          $(".unedit").each(function(alloc) {
+            let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/total));
+            // update actual %
+            $(this).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+          });
+
+          // let actual = (100*(value/total));
 
           // update actual %
-          $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+          // $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
 
-          // update total
+          // update totals
           $(root).find(".fr_total").html('$' + total.toLocaleString());
-
+          let allocatedHtmlArr = $(".allocated").html().split("\n");
+          let remainingHtmlArr = $(".remaining").html().split("\n");
+          allocatedHtmlArr[4] = '$' + total.toLocaleString();
+          remainingHtmlArr[4] = '$' + remaining_allocation.toLocaleString();
+          $(".allocated").html(allocatedHtmlArr.join("\n"));
+          $(".remaining").html(remainingHtmlArr.join("\n"));
+          let percentFunded = Math.round(100*(total/parseFloat('#{@draft_project_phase.cost}')));
+          $(".progress-bar").css("width", percentFunded.toLocaleString() + "%");
+          $(".progress-bar").text("\n" + percentFunded.toLocaleString() + "% Funded\n");
         },
         error: function(e) {
           console.log(e);
