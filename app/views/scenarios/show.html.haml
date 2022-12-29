@@ -238,14 +238,20 @@
       });
     });
 
-    $('.assetTable').DataTable();
+    $('.assetTable').DataTable({
+      'columnDefs': [ {
+          'targets': 0, /* table column index */
+          'orderable': false, /* true or false */
+       }]
+    });
 
     // This controls the year dropdown in each asset table
     //$(".assetTable").change(".assetReplacementYear", function(){
     $(".assetTable").on("change", ".assetReplacementYear", function(){
       var object_key = $(this).attr("id");
       var year = $(this).val();
-      $("#" + object_key + "Cell").html("Moved to: " + year);
+      var display_year = $(this).children("option:selected").text();
+      $("#" + object_key + "Cell").html("Moved to: " + display_year);
       //this.innerHTML = "WAITING...";
       moveTo(object_key, year, this);
     });
