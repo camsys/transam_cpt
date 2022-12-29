@@ -139,43 +139,47 @@
       let value = $(x.target).closest(".allocation_row").find("input.edit").val();
       let root = $(x.target).closest(".dfrp");  // dfrp is a class at the root of the draft_funding_request_partial
 
-      $.ajax({
-        url: "/draft_budget_allocations/"+id,
-        data: {"draft_budget_allocation": {"amount":value}},
-        method: 'PUT',
-        dataType: 'json',
-        success: function(data) {
-          console.log("updated allocation");
+      let old_value = parseFloat($(x.target).closest(".allocation_row").find(".unedit").text().replace(/[^\d\.\-eE+]/g, ""));
+      if (parseFloat(value) >= 0 && remaining_allocation + (old_value - parseFloat(value)) >= 0) {
 
-          let total = sum_a($(root).find(".unedit"));
+        $.ajax({
+          url: "/draft_budget_allocations/"+id,
+          data: {"draft_budget_allocation": {"amount":value}},
+          method: 'PUT',
+          dataType: 'json',
+          success: function(data) {
+            console.log("updated allocation");
 
-          $(".unedit").each(function(alloc) {
-            let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/total));
+            let total = sum_a($(root).find(".unedit"));
+
+            $(".unedit").each(function(alloc) {
+              let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/total));
+              // update actual %
+              $(this).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+            });
+
+            // let actual = (100*(value/total));
+
             // update actual %
-            $(this).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
-          });
+            // $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
 
-          // let actual = (100*(value/total));
-
-          // update actual %
-          // $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
-
-          // update totals
-          $(root).find(".fr_total").html('$' + total.toLocaleString());
-          let allocatedHtmlArr = $(".allocated").html().split("\n");
-          let remainingHtmlArr = $(".remaining").html().split("\n");
-          allocatedHtmlArr[4] = '$' + total.toLocaleString();
-          remainingHtmlArr[4] = '$' + remaining_allocation.toLocaleString();
-          $(".allocated").html(allocatedHtmlArr.join("\n"));
-          $(".remaining").html(remainingHtmlArr.join("\n"));
-          let percentFunded = Math.round(100*(total/parseFloat('#{@draft_project_phase.cost}')));
-          $(".progress-bar").css("width", percentFunded.toLocaleString() + "%");
-          $(".progress-bar").text("\n" + percentFunded.toLocaleString() + "% Funded\n");
-        },
-        error: function(e) {
-          console.log(e);
-        }
-      });
+            // update totals
+            $(root).find(".fr_total").html('$' + total.toLocaleString());
+            let allocatedHtmlArr = $(".allocated").html().split("\n");
+            let remainingHtmlArr = $(".remaining").html().split("\n");
+            allocatedHtmlArr[4] = '$' + total.toLocaleString();
+            remainingHtmlArr[4] = '$' + remaining_allocation.toLocaleString();
+            $(".allocated").html(allocatedHtmlArr.join("\n"));
+            $(".remaining").html(remainingHtmlArr.join("\n"));
+            let percentFunded = Math.round(100*(total/parseFloat('#{@draft_project_phase.cost}')));
+            $(".progress-bar").css("width", percentFunded.toLocaleString() + "%");
+            $(".progress-bar").text("\n" + percentFunded.toLocaleString() + "% Funded\n");
+          },
+          error: function(e) {
+            console.log(e);
+          }
+        });
+      }
     });
 
 
@@ -186,19 +190,30 @@
 
       if($(x.target).is(":not(:checked)")){ // close edit
         let updated_val = parseFloat($(x.target).siblings("input.edit").val() || "0");
-        $(x.target).siblings(".unedit").text('$' + updated_val.toLocaleString());// update static alloc amount, formatted
-        remaining_allocation += (initial_val - updated_val); // update remaining allocation according to the amount changed
+        let allocation_delta = initial_val - updated_val;
+        if (updated_val < 0) {
+          alert("Allocated value can not be a negative number.");
+          $(x.target).prop("checked", true);
+        } else if (remaining_allocation + allocation_delta < 0) {
+          alert("Allocated value can not exceed remaining cost. Please enter a value no higher than " + (initial_val + remaining_allocation) + ".");
+          $(x.target).prop("checked", true);
+        } else {
+          $(x.target).siblings(".unedit").text('$' + updated_val.toLocaleString());// update static alloc amount, formatted
+
+          remaining_allocation += (initial_val - updated_val); // update remaining allocation according to the amount changed
+
+          $(x.target).siblings().toggle(); // swap text box and span
+          $(x.target).closest(".allocation_row").find(".alloc_actions").children().toggle(); // swap the edit, lock, and trash icons, for the 'done editting' checkmark
+        }
       } else { // open edit
         if (initial_val <= 0) {
           $(x.target).siblings("input.edit").val(remaining_allocation); // textbox gets static value, stripped
         } else {
           $(x.target).siblings("input.edit").val(initial_val); // textbox gets static value, stripped
         }
+        $(x.target).siblings().toggle(); // swap text box and span
+        $(x.target).closest(".allocation_row").find(".alloc_actions").children().toggle(); // swap the edit, lock, and trash icons, for the 'done editting' checkmark
       }
-
-      $(x.target).siblings().toggle(); // swap text box and span
-
-      $(x.target).closest(".allocation_row").find(".alloc_actions").children().toggle(); // swap the edit, lock, and trash icons, for the 'done editting' checkmark
     });
 
     // Trigger Edit Allocation
@@ -231,12 +246,21 @@
     // Toggle controls for editting the funding request total
     $(document).on('click', "input.toggle_edit_total", (x)=>{
       if($(x.target).is(":not(:checked)")){ // close edit
-        console.log('not Checked');
-        $(x.target).siblings(".unedit_total").text('$' + parseFloat($(x.target).siblings("input.edit").val() || "0").toLocaleString()); // static gets textbox value, formatted
-        //$(x.target).closest(".dfrp").find(".total_actions").children().hide();
-        console.log(x.target);
-        //$(x.target).closest(".dfrp").find( "#totalSpinner" ).show();
-
+        let updated_total = parseFloat($(x.target).siblings("input.edit_total").val() || "0");
+        if (updated_total < 0) {
+          alert("Total allocation can not be a negative number.");
+          $(x.target).prop("checked", true);
+        } else if (updated_total > #{@draft_project_phase.cost}) {
+          alert("Total allocation can not exceed project phase cost.");
+          $(x.target).prop("checked", true);
+        } else {
+          console.log('not Checked');
+          $(x.target).siblings(".unedit_total").text('$' + parseFloat($(x.target).siblings("input.edit").val() || "0").toLocaleString()); // static gets textbox value, formatted
+          //$(x.target).closest(".dfrp").find(".total_actions").children().hide();
+          console.log(x.target);
+          //$(x.target).closest(".dfrp").find( "#totalSpinner" ).show();
+          $(x.target).siblings().toggle(); // swap the textbox and static total
+        }
       } else { // open edit
         console.log('edit');
         let input_val = parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, "") || "0");
@@ -246,9 +270,8 @@
           $($(x.target).siblings("input.edit")[0]).val(input_val); // textbox gets static value, stripped
         }
         $(x.target).closest(".dfrp").find(".total_actions").children().toggle(); // swap the edit button, and the checkmark and cancel button
+        $(x.target).siblings().toggle(); // swap the textbox and static total
       }
-      $(x.target).siblings().toggle(); // swap the textbox and static total
-
     });
 
 
@@ -259,16 +282,21 @@
 
     // Show Spinner on Update
     $(document).on("click", ".lock_total", (x)=>{
-      var cancel_id = x.target.id;
-      var fs_id = cancel_id.split("_")[1];
-      var edit_id = "#edit_" + fs_id;
-      var check_id = "#check_" + fs_id;
-      var cancel_id = "#cancel_" + fs_id;
-      var spinner_id = "#spinner_" + fs_id;
-      $(edit_id).hide();
-      $(check_id).hide();
-      $(cancel_id).hide();
-      $(spinner_id).show();
+      let root = $(x.target).closest(".dfrp");
+      let total = $(root).find("input.edit.edit_total").val();
+
+      if (parseFloat(total) >= 0 && parseFloat(total) <= #{@draft_project_phase.cost}) {
+        var cancel_id = x.target.id;
+        var fs_id = cancel_id.split("_")[1];
+        var edit_id = "#edit_" + fs_id;
+        var check_id = "#check_" + fs_id;
+        var cancel_id = "#cancel_" + fs_id;
+        var spinner_id = "#spinner_" + fs_id;
+        $(edit_id).hide();
+        $(check_id).hide();
+        $(cancel_id).hide();
+        $(spinner_id).show();
+      }
     });
 
 

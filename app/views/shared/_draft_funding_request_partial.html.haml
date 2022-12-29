@@ -113,19 +113,21 @@
             let total = $(root).find("input.edit.edit_total").val();
             let id = "#{funding_request.object_key}";
 
-            // Make Call to Update the Total
-            $.ajax({
-              url: "/draft_funding_requests/"+id+"/lock_total",
-              data: {"total":total},
-              method: 'PATCH',
-              dataType: 'json',
-              success: function(data) {
-                location.reload();
-              },
-              error: function(e) {
-                console.log(e);
-              }
-            });
+            if (parseFloat(total) >= 0 && parseFloat(total) <= #{@draft_project_phase.cost}) {
+              // Make Call to Update the Total
+              $.ajax({
+                url: "/draft_funding_requests/"+id+"/lock_total",
+                data: {"total":total},
+                method: 'PATCH',
+                dataType: 'json',
+                success: function(data) {
+                  location.reload();
+                },
+                error: function(e) {
+                  console.log(e);
+                }
+              });
+            }
           });
 
   .row
