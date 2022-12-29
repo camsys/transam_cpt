@@ -1,9 +1,10 @@
-
+  
 
 .col-md-12
-  %table.table-striped.assetTable
+  %table.table-striped.assetTable(data-order='[[1, "asc"]]')
     %thead
       %tr
+        %th
         %th.text-center
           YEAR
         %th ID
@@ -23,8 +24,12 @@
       -draft_project_phase.draft_project_phase_assets.each do |dppa|
         -specific_asset = dppa.transit_asset.very_specific
         %tr
+          %td
+            - if specific_asset.policy_replacement_year != draft_project_phase.fy_year
+              %a.transam-tooltip{title: "Moved from: #{format_as_fiscal_year(specific_asset.policy_replacement_year)}"}
+                %i.fa.fa-exclamation-triangle.text-danger
           %td.text-center{id: "#{dppa.object_key}Cell"}
-            %form
+            %form{style: "padding-left: 0px"}
               %select.assetReplacementYear{id: dppa.object_key}
                 -((draft_project_phase.scenario.try(:fy_year) || 2020)..(draft_project_phase.scenario.try(:ending_fy_year) || 2035) ).each do |year|
                   %option{value: "#{year}", selected: (year==draft_project_phase.fy_year)} 
