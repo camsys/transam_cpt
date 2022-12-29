@@ -8,7 +8,12 @@
 :javascript
   $(document).ready(function () {
 
-    $('.assetTable').DataTable();
+    $('.assetTable').DataTable({
+      'columnDefs': [ {
+          'targets': 0, /* table column index */
+          'orderable': false, /* true or false */
+       }]
+    });
 
     // This controls the year dropdown in each asset table
     $(".assetReplacementYear").change(function(){
