@@ -283,6 +283,10 @@ class Scenario < ApplicationRecord
       transition CANCELLABLE_STATES => :cancelled
     end
 
+    event :reopen do
+      transition :cancelled => :unconstrained_plan
+    end
+
   end
 
   #---------------------------------------------------------------------------
@@ -307,11 +311,11 @@ class Scenario < ApplicationRecord
 
   def state_owner
     case state.to_sym
-    when :approved, :cancelled
+    when :approved
       nil
     when :unconstrained_plan, :constrained_plan, :final_draft
       organization 
-    when :submitted_unconstrained_plan, :submitted_constrained_plan, :awaiting_final_approval
+    when :submitted_unconstrained_plan, :submitted_constrained_plan, :awaiting_final_approval, :cancelled
       reviewer_organization
     end
   end
