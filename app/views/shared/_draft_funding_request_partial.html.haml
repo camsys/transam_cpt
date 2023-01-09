@@ -65,7 +65,7 @@
         -remaining_pct = remaining_pct*(1-(allocation.required_pct))
       .col-md-1.alloc_actual
         -cost = funding_request.total
-        ="#{(100*(allocation.amount.to_f/cost.to_f)).round(3)}%"
+        ="#{allocation.amount > 0 && cost > 0 ? (100*(allocation.amount.to_f/cost.to_f)).round(3) : 0}%"
       .col-md-3.text-right
         %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none"}
         %span.unedit
@@ -110,7 +110,7 @@
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
 
             let root = $(x.target).closest(".dfrp");
-            let total = $(root).find("input.edit.edit_total").val();
+            let total = $(root).find("input.edit.edit_total").val() || "0";
             let id = "#{funding_request.object_key}";
 
             if (parseFloat(total) >= 0 && parseFloat(total) <= #{@draft_project_phase.cost}) {
@@ -129,7 +129,3 @@
               });
             }
           });
-
-  .row
-    .col-md-11
-      %hr
