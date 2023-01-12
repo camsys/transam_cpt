@@ -64,7 +64,7 @@
         ="#{(100*effective_pct).round(3)}%"
         -remaining_pct = remaining_pct*(1-(allocation.required_pct))
       .col-md-1.alloc_actual
-        -cost = funding_request.total
+        -cost = @draft_project_phase.cost
         ="#{allocation.amount > 0 && cost > 0 ? (100*(allocation.amount.to_f/cost.to_f)).round(3) : 0}%"
       .col-md-3.text-right
         %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none"}
@@ -110,7 +110,7 @@
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
 
             let root = $(x.target).closest(".dfrp");
-            let total = $(root).find("input.edit.edit_total").val() || "0";
+            let total = Math.floor(parseFloat($(root).find("input.edit.edit_total").val())).toString() || "0";
             let id = "#{funding_request.object_key}";
 
             if (parseFloat(total) >= 0 && parseFloat(total) <= #{@draft_project_phase.cost}) {
