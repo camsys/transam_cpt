@@ -110,7 +110,7 @@
           $(document).on("click", "##{funding_request.object_key} .lock_total", (x)=>{
 
             let root = $(x.target).closest(".dfrp");
-            let total = Math.floor(parseFloat($(root).find("input.edit.edit_total").val())).toString() || "0";
+            let total = Math.floor(parseFloat($(root).find("input.edit.edit_total").val()) || 0).toString();
             let id = "#{funding_request.object_key}";
 
             if (parseFloat(total) >= 0 && parseFloat(total) <= #{@draft_project_phase.cost}) {

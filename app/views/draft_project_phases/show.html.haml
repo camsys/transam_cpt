@@ -129,7 +129,7 @@
     $(document).on("click", ".confirm_edit",(x) => {
 
       let id = $(x.target).closest(".alloc_actions").attr("data_id");
-      let value = Math.floor(parseFloat($(x.target).closest(".allocation_row").find("input.edit").val())).toString() || "0";
+      let value = Math.floor(parseFloat($(x.target).closest(".allocation_row").find("input.edit").val()) || 0).toString();
       let root = $(x.target).closest(".dfrp");  // dfrp is a class at the root of the draft_funding_request_partial
 
       let old_value = parseFloat($(x.target).closest(".allocation_row").find(".unedit").text().replace(/[^\d\.\-eE+]/g, ""));
