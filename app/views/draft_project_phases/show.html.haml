@@ -102,13 +102,6 @@
               %i.fa.fa-trash
             ="Funding Request #{count+=1}"
         =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request, budgets: @draft_budgets}
-// Funding
-%div.row
-  .col-md-12.text-center
-    %h4
-      ="Funding Request"
-      =link_to draft_funding_requests_url(draft_project_phase_id: @draft_project_phase.object_key), method: :post, class: "btn btn-info btn-xs" do 
-        %i.fa.fa-plus
 
 // Milestones
 %div.row
@@ -136,7 +129,7 @@
     $(document).on("click", ".confirm_edit",(x) => {
 
       let id = $(x.target).closest(".alloc_actions").attr("data_id");
-      let value = $(x.target).closest(".allocation_row").find("input.edit").val();
+      let value = Math.floor(parseFloat($(x.target).closest(".allocation_row").find("input.edit").val()) || 0).toString();
       let root = $(x.target).closest(".dfrp");  // dfrp is a class at the root of the draft_funding_request_partial
 
       let old_value = parseFloat($(x.target).closest(".allocation_row").find(".unedit").text().replace(/[^\d\.\-eE+]/g, ""));
@@ -153,9 +146,9 @@
             let total = sum_a($(root).find(".unedit"));
 
             $(".unedit").each(function(alloc) {
-              let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/total));
+              let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/parseFloat('#{@draft_project_phase.cost}')));
               // update actual %
-              $(this).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
+              $(this).parent().siblings(".alloc_actual").html((actual.toFixed(3) || 0) + "%");
             });
 
             // let actual = (100*(value/total));
@@ -172,6 +165,9 @@
             $(".allocated").html(allocatedHtmlArr.join("\n"));
             $(".remaining").html(remainingHtmlArr.join("\n"));
             let percentFunded = Math.round(100*(total/parseFloat('#{@draft_project_phase.cost}')));
+            if (percentFunded == 100 && remaining_allocation > 0) {
+              percentFunded = 99;
+            }
             $(".progress-bar").css("width", percentFunded.toLocaleString() + "%");
             $(".progress-bar").text("\n" + percentFunded.toLocaleString() + "% Funded\n");
           },
@@ -189,7 +185,7 @@
       let initial_val = parseFloat($(x.target).siblings(".unedit").text().replace(/[^\d\.\-eE+]/g, "") || "0");
 
       if($(x.target).is(":not(:checked)")){ // close edit
-        let updated_val = parseFloat($(x.target).siblings("input.edit").val() || "0");
+        let updated_val = Math.floor(parseFloat($(x.target).siblings("input.edit").val() || "0"));
         let allocation_delta = initial_val - updated_val;
         if (updated_val < 0) {
           alert("Allocated value can not be a negative number.");
@@ -246,7 +242,7 @@
     // Toggle controls for editting the funding request total
     $(document).on('click', "input.toggle_edit_total", (x)=>{
       if($(x.target).is(":not(:checked)")){ // close edit
-        let updated_total = parseFloat($(x.target).siblings("input.edit_total").val() || "0");
+        let updated_total = Math.floor(parseFloat($(x.target).siblings("input.edit_total").val() || "0"));
         if (updated_total < 0) {
           alert("Total allocation can not be a negative number.");
           $(x.target).prop("checked", true);
