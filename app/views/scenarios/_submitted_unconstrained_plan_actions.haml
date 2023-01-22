@@ -4,5 +4,5 @@
   .col-md-4
     =button_to 'Reject', transition_scenario_path(@scenario, transition: "reject"), method: :put, class: "btn btn-info"
   .col-md-4
-    =button_to 'Close', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger", data: {confirm: "Are you sure you want to close this scenario? This action cannot be undone."}
+    =button_to 'Close', transition_scenario_path(@scenario, transition: "cancel"), method: :put, class: "btn btn-danger", data: {confirm: "Are you sure you want to close this scenario?"}
 

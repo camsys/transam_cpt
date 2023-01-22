@@ -57,7 +57,11 @@ class DraftProject < ApplicationRecord
 
   def percent_funded
     return 0 if cost == 0
-    return (100*(allocated.to_f/cost.to_f)).round
+    percent = (100*(allocated.to_f/cost.to_f)).round
+    if percent == 100 && allocated.to_f != cost.to_f
+      percent = 99
+    end
+    return percent
   end
 
   def copy(new_scenario, pinned_only=false, starting_year=nil)
