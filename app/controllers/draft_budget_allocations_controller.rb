@@ -38,11 +38,20 @@ class DraftBudgetAllocationsController < OrganizationAwareController
   def create 
     @draft_budget_allocation = DraftBudgetAllocation.new 
     respond_to do |format|
-      if @draft_budget_allocation.update(form_params)
-        format.html { redirect_to draft_project_phase_path(@draft_budget_allocation.draft_project_phase)}
+      if form_params[:amount].to_i > DraftFundingRequest.find(form_params[:draft_funding_request_id]).draft_project_phase.remaining
+        error_message = "Allocation amount can not exceed remaining project phase cost.
+          Please enter an amount no larger than $#{DraftFundingRequest.find(form_params[:draft_funding_request_id]).draft_project_phase.remaining}."
+      elsif form_params[:amount].to_i < 0
+        error_message = "Allocation amount must be a positive integer."
       else
-        format.html
+        if @draft_budget_allocation.update(form_params)
+          format.html { redirect_to draft_project_phase_path(@draft_budget_allocation.draft_project_phase)}
+        else
+          format.html
+        end
       end
+      flash.alert = error_message
+      format.html { redirect_back(fallback_location: root_path) }
     end
   end
 

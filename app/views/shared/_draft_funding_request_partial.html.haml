@@ -30,7 +30,7 @@
 
 
 
-.dfrp
+.dfrp{id: "#{funding_request.object_key}RequestContainer"}
   -funding_request.violations.each do |violation|
     %h5
       %i.fa.fa-exclamation-triangle
@@ -64,7 +64,7 @@
         ="#{(100*effective_pct).round(3)}%"
         -remaining_pct = remaining_pct*(1-(allocation.required_pct))
       .col-md-1.alloc_actual
-        -cost = @draft_project_phase.cost
+        -cost = funding_request.total
         ="#{allocation.amount > 0 && cost > 0 ? (100*(allocation.amount.to_f/cost.to_f)).round(3) : 0}%"
       .col-md-3.text-right
         %input.edit{type:'number',value:"#{allocation.amount}", style:"display:none"}
@@ -75,12 +75,17 @@
         %i.fa.fa-edit.trigger_toggle_edit
         %i.fa.fa-check.trigger_toggle_edit.confirm_edit{style:"display:none"}
         %i.fa.fa-times.cancel_edit{style:"display:none"}
-        -# =link_to lock_me_draft_budget_allocation_path(allocation_id:allocation), method: :patch do
-        -#   %i.fa.fa-lock.alloc_lock
-        -# =link_to draft_budget_allocation_path(allocation), method: :delete do
-        -#   %i.fa.fa-trash
+          =link_to lock_me_draft_budget_allocation_path(allocation_id:allocation), method: :patch do
+            %i.fa.fa-lock.alloc_lock
+          =link_to draft_budget_allocation_path(allocation), method: :delete do
+            %i.fa.fa-trash
 
-  .row  
+  .row.add-allocation
+    .col-md-3.text-center
+      =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do
+        %i.fa.fa-plus
+
+  .row
     .row
       .col-md-9
       .col-md-2
@@ -129,3 +134,26 @@
               });
             }
           });
+
+  .row
+    .col-md-11
+      %hr
+
+  :javascript
+    $(document).ready(function() {
+      let allocationCount = $("##{funding_request.object_key}RequestContainer .allocation_row").length;
+      if (allocationCount >= 3) {
+        $("##{funding_request.object_key}RequestContainer .add-allocation").hide();
+      } else {
+        $("##{funding_request.object_key}RequestContainer .add-allocation").show();
+      }
+      if (allocationCount <= 1) {
+        $("##{funding_request.object_key}RequestContainer a[data-method='delete']").hide();
+      } else {
+        $("##{funding_request.object_key}RequestContainer a[data-method='delete']").show();
+      }
+    });
+
+    // $(".cancel_edit[data-method='delete']").on("click", ()=>{
+    //
+    // });
