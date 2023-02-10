@@ -75,13 +75,15 @@ class DraftBudgetAllocationsController < OrganizationAwareController
 
   def lock_me
     allocation_to_loc = DraftBudgetAllocation.find_by(object_key: params[:allocation_id])
-    total_request_amount = allocation_to_loc.amount.to_f / allocation_to_loc.effective_pct.to_f
+    total_request_amount = ((params[:amount] || allocation_to_loc.amount).to_f / allocation_to_loc.effective_pct.to_f).round()
     funding_request = allocation_to_loc.draft_funding_request
     accumulated = 0.0
     funding_request.ordered_allocations.each do |alloc|
       calc_amount = (alloc.effective_pct.to_f * total_request_amount.to_f).floor()
       if(alloc.required_pct == 1.0)
         alloc.amount = total_request_amount - accumulated
+      elsif(alloc.object_key == params[:allocation_id])
+        alloc.amount = params[:amount]
       else
         alloc.amount = calc_amount
       end
@@ -90,7 +92,7 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     end
 
     respond_to do |format|
-      format.html { redirect_to draft_project_phase_path(allocation_to_loc.draft_project_phase) }
+      format.json {}
     end
   end
 
