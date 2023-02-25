@@ -38,11 +38,20 @@ class DraftBudgetAllocationsController < OrganizationAwareController
   def create 
     @draft_budget_allocation = DraftBudgetAllocation.new 
     respond_to do |format|
-      if @draft_budget_allocation.update(form_params)
-        format.html { redirect_to draft_project_phase_path(@draft_budget_allocation.draft_project_phase)}
+      if form_params[:amount].to_i > DraftFundingRequest.find(form_params[:draft_funding_request_id]).draft_project_phase.remaining
+        error_message = "Allocation amount can not exceed remaining project phase cost.
+          Please enter an amount no larger than $#{DraftFundingRequest.find(form_params[:draft_funding_request_id]).draft_project_phase.remaining}."
+      elsif form_params[:amount].to_i < 0
+        error_message = "Allocation amount must be a positive integer."
       else
-        format.html
+        if @draft_budget_allocation.update(form_params)
+          format.html { redirect_to draft_project_phase_path(@draft_budget_allocation.draft_project_phase)}
+        else
+          format.html
+        end
       end
+      flash.alert = error_message
+      format.html { redirect_back(fallback_location: root_path) }
     end
   end
 
@@ -66,13 +75,15 @@ class DraftBudgetAllocationsController < OrganizationAwareController
 
   def lock_me
     allocation_to_loc = DraftBudgetAllocation.find_by(object_key: params[:allocation_id])
-    total_request_amount = allocation_to_loc.amount.to_f / allocation_to_loc.effective_pct.to_f
+    total_request_amount = ((params[:amount] || allocation_to_loc.amount).to_f / allocation_to_loc.effective_pct.to_f).round()
     funding_request = allocation_to_loc.draft_funding_request
     accumulated = 0.0
     funding_request.ordered_allocations.each do |alloc|
       calc_amount = (alloc.effective_pct.to_f * total_request_amount.to_f).floor()
       if(alloc.required_pct == 1.0)
         alloc.amount = total_request_amount - accumulated
+      elsif(alloc.object_key == params[:allocation_id])
+        alloc.amount = params[:amount]
       else
         alloc.amount = calc_amount
       end
@@ -81,7 +92,7 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     end
 
     respond_to do |format|
-      format.html { redirect_to draft_project_phase_path(allocation_to_loc.draft_project_phase) }
+      format.json {}
     end
   end
 
