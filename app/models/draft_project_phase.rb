@@ -19,6 +19,10 @@ class DraftProjectPhase < ApplicationRecord
     :count
   ]
 
+  # SQL clause for cost sum-up
+  # this is also used in CapitalProject related cost calculation
+  COST_SUM_SQL_CLAUSE = "(CASE WHEN draft_project_phases.cost > 0 THEN draft_project_phases.cost ELSE draft_project_phases.cost_estimated END)"
+
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -54,6 +58,18 @@ class DraftProjectPhase < ApplicationRecord
 
   def allocated
     draft_budget_allocations.pluck(:amount).sum
+  end
+
+  def federal_allocated
+    draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Federal"}.pluck(:amount).sum
+  end
+
+  def state_allocated
+    draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "State"}.pluck(:amount).sum
+  end
+
+  def local_allocated
+    draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Local"}.pluck(:amount).sum
   end
 
   def remaining

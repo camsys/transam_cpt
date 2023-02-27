@@ -51,6 +51,18 @@ class DraftProject < ApplicationRecord
     phases.map{ |phase| phase.allocated }.sum
   end
 
+  def federal_allocated
+    phases.map{ |p| p.draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Federal"}.pluck(:amount).sum}.sum
+  end
+
+  def state_allocated
+    phases.map{ |p| p.draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "State"}.pluck(:amount).sum}.sum
+  end
+
+  def local_allocated
+    phases.map{ |p| p.draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Local"}.pluck(:amount).sum}.sum
+  end
+
   def remaining
     cost - allocated
   end
