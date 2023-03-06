@@ -430,7 +430,9 @@ class Scenario < ApplicationRecord
       return "rejected"
     when "submit"
       return "submitted"
-    end 
+    when "reopen"
+      return "reopened"
+    end
   end
 
   def state_title
