@@ -39,6 +39,7 @@ class DraftProject < ApplicationRecord
   # Validations
   #------------------------------------------------------------------------------
   validates :team_ali_code_id, presence: true
+  validates :project_number, presence: true
 
   #------------------------------------------------------------------------------
   # Instance Methods
