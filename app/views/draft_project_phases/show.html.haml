@@ -103,6 +103,14 @@
             ="Funding Request #{count+=1}"
         =render partial: "shared/draft_funding_request_partial", locals: {funding_request: funding_request, budgets: @draft_budgets}
 
+// Funding
+%div.row
+  .col-md-12.text-center
+    %h4
+      ="Funding Request"
+      =link_to draft_funding_requests_url(draft_project_phase_id: @draft_project_phase.object_key), method: :post, class: "btn btn-info btn-xs" do
+        %i.fa.fa-plus
+
 // Milestones
 %div.row
   .col-md-12
@@ -143,10 +151,11 @@
           success: function(data) {
             console.log("updated allocation");
 
-            let total = sum_a($(root).find(".unedit"));
+            let allocationTotal = sum_a($(root).find(".unedit"));
+            let grandTotal = parseFloat(sum_a($(".unedit")));
 
-            $(".unedit").each(function(alloc) {
-              let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/parseFloat('#{@draft_project_phase.cost}')));
+            $(root).find(".unedit").each(function(alloc) {
+              let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/parseFloat(sum_a($(root).find(".unedit")))));
               // update actual %
               $(this).parent().siblings(".alloc_actual").html((actual.toFixed(3) || 0) + "%");
             });
@@ -157,14 +166,14 @@
             // $(x.target).parent().siblings(".alloc_actual").html(actual.toFixed(3) + "%");
 
             // update totals
-            $(root).find(".fr_total").html('$' + total.toLocaleString());
+            $(root).find(".fr_total").html('$' + allocationTotal.toLocaleString());
             let allocatedHtmlArr = $(".allocated").html().split("\n");
             let remainingHtmlArr = $(".remaining").html().split("\n");
-            allocatedHtmlArr[4] = '$' + total.toLocaleString();
+            allocatedHtmlArr[4] = '$' + grandTotal.toLocaleString();
             remainingHtmlArr[4] = '$' + remaining_allocation.toLocaleString();
             $(".allocated").html(allocatedHtmlArr.join("\n"));
             $(".remaining").html(remainingHtmlArr.join("\n"));
-            let percentFunded = Math.round(100*(total/parseFloat('#{@draft_project_phase.cost}')));
+            let percentFunded = Math.round(100*(grandTotal/parseFloat('#{@draft_project_phase.cost}')));
             if (percentFunded == 100 && remaining_allocation > 0) {
               percentFunded = 99;
             }
@@ -234,7 +243,38 @@
     };
 
 
+    // lock allocation
+    $(document).on("click", ".alloc_lock", (x)=>{
 
+      let root = $(x.target).closest(".allocation_row");
+      let old_total = parseFloat($(root).closest(".dfrp").find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""));
+      let amount = Math.floor(parseFloat($(root).find("input.edit").val()) || 0).toString();
+      let effectivePct = parseFloat($(root).find("div")[2].innerText) / 100;
+      let id = $(x.target).data("allocationId");
+      let objectKey = $(x.target).data("objectKey");
+
+      if (parseFloat(amount) < 0) {
+        alert("Allocated value can not be a negative number.");
+      } else if (Math.round(parseFloat(amount)/effectivePct) > Math.round(old_total + remaining_allocation)) {
+        alert("Locking the entered allocation would result in a total of $" + Math.round(parseFloat(amount)/effectivePct) +
+          " being applied to this funding request, which exceeds the remaining project cost. " +
+          "Please enter a value no higher than " + Math.floor((old_total + remaining_allocation) * effectivePct) + " for this allocation.");
+      } else {
+        // Make Call to Update the Total
+        $.ajax({
+          url: "/draft_budget_allocations/"+id+"/lock_me",
+          data: {"amount":amount,"allocation_id":objectKey},
+          method: 'PATCH',
+          dataType: 'json',
+          success: function(data) {
+            location.reload();
+          },
+          error: function(e) {
+            console.log(e);
+          }
+        });
+      }
+    });
 
 
 
@@ -246,7 +286,7 @@
         if (updated_total < 0) {
           alert("Total allocation can not be a negative number.");
           $(x.target).prop("checked", true);
-        } else if (updated_total > #{@draft_project_phase.cost}) {
+        } else if (updated_total > remaining_allocation + parseFloat($(x.target).siblings(".unedit_total").text().replace(/[^\d\.\-eE+]/g, "") || "0")) {
           alert("Total allocation can not exceed project phase cost.");
           $(x.target).prop("checked", true);
         } else {
@@ -281,7 +321,7 @@
       let root = $(x.target).closest(".dfrp");
       let total = $(root).find("input.edit.edit_total").val();
 
-      if (parseFloat(total) >= 0 && parseFloat(total) <= #{@draft_project_phase.cost}) {
+      if (parseFloat(total) >= 0 && parseFloat(total) <= remaining_allocation + parseFloat($(root).find(".unedit_total").text().replace(/[^\d\.\-eE+]/g, ""))) {
         var cancel_id = x.target.id;
         var fs_id = cancel_id.split("_")[1];
         var edit_id = "#edit_" + fs_id;

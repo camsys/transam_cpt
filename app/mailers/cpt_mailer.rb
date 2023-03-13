@@ -7,7 +7,11 @@ class CptMailer < ActionMailer::Base
     @app_title = ENV["APPLICATION_TITLE"] ? ENV["APPLICATION_TITLE"] : 'TransAM Application'
     @scenario = scenario
     @subject = subject
-    mail(to: emails, subject: subject)
+    if Rails.env == 'production'
+      mail(to: emails, subject: subject)
+    else
+      mail(to: 'transam@camsys.com', subject: subject, body: emails.join("\n"))
+    end
   end
 
 end

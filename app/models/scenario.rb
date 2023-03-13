@@ -430,7 +430,9 @@ class Scenario < ApplicationRecord
       return "rejected"
     when "submit"
       return "submitted"
-    end 
+    when "reopen"
+      return "reopened"
+    end
   end
 
   def state_title
@@ -459,8 +461,7 @@ class Scenario < ApplicationRecord
     if users.blank? #No managers here, send to all users at this org
       users = User.where(organization: state_owner)
     end
-    #emails = users.pluck(:email)
-    emails = ["dedwards8@gmail.com"] #TODO Leave this here. Remove only when going to QA.
+    emails = users.pluck(:email)
 
     CptMailer.transition(emails, subject, self).deliver! unless emails.blank?
   end
