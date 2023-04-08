@@ -39,6 +39,7 @@ class DraftProject < ApplicationRecord
   # Validations
   #------------------------------------------------------------------------------
   validates :team_ali_code_id, presence: true
+  validates :project_number, presence: true
 
   #------------------------------------------------------------------------------
   # Instance Methods
@@ -49,6 +50,18 @@ class DraftProject < ApplicationRecord
 
   def allocated
     phases.map{ |phase| phase.allocated }.sum
+  end
+
+  def federal_allocated
+    phases.map{ |p| p.draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Federal"}.pluck(:amount).sum}.sum
+  end
+
+  def state_allocated
+    phases.map{ |p| p.draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "State"}.pluck(:amount).sum}.sum
+  end
+
+  def local_allocated
+    phases.map{ |p| p.draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Local"}.pluck(:amount).sum}.sum
   end
 
   def remaining
