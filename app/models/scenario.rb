@@ -302,6 +302,10 @@ class Scenario < ApplicationRecord
     #Add on the ALIs
     export[:activity_line_items] = draft_project_phases.where(fy_year: fy_year).map{ |ali| ali.dotgrants_json}
     export[:funding_templates] = FundingTemplate.all.map{ |funding_template| funding_template.as_json }
+    if organization.organization_type == OrganizationType.find_by(class_name: "TransitOperator")
+      export[:email] = organization.executive_director&.email
+    end
+    export[:fein] = organization.subrecipient_number
     return export 
   end 
 
