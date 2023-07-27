@@ -66,8 +66,8 @@ class ReplacementStatusUpdateEvent < AssetEvent
   protected
 
   def update_asset
-    Rails.logger.debug "Updating replacement status for asset = #{transam_asset.object_key}"
-
+    Rails.logger.debug "Updating replacement status for asset = #{transam_asset.object_key} to #{replacement_status_type_id}"
+    transam_asset.reload
     if transam_asset.replacement_status_updates.empty?
       transam_asset.replacement_status_type = nil
     else
@@ -87,8 +87,10 @@ class ReplacementStatusUpdateEvent < AssetEvent
     transam_asset.save(validate: false)
 
     # update asset and cost(s) in project planner
-    service = CapitalProjectBuilder.new
-    service.update_asset_schedule(transam_asset)
+    if transam_asset.replacement_by_policy?
+      service = CapitalProjectBuilder.new
+      service.update_asset_schedule(transam_asset)
+    end
   end
 
   # Set resonable defaults for a new condition update event
