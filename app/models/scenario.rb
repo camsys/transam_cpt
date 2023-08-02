@@ -32,7 +32,9 @@ class Scenario < ApplicationRecord
     :unconstrained_plan, 
     :submitted_unconstrained_plan, 
     :constrained_plan, 
-    :submitted_constrained_plan
+    :submitted_constrained_plan,
+    :final_draft,
+    :awaiting_final_approval
   ]
 
   # STATE WHERE WE ARE DEALING WITH BUDGETS
