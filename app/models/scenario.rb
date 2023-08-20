@@ -32,7 +32,9 @@ class Scenario < ApplicationRecord
     :unconstrained_plan, 
     :submitted_unconstrained_plan, 
     :constrained_plan, 
-    :submitted_constrained_plan
+    :submitted_constrained_plan,
+    :final_draft,
+    :awaiting_final_approval
   ]
 
   # STATE WHERE WE ARE DEALING WITH BUDGETS
@@ -291,6 +293,12 @@ class Scenario < ApplicationRecord
       transition :cancelled => :unconstrained_plan
     end
 
+    #---------------------------------------------------------------------------
+    # Transition actions
+    #---------------------------------------------------------------------------
+
+    after_transition :mark_assets_underway, all => :approved
+    
   end
 
   #---------------------------------------------------------------------------
@@ -302,6 +310,10 @@ class Scenario < ApplicationRecord
     #Add on the ALIs
     export[:activity_line_items] = draft_project_phases.where(fy_year: fy_year).map{ |ali| ali.dotgrants_json}
     export[:funding_templates] = FundingTemplate.all.map{ |funding_template| funding_template.as_json }
+    if organization.organization_type == OrganizationType.find_by(class_name: "TransitOperator")
+      export[:email] = organization.executive_director&.email
+    end
+    export[:fein] = organization.subrecipient_number
     return export 
   end 
 
@@ -324,6 +336,17 @@ class Scenario < ApplicationRecord
     end
   end
 
+  def mark_assets_underway
+    underway_id = ReplacementStatusType.where(name: 'Underway').pluck(:id).first
+    comment = "The #{name} plan includes the replacement of this asset."
+    draft_project_phases.where(fy_year: fy_year).each do |dpp|
+      dpp.transit_assets.each do |ta|
+        ReplacementStatusUpdateEvent.create(transam_asset: ta.transam_asset, replacement_year: fy_year,
+                                            replacement_status_type_id: underway_id, comments: comment)
+      end
+    end
+  end
+  
   #---------------------------------------------------------------------------
   # State Machine Validations
   #---------------------------------------------------------------------------
