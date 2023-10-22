@@ -106,12 +106,12 @@ class DraftProject < ApplicationRecord
 
   def copy_from_attributes 
     attributes = {}
-    (FORM_PARAMS - [:project_number, {district_ids: [] }]).each do |param|
+    FORM_PARAMS.each do |param|
       attributes[param] = self.send(param)
     end   
     new_project = DraftProject.create(attributes)
     new_project.districts = self.districts
-    new_project.save 
+    new_project.save!
     return new_project
   end
 
