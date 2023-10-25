@@ -25,9 +25,7 @@ class DraftBudgetAllocationsController < OrganizationAwareController
     org = @draft_funding_request.draft_project_phase.try(:organization)
     @draft_budgets = DraftBudget.active.where(owner: org)
     @draft_budgets += DraftBudget.active.placeholder 
-    if current_user.organization.grantor?
-      @draft_budgets += DraftBudget.active.shared 
-    end
+    @draft_budgets += DraftBudget.active.shared 
     @draft_budgets.uniq!
 
     respond_to do |format|
