@@ -55,7 +55,9 @@
         %form.text-left
           %select.text-left.budgetForm{id: allocation.object_key}
             -budgets.each do |budget|
-              %option{value: budget.id, selected: allocation.draft_budget == budget} 
+              %option{value: budget.id, 
+                      selected: allocation.draft_budget == budget, 
+                      disabled: budget.shared_across_scenarios && !is_grantor} 
                 =budget.try(:type_and_name)
       .col-md-1
         ="#{100*allocation.required_pct}%"
