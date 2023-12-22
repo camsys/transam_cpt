@@ -18,6 +18,7 @@ wb.styles do |style|
             project_id:         ["Project ID", "phase.draft_project.project_number.to_s.split('#').last"],
             organization:       ["Organization", "phase.scenario.organization"],
             project_year:       ["Project Year", "format_as_fiscal_year(phase.draft_project.fy_year)"],
+            primary_scenario:   ["Primary Scenario", "format_as_yes_no(phase.scenario.primary_scenario)"],
             project_title:      ["Project Title", "phase.draft_project.title"],
             scope:              ["Scope", "phase.team_ali_code.try(:scope)"],
             project_type:       ["Project Type", "phase.draft_project.capital_project_type"],

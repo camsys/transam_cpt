@@ -17,6 +17,7 @@ wb.styles do |style|
             organization:           ["Agency", "project.organization.short_name"],
             year:                   ["FY", "format_as_fiscal_year(project.fy_year)"],
             project_id:             ["Project Name", "project.project_number.to_s.split('#').last"],
+            primary_scenario:       ["Primary Scenario", "format_as_yes_no(project.scenario.try(:primary_scenario))"],
             title:                  ["Title", "project.title"],
             project_description:    ["Project Description", "project.description"],
             project_justification:  ["Project Justification", "project.justification"],

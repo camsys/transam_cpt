@@ -50,7 +50,7 @@ class ScenariosController < OrganizationAwareController
     end
     #@phase_filter_ali_code = params[:filter_ali] || @scenario.draft_project_phases.min_by(&:fy_year).team_ali_code #TODO: what should be default here?
     respond_to do |format|
-      format.html
+      format.html {render :show, locals: {new_scenario: params[:new_scenario]}}
     end
     
   end
@@ -90,7 +90,7 @@ class ScenariosController < OrganizationAwareController
 
     respond_to do |format|
       if @scenario.update(form_params)
-        format.html { redirect_to scenario_path(@scenario) }
+        format.html { redirect_to scenario_path(@scenario, new_scenario: true) }
       else
         format.html
       end
@@ -136,6 +136,35 @@ class ScenariosController < OrganizationAwareController
     @scenario = @scenario.copy 
     respond_to do |format|
       format.html { redirect_to scenario_path(@scenario) }
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+  # Toggle Primary Scenario
+  #-----------------------------------------------------------------------------
+  def toggle_primary
+    set_scenario
+
+    unless @scenario.primary_scenario
+      if old_primary = Scenario.find_by(organization: @scenario.organization, fy_year: @scenario.fy_year, primary_scenario: true)
+        unless old_primary.update(primary_scenario: false)
+          error =  old_primary.errors.try(:first)
+          if error
+            flash.alert = error.try(:last)
+          end
+        end
+      end
+    end
+
+    respond_to do |format|
+      if @scenario.update(primary_scenario: !@scenario.primary_scenario)
+        format.html { redirect_to scenario_path(@scenario) }
+      else
+        error =  @scenario.errors.try(:first)
+        if error
+          flash.alert = error.try(:last)
+        end
+      end
     end
   end
 

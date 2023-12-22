@@ -77,6 +77,7 @@ class Scenario < ApplicationRecord
   validates :organization_id, presence: true
   validates :fy_year, presence: true 
   validates :ending_fy_year, presence: true
+  validates :primary_scenario, uniqueness: {scope: [:organization, :fy_year]}, if: :primary_scenario
 
   #------------------------------------------------------------------------------
   # Scopes

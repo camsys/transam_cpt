@@ -10,6 +10,15 @@
     cursor: pointer;
   }
 
+  #primary-scenario-selector {
+    font-size: large;
+  }
+
+  #primary-scenario-selector a {
+    text-decoration: none;
+    color: inherit;
+  }
+
 .row.text-center
   %h1
     =@scenario.name 
@@ -44,7 +53,17 @@
       =link_to assets_scenario_path(@scenario), target: "_blank" do 
         %i.fa.fa-search
         Assets
-
+    .row
+      #primary-scenario-selector
+        - if !@scenario.primary_scenario
+          - old_primary = Scenario.find_by(organization: @scenario.organization, fy_year: @scenario.fy_year, primary_scenario: true)
+          =link_to toggle_primary_scenario_path(@scenario),
+          method: :put,
+          data: old_primary ? {confirm: "This agency already has a Primary Scenario for this fiscal year. Would you like to mark this scenario as the new Primary Scenario?"} : {} do
+            %i{class: "fa fa-square-o"}
+        - else
+          %i{class: "fa fa-times-rectangle-o"}
+        %strong Primary Scenario
 
   .col-md-4
     //  .progress
@@ -287,7 +306,10 @@
       }
     });
 
-
+    // Check the Primary Scenario box if this scenario is new, triggering confirmation if previous scenario selected
+    if (#{new_scenario == "true"}) {
+      $('#primary-scenario-selector a').click();
+    }
   });
 
 
