@@ -89,10 +89,11 @@
       :search => 'client',
       :export => "['csv', 'txt']",
       :columns => '{"name":{"name": "Name","type":"drilldown-link"},
+                    "primary_scenario":{"name":"Primary Scenario","type":"x-column"},
                     "status":{"name":"Status"},
                     "org":{"name":"Organization"},
                     "created_at":{"name":"Created At"}}',
-      :selected_columns => "name,status,org,created_at",
+      :selected_columns => "name,primary_scenario,status,org,created_at",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -105,6 +106,7 @@
       add_row('#{table_dom_id}',
       {
         "name": '#{link_to scenario.name, scenario_path(scenario)}',
+        "primary_scenario": "#{format_as_boolean(scenario.primary_scenario, "fa-times")}",
         "status": '#{scenario.state_title}',
         "org": '#{scenario.organization.name}',
         "created_at": "#{format_as_date_time(scenario.created_at)}"

@@ -88,6 +88,7 @@ Rails.application.routes.draw do
       get 'assets'
       post 'copy'
       get 'dotgrants_export'
+      put 'toggle_primary'
     end
   end
 
