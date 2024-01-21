@@ -63,6 +63,7 @@
           %th.left{data: {field: 'agency', visible: "#{@organization_list.count > 1}"}} Agency
         %th.center.nowrap{data: {field: 'fy_year'}} #{get_fy_label}
         %th.left.nowrap{data: {field: 'project_number'}} Project Name
+        %th.center{data: {field: 'primary_scenario', formatter: 'raw_boolean_x_formatter'}} Primary Scenario
         %th.left{data: {visible: 'false', field: 'title'}} Title
         %th.left.nowrap{data: {visible: 'false', field: 'description'}} Project Description
         %th.left.nowrap{data: {visible: 'false', field: 'justification'}} Project Justification
