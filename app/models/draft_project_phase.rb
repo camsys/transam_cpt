@@ -95,6 +95,9 @@ class DraftProjectPhase < ApplicationRecord
       return
     end
     self.update(cost: estimated_cost)
+    draft_funding_requests.each do |r|
+      r.lock_total(estimated_cost)
+    end
   end
 
   def estimated_cost
