@@ -60,6 +60,10 @@ class DraftProjectPhase < ApplicationRecord
     draft_budget_allocations.pluck(:amount).sum
   end
 
+  def placeholder_total
+    draft_budget_allocations.select{ |a| a.draft_budget.default}.sum(&:amount);
+  end
+
   def federal_allocated
     draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Federal"}.pluck(:amount).sum
   end

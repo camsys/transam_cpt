@@ -76,6 +76,10 @@
       %strong
         Remaining:
       =format_as_currency(@draft_project_phase.remaining)
+    .row.placeholder
+      %strong
+        Placeholder Total:
+      =format_as_currency(@draft_project_phase.placeholder_total)
   .col-md-4
     .progress
       .progress-bar.bg-success{role: "progressbar", style: "width: #{@draft_project_phase.percent_funded}%"}
@@ -155,6 +159,9 @@
 
             let allocationTotal = sum_a($(root).find(".unedit"));
             let grandTotal = parseFloat(sum_a($(".unedit")));
+            let placeholderTotal = sum_a($(root).find(".unedit").filter(function(index) {
+              return $(this).closest(".allocation_row").find("option:selected").text().includes("Placeholder");
+            }));
 
             $(root).find(".unedit").each(function(alloc) {
               let actual = (100*(parseFloat($(this).text().replace(/[^\d\.\-eE+]/g, ""))/parseFloat(sum_a($(root).find(".unedit")))));
@@ -171,10 +178,13 @@
             $(root).find(".fr_total").html('$' + allocationTotal.toLocaleString());
             let allocatedHtmlArr = $(".allocated").html().split("\n");
             let remainingHtmlArr = $(".remaining").html().split("\n");
+            let placeholderHtmlArr = $(".placeholder").html().split("\n");
             allocatedHtmlArr[4] = '$' + grandTotal.toLocaleString();
             remainingHtmlArr[4] = '$' + remaining_allocation.toLocaleString();
+            placeholderHtmlArr[4] = '$' + placeholderTotal.toLocaleString();
             $(".allocated").html(allocatedHtmlArr.join("\n"));
             $(".remaining").html(remainingHtmlArr.join("\n"));
+            $(".placeholder").html(placeholderHtmlArr.join("\n"));
             let percentFunded = Math.round(100*(grandTotal/parseFloat('#{@draft_project_phase.cost}')));
             if (percentFunded == 100 && remaining_allocation > 0) {
               percentFunded = 99;
