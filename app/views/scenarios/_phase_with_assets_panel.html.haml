@@ -130,6 +130,10 @@
           %strong
             Remaining:
           =format_as_currency(phase.remaining)
+        .row
+          %strong
+            Placeholder Total:
+          =format_as_currency(phase.placeholder_total)
       //.col-md-2
       //  .row 
       //    =pie_chart [["Allocated",phase.allocated],["Remaining",phase.remaining]], donut: true, colors:["green","red"]

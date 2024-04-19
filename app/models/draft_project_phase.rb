@@ -60,6 +60,10 @@ class DraftProjectPhase < ApplicationRecord
     draft_budget_allocations.pluck(:amount).sum
   end
 
+  def placeholder_total
+    draft_budget_allocations.select{ |a| a.draft_budget.default}.sum(&:amount);
+  end
+
   def federal_allocated
     draft_budget_allocations.select{ |a| a.funding_source_type.try(:name) == "Federal"}.pluck(:amount).sum
   end
@@ -91,6 +95,9 @@ class DraftProjectPhase < ApplicationRecord
       return
     end
     self.update(cost: estimated_cost)
+    draft_funding_requests.each do |r|
+      r.lock_total(estimated_cost)
+    end
   end
 
   def estimated_cost

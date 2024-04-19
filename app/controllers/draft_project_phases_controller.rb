@@ -71,7 +71,17 @@ class DraftProjectPhasesController < OrganizationAwareController
 
     respond_to do |format|
       if @draft_project_phase.update(form_params)
-        format.html { redirect_to draft_project_path(@draft_project_phase.draft_project) }
+        funding_updated = true
+        @draft_project_phase.draft_funding_requests.each do |r|
+          if !r.lock_total(@draft_project_phase.cost)
+            funding_updated = false
+          end
+        end
+        if funding_updated
+          format.html { redirect_to draft_project_path(@draft_project_phase.draft_project) }
+        else
+          format.html
+        end
       else
         format.html
       end

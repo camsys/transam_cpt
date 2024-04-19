@@ -75,7 +75,7 @@ FactoryBot.define do
     fta_type_id { 1 }
     fta_type_type { "FtaSupportVehicleType" }
     manufacture_year { 1.year.ago }
-    serial_number { 'ABC123' }
+    serial_number { "TESTSERNUM1234567" }
     manufacturer_id { 1 }
     manufacturer_model_id { 1 }
     fuel_type_id { 18 }
