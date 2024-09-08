@@ -13,7 +13,7 @@
         %label{style: "margin-left: 5px;"} Filter by Status
         %select#statusFilter
           %option{value: "", selected: @status == nil}
-          - Scenario.all.map{|s| s.state}.uniq.each do |state|
+          - Scenario.all.order(:state).map{|s| s.state}.uniq.each do |state|
             %option{value: state, selected: state == @status}
               = state == "cancelled" ? "Closed" : state.titleize
 

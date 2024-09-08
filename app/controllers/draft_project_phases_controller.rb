@@ -19,6 +19,7 @@ class DraftProjectPhasesController < OrganizationAwareController
     @draft_budgets += DraftBudget.active.placeholder 
     @draft_budgets += DraftBudget.active.shared 
     @draft_budgets.uniq!
+    @draft_budgets.sort_by!{|db| db.name.downcase}
     @is_grantor = current_user.organization.grantor?
     
     respond_to do |format|
