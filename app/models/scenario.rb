@@ -15,6 +15,7 @@ class Scenario < ApplicationRecord
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize :set_defaults
+  before_save :check_auto_primary
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
@@ -518,5 +519,11 @@ class Scenario < ApplicationRecord
     self.fy_year ||= current_planning_year_year
     self.ending_fy_year ||= current_planning_year_year
     self.reviewer_organization ||= Organization.find_by(organization_type: OrganizationType.where(name: 'Grantor'))
+  end
+
+  def check_auto_primary
+    unless Scenario.find_by(organization: self.organization, fy_year: self.fy_year)
+      self.primary_scenario = true
+    end
   end
 end

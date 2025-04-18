@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_05_175126) do
+ActiveRecord::Schema.define(version: 2024_06_14_211612) do
 
-  create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "organization_type_id"
     t.string "name", limit: 64
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at"
   end
 
-  create_table "activity_line_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "activity_line_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "capital_project_id", null: false
     t.integer "fy_year", null: false
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fuel_type_id"], name: "index_activity_line_items_on_fuel_type_id"
   end
 
-  create_table "activity_line_items_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "activity_line_items_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "activity_line_item_id", null: false
     t.integer "asset_id"
     t.bigint "transam_asset_id"
@@ -61,7 +61,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_activity_line_items_assets_on_transam_asset_id"
   end
 
-  create_table "activity_logs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "activity_logs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "organization_id", null: false
     t.string "item_type", limit: 64, null: false
     t.integer "item_id"
@@ -72,13 +72,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["user_id", "activity_time"], name: "activity_logs_idx2"
   end
 
-  create_table "archived_fiscal_years", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "archived_fiscal_years", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "organization_id"
     t.integer "fy_year"
     t.index ["organization_id"], name: "index_archived_fiscal_years_on_organization_id"
   end
 
-  create_table "asset_event_asset_subsystems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_event_asset_subsystems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_event_id"
     t.integer "asset_subsystem_id"
     t.integer "parts_cost"
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["asset_subsystem_id"], name: "rehab_events_subsystems_idx2"
   end
 
-  create_table "asset_event_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_event_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "job_name", limit: 64, null: false
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["class_name"], name: "asset_event_types_idx1"
   end
 
-  create_table "asset_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "asset_id"
     t.string "transam_asset_type"
@@ -188,21 +188,21 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["upload_id"], name: "asset_events_idx5"
   end
 
-  create_table "asset_events_vehicle_usage_codes", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_events_vehicle_usage_codes", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_event_id"
     t.integer "vehicle_usage_code_id"
     t.index ["asset_event_id", "vehicle_usage_code_id"], name: "asset_events_vehicle_usage_codes_idx1"
   end
 
-  create_table "asset_fleet_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_fleet_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "class_name"
-    t.text "groups"
+    t.text "standard_groups"
     t.text "custom_groups"
     t.string "label_groups"
     t.boolean "active"
   end
 
-  create_table "asset_fleets", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_fleets", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key"
     t.integer "organization_id"
     t.integer "asset_fleet_type_id"
@@ -217,7 +217,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "index_asset_fleets_on_organization_id"
   end
 
-  create_table "asset_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
     t.string "name", limit: 64, null: false
@@ -230,7 +230,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "asset_groups_idx2"
   end
 
-  create_table "asset_groups_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_groups_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.bigint "transam_asset_id"
     t.integer "asset_group_id", null: false
@@ -238,7 +238,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_asset_groups_assets_on_transam_asset_id"
   end
 
-  create_table "asset_subsystems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_subsystems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64
     t.string "code", limit: 2
     t.string "description", limit: 254
@@ -246,7 +246,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active"
   end
 
-  create_table "asset_subtypes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_subtypes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_type_id", null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -255,14 +255,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["asset_type_id"], name: "asset_subtypes_idx1"
   end
 
-  create_table "asset_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.integer "user_id"
     t.index ["asset_id"], name: "asset_tags_idx1"
     t.index ["user_id"], name: "asset_tags_idx2"
   end
 
-  create_table "asset_type_info_logs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_type_info_logs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "transam_asset_type", null: false
     t.bigint "transam_asset_id", null: false
     t.bigint "fta_asset_class_id"
@@ -279,7 +279,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_type", "transam_asset_id"], name: "asset_type_info_log_idx"
   end
 
-  create_table "asset_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "display_icon_name", limit: 64, null: false
@@ -291,13 +291,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["name"], name: "asset_types_idx2"
   end
 
-  create_table "asset_types_manufacturers", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "asset_types_manufacturers", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_type_id"
     t.integer "manufacturer_id"
     t.index ["asset_type_id", "manufacturer_id"], name: "asset_types_manufacturers_idx1"
   end
 
-  create_table "assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
     t.integer "asset_type_id", null: false
@@ -431,7 +431,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["superseded_by_id"], name: "assets_idx13"
   end
 
-  create_table "assets_asset_fleets", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_asset_fleets", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.bigint "transam_asset_id"
     t.integer "asset_fleet_id"
@@ -441,7 +441,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_asset_fleets_on_transam_asset_id"
   end
 
-  create_table "assets_districts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_districts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.bigint "transam_asset_id"
     t.integer "district_id"
@@ -449,7 +449,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_districts_on_transam_asset_id"
   end
 
-  create_table "assets_expenditures", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_expenditures", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id", null: false
     t.bigint "transam_asset_id"
     t.integer "expenditure_id", null: false
@@ -457,7 +457,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_expenditures_on_transam_asset_id"
   end
 
-  create_table "assets_facility_features", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_facility_features", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.bigint "transam_asset_id"
     t.integer "facility_feature_id", null: false
@@ -466,7 +466,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_facility_features_on_transam_asset_id"
   end
 
-  create_table "assets_fta_mode_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_fta_mode_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.string "transam_asset_type"
     t.bigint "transam_asset_id"
@@ -476,7 +476,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_fta_mode_types_on_transam_asset_id"
   end
 
-  create_table "assets_fta_service_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_fta_service_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.string "transam_asset_type"
     t.bigint "transam_asset_id"
@@ -486,14 +486,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_fta_service_types_on_transam_asset_id"
   end
 
-  create_table "assets_rail_safety_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_rail_safety_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "transam_asset_id"
     t.integer "rail_safety_feature_id"
     t.index ["rail_safety_feature_id"], name: "index_assets_rail_safety_features_on_rail_safety_feature_id"
     t.index ["transam_asset_id"], name: "index_assets_rail_safety_features_on_transam_asset_id"
   end
 
-  create_table "assets_vehicle_features", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_vehicle_features", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.bigint "transam_asset_id"
     t.integer "vehicle_feature_id"
@@ -501,13 +501,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_assets_vehicle_features_on_transam_asset_id"
   end
 
-  create_table "assets_vehicle_usage_codes", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "assets_vehicle_usage_codes", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id", null: false
     t.integer "vehicle_usage_code_id", null: false
     t.index ["asset_id", "vehicle_usage_code_id"], name: "assets_vehicle_usage_codes_idx1"
   end
 
-  create_table "capital_plan_action_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_plan_action_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "capital_plan_type_id"
     t.integer "capital_plan_module_type_id"
     t.string "name"
@@ -519,7 +519,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["capital_plan_type_id"], name: "index_capital_plan_action_types_on_capital_plan_type_id"
   end
 
-  create_table "capital_plan_actions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_plan_actions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "capital_plan_id"
     t.integer "capital_plan_module_id"
@@ -536,7 +536,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["capital_plan_module_id"], name: "index_capital_plan_actions_on_capital_plan_module_id"
   end
 
-  create_table "capital_plan_module_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_plan_module_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "capital_plan_type_id"
     t.string "name"
     t.string "class_name"
@@ -546,7 +546,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["capital_plan_type_id"], name: "index_capital_plan_module_types_on_capital_plan_type_id"
   end
 
-  create_table "capital_plan_modules", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_plan_modules", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "capital_plan_id"
     t.integer "capital_plan_module_type_id"
@@ -559,13 +559,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["capital_plan_module_type_id"], name: "index_capital_plan_modules_on_capital_plan_module_type_id"
   end
 
-  create_table "capital_plan_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_plan_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "capital_plans", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_plans", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "capital_plan_type_id"
     t.integer "organization_id"
@@ -576,14 +576,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "index_capital_plans_on_organization_id"
   end
 
-  create_table "capital_project_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_project_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 4, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "capital_projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "fy_year", null: false
     t.string "project_number", limit: 32, null: false
@@ -607,12 +607,12 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id", "project_number"], name: "capital_projects_idx2"
   end
 
-  create_table "capital_projects_districts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "capital_projects_districts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "capital_project_id"
     t.integer "district_id"
   end
 
-  create_table "chart_of_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "chart_of_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "organization_id"
     t.boolean "active"
@@ -621,12 +621,12 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "chart_of_accounts_idx1"
   end
 
-  create_table "chasses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "chasses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "commentable_id", null: false
     t.string "commentable_type", limit: 64, null: false
@@ -637,7 +637,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["commentable_id", "commentable_type"], name: "comments_idx1"
   end
 
-  create_table "component_elements", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "component_elements", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "parent_type"
     t.bigint "parent_id"
     t.string "name"
@@ -645,7 +645,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["parent_type", "parent_id"], name: "index_component_elements_on_parent_type_and_parent_id"
   end
 
-  create_table "component_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "component_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.bigint "component_type_id"
     t.bigint "component_subtype_id"
@@ -654,14 +654,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["component_type_id"], name: "index_component_materials_on_component_type_id"
   end
 
-  create_table "component_subtypes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "component_subtypes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.bigint "component_type_id"
     t.boolean "active"
     t.index ["component_type_id"], name: "index_component_subtypes_on_component_type_id"
   end
 
-  create_table "component_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "component_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_category_id"
     t.bigint "fta_asset_class_id"
     t.string "name"
@@ -671,7 +671,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_asset_class_id"], name: "index_component_types_on_fta_asset_class_id"
   end
 
-  create_table "condition_estimation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "condition_estimation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -679,14 +679,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["class_name"], name: "condition_estimation_types_idx1"
   end
 
-  create_table "condition_rollup_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "condition_rollup_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "class_name"
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "condition_type_percents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "condition_type_percents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "asset_event_id"
     t.bigint "condition_type_id"
     t.integer "pcnt"
@@ -696,19 +696,19 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["condition_type_id"], name: "index_condition_type_percents_on_condition_type_id"
   end
 
-  create_table "condition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "condition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.decimal "rating_ceiling", precision: 9, scale: 2, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "contract_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "contract_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "cost_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "cost_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -716,7 +716,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["class_name"], name: "cost_calculation_types_idx1"
   end
 
-  create_table "customers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "customers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "license_type_id", null: false
     t.string "name", limit: 64, null: false
     t.boolean "active", null: false
@@ -724,14 +724,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "delayed_job_priorities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "delayed_job_priorities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "class_name", null: false
     t.integer "priority", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "priority"
     t.integer "attempts"
     t.text "handler"
@@ -746,14 +746,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "depreciation_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "depreciation_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "depreciation_entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "depreciation_entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "asset_id"
     t.bigint "transam_asset_id"
@@ -767,34 +767,34 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_depreciation_entries_on_transam_asset_id"
   end
 
-  create_table "depreciation_entries_general_ledger_account_entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "depreciation_entries_general_ledger_account_entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "depreciation_entry_id"
     t.integer "general_ledger_account_entry_id"
     t.index ["depreciation_entry_id"], name: "depr_entry_idx"
     t.index ["general_ledger_account_entry_id"], name: "gl_entry_idx"
   end
 
-  create_table "depreciation_interval_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "depreciation_interval_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.integer "months", null: false
     t.boolean "active", null: false
   end
 
-  create_table "disposition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "disposition_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 2, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "district_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "district_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "districts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "districts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "district_type_id", null: false
     t.string "state"
     t.string "name", limit: 64, null: false
@@ -805,7 +805,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["name"], name: "districts_idx2"
   end
 
-  create_table "document_folders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "document_folders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.boolean "active"
@@ -813,7 +813,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "document_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "document_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.string "pattern"
@@ -825,7 +825,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["document_folder_id"], name: "index_document_tags_on_document_folder_id"
   end
 
-  create_table "documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "documentable_id", null: false
     t.string "documentable_type", limit: 64, null: false
@@ -842,7 +842,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "documents_idx1"
   end
 
-  create_table "draft_budget_allocations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_budget_allocations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "amount"
     t.string "object_key", limit: 12
     t.datetime "created_at", null: false
@@ -853,7 +853,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["draft_funding_request_id"], name: "index_draft_budget_allocations_on_draft_funding_request_id"
   end
 
-  create_table "draft_budgets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_budgets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.integer "amount"
     t.string "object_key", limit: 12
@@ -868,7 +868,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["funding_template_id"], name: "index_draft_budgets_on_funding_template_id"
   end
 
-  create_table "draft_funding_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_funding_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "draft_project_phase_id"
@@ -876,7 +876,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["draft_project_phase_id"], name: "index_draft_funding_requests_on_draft_project_phase_id"
   end
 
-  create_table "draft_project_districts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_project_districts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "draft_project_id"
     t.integer "district_id"
     t.string "object_key", limit: 12
@@ -884,7 +884,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "draft_project_phase_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_project_phase_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "draft_project_phase_id"
     t.bigint "transit_asset_id"
     t.datetime "created_at", null: false
@@ -894,7 +894,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transit_asset_id"], name: "index_draft_project_phase_assets_on_transit_asset_id"
   end
 
-  create_table "draft_project_phases", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_project_phases", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.string "name"
     t.integer "cost"
@@ -913,7 +913,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["team_ali_code_id"], name: "index_draft_project_phases_on_team_ali_code_id"
   end
 
-  create_table "draft_projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "draft_projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.string "project_number"
     t.datetime "created_at", null: false
@@ -932,7 +932,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["team_ali_code_id"], name: "index_draft_projects_on_team_ali_code_id"
   end
 
-  create_table "dual_fuel_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "dual_fuel_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "primary_fuel_type_id"
     t.integer "secondary_fuel_type_id"
     t.boolean "active"
@@ -940,13 +940,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["secondary_fuel_type_id"], name: "index_dual_fuel_types_on_secondary_fuel_type_id"
   end
 
-  create_table "esl_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "esl_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "class_name"
     t.boolean "active"
   end
 
-  create_table "expenditures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "expenditures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "general_ledger_account_id"
     t.integer "grant_id"
@@ -965,14 +965,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "expenditures_idx1"
   end
 
-  create_table "expense_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "expense_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
     t.index ["name"], name: "expense_types_idx2"
   end
 
-  create_table "facilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "facilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "facility_name"
     t.string "ntd_id"
     t.string "address1"
@@ -1012,20 +1012,20 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["leed_certification_type_id"], name: "index_facilities_on_leed_certification_type_id"
   end
 
-  create_table "facility_capacity_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "facility_capacity_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "facility_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "facility_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 4, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active"
   end
 
-  create_table "file_content_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "file_content_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "builder_name"
@@ -1035,14 +1035,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["name"], name: "file_content_types_idx1"
   end
 
-  create_table "file_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "file_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
     t.index ["name"], name: "file_status_types_idx1"
   end
 
-  create_table "forms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "forms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -1055,25 +1055,25 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "forms_idx1"
   end
 
-  create_table "frequency_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "frequency_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 32, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_agency_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_agency_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 256, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_asset_categories", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_asset_categories", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "display_icon_name"
     t.boolean "active"
   end
 
-  create_table "fta_asset_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_asset_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_category_id"
     t.string "name"
     t.string "class_name"
@@ -1083,21 +1083,21 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_asset_category_id"], name: "index_fta_asset_classes_on_fta_asset_category_id"
   end
 
-  create_table "fta_bus_mode_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_bus_mode_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "code", limit: 4, null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_equipment_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_equipment_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_class_id"
     t.string "name"
     t.boolean "active"
     t.index ["fta_asset_class_id"], name: "index_fta_equipment_types_on_fta_asset_class_id"
   end
 
-  create_table "fta_facility_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_facility_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "fta_asset_class_id"
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -1105,14 +1105,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active", null: false
   end
 
-  create_table "fta_funding_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_funding_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 6, null: false
     t.string "description", limit: 256, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_guideway_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_guideway_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_class_id"
     t.string "name"
     t.boolean "active"
@@ -1120,27 +1120,27 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_asset_class_id"], name: "index_fta_guideway_types_on_fta_asset_class_id"
   end
 
-  create_table "fta_mode_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_mode_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 2, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_mode_types_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_mode_types_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "organization_id", null: false
     t.integer "fta_mode_type_id", null: false
     t.index ["organization_id", "fta_mode_type_id"], name: "fta_mode_types_organizations_idx1"
   end
 
-  create_table "fta_ownership_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_ownership_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 4, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_power_signal_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_power_signal_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_class_id"
     t.string "name"
     t.boolean "active"
@@ -1148,26 +1148,26 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_asset_class_id"], name: "index_fta_power_signal_types_on_fta_asset_class_id"
   end
 
-  create_table "fta_private_mode_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_private_mode_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.string "description", null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_service_area_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_service_area_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_service_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_service_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 2, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "fta_support_vehicle_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_support_vehicle_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "fta_asset_class_id"
     t.string "name", null: false
     t.string "description", null: false
@@ -1176,7 +1176,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active", null: false
   end
 
-  create_table "fta_track_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_track_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_class_id"
     t.string "name"
     t.boolean "active"
@@ -1184,7 +1184,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_asset_class_id"], name: "index_fta_track_types_on_fta_asset_class_id"
   end
 
-  create_table "fta_type_asset_subtype_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_type_asset_subtype_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "fta_type_type", null: false
     t.bigint "fta_type_id", null: false
     t.bigint "asset_subtype_id", null: false
@@ -1192,7 +1192,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_type_type", "fta_type_id"], name: "fta_type_asset_subtype_mappings_idx"
   end
 
-  create_table "fta_vehicle_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fta_vehicle_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "fta_asset_class_id"
     t.string "name", limit: 64, null: false
     t.string "code", limit: 2, null: false
@@ -1202,20 +1202,20 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active", null: false
   end
 
-  create_table "fuel_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "fuel_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.string "description", null: false
     t.boolean "active", null: false
   end
 
-  create_table "funding_bucket_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_bucket_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.string "description", null: false
     t.boolean "active", null: false
   end
 
-  create_table "funding_buckets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_buckets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "funding_template_id", null: false
     t.integer "fiscal_year", null: false
@@ -1231,14 +1231,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_on"
   end
 
-  create_table "funding_line_item_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_line_item_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "code", limit: 2
     t.string "name", limit: 64
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "funding_line_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_line_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "organization_id"
     t.integer "fy_year"
@@ -1259,7 +1259,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["project_number"], name: "funding_line_items_idx3"
   end
 
-  create_table "funding_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "activity_line_item_id"
     t.integer "federal_funding_line_item_id"
@@ -1275,13 +1275,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "funding_requests_idx1"
   end
 
-  create_table "funding_source_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_source_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "funding_sources", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_sources", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 256, null: false
@@ -1304,14 +1304,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "funding_sources_idx1"
   end
 
-  create_table "funding_sources_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_sources_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "funding_source_id"
     t.bigint "organization_id"
     t.index ["funding_source_id"], name: "index_funding_sources_organizations_on_funding_source_id"
     t.index ["organization_id"], name: "index_funding_sources_organizations_on_organization_id"
   end
 
-  create_table "funding_template_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_template_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "funding_source_id"
     t.string "name", limit: 64, null: false
     t.string "description", limit: 256, null: false
@@ -1319,7 +1319,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["funding_source_id"], name: "index_funding_template_types_on_funding_source_id"
   end
 
-  create_table "funding_templates", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_templates", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "funding_source_id"
     t.string "name", limit: 64, null: false
@@ -1341,21 +1341,21 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["owner_id"], name: "index_funding_templates_on_owner_id"
   end
 
-  create_table "funding_templates_funding_template_types", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_templates_funding_template_types", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "funding_template_id"
     t.integer "funding_template_type_id"
     t.index ["funding_template_id"], name: "funding_templates_funding_template_types_idx1"
     t.index ["funding_template_type_id"], name: "funding_templates_funding_template_types_idx2"
   end
 
-  create_table "funding_templates_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "funding_templates_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "funding_template_id"
     t.integer "organization_id"
     t.index ["funding_template_id"], name: "index_funding_templates_organizations_on_funding_template_id"
     t.index ["organization_id"], name: "index_funding_templates_organizations_on_organization_id"
   end
 
-  create_table "general_ledger_account_entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "general_ledger_account_entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "general_ledger_account_id"
     t.date "event_date"
@@ -1370,7 +1370,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_general_ledger_account_entries_on_transam_asset_id"
   end
 
-  create_table "general_ledger_account_subtypes", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "general_ledger_account_subtypes", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "general_ledger_account_type_id"
     t.string "name"
     t.string "description"
@@ -1379,13 +1379,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at"
   end
 
-  create_table "general_ledger_account_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "general_ledger_account_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "general_ledger_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "general_ledger_accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "chart_of_account_id", null: false
     t.integer "general_ledger_account_type_id", null: false
@@ -1401,7 +1401,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "general_ledger_accounts_idx1"
   end
 
-  create_table "general_ledger_mappings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "general_ledger_mappings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "chart_of_account_id"
     t.integer "asset_subtype_id"
@@ -1419,13 +1419,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["gain_loss_account_id"], name: "index_general_ledger_mappings_on_gain_loss_account_id"
   end
 
-  create_table "governing_body_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "governing_body_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "grant_amendments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "grant_amendments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.bigint "grant_id"
     t.string "amendment_num"
@@ -1437,7 +1437,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["grant_id"], name: "index_grant_amendments_on_grant_id"
   end
 
-  create_table "grant_apportionments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "grant_apportionments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.bigint "grant_id"
     t.string "sourceable_type"
@@ -1453,7 +1453,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["sourceable_type", "sourceable_id"], name: "index_grant_apportionments_on_sourceable_type_and_sourceable_id"
   end
 
-  create_table "grant_budgets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "grant_budgets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "general_ledger_account_id", null: false
     t.integer "grant_id", null: false
     t.integer "amount", null: false
@@ -1461,7 +1461,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["general_ledger_account_id", "grant_id"], name: "grant_budgets_idx1"
   end
 
-  create_table "grant_purchases", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "grant_purchases", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "asset_id"
     t.bigint "transam_asset_id"
     t.float "pcnt_purchase_cost", null: false
@@ -1476,7 +1476,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transam_asset_id"], name: "index_grant_purchases_on_transam_asset_id"
   end
 
-  create_table "grants", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "grants", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "owner_id", null: false
     t.bigint "contributor_id"
@@ -1502,7 +1502,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["owner_id"], name: "grants_idx2"
   end
 
-  create_table "image_classifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "image_classifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "category"
     t.integer "sort_order"
@@ -1511,7 +1511,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.bigint "base_imagable_id"
     t.string "base_imagable_type"
@@ -1538,64 +1538,64 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "images_idx1"
   end
 
-  create_table "infrastructure_bridge_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_bridge_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_cap_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_cap_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_chain_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_chain_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_control_system_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_control_system_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_crossings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_crossings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_divisions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_divisions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.bigint "organization_id"
     t.boolean "active"
     t.index ["organization_id"], name: "index_infrastructure_divisions_on_organization_id"
   end
 
-  create_table "infrastructure_foundations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_foundations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_gauge_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_gauge_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_operation_method_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_operation_method_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_rail_joinings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_rail_joinings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_reference_rails", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_reference_rails", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_segment_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_segment_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "fta_asset_class_id"
     t.bigint "asset_subtype_id"
     t.string "name"
@@ -1604,31 +1604,31 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_asset_class_id"], name: "index_infrastructure_segment_types_on_fta_asset_class_id"
   end
 
-  create_table "infrastructure_segment_unit_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_segment_unit_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructure_subdivisions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_subdivisions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.bigint "organization_id"
     t.boolean "active"
     t.index ["organization_id"], name: "index_infrastructure_subdivisions_on_organization_id"
   end
 
-  create_table "infrastructure_tracks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_tracks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.bigint "organization_id"
     t.boolean "active"
     t.index ["organization_id"], name: "index_infrastructure_tracks_on_organization_id"
   end
 
-  create_table "infrastructure_voltage_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructure_voltage_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "infrastructures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "infrastructures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "from_line"
     t.string "to_line"
     t.bigint "infrastructure_segment_unit_type_id"
@@ -1707,19 +1707,19 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["shared_capital_responsibility_organization_id"], name: "shared_cap_responsibility_org_infrastructure_idx"
   end
 
-  create_table "issue_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "issue_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 32, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active"
   end
 
-  create_table "issue_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "issue_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "issues", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "issues", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "issue_type_id", null: false
     t.integer "web_browser_type_id", null: false
@@ -1733,7 +1733,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "issues_idx1"
   end
 
-  create_table "keyword_search_indices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "keyword_search_indices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_class", limit: 64, null: false
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
@@ -1745,13 +1745,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_class"], name: "keyword_search_indices_idx1"
   end
 
-  create_table "leed_certification_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "leed_certification_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.text "description", limit: 255, null: false
     t.boolean "active", null: false
   end
 
-  create_table "license_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "license_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "asset_manager", null: false
@@ -1759,27 +1759,27 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active", null: false
   end
 
-  create_table "location_reference_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "location_reference_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "format", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "maintenance_provider_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "maintenance_provider_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 2, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "maintenance_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "maintenance_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 32, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "manufacturer_models", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "manufacturer_models", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.bigint "organization_id"
@@ -1789,7 +1789,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "index_manufacturer_models_on_organization_id"
   end
 
-  create_table "manufacturers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "manufacturers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "filter", limit: 32, null: false
     t.string "name", limit: 128, null: false
     t.string "code", limit: 3, null: false
@@ -1797,14 +1797,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["filter"], name: "manufacturers_idx1"
   end
 
-  create_table "message_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "message_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "message_id"
     t.integer "user_id"
     t.index ["message_id"], name: "message_tags_idx1"
     t.index ["user_id"], name: "message_tags_idx2"
   end
 
-  create_table "message_templates", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "message_templates", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "priority_type_id"
     t.string "object_key"
     t.string "name"
@@ -1822,7 +1822,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["priority_type_id"], name: "index_message_templates_on_priority_type_id"
   end
 
-  create_table "messages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "messages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
     t.integer "user_id", null: false
@@ -1844,7 +1844,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["user_id"], name: "messages_idx3"
   end
 
-  create_table "milestone_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "milestone_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", null: false
     t.boolean "is_vehicle_delivery", null: false
@@ -1852,7 +1852,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "required", default: false
   end
 
-  create_table "milestones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "milestones", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "activity_line_item_id"
     t.integer "milestone_type_id", null: false
@@ -1867,7 +1867,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["draft_project_phase_id"], name: "index_milestones_on_draft_project_phase_id"
   end
 
-  create_table "notice_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "notice_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.string "display_icon", limit: 64, null: false
@@ -1875,7 +1875,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active"
   end
 
-  create_table "notices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "notices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "subject", limit: 64, null: false
     t.string "summary", limit: 128, null: false
@@ -1889,7 +1889,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at"
   end
 
-  create_table "notifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "notifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "text", null: false
     t.string "link", null: false
@@ -1901,7 +1901,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["notifiable_id", "notifiable_type"], name: "index_notifications_on_notifiable_id_and_notifiable_type"
   end
 
-  create_table "ntd_a20_summaries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_a20_summaries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "ntd_report_id"
     t.bigint "fta_mode_type_id"
     t.bigint "fta_service_type_id"
@@ -1913,7 +1913,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_report_id"], name: "index_ntd_a20_summaries_on_ntd_report_id"
   end
 
-  create_table "ntd_facilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_facilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "ntd_report_id"
     t.string "facility_id"
     t.string "name", limit: 128
@@ -1943,7 +1943,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_report_id"], name: "ntd_admin_and_maintenance_facilities_idx1"
   end
 
-  create_table "ntd_forms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_forms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "form_id"
     t.integer "organization_id"
@@ -1966,7 +1966,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id", "fy_year"], name: "ntd_forms_idx2"
   end
 
-  create_table "ntd_infrastructures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_infrastructures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "ntd_report_id"
     t.string "fta_mode"
     t.string "fta_service_type"
@@ -1996,14 +1996,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_report_id"], name: "index_ntd_infrastructures_on_ntd_report_id"
   end
 
-  create_table "ntd_organization_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_organization_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "ntd_performance_measures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_performance_measures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "ntd_report_id"
     t.bigint "fta_asset_category_id"
     t.string "asset_level"
@@ -2017,7 +2017,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_report_id"], name: "index_ntd_performance_measures_on_ntd_report_id"
   end
 
-  create_table "ntd_reports", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_reports", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.bigint "ntd_form_id"
     t.text "processing_log"
@@ -2028,7 +2028,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_form_id"], name: "index_ntd_reports_on_ntd_form_id"
   end
 
-  create_table "ntd_revenue_vehicle_fleets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_revenue_vehicle_fleets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "ntd_report_id"
     t.string "vehicle_object_key"
     t.string "fta_asset_class"
@@ -2077,7 +2077,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_report_id"], name: "ntd_revenue_vehicle_fleets_idx1"
   end
 
-  create_table "ntd_service_vehicle_fleets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ntd_service_vehicle_fleets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "ntd_report_id"
     t.string "vehicle_object_key"
     t.string "sv_id"
@@ -2101,14 +2101,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["ntd_report_id"], name: "ntd_service_vehicle_fleets_idx1"
   end
 
-  create_table "organization_role_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organization_role_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "organization_id", null: false
     t.integer "role_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "organization_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organization_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "display_icon_name", limit: 64, null: false
@@ -2119,7 +2119,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["class_name"], name: "organization_types_idx1"
   end
 
-  create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "organization_type_id", null: false
     t.integer "customer_id", null: false
     t.string "external_id", limit: 32
@@ -2160,9 +2160,6 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.integer "capital_projects_range_fys"
     t.integer "executive_director_id"
     t.string "agency_office_address"
-    t.string "rta_client_id"
-    t.string "rta_client_secret"
-    t.string "rta_tenant_id"
     t.index ["customer_id"], name: "organizations_idx2"
     t.index ["executive_director_id"], name: "index_organizations_on_executive_director_id"
     t.index ["grantor_id"], name: "organizations_idx3"
@@ -2171,13 +2168,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["short_name"], name: "short_name"
   end
 
-  create_table "organizations_districts", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organizations_districts", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "organization_id"
     t.integer "district_id"
     t.index ["organization_id", "district_id"], name: "organizations_districts_idx2"
   end
 
-  create_table "organizations_saved_queries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organizations_saved_queries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "saved_query_id", null: false
     t.bigint "organization_id", null: false
     t.datetime "created_at", null: false
@@ -2186,40 +2183,40 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["saved_query_id"], name: "index_organizations_saved_queries_on_saved_query_id"
   end
 
-  create_table "organizations_saved_searches", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organizations_saved_searches", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "organization_id"
     t.bigint "saved_search_id"
     t.index ["organization_id"], name: "index_organizations_saved_searches_on_organization_id"
     t.index ["saved_search_id"], name: "index_organizations_saved_searches_on_saved_search_id"
   end
 
-  create_table "organizations_service_provider_types", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "organizations_service_provider_types", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "organization_id", null: false
     t.integer "service_provider_type_id", null: false
     t.index ["organization_id"], name: "organization_spt_idx1"
     t.index ["service_provider_type_id"], name: "organization_spt_idx2"
   end
 
-  create_table "out_of_service_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "out_of_service_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "performance_restriction_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "performance_restriction_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "planning_partners_organizations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "planning_partners_organizations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "planning_partner_id"
     t.integer "organization_id"
     t.index ["organization_id"], name: "index_planning_partners_organizations_on_organization_id"
     t.index ["planning_partner_id"], name: "index_planning_partners_organizations_on_planning_partner_id"
   end
 
-  create_table "policies", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "policies", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
     t.integer "parent_id"
@@ -2241,7 +2238,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "policies_idx2"
   end
 
-  create_table "policy_asset_subtype_rules", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "policy_asset_subtype_rules", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "policy_id", null: false
     t.integer "asset_subtype_id", null: false
     t.integer "fuel_type_id"
@@ -2277,7 +2274,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["policy_id"], name: "policy_asset_subtype_rules_idx1"
   end
 
-  create_table "policy_asset_type_rules", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "policy_asset_type_rules", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "policy_id", null: false
     t.integer "asset_type_id", null: false
     t.integer "service_life_calculation_type_id", null: false
@@ -2292,35 +2289,36 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["policy_id"], name: "policy_asset_type_rules_idx1"
   end
 
-  create_table "priority_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "priority_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "is_default", null: false
     t.boolean "active", null: false
   end
 
-  create_table "query_asset_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_asset_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "table_name"
     t.text "transam_assets_join"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "query_association_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_association_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "table_name"
     t.string "display_field_name"
     t.string "id_field_name", default: "id"
+    t.boolean "use_field_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "query_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "query_field_asset_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_field_asset_classes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "query_field_id"
     t.bigint "query_asset_class_id"
     t.datetime "created_at", null: false
@@ -2329,7 +2327,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["query_field_id"], name: "index_query_field_asset_classes_on_query_field_id"
   end
 
-  create_table "query_fields", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_fields", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "label"
     t.datetime "created_at", null: false
@@ -2347,7 +2345,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["query_category_id"], name: "index_query_fields_on_query_category_id"
   end
 
-  create_table "query_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "query_field_id"
     t.text "value"
     t.datetime "created_at", null: false
@@ -2358,7 +2356,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["saved_query_id"], name: "index_query_filters_on_saved_query_id"
   end
 
-  create_table "query_params", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "query_params", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.text "query_string"
@@ -2366,37 +2364,37 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active"
   end
 
-  create_table "rail_safety_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "rail_safety_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "ramp_manufacturers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "ramp_manufacturers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.boolean "active"
   end
 
-  create_table "replacement_reason_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "replacement_reason_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active"
   end
 
-  create_table "replacement_status_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "replacement_status_types", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "active"
   end
 
-  create_table "report_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "report_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.string "display_icon_name", limit: 64, null: false
     t.boolean "active", null: false
   end
 
-  create_table "reports", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "reports", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "report_type_id", null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -2417,7 +2415,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["report_type_id"], name: "reports_idx1"
   end
 
-  create_table "revenue_vehicles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "revenue_vehicles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "esl_category_id"
     t.integer "standing_capacity"
     t.bigint "fta_funding_type_id"
@@ -2432,14 +2430,14 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["fta_ownership_type_id"], name: "index_revenue_vehicles_on_fta_ownership_type_id"
   end
 
-  create_table "role_privilege_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "role_privilege_mappings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "role_id"
     t.bigint "privilege_id"
     t.index ["privilege_id"], name: "index_role_privilege_mappings_on_privilege_id"
     t.index ["role_id"], name: "index_role_privilege_mappings_on_role_id"
   end
 
-  create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.integer "weight"
     t.integer "resource_id"
@@ -2454,7 +2452,18 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["resource_id"], name: "roles_idx2"
   end
 
-  create_table "rule_sets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "rta_org_credentials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "organization_id"
+    t.string "rta_client_id"
+    t.string "rta_client_secret"
+    t.string "rta_tenant_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_rta_org_credentials_on_organization_id"
+  end
+
+  create_table "rule_sets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key"
     t.string "name"
     t.string "class_name"
@@ -2462,7 +2471,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.boolean "active"
   end
 
-  create_table "saved_queries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "saved_queries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key"
     t.string "name"
     t.string "description"
@@ -2474,7 +2483,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.text "ordered_output_field_ids"
   end
 
-  create_table "saved_query_fields", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "saved_query_fields", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "saved_query_id"
     t.bigint "query_field_id"
     t.datetime "created_at", null: false
@@ -2483,7 +2492,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["saved_query_id"], name: "index_saved_query_fields_on_saved_query_id"
   end
 
-  create_table "saved_searches", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "saved_searches", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "user_id", null: false
     t.string "name", limit: 64, null: false
@@ -2496,7 +2505,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "scenarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "scenarios", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12
     t.integer "organization_id"
     t.integer "fy_year"
@@ -2508,24 +2517,25 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.bigint "reviewer_organization_id"
     t.boolean "email_updates", default: true
     t.integer "ending_fy_year"
+    t.boolean "primary_scenario"
     t.index ["organization_id"], name: "index_scenarios_on_organization_id"
     t.index ["reviewer_organization_id"], name: "index_scenarios_on_reviewer_organization_id"
   end
 
-  create_table "search_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "search_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name"
     t.string "class_name"
     t.boolean "active"
   end
 
-  create_table "serial_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "serial_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "identifiable_type"
     t.bigint "identifiable_id"
     t.string "identification"
     t.index ["identifiable_type", "identifiable_id"], name: "index_serial_numbers_on_identifiable_type_and_identifiable_id"
   end
 
-  create_table "service_life_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "service_life_calculation_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "class_name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -2533,21 +2543,21 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["class_name"], name: "service_life_calculation_types_idx1"
   end
 
-  create_table "service_provider_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "service_provider_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 5, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "service_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "service_status_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 1, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "service_vehicles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "service_vehicles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "service_vehiclible_type"
     t.bigint "service_vehiclible_id"
     t.bigint "chassis_id"
@@ -2573,10 +2583,11 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["dual_fuel_type_id"], name: "index_service_vehicles_on_dual_fuel_type_id"
     t.index ["fuel_type_id"], name: "index_service_vehicles_on_fuel_type_id"
     t.index ["ramp_manufacturer_id"], name: "index_service_vehicles_on_ramp_manufacturer_id"
+    t.index ["serial_number"], name: "serial_number_idx1"
     t.index ["service_vehiclible_type", "service_vehiclible_id"], name: "service_vehiclible_idx"
   end
 
-  create_table "system_config_extensions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "system_config_extensions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "class_name"
     t.string "extension_name"
     t.string "engine_name"
@@ -2585,7 +2596,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "system_config_field_customizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "system_config_field_customizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "table_name"
     t.string "field_name"
     t.string "description"
@@ -2599,7 +2610,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.string "action_name"
   end
 
-  create_table "system_configs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "system_configs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "customer_id"
     t.string "start_of_fiscal_year", limit: 5
     t.integer "fy_year"
@@ -2624,7 +2635,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at"
   end
 
-  create_table "tam_groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tam_groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key"
     t.integer "organization_id"
     t.integer "tam_policy_id"
@@ -2638,17 +2649,17 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["tam_policy_id"], name: "index_tam_groups_on_tam_policy_id"
   end
 
-  create_table "tam_groups_fta_asset_categories", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tam_groups_fta_asset_categories", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "tam_group_id"
     t.integer "fta_asset_category_id"
   end
 
-  create_table "tam_groups_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tam_groups_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "tam_group_id"
     t.integer "organization_id"
   end
 
-  create_table "tam_performance_metrics", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tam_performance_metrics", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key"
     t.integer "tam_group_id"
     t.integer "fta_asset_category_id"
@@ -2665,7 +2676,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["tam_group_id"], name: "index_tam_performance_metrics_on_tam_group_id"
   end
 
-  create_table "tam_policies", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tam_policies", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key"
     t.integer "fy_year"
     t.boolean "copied"
@@ -2673,7 +2684,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "taskable_id"
     t.string "taskable_type"
@@ -2696,7 +2707,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["user_id"], name: "tasks_idx2"
   end
 
-  create_table "team_ali_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "team_ali_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64
     t.integer "parent_id"
     t.integer "lft"
@@ -2708,7 +2719,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["rgt"], name: "team_scope_ali_codes_idx2"
   end
 
-  create_table "transam_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "transam_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "transam_assetible_type"
     t.bigint "transam_assetible_id"
     t.string "object_key", limit: 12, null: false
@@ -2762,7 +2773,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["vendor_id"], name: "index_transam_assets_on_vendor_id"
   end
 
-  create_table "transit_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "transit_assets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "transit_assetible_type"
     t.bigint "transit_assetible_id"
     t.bigint "asset_id"
@@ -2795,7 +2806,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transit_assetible_type", "transit_assetible_id"], name: "transit_assetible_idx"
   end
 
-  create_table "transit_components", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "transit_components", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "component_type_id"
     t.bigint "component_subtype_id"
     t.bigint "component_element_id"
@@ -2822,7 +2833,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["infrastructure_voltage_type_id"], name: "index_transit_components_on_infrastructure_voltage_type_id"
   end
 
-  create_table "uploads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "uploads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id"
     t.integer "user_id", null: false
@@ -2848,7 +2859,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["user_id"], name: "uploads_idx3"
   end
 
-  create_table "user_activity_line_item_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "user_activity_line_item_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 256, null: false
@@ -2870,12 +2881,12 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.datetime "updated_at"
   end
 
-  create_table "user_activity_line_item_filters_organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "user_activity_line_item_filters_organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_activity_line_item_filter_id", null: false
     t.integer "organization_id", null: false
   end
 
-  create_table "user_notifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "user_notifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "notification_id", null: false
     t.datetime "opened_at"
@@ -2885,7 +2896,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["user_id"], name: "index_user_notifications_on_user_id"
   end
 
-  create_table "user_organization_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "user_organization_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
@@ -2901,13 +2912,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["object_key"], name: "user_organization_filters_idx1"
   end
 
-  create_table "user_organization_filters_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "user_organization_filters_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_organization_filter_id", null: false
     t.integer "organization_id", null: false
     t.index ["user_organization_filter_id", "organization_id"], name: "user_organization_filters_idx1"
   end
 
-  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
     t.string "external_id", limit: 32
@@ -2952,13 +2963,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "users_idx2"
   end
 
-  create_table "users_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id"
     t.integer "organization_id"
     t.index ["user_id", "organization_id"], name: "users_organizations_idx2"
   end
 
-  create_table "users_roles", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users_roles", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "role_id", null: false
     t.integer "granted_by_user_id"
@@ -2972,51 +2983,51 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["user_id", "role_id"], name: "users_roles_idx2"
   end
 
-  create_table "users_user_activity_line_item_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users_user_activity_line_item_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "user_activity_line_item_filter_id", null: false
   end
 
-  create_table "users_user_organization_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users_user_organization_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "user_organization_filter_id", null: false
     t.index ["user_id"], name: "users_user_organization_filters_idx1"
     t.index ["user_organization_filter_id"], name: "users_user_organization_filters_idx2"
   end
 
-  create_table "users_viewable_organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users_viewable_organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id"
     t.integer "organization_id"
   end
 
-  create_table "vehicle_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "vehicle_features", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 3, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "vehicle_rebuild_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "vehicle_rebuild_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.text "description", limit: 255, null: false
     t.boolean "active", null: false
   end
 
-  create_table "vehicle_storage_method_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "vehicle_storage_method_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 1, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "vehicle_usage_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "vehicle_usage_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "code", limit: 1, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "vendors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "vendors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "organization_id", null: false
     t.string "name", limit: 64, null: false
@@ -3039,7 +3050,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["organization_id"], name: "vendors_idx3"
   end
 
-  create_table "version_associations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "version_associations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "version_id"
     t.string "foreign_key_name", null: false
     t.integer "foreign_key_id"
@@ -3048,7 +3059,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["version_id"], name: "index_version_associations_on_version_id"
   end
 
-  create_table "versions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "versions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
@@ -3060,7 +3071,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
-  create_table "weather_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "weather_codes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "state", limit: 2
     t.string "code", limit: 8
     t.string "city", limit: 64
@@ -3068,13 +3079,13 @@ ActiveRecord::Schema.define(version: 2021_08_05_175126) do
     t.index ["state", "city"], name: "weather_codes_idx"
   end
 
-  create_table "web_browser_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "web_browser_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", limit: 64, null: false
     t.string "description", limit: 254, null: false
     t.boolean "active", null: false
   end
 
-  create_table "workflow_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "workflow_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "object_key", limit: 12, null: false
     t.integer "accountable_id", null: false
     t.string "accountable_type", limit: 64, null: false
