@@ -178,22 +178,26 @@ class Scenario < ApplicationRecord
     return d
   end
 
-  def self.peaks_and_valleys_chart_data(scenario=nil, year=nil)
+  def self.peaks_and_valleys_chart_data(scenarios=nil, year=nil)
     data = []
     year ||= self.current_fiscal_year_year
 
     # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
-    if scenario
-      year_range = (scenario.fy_year..scenario.ending_fy_year)
-      projects = scenario.draft_projects
+    if scenarios.instance_of? Scenario
+      year_range = (scenarios.fy_year..scenarios.ending_fy_year)
+      projects = scenarios.draft_projects
+    elsif scenarios
+      scenarios = scenarios.in_constrained_state.where(fy_year: year)
+      year_range = (scenarios.pluck(:fy_year).min()..scenarios.pluck(:ending_fy_year).max())
+      projects = DraftProject.where(scenario: scenarios).distinct
     else
       year_range = (year.to_i..(year.to_i+12))
       scenarios = Scenario.in_constrained_state.where(fy_year: year)
-      projects = DraftProject.where(scenario_id: scenarios.pluck(:id)).uniq
+      projects = DraftProject.where(scenario: scenarios).distinct
     end
 
     # Get all the phases and group them by ALI
-    ali_to_phases = DraftProjectPhase.where(draft_project_id: projects.pluck(:id)).group_by { |phase| phase.parent_ali_code } 
+    ali_to_phases = DraftProjectPhase.where(draft_project: projects).group_by { |phase| phase.parent_ali_code }
 
     # Iterate through each ALI and add up the costs
     ali_to_phases.each do |ali, phases|
