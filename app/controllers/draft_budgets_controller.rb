@@ -45,10 +45,12 @@ class DraftBudgetsController < OrganizationAwareController
     add_breadcrumb "New Budget"
     
     @funding_templates = get_contributor_funding_templates
-    @funding_template = FundingTemplate.find_by(object_key: params[:funding_template_id]) || @funding_templates.first 
-    @draft_budget.funding_template = @funding_template
-    @eligible_owner_orgs = current_user.viewable_organizations & @funding_template.organizations
-    @eligible_contributor_orgs = current_user.viewable_organizations & @funding_template.contributor_organizations
+    if params[:funding_template_id].present?
+      @funding_template = FundingTemplate.find_by(object_key: params[:funding_template_id]) || @funding_templates.first
+      @draft_budget.funding_template = @funding_template
+      @eligible_owner_orgs = current_user.viewable_organizations & @funding_template.organizations
+      @eligible_contributor_orgs = current_user.viewable_organizations & @funding_template.contributor_organizations
+    end
 
     respond_to do |format|
       format.html
