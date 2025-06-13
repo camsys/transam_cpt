@@ -27,7 +27,7 @@
 
 .row 
   .col-md-12
-    =column_chart Scenario.peaks_and_valleys_chart_data(nil, @fy_year), prefix: "$", library: {scales: {yAxes: [{id: 'y-axis', type: 'logarithmic'},]}}
+    =column_chart Scenario.peaks_and_valleys_chart_data(@scenarios, @fy_year), prefix: "$", library: {scales: {yAxes: [{id: 'y-axis', type: 'logarithmic'},]}}
 
 
 
