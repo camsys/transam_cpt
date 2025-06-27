@@ -56,7 +56,7 @@
     .row
       #primary-scenario-selector
         - if !@scenario.primary_scenario
-          - old_primary = Scenario.find_by(organization: @scenario.organization, fy_year: @scenario.fy_year, primary_scenario: true)
+          - old_primary = Scenario.find_by(organization: @scenario.organization, fy_year: @scenario.fy_year, ending_fy_year: @scenario.ending_fy_year, primary_scenario: true)
           =link_to toggle_primary_scenario_path(@scenario),
           method: :put,
           data: old_primary ? {confirm: "This agency already has a Primary Scenario for this fiscal year. Would you like to mark this scenario as the new Primary Scenario?"} : {} do
