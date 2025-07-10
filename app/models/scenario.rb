@@ -526,7 +526,7 @@ class Scenario < ApplicationRecord
   end
 
   def check_auto_primary
-    unless Scenario.find_by(organization: self.organization, fy_year: self.fy_year)
+    unless Scenario.find_by(organization: self.organization, fy_year: self.fy_year, ending_fy_year: self.ending_fy_year)
       self.primary_scenario = true
     end
   end

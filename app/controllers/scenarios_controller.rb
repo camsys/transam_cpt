@@ -146,7 +146,7 @@ class ScenariosController < OrganizationAwareController
     set_scenario
 
     unless @scenario.primary_scenario
-      if old_primary = Scenario.find_by(organization: @scenario.organization, fy_year: @scenario.fy_year, primary_scenario: true)
+      if old_primary = Scenario.find_by(organization: @scenario.organization, fy_year: @scenario.fy_year, ending_fy_year: @scenario.ending_fy_year, primary_scenario: true)
         unless old_primary.update(primary_scenario: false)
           error =  old_primary.errors.try(:first)
           if error
