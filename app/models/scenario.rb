@@ -78,7 +78,7 @@ class Scenario < ApplicationRecord
   validates :organization_id, presence: true
   validates :fy_year, presence: true 
   validates :ending_fy_year, presence: true
-  validates :primary_scenario, uniqueness: {scope: [:organization, :fy_year]}, if: :primary_scenario
+  validates :primary_scenario, uniqueness: {scope: [:organization, :fy_year, :ending_fy_year]}, if: :primary_scenario
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -526,7 +526,7 @@ class Scenario < ApplicationRecord
   end
 
   def check_auto_primary
-    unless Scenario.find_by(organization: self.organization, fy_year: self.fy_year)
+    unless Scenario.find_by(organization: self.organization, fy_year: self.fy_year, ending_fy_year: self.ending_fy_year)
       self.primary_scenario = true
     end
   end
