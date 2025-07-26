@@ -81,7 +81,7 @@ Rails.application.routes.draw do
   end
 
   ### SCENARIOS WorkFlOW
-  resources :scenarios, only: [:index, :show, :edit, :update, :new, :create] do
+  resources :scenarios, only: [:index, :show, :edit, :update, :new, :create, :get_similar_scenarios] do
     resources :comments
     member do 
       put 'transition'
@@ -89,6 +89,9 @@ Rails.application.routes.draw do
       post 'copy'
       get 'dotgrants_export'
       put 'toggle_primary'
+    end
+    collection do
+      get 'get_similar_scenarios'
     end
   end
 

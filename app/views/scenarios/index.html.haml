@@ -92,8 +92,10 @@
                     "primary_scenario":{"name":"Primary Scenario","type":"x-column"},
                     "status":{"name":"Status"},
                     "org":{"name":"Organization"},
+                    "fy_year":{"name":"FY Start"},
+                    "ending_fy_year":{"name":"FY End"},
                     "created_at":{"name":"Created At"}}',
-      :selected_columns => "name,primary_scenario,status,org,created_at",
+      :selected_columns => "name,primary_scenario,status,org,fy_year,ending_fy_year,created_at",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -109,5 +111,7 @@
         "primary_scenario": "#{format_as_boolean(scenario.primary_scenario, "fa-times")}",
         "status": '#{scenario.state_title}',
         "org": '#{scenario.organization.name}',
+        "fy_year": '#{scenario.fy_year}',
+        "ending_fy_year": '#{scenario.ending_fy_year}',
         "created_at": "#{format_as_date_time(scenario.created_at)}"
       }, #{index});
