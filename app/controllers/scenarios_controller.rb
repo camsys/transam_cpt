@@ -217,7 +217,7 @@ class ScenariosController < OrganizationAwareController
     similar_scenarios = Scenario.where(organization_id: params[:organization_id], fy_year: params[:fy_year], ending_fy_year: params[:ending_fy_year])
 
     respond_to do |format|
-      format.json { render :json => similar_scenarios }
+      format.json { render :json => {formatted_start_year: format_as_fiscal_year(params[:fy_year].to_i), formatted_end_year: format_as_fiscal_year(params[:ending_fy_year].to_i), scenarios: similar_scenarios} }
     end
   end
     

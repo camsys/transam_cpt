@@ -27,13 +27,13 @@
   .row
     =@scenario.description
   .row
-    ="FY Start: #{@scenario.fy_year}, FY End: #{@scenario.ending_fy_year}"
+    ="FY Start: #{format_as_fiscal_year(@scenario.fy_year)}, FY End: #{format_as_fiscal_year(@scenario.ending_fy_year)}"
   .row
     ="Created: #{@scenario.created_at.strftime('%b %e, %Y at %I:%M%p')}"
   .row
     =link_to edit_scenario_path(@scenario) do 
       %i.fa.fa-edit
-    =link_to copy_scenario_path(@scenario), method: :post, data: {confirm: "You already have #{similar_scenarios_count} #{similar_scenarios_count == 1 ? "scenario" : "scenarios"} for #{@scenario.organization.short_name} for #{@scenario.fy_year} to #{@scenario.ending_fy_year}. Are you sure you want to copy this scenario?"} do
+    =link_to copy_scenario_path(@scenario), method: :post, data: {confirm: "You already have #{similar_scenarios_count} #{similar_scenarios_count == 1 ? "scenario" : "scenarios"} for #{@scenario.organization.short_name} for #{format_as_fiscal_year(@scenario.fy_year)} to #{format_as_fiscal_year(@scenario.ending_fy_year)}. Are you sure you want to copy this scenario?"} do
       %i.fa.fa-clone
     -if @scenario.state == "approved"
       =link_to dotgrants_export_scenario_path(@scenario) do

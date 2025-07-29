@@ -21,9 +21,9 @@
       data: {organization_id: scenario_org_id, fy_year: scenario_fy_year, ending_fy_year: scenario_ending_fy_year},
       dataType: 'json',
       success: function(result){
-        var count = result.length
+        var count = result["scenarios"].length
         if (count > 0) {
-          $('#confirm_dialog_modal p').text(`You already have ${count} ${count == 1 ? "scenario" : "scenarios"} for ${scenario_org_name} for ${scenario_fy_year} to ${scenario_ending_fy_year}. Are you sure you want to create this scenario?`);
+          $('#confirm_dialog_modal p').text(`You already have ${count} ${count == 1 ? "scenario" : "scenarios"} for ${scenario_org_name} for ${result["formatted_start_year"]} to ${result["formatted_end_year"]}. Are you sure you want to create this scenario?`);
         } else {
           $('#confirm_dialog_modal a[data-dismiss="modal"').first().click();
           $('.new_scenario').submit();
