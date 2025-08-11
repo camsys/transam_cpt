@@ -73,7 +73,7 @@ class ScenariosController < OrganizationAwareController
   def new
     @scenario = Scenario.new
     @fiscal_years = (current_fiscal_year_year..current_fiscal_year_year + 49).map{ |y| [fiscal_year(y), y] }
-    @organizations =  Organization.all #TODO: Determine correct permissions here
+    @organizations =  current_user.viewable_organizations #TODO: Determine correct permissions here
     add_breadcrumb "New Scenario"
 
     respond_to do |format|
@@ -210,6 +210,14 @@ class ScenariosController < OrganizationAwareController
     #render json: @scenario.dotgrants_json
     respond_to do |format|
       format.html { send_data @scenario.dotgrants_json.to_json, filename: "#{@scenario.organization.try(:short_name)}_dotgrants.json",type: :json, disposition: "attachment" }
+    end
+  end
+
+  def get_similar_scenarios
+    similar_scenarios = Scenario.where(organization_id: params[:organization_id], fy_year: params[:fy_year], ending_fy_year: params[:ending_fy_year])
+
+    respond_to do |format|
+      format.json { render :json => {formatted_start_year: format_as_fiscal_year(params[:fy_year].to_i), formatted_end_year: format_as_fiscal_year(params[:ending_fy_year].to_i), scenarios: similar_scenarios} }
     end
   end
     

@@ -7,4 +7,30 @@
     =f.input :description
     =f.input :organization_id, collection: @organizations.collect { |o| [o.name, o.id] }
     =f.input :reviewer_organization, as: :hidden
-    =f.submit 'Save', class: 'btn btn-primary'
+    =f.submit 'Save', class: 'btn btn-primary', data: {confirm: "Checking existing scenarios..."}
+
+:javascript
+  $('.new_scenario :submit').on('click', function(e) {
+    var scenario_org_id = $('#scenario_organization_id')[0].value;
+    var scenario_org_name = $('#scenario_organization_id option:selected')[0].text;
+    var scenario_fy_year = $('#scenario_fy_year')[0].value;
+    var scenario_ending_fy_year = $('#scenario_ending_fy_year')[0].value;
+
+    $.ajax({
+      url: '/scenarios/get_similar_scenarios',
+      data: {organization_id: scenario_org_id, fy_year: scenario_fy_year, ending_fy_year: scenario_ending_fy_year},
+      dataType: 'json',
+      success: function(result){
+        var count = result["scenarios"].length
+        if (count > 0) {
+          $('#confirm_dialog_modal p').text(`You already have ${count} ${count == 1 ? "scenario" : "scenarios"} for ${scenario_org_name} for ${result["formatted_start_year"]} to ${result["formatted_end_year"]}. Are you sure you want to create this scenario?`);
+        } else {
+          $('#confirm_dialog_modal a[data-dismiss="modal"').first().click();
+          $('.new_scenario').submit();
+        }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+      }
+    });
+  });
