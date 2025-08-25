@@ -185,7 +185,7 @@ class DraftProject < ApplicationRecord
         agency: organization.try(:to_s),
         fy_year: formatted_fiscal_year,
         project_number: project_number,
-        primary_scenario: scenario.try(:primary_scenario),
+        primary_scenario: primary_scenario,
         scope: team_ali_code.try(:scope),
         is_emergency: emergency?,
         is_sogr: sogr?,
@@ -293,7 +293,9 @@ class DraftProject < ApplicationRecord
     fiscal_year(self.try(:fy_year))
   end
 
-
+  def primary_scenario
+    scenario.try(:primary_scenario)
+  end
 
 
 
