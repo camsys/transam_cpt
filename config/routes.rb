@@ -110,7 +110,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :draft_budgets, only: [:index, :show, :edit, :update, :new, :create]
+  resources :draft_budgets, only: [:index, :show, :edit, :update, :new, :create, :destroy]
   resources :draft_budget_allocations, only: [:edit, :update, :new, :create, :destroy] do
     member do
       patch 'lock_me'

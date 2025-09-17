@@ -10,6 +10,9 @@
   .row
     =link_to edit_draft_budget_path(@draft_budget) do 
       %i.fa.fa-edit
+    -if (can? :destroy, @draft_budget) && @draft_budget.draft_budget_allocations.count == 0
+      =link_to draft_budget_path(@draft_budget), :method => :delete, :class => "btn btn-xs btn-action", :data => { :confirm => 'Are you sure you want to remove this budget?' } do
+        %i.fa.fa-trash
 
 //Main Content  
 .row
