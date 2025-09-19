@@ -246,6 +246,7 @@ class ActivityLineItem < ActiveRecord::Base
     end
 
     if self.notional?
+      replacement_cost_calculation_type = CostCalculationType.find_by(class_name: 'PurchasePricePlusInterestCalculator') if asset.policy_analyzer.get_replacement_cost == 0
       calculate_estimated_replacement_cost(asset, replacement_cost_calculation_type, start_of_fiscal_year(capital_project.fy_year))
     else
       asset.scheduled_replacement_cost
