@@ -81,6 +81,18 @@ class DraftBudgetsController < OrganizationAwareController
     end
   end
 
+  def destroy
+    set_draft_budget
+    respond_to do |format|
+      if @draft_budget.destroy
+        notify_user(:notice, "The budget was successfully removed.")
+        format.html { redirect_to draft_budgets_path }
+      else
+        format.html
+      end
+    end
+  end
+
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
