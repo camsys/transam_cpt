@@ -36,6 +36,19 @@
     });
   }
 
+  $(document).ready(function() {
+    /* Activating Best In Place */
+    jQuery(".best_in_place").best_in_place();
+
+    // best_in_place callbacks for panels
+    $(".update_budgets").bind("ajax:success", function() {
+      let rows = $(`\#${$(this).attr("id")}`).closest(".col-md-2").find(".row");
+      rows.eq(0).html(rows.eq(0).html().replace(" (e)", ""));
+      let remaining = parseInt(rows.eq(0).html().split("$")[1].replaceAll(",","")) - parseInt(rows.eq(1).html().split("$")[1].replaceAll(",",""));
+      rows.eq(2).html(rows.eq(2).html().split("$")[0] + `$${remaining.toLocaleString()}` + "\n");
+      jQuery(".best_in_place").best_in_place();
+    });
+  })
 
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
   .panel-heading
@@ -73,6 +86,11 @@
           %strong
             Count:
           =phase.get_count.to_s
+        .row
+          %strong
+            Contract Complete:
+          =best_in_place phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")), :milestone_date, as: :date, activator: "#edit_contract_complete_#{phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).id}"
+          %a.fa.fa-edit{href: '#', id: "edit_contract_complete_#{phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).id}"}
 
 
         // Several Conditional Links   
@@ -103,15 +121,17 @@
           =link_to draft_project_path(phase.draft_project) do
             =phase.draft_project.try(:title)   
         -unless phase.draft_project.description.blank?
-          .row 
+          .row
             %strong
               Description:
-            =phase.draft_project.description
+            =best_in_place phase.draft_project, :description, as: :textarea, activator: "#edit_description_#{phase.draft_project.id}"
+            %a.fa.fa-edit{href: '#', id: "edit_description_#{phase.draft_project.id}"}
         -unless phase.draft_project.justification.blank?
           .row 
             %strong
               Justification:
-            =phase.draft_project.justification
+            =best_in_place phase.draft_project, :justification, as: :textarea, activator: "#edit_justification_#{phase.draft_project.id}"
+            %a.fa.fa-edit{href: '#', id: "edit_justification_#{phase.draft_project.id}"}
         -unless phase.cost_justification.blank?
           .row 
             %strong
@@ -121,7 +141,8 @@
         .row
           %strong
             =phase.cost_estimated ? "Cost (e):" : "Cost:"
-          =format_as_currency(phase.cost)
+          =best_in_place phase, :cost, activator: "#edit_cost_#{phase.id}", display_with: lambda { |cost| format_as_currency(cost) }, classes: "update_budgets"
+          %a.fa.fa-edit{href: '#', id: "edit_cost_#{phase.id}"}
         .row
           %strong
             Allocated:
