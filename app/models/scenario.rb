@@ -182,12 +182,12 @@ class Scenario < ApplicationRecord
     data = []
     year ||= self.current_fiscal_year_year
 
-    # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects form all scenarios in the constrained phases or beyond
+    # If we are within a scenario, only pull projects from that scenario. Otherwise, pull projects from all primary scenarios regardless of status
     if scenarios.instance_of? Scenario
       year_range = (scenarios.fy_year..scenarios.ending_fy_year)
       projects = scenarios.draft_projects
     elsif scenarios
-      scenarios = scenarios.in_constrained_state.where(fy_year: year)
+      scenarios = scenarios.where(fy_year: year, primary_scenario: true)
       year_range = (scenarios.pluck(:fy_year).min()..scenarios.pluck(:ending_fy_year).max())
       projects = DraftProject.where(scenario: scenarios).distinct
     else
