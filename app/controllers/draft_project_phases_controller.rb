@@ -39,12 +39,15 @@ class DraftProjectPhasesController < OrganizationAwareController
   end
 
   def update
-    set_draft_project_phase 
+    set_draft_project_phase
+    if form_params[:cost].present? && form_params[:cost].to_i != @draft_project_phase.cost
+      @draft_project_phase.cost_estimated = false
+    end
     respond_to do |format|
       if @draft_project_phase.update(form_params)
         @draft_project_phase.set_estimated_cost
         format.html { redirect_to draft_project_phase_path(@draft_project_phase) }
-        format.json { render json: true }
+        format.json { respond_with_bip(@draft_project_phase) }
       else
         format.html
         format.json { render json: false }

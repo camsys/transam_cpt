@@ -40,6 +40,8 @@ class DraftProject < ApplicationRecord
   #------------------------------------------------------------------------------
   validates :team_ali_code_id, presence: true
   validates :project_number, presence: true
+  validates :description, length: {maximum: 4000}
+  validates :justification, length: {maximum: 4000}
 
   #------------------------------------------------------------------------------
   # Instance Methods

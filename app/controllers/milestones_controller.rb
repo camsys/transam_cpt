@@ -13,6 +13,7 @@ class MilestonesController < OrganizationAwareController
           @milestone.save
         end
         format.html { redirect_to draft_project_phase_path(@milestone.draft_project_phase) }
+        format.json { respond_with_bip(@milestone) }
       else
         format.html
       end
