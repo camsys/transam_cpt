@@ -20,7 +20,7 @@ class ScenariosController < OrganizationAwareController
   def index
     @fy_year = allowed_params[:fy_year] || current_planning_year_year
     @status = allowed_params[:status]
-    @scenarios = Scenario.where(fy_year: @fy_year, organization: current_user.viewable_organizations).order(created_at: :desc)
+    @scenarios = Scenario.where(fy_year: @fy_year, organization: @organization_list).order(created_at: :desc)
 
     if @status
       @scenarios = @scenarios.where(state: @status)
