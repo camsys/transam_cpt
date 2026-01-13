@@ -49,6 +49,14 @@
       scenarioFilters["status"] = scenarioStatus;
       applyFilters(scenarioFilters);
     });
+
+    // On Windows, force the picker to show for arrow keys
+    $("#yearSelector,#statusFilter").on("keydown", function(e){
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        this.showPicker();
+        e.preventDefault();
+      }
+    });
   });
 
 
