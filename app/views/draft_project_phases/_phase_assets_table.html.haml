@@ -10,7 +10,7 @@
         %th Desc
         %th Fuel
         %th Age
-        %th Bcklg
+        %th Length
         %th Mileage
         %th Condition
         %th FY
@@ -45,7 +45,7 @@
           %td.text-center
             =specific_asset.age
           %td.text-right
-            =format_as_boolean(specific_asset.in_backlog)
+            ="#{specific_asset.try(:vehicle_length)} #{specific_asset.try(:vehicle_length_unit)&.pluralize}"
           %td.text-right
             =format_as_integer specific_asset.try(:reported_mileage)
           %td.text-center
