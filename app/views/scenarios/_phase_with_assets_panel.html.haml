@@ -48,6 +48,11 @@
       rows.eq(2).html(rows.eq(2).html().split("$")[0] + `$${remaining.toLocaleString()}` + "\n");
       jQuery(".best_in_place").best_in_place();
     });
+
+    // don't allow dates in the past to be selected from datepicker
+    $.datepicker.setDefaults({
+      minDate: 0    // Sets the minimum date to today
+    });
   })
 
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
