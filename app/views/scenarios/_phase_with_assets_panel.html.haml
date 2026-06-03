@@ -53,6 +53,10 @@
     $.datepicker.setDefaults({
       minDate: 0    // Sets the minimum date to today
     });
+
+    $(document).on('best_in_place:activate', '.best_in_place[data-bip-type="date"]', function() {
+      $(this).find('input').attr('readonly', true);
+    });
   })
 
 .panel.panel-default.phase{ ali: "#{phase.draft_project.team_ali_code}", year: "#{phase.fy_year}", id: "#{phase.object_key}" }
