@@ -85,7 +85,7 @@ class DraftProjectsController < OrganizationAwareController
     respond_to do |format|
       if @draft_project.update(form_params)
         add_districts
-        format.html { redirect_to draft_project_path(@draft_project) }
+        format.html { redirect_to new_draft_project_phase_path(draft_project_id: @draft_project.object_key) }
       else
         notify_user(:alert, @draft_project.errors.full_messages.join("; "))
         format.html {redirect_back(fallback_location: root_path)}
