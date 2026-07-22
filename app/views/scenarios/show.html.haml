@@ -69,7 +69,7 @@
           %i{class: "fa fa-times-rectangle-o"}
         %strong Primary Scenario
     .row
-      =link_to report_path(Report.find_by(class_name: "ScenarioBudgetReport"), scenario_id: @scenario.id) do
+      =link_to report_path(Report.find_by(class_name: "ScenarioBudgetReport"), scenario_id: @scenario.id), target: '_blank' do
         Budget Report
 
   .col-md-4
