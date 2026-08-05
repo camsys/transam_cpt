@@ -68,9 +68,10 @@
         - else
           %i{class: "fa fa-times-rectangle-o"}
         %strong Primary Scenario
-    .row
-      =link_to report_path(Report.find_by(class_name: "ScenarioBudgetReport"), scenario_id: @scenario.id), target: '_blank' do
-        Budget Report
+    - unless Report.find_by(class_name: "ScenarioBudgetReport").nil?
+      .row
+        =link_to report_path(Report.find_by(class_name: "ScenarioBudgetReport"), scenario_id: @scenario.id), target: '_blank' do
+          Budget Report
 
   .col-md-4
     //  .progress
