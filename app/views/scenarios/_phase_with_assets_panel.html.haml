@@ -65,14 +65,15 @@
       .col-md-10
         %h4
           -if phase.pinned
-            %i.fa.fa-thumb-tack.pinned.pinner{data: {object_key: phase.object_key}}
+            %i.fa.fa-thumb-tack.pinned.pinner{data: {object_key: phase.object_key, allowed: scenario_updatable}}
           -else
-            %i.fa.fa-thumb-tack.unpinned.pinner{data: {object_key: phase.object_key}}
+            %i.fa.fa-thumb-tack.unpinned.pinner{data: {object_key: phase.object_key, allowed: scenario_updatable}}
           =link_to draft_project_phase_path(phase) do
             =phase.name
-      .col-md-2.text-right
-        = form_with model: phase, html:{class: "phase_year_select"} do |f|
-          = f.select :phase_year_select, options_for_select((phase.scenario.fy_year..phase.scenario.ending_fy_year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
+      - if scenario_updatable
+        .col-md-2.text-right
+          = form_with model: phase, html:{class: "phase_year_select"} do |f|
+            = f.select :phase_year_select, options_for_select((phase.scenario.fy_year..phase.scenario.ending_fy_year).map{ |y| [format_as_fiscal_year(y), y] }, phase.fy_year) #.year_range.uniq.sort.map!{ |y| [format_as_fiscal_year(y), y] }
   
   .panel-body
 
@@ -99,23 +100,25 @@
           %strong
             Contract Complete:
           =best_in_place phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")), :milestone_date, as: :date, activator: "#edit_contract_complete_#{phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).id}"
-          %a.fa.fa-edit{href: '#', id: "edit_contract_complete_#{phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).id}"}
+          - if scenario_updatable
+            %a.fa.fa-edit{href: '#', id: "edit_contract_complete_#{phase.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).id}"}
 
 
         // Several Conditional Links   
         -unless phase.milestones_completed?
-          .row 
-            %strong
-              =link_to draft_project_phase_path(phase, anchor: "milestones-section"), target: "_blank" do
-                %i.fa.fa-flag-checkered
-                Add Milestones
-        -if phase.scenario.state == "constrained_plan" and not phase.federal_and_local_funding_complete?
+          - if scenario_updatable
+            .row
+              %strong
+                =link_to draft_project_phase_path(phase, anchor: "milestones-section"), target: "_blank" do
+                  %i.fa.fa-flag-checkered
+                  Add Milestones
+        -if phase.scenario.state == "constrained_plan" and not phase.federal_and_local_funding_complete? and scenario_updatable
           .row
             %strong
               =link_to draft_project_phase_path(phase, anchor: "funding-section"), target: "_blank" do
                 %i.fa.fa-usd
                 Update Funding
-        -if phase.scenario.state == "submitted_constrained_plan" and not phase.state_funding_complete?
+        -if phase.scenario.state == "submitted_constrained_plan" and not phase.state_funding_complete? and scenario_updatable
           .row
             %strong
               =link_to draft_project_phase_path(phase, anchor: "funding-section"), target: "_blank" do
@@ -134,13 +137,15 @@
             %strong
               Description:
             =best_in_place phase.draft_project, :description, as: :textarea, activator: "#edit_description_#{phase.draft_project.id}"
-            %a.fa.fa-edit{href: '#', id: "edit_description_#{phase.draft_project.id}"}
+            - if scenario_updatable
+              %a.fa.fa-edit{href: '#', id: "edit_description_#{phase.draft_project.id}"}
         -unless phase.draft_project.justification.blank?
           .row 
             %strong
               Justification:
             =best_in_place phase.draft_project, :justification, as: :textarea, activator: "#edit_justification_#{phase.draft_project.id}"
-            %a.fa.fa-edit{href: '#', id: "edit_justification_#{phase.draft_project.id}"}
+            - if scenario_updatable
+              %a.fa.fa-edit{href: '#', id: "edit_justification_#{phase.draft_project.id}"}
         -unless phase.cost_justification.blank?
           .row 
             %strong
@@ -151,7 +156,8 @@
           %strong
             =phase.cost_estimated ? "Cost (e):" : "Cost:"
           =best_in_place phase, :cost, activator: "#edit_cost_#{phase.id}", display_with: lambda { |cost| format_as_currency(cost) }, classes: "update_budgets"
-          %a.fa.fa-edit{href: '#', id: "edit_cost_#{phase.id}"}
+          - if scenario_updatable
+            %a.fa.fa-edit{href: '#', id: "edit_cost_#{phase.id}"}
         .row
           %strong
             Allocated:
@@ -172,7 +178,7 @@
     // Asstes Table
     %hr 
     .row
-      =render partial: "draft_project_phases/phase_assets_table", locals: {draft_project_phase: phase}
+      =render partial: "draft_project_phases/phase_assets_table", locals: {draft_project_phase: phase, scenario_updatable: scenario_updatable}
       
       //
       
@@ -181,5 +187,6 @@
     .row
       .col-md-10.text-left
         ="Created: #{phase.created_at.strftime('%m/%d/%Y at %I:%M%p')}"
-      .col-md-2.text-right
-        %i.fa.fa-trash.deletePhase{data: {object_key: phase.object_key}}
+      - if scenario_updatable
+        .col-md-2.text-right
+          %i.fa.fa-trash.deletePhase{data: {object_key: phase.object_key}}

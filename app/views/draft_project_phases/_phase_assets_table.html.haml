@@ -30,7 +30,7 @@
                 %i.fa.fa-exclamation-triangle.text-danger
           %td.text-center{id: "#{dppa.object_key}Cell"}
             %form{style: "padding-left: 0px"}
-              %select.assetReplacementYear{id: dppa.object_key}
+              %select.assetReplacementYear{id: dppa.object_key, disabled: !scenario_updatable}
                 -((draft_project_phase.scenario.try(:fy_year) || 2020)..(draft_project_phase.scenario.try(:ending_fy_year) || 2035) ).each do |year|
                   %option{value: "#{year}", selected: (year==draft_project_phase.fy_year)} 
                     =format_as_fiscal_year year
