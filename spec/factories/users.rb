@@ -70,4 +70,20 @@ FactoryBot.define do
     end
   end
 
+  factory :grantor_user, :class => :user do
+    phone { 999999999 }
+    password { 'Welcome1' }
+    association :organization, :factory => :grantor
+    active { true }
+
+    factory :grantor_manager, :class => :user do
+      first_name { "grantor" }
+      last_name  { "manager" }
+      sequence(:email) {|n| "grantor#{n}@example.com"}
+
+      after(:create) do |u|
+        u.add_role :manager
+      end
+    end
+  end
 end

@@ -19,6 +19,7 @@
     color: inherit;
   }
 
+- scenario_updatable = can?(:update, @scenario)
 - similar_scenarios_count = Scenario.where(organization: @scenario.organization, fy_year: @scenario.fy_year, ending_fy_year: @scenario.ending_fy_year).count
 
 .row.text-center
@@ -31,8 +32,9 @@
   .row
     ="Created: #{@scenario.created_at.strftime('%b %e, %Y at %I:%M%p')}"
   .row
-    =link_to edit_scenario_path(@scenario) do 
-      %i.fa.fa-edit
+    - if scenario_updatable
+      =link_to edit_scenario_path(@scenario) do
+        %i.fa.fa-edit
     =link_to copy_scenario_path(@scenario), method: :post, data: {confirm: "You already have #{similar_scenarios_count} #{similar_scenarios_count == 1 ? "scenario" : "scenarios"} for #{@scenario.organization.short_name} for #{format_as_fiscal_year(@scenario.fy_year)} to #{format_as_fiscal_year(@scenario.ending_fy_year)}. Are you sure you want to copy this scenario?"} do
       %i.fa.fa-clone
     -if @scenario.state == "approved"
@@ -152,7 +154,7 @@
       -@scenario.draft_project_phases.where(fy_year: @phase_filter_year).each_with_index do |phase, index|
         .row
           .col-md-12
-            =render partial: "phase_with_assets_panel", locals: {phase: phase}
+            =render partial: "phase_with_assets_panel", locals: {phase: phase, scenario_updatable: scenario_updatable}
 
     // Project Phases
     %div.row.text-center
@@ -297,7 +299,7 @@
     });
 
     // Handle When someone pins/unpins a phase
-    $(".pinner").click(function(){
+    $(".pinner[data-allowed]").click(function(){
       var object_key = this.dataset.objectKey;
       console.log(object_key);
       if (this.classList.contains('pinned')) {
