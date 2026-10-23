@@ -25,6 +25,37 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
 
   end
 
+  # TTPLAT-3118: pins the rendered ALI page without depending on the candidate
+  # asset list (@assets), which TTPLAT-3091 stops computing. The setup is the
+  # existing 'GET show' setup because the matcher still runs until 3091 lands.
+  describe 'GET show (rendered)' do
+    render_views
+
+    # The dummy layout's stylesheet_link_tag / javascript_include_tag raise under
+    # sprockets 4 (bootstrap-editable-rails adds a Regexp to assets.precompile),
+    # before any view under test renders. Stub only those two layout helpers.
+    before(:each) do
+      allow_any_instance_of(ActionView::Base).to receive(:stylesheet_link_tag).and_return('')
+      allow_any_instance_of(ActionView::Base).to receive(:javascript_include_tag).and_return('')
+    end
+
+    it 'renders the ALI page' do
+      Organization.get_typed_organization(test_ali.capital_project.organization).service_provider_types << ServiceProviderType.find_by_name('Urban')
+      test_ali.capital_project.organization.save!
+      test_parent_policy = create(:parent_policy, :organization => test_ali.capital_project.organization, type: create(:asset_type).id, subtype: create(:asset_subtype).id, replacement_code: test_ali.team_ali_code)
+      create(:policy, organization: test_parent_policy.organization, parent: test_parent_policy)
+      create(:buslike_asset, :organization => test_ali.capital_project.organization, :asset_type => test_parent_policy.policy_asset_type_rules.first.asset_type, :asset_subtype => test_parent_policy.policy_asset_subtype_rules.first.asset_subtype, :scheduled_replacement_year => test_ali.capital_project.fy_year)
+
+      get :show, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template('activity_line_items/show')
+      expect(assigns(:project)).to eq(test_project)
+      expect(assigns(:activity_line_item)).to eq(test_ali)
+      expect(response.body).to include(test_ali.name)
+    end
+  end
+
   it 'GET add_asset' do
     skip 'Assumes transam_asset. Not yet testable.'
     request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
