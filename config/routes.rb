@@ -59,8 +59,6 @@ Rails.application.routes.draw do
         get 'restore_cost'
         post 'set_cost'
         get 'edit_milestones'
-        get 'add_asset'
-        delete 'remove_asset'
         get 'pin'
       end
     end
