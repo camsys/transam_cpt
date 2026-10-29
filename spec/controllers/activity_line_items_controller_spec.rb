@@ -5,7 +5,6 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   let(:test_user)    { create(:normal_user) }
   let(:test_project) { create(:capital_project, :organization_id => test_user.organization_id) }
   let(:test_ali)      { create(:activity_line_item, :capital_project => test_project) }
-  let(:test_asset)    { create(:buslike_asset) }
 
   before(:each) do
     sign_in test_user
@@ -14,20 +13,13 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
   it 'GET show' do
     Organization.get_typed_organization(test_ali.capital_project.organization).service_provider_types << ServiceProviderType.find_by_name('Urban')
     test_ali.capital_project.organization.save!
-    test_parent_policy = create(:parent_policy, :organization => test_ali.capital_project.organization, type: create(:asset_type).id, subtype: create(:asset_subtype).id, replacement_code: test_ali.team_ali_code)
-    test_policy = create(:policy, organization: test_parent_policy.organization, parent: test_parent_policy)
-    test_asset = create(:buslike_asset, :organization => test_ali.capital_project.organization, :asset_type => test_parent_policy.policy_asset_type_rules.first.asset_type, :asset_subtype => test_parent_policy.policy_asset_subtype_rules.first.asset_subtype, :scheduled_replacement_year => test_ali.capital_project.fy_year)
     get :show, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
 
     expect(assigns(:project)).to eq(test_project)
     expect(assigns(:activity_line_item)).to eq(test_ali)
-    expect(assigns(:assets)).to include(test_asset)
-
   end
 
-  # TTPLAT-3118: pins the rendered ALI page without depending on the candidate
-  # asset list (@assets), which TTPLAT-3091 stops computing. The setup is the
-  # existing 'GET show' setup because the matcher still runs until 3091 lands.
+  # TTPLAT-3118: pins the rendered ALI page. TTPLAT-3091 instance 9 removed the candidate asset list (@assets), so this example needs no policies or assets.
   describe 'GET show (rendered)' do
     render_views
 
@@ -42,9 +34,6 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
     it 'renders the ALI page' do
       Organization.get_typed_organization(test_ali.capital_project.organization).service_provider_types << ServiceProviderType.find_by_name('Urban')
       test_ali.capital_project.organization.save!
-      test_parent_policy = create(:parent_policy, :organization => test_ali.capital_project.organization, type: create(:asset_type).id, subtype: create(:asset_subtype).id, replacement_code: test_ali.team_ali_code)
-      create(:policy, organization: test_parent_policy.organization, parent: test_parent_policy)
-      create(:buslike_asset, :organization => test_ali.capital_project.organization, :asset_type => test_parent_policy.policy_asset_type_rules.first.asset_type, :asset_subtype => test_parent_policy.policy_asset_subtype_rules.first.asset_subtype, :scheduled_replacement_year => test_ali.capital_project.fy_year)
 
       get :show, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key}
 
@@ -54,26 +43,6 @@ RSpec.describe ActivityLineItemsController, :type => :controller do
       expect(assigns(:activity_line_item)).to eq(test_ali)
       expect(response.body).to include(test_ali.name)
     end
-  end
-
-  it 'GET add_asset' do
-    skip 'Assumes transam_asset. Not yet testable.'
-    request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
-    post :add_asset, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, :asset => test_asset.object_key}
-
-    expect(test_ali.assets).to include(test_asset)
-  end
-  it 'DELETE remove_asset' do
-    skip 'Assumes transam_asset. Not yet testable.'
-
-    request.env["HTTP_REFERER"] = capital_project_activity_line_items_path(test_project)
-    test_ali.assets << test_asset
-    test_ali.save!
-    expect(test_ali.assets).to include(test_asset)
-
-    post :remove_asset, params:{:capital_project_id => test_project.object_key, :id => test_ali.object_key, :asset => test_asset.object_key}
-    test_ali.reload
-    expect(test_ali.assets).not_to include(test_asset)
   end
 
   it 'GET new' do

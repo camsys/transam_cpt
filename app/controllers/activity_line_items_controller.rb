@@ -6,7 +6,7 @@ class ActivityLineItemsController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Projects", :capital_projects_path
 
-  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy, :add_asset, :remove_asset,
+  before_action :set_activity_line_item,  :only => [:show, :edit, :update, :destroy,
                                                     :edit_cost, :restore_cost, :edit_milestones, :set_cost, :assets, :pin]
   before_action :get_capital_project
   before_action :reformat_date_fields,    :only => [:create, :update]
@@ -29,10 +29,6 @@ class ActivityLineItemsController < OrganizationAwareController
     add_breadcrumb @project.project_number, capital_project_path(@project)
     add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
 
-    # Get the list of candidate assets that could be added to the ALI
-    matcher = AliAssetMatcherService.new
-    @assets = matcher.match(@activity_line_item, {})
-
     # Set up the cache list for the ALI
     cache_list(@project.activity_line_items, INDEX_KEY_LIST_VAR)
 
@@ -42,37 +38,6 @@ class ActivityLineItemsController < OrganizationAwareController
     @next_record_path = @next_record_key.nil? ? "#" : capital_project_activity_line_item_path(@project, @next_record_key)
 
   end
-
-  #
-  # Not used
-  # -----------------------------------------------------------------------------
-  # Add the specified asset to this ALI
-  def add_asset
-    asset = Asset.find_by_object_key(params[:asset])
-    if asset.nil?
-      notify_user(:alert, "Unable to add asset. Record not found!")
-      return
-    else
-      @activity_line_item.assets << asset
-      notify_user(:notice, "Asset was successfully added to the ALI")
-    end
-    redirect_back(fallback_location: root_path)
-  end
-
-  def remove_asset
-    asset = Asset.find_by_object_key(params[:asset])
-    if asset.nil?
-      notify_user(:alert, "Unable to remove asset. Record not found!")
-      return
-    else
-      @activity_line_item.assets.delete(asset)
-      # force the ALI to update its estimated costs
-      @activity_line_item.save
-      notify_user(:notice, "Asset was successfully removed from the ALI")
-    end
-    redirect_back(fallback_location: root_path)
-  end
-  # -----------------------------------------------------------------------------
 
   # GET /activity_line_items/new
   def new
