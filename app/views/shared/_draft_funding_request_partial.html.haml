@@ -57,7 +57,7 @@
             -budgets.each do |budget|
               %option{value: budget.id, 
                       selected: allocation.draft_budget == budget, 
-                      disabled: budget.shared_across_scenarios && !is_grantor} 
+                      disabled: (budget.shared_across_scenarios && !is_grantor) || !scenario_updatable}
                 =budget.try(:type_and_name)
       .col-md-1
         ="#{100*allocation.required_pct}%"
@@ -73,18 +73,20 @@
         %span.unedit
           =format_as_currency allocation.amount
         %input.toggle_edit{type:'checkbox',style:"visibility:hidden"}
-      .col-md-1.alloc_actions{ data_id: "#{allocation.object_key}" }
-        %i.fa.fa-edit.trigger_toggle_edit
-        %i.fa.fa-check.trigger_toggle_edit.confirm_edit{style:"display:none"}
-        %i.fa.fa-times.cancel_edit{style:"display:none"}
-          %i.fa.fa-lock.alloc_lock{data:{allocation_id: allocation.id, object_key: allocation.object_key}}
-          =link_to draft_budget_allocation_path(allocation), method: :delete do
-            %i.fa.fa-trash
+      - if scenario_updatable
+        .col-md-1.alloc_actions{ data_id: "#{allocation.object_key}" }
+          %i.fa.fa-edit.trigger_toggle_edit
+          %i.fa.fa-check.trigger_toggle_edit.confirm_edit{style:"display:none"}
+          %i.fa.fa-times.cancel_edit{style:"display:none"}
+            %i.fa.fa-lock.alloc_lock{data:{allocation_id: allocation.id, object_key: allocation.object_key}}
+            =link_to draft_budget_allocation_path(allocation), method: :delete do
+              %i.fa.fa-trash
 
-  .row.add-allocation
-    .col-md-3.text-center
-      =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do
-        %i.fa.fa-plus
+  - if scenario_updatable
+    .row.add-allocation
+      .col-md-3.text-center
+        =link_to new_draft_budget_allocation_url(draft_funding_request_id: funding_request.object_key) do
+          %i.fa.fa-plus
 
   .row
     .row
@@ -104,11 +106,12 @@
           ="#{format_as_currency(funding_request.total)}"
         %input.toggle_edit_total{type:'checkbox',style:"visibility:hidden", id: "edit_field_#{funding_request.id}"}
       
-      .col-md-1.total_actions{id:"#{funding_request.object_key}"}
-        %i.fa.fa-edit.trigger_toggle_edit_total.edit_button{id: "edit_#{funding_request.id}"}
-        
-        %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none", id: "check_#{funding_request.id}"}
-        %i.fa.fa-times.cancel_edit_total{style:"display:none", id: "cancel_#{funding_request.id}"}
+      - if scenario_updatable
+        .col-md-1.total_actions{id:"#{funding_request.object_key}"}
+          %i.fa.fa-edit.trigger_toggle_edit_total.edit_button{id: "edit_#{funding_request.id}"}
+
+          %i.fa.fa-check.trigger_toggle_edit_total.lock_total{style:"display:none", id: "check_#{funding_request.id}"}
+          %i.fa.fa-times.cancel_edit_total{style:"display:none", id: "cancel_#{funding_request.id}"}
       %span{style:"display:none", id: "spinner_#{funding_request.id}"}
         %i.fa.fa-spinner.fa-spin
         :javascript

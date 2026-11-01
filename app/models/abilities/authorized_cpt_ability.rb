@@ -58,6 +58,10 @@ module Abilities
         ali.capital_project.can_update? and organization_ids.include?(ali.capital_project.organization_id) and !ali.is_agency_planning_complete? and !ali.pinned?
       end
 
+      # This rule is deliberately more limited than the above rules, scoping the ability to update a scenario solely based on the user's org alone, not all orgs
+      can [:update], Scenario do |scenario|
+        scenario.updatable_by?(user)
+      end
 
     end
   end

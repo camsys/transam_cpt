@@ -57,6 +57,8 @@ class Scenario < ApplicationRecord
     "approved"
   ]
 
+  AGENCY_EDITABLE_STATES = %w[unconstrained_plan constrained_plan].freeze
+
   #------------------------------------------------------------------------------
   # Associations
   #------------------------------------------------------------------------------
@@ -147,6 +149,11 @@ class Scenario < ApplicationRecord
 
     new_scenario
 
+  end
+
+  def updatable_by?(user)
+    return false if user.nil? || user.organization.nil?
+    (user.organization == reviewer_organization) || (user.organization == organization && state.in?(AGENCY_EDITABLE_STATES))
   end
 
 

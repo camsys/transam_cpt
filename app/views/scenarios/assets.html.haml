@@ -12,6 +12,8 @@
 
   });
 
+- scenario_updatable = can?(:update, @scenario)
+
 .col-md-1
 .col-md-10
   %h3
@@ -36,7 +38,7 @@
             =ta.asset_subtype.try(:name)
           %td
             -if phase
-              =link_to phase.draft_project_phase.try(:long_name), edit_draft_project_phase_asset_path('none', transit_asset_id: ta.object_key, scenario_id: @scenario.object_key)
-            -else
+              =link_to phase.draft_project_phase.try(:long_name), scenario_updatable ? edit_draft_project_phase_asset_path('none', transit_asset_id: ta.object_key, scenario_id: @scenario.object_key) : draft_project_phase_path(phase.draft_project_phase)
+            -elsif scenario_updatable
               =link_to '+', new_draft_project_phase_asset_path(transit_asset_id: ta.object_key, scenario_id: @scenario.object_key)
 

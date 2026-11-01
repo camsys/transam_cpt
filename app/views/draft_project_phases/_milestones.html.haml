@@ -19,9 +19,10 @@
       .col-md-1
         =f.input :milestone_date, as: :string, :input_html => { :id => "milestone_#{milestone.id}_milestone_date", :class => 'form-control datepicker', value: (milestone.milestone_date ? milestone.milestone_date.strftime('%m/%d/%Y') : nil) }, label: false, readonly: true
       .col-md-3
-        =f.input :comments, label: false
-      .col-md-1
-        =f.submit
+        =f.input :comments, label: false, readonly: !scenario_updatable
+      - if scenario_updatable
+        .col-md-1
+          =f.submit
 
 :javascript
   $('.datepicker').datepicker({

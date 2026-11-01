@@ -1,3 +1,5 @@
+- scenario_updatable = can?(:update, @scenario)
+
 .col-md-12.comments_panel
   %h3.text-center
     ="Timeline"
@@ -6,7 +8,7 @@
       %li.list-group-item.comment
         %span.title.text-muted{:style => 'min-width: 140px; display:inline-block;'}= "#{c.creator.name} (#{c.creator_organization})<br/>#{format_as_date_time(c.created_at)}".html_safe
         %span.pull-right{:style => 'min-width: 80px; display:block;vertical-align:top'}
-          - if can? :destroy, c
+          - if can? :destroy, c && scenario_updatable
             = link_to [c.commentable.becomes(c.commentable.class.base_class), c], :method => :delete, :class => "btn btn-warning btn-xs pull-right btn-action", :data => { :confirm => 'Are you sure you want to remove this comment?' } do
               %i.fa.fa-trash
               Delete
