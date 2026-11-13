@@ -1,7 +1,7 @@
 FactoryBot.define do
 
   trait :basic_event_traits do
-    association :asset, :factory => :equipment_asset
+    association :transam_asset, :factory => :transam_asset
   end
 
   factory :asset_event do
